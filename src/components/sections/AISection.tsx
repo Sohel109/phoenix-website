@@ -59,7 +59,11 @@ export function AISection() {
                             className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
                         >
                             <button
-                                onClick={() => document.querySelector<HTMLButtonElement>('.fixed.bottom-6.right-6')?.click()}
+                                onClick={() => {
+                                    // Find and click the chatbot button using a more reliable selector
+                                    const chatbotBtn = document.querySelector('[class*="from-violet-600"][class*="to-orange-500"][class*="rounded-full"]') as HTMLButtonElement;
+                                    chatbotBtn?.click();
+                                }}
                                 className="group relative inline-flex items-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold hover:scale-105 hover:bg-violet-600 dark:hover:bg-violet-400 dark:hover:text-white transition-all duration-300"
                             >
                                 <span>Essayer maintenant</span>
