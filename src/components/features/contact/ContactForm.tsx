@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, ArrowLeft, Loader2, CheckCircle, ChevronRight } from 'lucide-react';
+import { Send, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 
 interface ContactFormProps {
     category: string;
