@@ -220,7 +220,7 @@ export function Chatbot() {
                 onClick={toggleChat}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 p-4 bg-gradient-to-r from-violet-600 to-orange-500 text-white rounded-full shadow-lg hover:shadow-violet-500/30 transition-shadow group"
+                className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 p-4 bg-gradient-to-r from-violet-600 to-orange-500 text-white rounded-full shadow-lg hover:shadow-violet-500/30 transition-shadow group"
             >
                 <AnimatePresence mode='wait'>
                     {isOpen ? (
