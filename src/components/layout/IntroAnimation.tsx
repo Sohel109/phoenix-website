@@ -8,6 +8,18 @@ interface IntroAnimationProps {
 export function IntroAnimation({ onComplete }: IntroAnimationProps) {
     const [isVisible, setIsVisible] = useState(true);
 
+    // Skip animation on mobile for performance
+    // This check should ideally be done using a more robust method like media queries or a custom hook
+    // that listens to window resize events, but for a quick check, window.innerWidth is used here.
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (isMobile) {
+        useEffect(() => {
+            // If animation is skipped, call onComplete immediately
+            onComplete();
+        }, [onComplete]);
+        return null;
+    }
+
     useEffect(() => {
         // Sequence (Turbo Mode - Max 2s):
         // 0s: Background
