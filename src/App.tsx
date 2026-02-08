@@ -6,6 +6,7 @@ import { Footer } from './components/layout/Footer';
 import { IntroAnimation } from './components/layout/IntroAnimation';
 import { AuroraBackground } from './components/layout/AuroraBackground';
 import { Chatbot } from './components/features/Chatbot';
+import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
@@ -48,6 +49,7 @@ function App() {
             <Header />
             <BubbleMenu />
             <Chatbot />
+            <IOSInstallPrompt />
             <main className="flex-grow">
               <Routes>
                 <Route path="/" element={<Home />} />
