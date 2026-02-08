@@ -20,7 +20,8 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
         setStatus('loading');
 
         try {
-            const response = await fetch('http://localhost:3001/api/send-email', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+            const response = await fetch(`${API_URL}/api/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
