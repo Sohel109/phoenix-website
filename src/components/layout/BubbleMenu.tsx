@@ -9,8 +9,8 @@ const menuItems = [
     { label: 'Accueil', path: '/', icon: Home },
     { label: 'Projets', path: '/projets', icon: FolderOpen },
     { label: 'Événements', path: '/evenements', icon: Calendar },
-    { label: 'Partenaires', path: '/partenaires', icon: Users },
-    { label: 'Docs', path: '/documents', icon: FileText },
+    { label: 'Partenaires', path: '/partenaires', icon: Users, hideOnMobile: true },
+    { label: 'Docs', path: '/documents', icon: FileText, hideOnMobile: true },
     { label: 'Contact', path: '/contact', icon: Mail },
 ];
 
@@ -69,11 +69,14 @@ export function BubbleMenu() {
                             to={item.path}
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
-                            className="relative"
+                            className={clsx(
+                                "relative",
+                                item.hideOnMobile && "hidden md:block"
+                            )}
                         >
                             <motion.div
                                 className={clsx(
-                                    "relative z-10 flex items-center justify-center w-12 h-12 rounded-full transition-colors duration-300",
+                                    "relative z-10 flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full transition-colors duration-300",
                                     isActive
                                         ? "text-white" // Active is always white text (on orange bg)
                                         : isDarkStyle
@@ -86,7 +89,7 @@ export function BubbleMenu() {
                                 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                                <item.icon size={20} strokeWidth={2} />
+                                <item.icon size={18} strokeWidth={2} className="md:w-5 md:h-5" />
 
                                 {/* Active State Dot - Only if NOT hovered (optional, keeping minimal) */}
                                 {isActive && (
@@ -136,11 +139,11 @@ export function BubbleMenu() {
                     href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
+                    className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
                     whileHover={{ scale: 1.1, rotate: 10 }}
                     whileTap={{ scale: 0.9 }}
                 >
-                    <Heart size={20} fill="currentColor" />
+                    <Heart size={18} fill="currentColor" className="md:w-5 md:h-5" />
                 </motion.a>
             </motion.div>
         </div>
