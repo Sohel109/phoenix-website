@@ -10,6 +10,7 @@ import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
+import { ProjectMap } from './pages/ProjectMap';
 import { Events } from './pages/Events';
 import { EventDetail } from './pages/EventDetail';
 import { Partners } from './pages/Partners';
@@ -55,6 +56,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/projets" element={<Projects />} />
                 <Route path="/projets/:id" element={<ProjectDetail />} />
+                <Route path="/carte-des-projets" element={<ProjectMap />} />
                 <Route path="/evenements" element={<Events />} />
                 <Route path="/evenements/:id" element={<EventDetail />} />
                 <Route path="/partenaires" element={<Partners />} />

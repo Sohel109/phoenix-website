@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Home, FolderOpen, Calendar, Users, FileText, Mail, Heart } from 'lucide-react';
+import { Home, FolderOpen, Calendar, Users, FileText, Mail, Heart, Map } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 const menuItems = [
     { label: 'Accueil', path: '/', icon: Home },
     { label: 'Projets', path: '/projets', icon: FolderOpen },
+    { label: 'Carte', path: '/carte-des-projets', icon: Map },
     { label: 'Événements', path: '/evenements', icon: Calendar },
     { label: 'Partenaires', path: '/partenaires', icon: Users, hideOnMobile: true },
     { label: 'Docs', path: '/documents', icon: FileText, hideOnMobile: true },
