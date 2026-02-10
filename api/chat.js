@@ -4,6 +4,13 @@ const associationName = "PHOENIX ÉGALITÉ DES CHANCES";
 const PHOENIX_DB = {
     general: `Phoenix Égalité des Chances (Phoenix EDC) est une association étudiante loi 1901 d'intérêt général, basée à Kedge Business School Marseille.\\nCréation : 2011 (Racines 1998).\\nMission : Tutorat, égalité des chances et ouverture culturelle pour les jeunes des Quartiers Prioritaires de la Ville (QPV).\\nBénévoles : ~140 étudiants Kedge.\\nBénéficiaires : ~300 jeunes/an.`,
 
+    overview: [
+        {
+            keywords: ["combien", "nombre", "liste", "quels", "projets", "tous les projets"],
+            content: "Phoenix EDC gère EXACTEMENT 9 projets de tutorat à Marseille : 1) Sup d'OM (Droit au Bac), 2) A Chacun Son Excellence (ACSE), 3) MASSA 13, 4) St Gabriel, 5) Apprentis d'Auteuil, 6) Mizzó (Collège Izzo), 7) Jules Ferry, 8) Arthur Rimbaud, 9) Roy d'Espagne. Chaque projet a sa spécificité entre soutien scolaire pur, ouverture culturelle, ou hybride."
+        }
+    ],
+
     projets: [
         { keywords: ["om", "foot", "sport", "athlète", "campux", "commanderie", "sup d'om", "lise", "ilyes"], content: "Sup d'OM (Droit au Bac) : PROJET 100% SOUTIEN SCOLAIRE. C'est le seul projet uniquement dédié à l'aide aux devoirs (pas d'ouverture culturelle). Une dizaine de tuteurs se rendent au centre de formation de l'OM (la Commanderie) pour les mardis et jeudis soir. Chefs de Projet : Lise Dehedin et Ilyes Lounane." },
         { keywords: ["acse", "lycée", "bac", "excellence", "farah", "oumaima"], content: "A Chacun Son Excellence (ACSE) : PROJET CULTURE & ORIENTATION. Tutorat culturel et aide à l'orientation pour lycéens. Samedi après-midi à Kedge. Pas d'aide aux devoirs classique. Cheffes de Projet : Farah Dali et Oumaima Mghalfi." },
@@ -50,28 +57,39 @@ function getTailoredContext(userQuestion) {
     const q = userQuestion.toLowerCase();
     let relevantFacts = [];
 
+    // 1. Scan Overview (for general questions about project count/list)
+    if (PHOENIX_DB.overview) {
+        PHOENIX_DB.overview.forEach(o => {
+            if (o.keywords.some(k => q.includes(k))) relevantFacts.push("📊 VUE D'ENSEMBLE : " + o.content);
+        });
+    }
+
+    // 2. Scan Projects
     PHOENIX_DB.projets.forEach(p => {
         if (p.keywords.some(k => q.includes(k))) relevantFacts.push("PROJET IMPLIQUÉ : " + p.content);
     });
 
+    // 3. Scan Events
     PHOENIX_DB.events.forEach(e => {
         if (e.keywords.some(k => q.includes(k))) relevantFacts.push("ÉVÉNEMENT : " + e.content);
     });
 
+    // 4. Scan Docs & Links (Haute Priorité)
     PHOENIX_DB.docs.forEach(d => {
         if (d.keywords.some(k => q.includes(k))) relevantFacts.push("RESSOURCE CLÉ : " + d.content);
     });
-
     PHOENIX_DB.links.forEach(l => {
         if (l.keywords.some(k => q.includes(k))) relevantFacts.push("LIEN UTILE : " + l.content);
     });
 
+    // 5. Scan Bureau
     if (PHOENIX_DB.bureau) {
         PHOENIX_DB.bureau.forEach(b => {
             if (b.keywords.some(k => q.includes(k))) relevantFacts.push("MEMBRES DU BUREAU : " + b.content);
         });
     }
 
+    // Construction du Prompt Système Dynamique
     let systemPrompt = `Tu es Teymou, l'assistant de ${associationName}.\\n`;
     systemPrompt += `INFO GÉNÉRALE :\\n${PHOENIX_DB.general}\\n\\n`;
 
@@ -92,6 +110,7 @@ function getTailoredContext(userQuestion) {
 
     return systemPrompt;
 }
+
 
 async function callCognitiveAI(question) {
     const token = process.env.HF_API_TOKEN;
