@@ -7,7 +7,7 @@ const PHOENIX_DB = {
     overview: [
         {
             keywords: ["combien", "nombre", "liste", "quels", "projets", "tous les projets"],
-            content: "Phoenix EDC gère EXACTEMENT 9 projets de tutorat à Marseille : 1) Sup d'OM (Droit au Bac), 2) A Chacun Son Excellence (ACSE), 3) MASSA 13, 4) St Gabriel, 5) Apprentis d'Auteuil, 6) Mizzó (Collège Izzo), 7) Jules Ferry, 8) Arthur Rimbaud, 9) Roy d'Espagne. Chaque projet a sa spécificité entre soutien scolaire pur, ouverture culturelle, ou hybride."
+            content: "Phoenix EDC gère EXACTEMENT 9 projets de tutorat à Marseille : 1) Sup d'OM (Droit au Bac), 2) A Chacun Son Excellence (ACSE), 3) MASSA 13, 4) St Gabriel, 5) Apprentis d'Auteuil, 6) Collège Izzo, 7) Jules Ferry, 8) Arthur Rimbaud, 9) Roy d'Espagne. Chaque projet a sa spécificité entre soutien scolaire pur, ouverture culturelle, ou hybride."
         }
     ],
 
@@ -17,7 +17,7 @@ const PHOENIX_DB = {
         { keywords: ["massa", "massabielle", "13", "brevet", "fabien", "idriss"], content: "MASSA 13 : PROJET HYBRIDE (Aide aux devoirs + Culture). Séance du jeudi soir : commence par l'aide aux devoirs individuel et finit par une ouverture culturelle. Chefs de Projet : Fabien Boles Franso ou Idriss Bahou." },
         { keywords: ["saint-gabriel", "gabriel", "social", "tessa", "eline"], content: "Projet St Gabriel : PROJET HYBRIDE. En plus du soutien scolaire, les tuteurs développent l'esprit critique via des débats. Cheffes de Projet : Tessa Valente et Eline Far." },
         { keywords: ["auteuil", "vitagliano", "apprenti", "clara"], content: "Projet Apprentis d'Auteuil : PROJET 100% OUVERTURE CULTURELLE. Pas d'aide aux devoirs. Séances sur thèmes d'actualité (Lundi/Vendredi). Cheffe de Projet : Clara Boudeville." },
-        { keywords: ["izzo", "euro", "classe", "mizzó", "mizzo", "adel", "elsa"], content: "Mizzó (Collège Izzo) : PROJET HYBRIDE. Présentations culturelles ludiques et approfondies suivies d'échanges (Goûter). Chefs de Projet : Adel Bia et Elsa Ald." },
+        { keywords: ["izzo", "euro", "classe", "mizzó", "mizzo", "adel", "elsa"], content: "Collège Izzo : PROJET HYBRIDE. Présentations culturelles ludiques et approfondies suivies d'échanges (Goûter). Chefs de Projet : Adel Bia et Elsa Ald." },
         { keywords: ["ferry", "jules", "oral", "powerpoint", "eloquence", "lou-ann", "nadège", "chelsea"], content: "Projet Jules Ferry : PROJET HYBRIDE. Mélange de soutien scolaire et d'ouverture culturelle (2 mercredis/mois). Cheffes de Projet : Lou-Ann Lapointe, Nadège Bavugilije et Chelsea Afonso de Barros." },
         { keywords: ["rimbaud", "arthur", "salwa"], content: "Projet Arthur Rimbaud : PROJET HYBRIDE. Mélange d'ouverture culturelle et d'aide aux devoirs les jeudis. Cheffe de Projet : Salwa Guernina." },
         { keywords: ["roy", "espagne", "nadir"], content: "Projet Roy d'Espagne : PROJET HYBRIDE. Alterne entre aide aux devoirs individuelle et ouverture culturelle collective le jeudi après-midi. Chef de Projet : Nadir Stiti." }
