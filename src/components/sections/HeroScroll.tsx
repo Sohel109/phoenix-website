@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const heroImages = [
     '/images/projects/hero-1.png',  // Groupe devant La Base
@@ -11,6 +12,7 @@ const heroImages = [
 ];
 
 export function HeroScroll() {
+    const { t } = useTranslation();
     const targetRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -91,14 +93,14 @@ export function HeroScroll() {
 
                         {/* Label Badge */}
                         <div className="inline-block py-2 px-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-medium text-sm md:text-base mb-8 shadow-lg">
-                            Depuis 2011 • Kedge Business School
+                            {t('hero.since')}
                         </div>
 
                         {/* HEADLINE */}
                         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white mb-12 leading-[0.9] tracking-tight uppercase drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                            <span className="drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">L'Égalité</span> <br />
+                            <span className="drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">{t('hero.title1')}</span> <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-500 to-violet-600 drop-shadow-[0_0_30px_rgba(124,58,237,0.8)] filter">
-                                des Chances
+                                {t('hero.title2')}
                             </span>
                         </h1>
 
@@ -108,7 +110,7 @@ export function HeroScroll() {
                                 to="/projets"
                                 className="group px-10 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl flex items-center gap-3"
                             >
-                                Découvrir nos projets
+                                {t('hero.cta1')}
                                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                             </Link>
 
@@ -116,7 +118,7 @@ export function HeroScroll() {
                                 to="/contact"
                                 className="px-10 py-5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/20 transition-all"
                             >
-                                Nous rejoindre
+                                {t('hero.cta2')}
                             </Link>
                         </div>
 

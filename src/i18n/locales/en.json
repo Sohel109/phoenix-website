@@ -1,0 +1,109 @@
+{
+    "nav": {
+        "home": "Home",
+        "projects": "Projects",
+        "map": "Map",
+        "events": "Events",
+        "partners": "Partners",
+        "documents": "Documents",
+        "transparency": "Transparency",
+        "contact": "Contact"
+    },
+    "hero": {
+        "since": "Since 2011 • Kedge Business School",
+        "title1": "Equal",
+        "title2": "Opportunities",
+        "cta1": "Discover our projects",
+        "cta2": "Join us"
+    },
+    "missions": {
+        "title": "OUR",
+        "titleHighlight": "MISSIONS",
+        "tutoring": {
+            "title": "Academic Tutoring",
+            "desc": "Homework help and weekly academic support to strengthen skills and build confidence."
+        },
+        "culture": {
+            "title": "Cultural Outreach",
+            "desc": "Trips, travels and workshops to spark curiosity and discover new horizons."
+        },
+        "orientation": {
+            "title": "Career Guidance",
+            "desc": "Support in choosing studies and discovering the professional world."
+        }
+    },
+    "partners": {
+        "title": "THEY",
+        "titleHighlight": "SUPPORT US",
+        "viewAll": "View all our partners"
+    },
+    "footer": {
+        "contact": "Contact",
+        "address": "KEDGE Business School\nLuminy Campus\n13009 Marseille",
+        "quickLinks": "Quick Links",
+        "ourProjects": "Our Projects",
+        "events": "Events",
+        "becomePartner": "Become a Partner",
+        "legalMentions": "Legal Mentions",
+        "transparency": "Transparency",
+        "followUs": "Follow Us",
+        "rights": "All rights reserved.",
+        "description": "The student association of KEDGE Business School fighting for equal opportunities and access to education for all."
+    },
+    "contact": {
+        "hero": {
+            "title": "Contact Us",
+            "subtitle": "A question, a suggestion, or want to join the Phoenix adventure?"
+        },
+        "categories": {
+            "information": {
+                "label": "Information",
+                "description": "Discover our vision"
+            },
+            "partnership": {
+                "label": "Partnership",
+                "description": "Support our ambition"
+            }
+        }
+    },
+    "transparency": {
+        "title": "Financial Transparency",
+        "subtitle": "Discover how your donations are used to transform the lives of 300 young people each year",
+        "commitment": {
+            "title": "Our commitment",
+            "text1": "Phoenix Equal Opportunities is an association",
+            "highlight1": "recognized as being of general interest",
+            "text2": "Your donations are",
+            "highlight2": "tax deductible up to 66%",
+            "text3": "We are committed to",
+            "highlight3": "total transparency",
+            "text4": "on how every euro is used."
+        },
+        "breakdown": {
+            "title": "Donation Breakdown",
+            "events": "Events & cultural outings",
+            "eventsDesc": "Olympics, MUN, cultural outings, Marseille Eloquence City and JEDC.",
+            "education": "Educational materials & activities",
+            "educationDesc": "School supplies, books, educational materials and activity materials for young people.",
+            "admin": "Administrative costs",
+            "adminDesc": "Insurance, management tools, communication and minimal operating costs."
+        },
+        "details": "Details by Category",
+        "impact": {
+            "title": "Concrete Impact of Your Donations",
+            "examples": {
+                "25": "Complete educational materials kit for a project",
+                "100": "Materials for a group cultural activity",
+                "250": "Organization of a cultural outing for a group",
+                "500": "Funding for a major event (MUN, Olympics)"
+            }
+        },
+        "cta": {
+            "title": "Support Our Mission",
+            "subtitle": "Every donation counts. Together, let's give all young people equal opportunities to succeed.",
+            "button": "Make a tax-deductible donation",
+            "taxInfo": "66% tax reduction • Automatic tax receipt"
+        },
+        "back": "Back"
+    }
+}

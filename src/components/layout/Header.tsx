@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Header() {
     const { theme, toggleTheme } = useTheme();
@@ -13,13 +14,16 @@ export function Header() {
                 </span>
             </Link>
 
-            <button
-                onClick={toggleTheme}
-                className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-colors shadow-lg"
-                aria-label="Toggle Dark Mode"
-            >
-                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-            </button>
+            <div className="flex items-center gap-3">
+                <LanguageSwitcher />
+                <button
+                    onClick={toggleTheme}
+                    className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-colors shadow-lg"
+                    aria-label="Toggle Dark Mode"
+                >
+                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                </button>
+            </div>
         </header>
     );
 }
