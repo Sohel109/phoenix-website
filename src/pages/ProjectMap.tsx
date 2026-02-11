@@ -32,6 +32,24 @@ export function ProjectMap() {
         return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
     };
 
+    // Create custom minimalist marker icons
+    const createCustomIcon = (color: string) => {
+        const svgIcon = `
+            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" fill="${color}" opacity="0.9"/>
+                <circle cx="16" cy="16" r="8" fill="white" opacity="0.3"/>
+                <circle cx="16" cy="16" r="5" fill="white"/>
+            </svg>
+        `;
+
+        return new Icon({
+            iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16],
+        });
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A103C] to-[#0A0118] pt-20 pb-12">
             <div className="container mx-auto px-4">
@@ -99,6 +117,7 @@ export function ProjectMap() {
                             <Marker
                                 key={project.id}
                                 position={project.coordinates}
+                                icon={createCustomIcon(projectTypeColors[project.type])}
                             >
                                 <Tooltip direction="top" offset={[0, -20]} opacity={0.9}>
                                     <div className="font-semibold">{project.fullName}</div>
