@@ -82,6 +82,14 @@ export function Footer() {
                             </li>
                             <li>
                                 <Link
+                                    to="/transparence"
+                                    className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
+                                >
+                                    → Transparence
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
                                     to="/mentions-legales"
                                     className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
                                 >

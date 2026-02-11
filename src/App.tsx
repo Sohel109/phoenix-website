@@ -16,6 +16,7 @@ import { EventDetail } from './pages/EventDetail';
 import { Partners } from './pages/Partners';
 import { Documents } from './pages/Documents';
 import { LegalMentions } from './pages/LegalMentions';
+import { Transparency } from './pages/Transparency';
 import { Contact } from './pages/Contact';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/partenaires" element={<Partners />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/mentions-legales" element={<LegalMentions />} />
+                <Route path="/transparence" element={<Transparency />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>
             </main>
