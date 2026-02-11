@@ -5,14 +5,14 @@ import { useNavigate } from 'react-router-dom';
 const donationBreakdown = [
     {
         category: 'Matériel pédagogique & activités',
-        percentage: 70,
+        percentage: 25,
         color: '#FF6B00', // Orange
         icon: BookOpen,
         description: 'Fournitures scolaires, livres, matériel éducatif et supports d\'activités pour les jeunes.'
     },
     {
         category: 'Événements & sorties culturelles',
-        percentage: 25,
+        percentage: 70,
         color: '#EC4899', // Rose
         icon: PartyPopper,
         description: 'Olympiades, SimONU, sorties culturelles, Marseille Cité Éloquente et JEDC.'
@@ -28,16 +28,8 @@ const donationBreakdown = [
 
 const impactExamples = [
     {
-        amount: '10€',
-        impact: 'Fournitures scolaires pour 1 jeune pendant un an'
-    },
-    {
         amount: '25€',
         impact: 'Kit complet de matériel pédagogique pour un projet'
-    },
-    {
-        amount: '50€',
-        impact: 'Participation d\'un jeune à un atelier d\'éloquence'
     },
     {
         amount: '100€',
