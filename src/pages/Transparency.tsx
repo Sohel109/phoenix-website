@@ -4,18 +4,18 @@ import { useNavigate } from 'react-router-dom';
 
 const donationBreakdown = [
     {
-        category: 'Matériel pédagogique & activités',
-        percentage: 25,
-        color: '#FF6B00', // Orange
-        icon: BookOpen,
-        description: 'Fournitures scolaires, livres, matériel éducatif et supports d\'activités pour les jeunes.'
-    },
-    {
         category: 'Événements & sorties culturelles',
         percentage: 70,
         color: '#EC4899', // Rose
         icon: PartyPopper,
         description: 'Olympiades, SimONU, sorties culturelles, Marseille Cité Éloquente et JEDC.'
+    },
+    {
+        category: 'Matériel pédagogique & activités',
+        percentage: 25,
+        color: '#FF6B00', // Orange
+        icon: BookOpen,
+        description: 'Fournitures scolaires, livres, matériel éducatif et supports d\'activités pour les jeunes.'
     },
     {
         category: 'Frais administratifs',
