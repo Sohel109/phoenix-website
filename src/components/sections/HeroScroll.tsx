@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const heroImages = [
-    '/images/home/hero-travel.jpg',         // 1. Travel/Culture (User Preference)
-    '/images/home/mission-tutorat.png',     // 2. Tutoring
-    '/images/home/mission-orientation.png', // 3. Orientation
-    '/images/home/hero-travel.jpg'          // 4. Repeat Travel for loop
+    '/images/projects/sup-d-om-modern.png',      // 1. Sup d'OM
+    '/images/projects/acse-modern.png',           // 2. ACSE
+    '/images/projects/saint-gabriel-modern.png',  // 3. Saint Gabriel
+    '/images/projects/izzo-modern.png'            // 4. Izzo
 ];
 
 export function HeroScroll() {
