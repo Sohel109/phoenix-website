@@ -1,18 +1,11 @@
 import { motion } from 'framer-motion';
-import { UserPlus, Info, Handshake } from 'lucide-react';
+import { Info, Handshake } from 'lucide-react';
 
 interface SelectionViewProps {
     onSelect: (category: string) => void;
 }
 
 const categories = [
-    {
-        id: 'recrutement',
-        label: 'Recrutement',
-        icon: UserPlus,
-        gradient: 'from-orange-500 to-red-600',
-        description: 'Rejoindre l\'excellence'
-    },
     {
         id: 'information',
         label: 'Information',
