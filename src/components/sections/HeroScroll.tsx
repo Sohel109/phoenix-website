@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const heroImages = [
-    '/images/projects/hero-1.jpg',  // Groupe devant La Base
-    '/images/projects/hero-2.jpg',  // Conférence
-    '/images/projects/hero-3.jpg',  // Présentation orientation
-    '/images/projects/hero-4.jpg'   // Groupe en gare
+    '/images/projects/hero-1.png',  // Groupe devant La Base
+    '/images/projects/hero-2.png',  // Conférence
+    '/images/projects/hero-3.png',  // Présentation orientation
+    '/images/projects/hero-4.png'   // Groupe en gare
 ];
 
 export function HeroScroll() {
