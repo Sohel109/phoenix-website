@@ -1,28 +1,18 @@
 import { motion } from 'framer-motion';
-import { PieChart, Heart, Users, BookOpen, PartyPopper, FileText, TrendingUp, ArrowLeft } from 'lucide-react';
+import { PieChart, Heart, BookOpen, PartyPopper, FileText, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const donationBreakdown = [
     {
         category: 'Matériel pédagogique & activités',
-        percentage: 60,
-        amount: '12 000€',
+        percentage: 70,
         color: '#FF6B00', // Orange
         icon: BookOpen,
         description: 'Fournitures scolaires, livres, matériel éducatif et supports d\'activités pour les jeunes.'
     },
     {
-        category: 'Formation des bénévoles',
-        percentage: 20,
-        amount: '4 000€',
-        color: '#7C3AED', // Violet
-        icon: Users,
-        description: 'Formations pédagogiques, ateliers de développement personnel et accompagnement des tuteurs.'
-    },
-    {
         category: 'Événements & sorties culturelles',
-        percentage: 15,
-        amount: '3 000€',
+        percentage: 25,
         color: '#EC4899', // Rose
         icon: PartyPopper,
         description: 'Olympiades, SimONU, sorties culturelles, Marseille Cité Éloquente et JEDC.'
@@ -30,7 +20,6 @@ const donationBreakdown = [
     {
         category: 'Frais administratifs',
         percentage: 5,
-        amount: '1 000€',
         color: '#10B981', // Vert
         icon: FileText,
         description: 'Assurances, outils de gestion, communication et frais de fonctionnement minimal.'
@@ -39,16 +28,24 @@ const donationBreakdown = [
 
 const impactExamples = [
     {
+        amount: '10€',
+        impact: 'Fournitures scolaires pour 1 jeune pendant un an'
+    },
+    {
+        amount: '25€',
+        impact: 'Kit complet de matériel pédagogique pour un projet'
+    },
+    {
         amount: '50€',
-        impact: 'Fournitures scolaires complètes pour 5 jeunes pendant un an'
+        impact: 'Participation d\'un jeune à un atelier d\'éloquence'
     },
     {
         amount: '100€',
-        impact: 'Organisation d\'une sortie culturelle pour un groupe de 15 jeunes'
+        impact: 'Matériel pour une activité culturelle collective'
     },
     {
-        amount: '200€',
-        impact: 'Formation complète d\'un bénévole tuteur'
+        amount: '250€',
+        impact: 'Organisation d\'une sortie culturelle pour un groupe'
     },
     {
         amount: '500€',
@@ -137,12 +134,9 @@ export function Transparency() {
                                             />
                                             <span className="text-white font-medium">{item.category}</span>
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-gray-400 text-sm">{item.amount}</span>
-                                            <span className="text-2xl font-bold text-white min-w-[60px] text-right">
-                                                {item.percentage}%
-                                            </span>
-                                        </div>
+                                        <span className="text-2xl font-bold text-white min-w-[60px] text-right">
+                                            {item.percentage}%
+                                        </span>
                                     </div>
                                     <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
                                         <motion.div
@@ -189,12 +183,9 @@ export function Transparency() {
                                         <div className="flex-1">
                                             <h3 className="text-xl font-bold text-white mb-2">{item.category}</h3>
                                             <p className="text-gray-400 text-sm mb-3">{item.description}</p>
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-2xl font-bold" style={{ color: item.color }}>
-                                                    {item.percentage}%
-                                                </span>
-                                                <span className="text-gray-500">≈ {item.amount}/an</span>
-                                            </div>
+                                            <span className="text-2xl font-bold" style={{ color: item.color }}>
+                                                {item.percentage}%
+                                            </span>
                                         </div>
                                     </div>
                                 </motion.div>
