@@ -48,7 +48,7 @@ export function BubbleMenu() {
     const isDarkStyle = dockTheme === 'dark';
 
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
             <motion.div
                 className={clsx(
                     "flex items-center gap-2 p-2 rounded-full shadow-2xl ring-1 transition-colors duration-500",

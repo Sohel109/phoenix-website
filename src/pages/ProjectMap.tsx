@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
 import { Icon, type LatLngExpression } from 'leaflet';
 import { motion } from 'framer-motion';
-import { MapPin, Users, ArrowLeft } from 'lucide-react';
+import { MapPin, Users, ArrowLeft, Navigation } from 'lucide-react';
 import { projectsData, projectTypeColors, projectTypeLabels } from '../data/projectsData';
 import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
@@ -27,6 +27,10 @@ export function ProjectMap() {
         // Force map to recalculate size on mount
         window.dispatchEvent(new Event('resize'));
     }, []);
+
+    const getDirectionsUrl = (address: string) => {
+        return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A103C] to-[#0A0118] pt-20 pb-12">
@@ -125,7 +129,7 @@ export function ProjectMap() {
                                             <p className="text-xs text-gray-500">{project.address}</p>
                                         </div>
 
-                                        <div className="flex items-start gap-2">
+                                        <div className="flex items-start gap-2 mb-3">
                                             <Users size={16} className="text-gray-500 mt-0.5 flex-shrink-0" />
                                             <div className="text-xs text-gray-500">
                                                 <span className="font-medium">Chefs de projet :</span>
@@ -133,6 +137,17 @@ export function ProjectMap() {
                                                 {project.chefs.join(', ')}
                                             </div>
                                         </div>
+
+                                        {/* Directions Button */}
+                                        <a
+                                            href={getDirectionsUrl(project.address)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-lg hover:from-orange-600 hover:to-purple-700 transition-all font-medium text-sm"
+                                        >
+                                            <Navigation size={16} />
+                                            Itinéraire
+                                        </a>
                                     </div>
                                 </Popup>
                             </Marker>
