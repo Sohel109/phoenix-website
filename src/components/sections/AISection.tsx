@@ -1,7 +1,11 @@
 import { motion } from 'framer-motion';
 import { Sparkles, MessageSquareText, BrainCircuit, Rocket } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
+
 export function AISection() {
+    const { t } = useTranslation();
+
     return (
         <section id="ai-section" className="py-24 relative overflow-hidden">
             {/* Background decoration */}
@@ -22,7 +26,7 @@ export function AISection() {
                         >
                             <Sparkles size={16} className="text-violet-600" />
                             <span className="text-sm font-semibold text-violet-700 dark:text-violet-300">
-                                NOUVEAU : PHOENIX AI
+                                {t('home.ai.badge')}
                             </span>
                         </motion.div>
 
@@ -33,9 +37,9 @@ export function AISection() {
                             transition={{ delay: 0.1 }}
                             className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-6"
                         >
-                            DISCUTEZ AVEC <br />
+                            {t('home.ai.title')} <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-orange-500">
-                                NOTRE INTELLIGENCE
+                                {t('home.ai.titleHighlight')}
                             </span>
                         </motion.h2>
 
@@ -46,9 +50,7 @@ export function AISection() {
                             transition={{ delay: 0.2 }}
                             className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
                         >
-                            Une question sur nos programmes ? Besoin d'aide pour votre orientation ?
-                            Notre assistant virtuel est là pour vous répondre instantanément, 24h/24 et 7j/7.
-                            C'est totalement gratuit et accessible à tous.
+                            {t('home.ai.description')}
                         </motion.p>
 
                         <motion.div
@@ -66,7 +68,7 @@ export function AISection() {
                                 }}
                                 className="group relative inline-flex items-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold hover:scale-105 hover:bg-violet-600 dark:hover:bg-violet-400 dark:hover:text-white transition-all duration-300"
                             >
-                                <span>Essayer maintenant</span>
+                                <span>{t('home.ai.cta')}</span>
                                 <MessageSquareText size={20} className="group-hover:rotate-12 transition-transform" />
                             </button>
                         </motion.div>
@@ -87,23 +89,23 @@ export function AISection() {
                                         <BrainCircuit size={24} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg">Pourquoi Phoenix AI ?</h4>
-                                        <p className="text-sm text-gray-500">Assistant Intelligent</p>
+                                        <h4 className="font-bold text-lg">{t('home.ai.features.title')}</h4>
+                                        <p className="text-sm text-gray-500">{t('home.ai.features.subtitle')}</p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
                                     <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-500/10 flex items-center gap-3">
                                         <Rocket size={18} className="text-violet-600" />
-                                        <span className="text-sm font-medium">Réponses instantanées</span>
+                                        <span className="text-sm font-medium">{t('home.ai.features.instant')}</span>
                                     </div>
                                     <div className="p-3 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-500/10 flex items-center gap-3">
                                         <Sparkles size={18} className="text-orange-500" />
-                                        <span className="text-sm font-medium">Disponible 24h/24</span>
+                                        <span className="text-sm font-medium">{t('home.ai.features.available')}</span>
                                     </div>
                                     <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-500/10 flex items-center gap-3">
                                         <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-[10px] text-white">€</div>
-                                        <span className="text-sm font-medium">100% Gratuit</span>
+                                        <span className="text-sm font-medium">{t('home.ai.features.free')}</span>
                                     </div>
                                 </div>
                             </div>

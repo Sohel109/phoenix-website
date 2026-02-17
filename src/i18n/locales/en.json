@@ -105,5 +105,45 @@
             "taxInfo": "66% tax reduction • Automatic tax receipt"
         },
         "back": "Back"
+    },
+    "home": {
+        "missions": {
+            "title": "OUR",
+            "titleHighlight": "MISSIONS",
+            "academic": {
+                "title": "Academic Tutoring",
+                "desc": "Homework help and weekly academic support to strengthen skills and build confidence."
+            },
+            "culture": {
+                "title": "Cultural Outreach",
+                "desc": "Trips, travels and workshops to spark curiosity and discover new horizons."
+            },
+            "orientation": {
+                "title": "Career Guidance",
+                "desc": "Support in choosing studies and discovering the professional world."
+            }
+        },
+        "impact": {
+            "title": "Our Impact in",
+            "titleHighlight": "all its forms",
+            "youth": "Young people supported",
+            "volunteers": "Student volunteers",
+            "projects": "Active projects",
+            "creation": "Creation date"
+        },
+        "ai": {
+            "badge": "NEW: PHOENIX AI",
+            "title": "CHAT WITH",
+            "titleHighlight": "OUR INTELLIGENCE",
+            "description": "A question about our programs? Need help with your orientation? Our virtual assistant is here to answer you instantly, 24/7. It's completely free and accessible to everyone.",
+            "cta": "Try now",
+            "features": {
+                "title": "Why Phoenix AI?",
+                "subtitle": "Intelligent Assistant",
+                "instant": "Instant answers",
+                "available": "Available 24/7",
+                "free": "100% Free"
+            }
+        }
     }
 }

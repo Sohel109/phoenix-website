@@ -5,7 +5,10 @@ import { KeyFigures } from '../components/sections/KeyFigures';
 import { HeroScroll } from '../components/sections/HeroScroll';
 import { AISection } from '../components/sections/AISection';
 
+import { useTranslation } from 'react-i18next';
+
 export function Home() {
+    const { t } = useTranslation();
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -26,7 +29,7 @@ export function Home() {
                         className="text-center max-w-3xl mx-auto mb-24"
                     >
                         <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-6">
-                            NOS <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">MISSIONS</span>
+                            {t('home.missions.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">{t('home.missions.titleHighlight')}</span>
                         </h2>
                     </motion.div>
 
@@ -34,18 +37,18 @@ export function Home() {
                         {[
                             {
                                 icon: <BookOpen size={32} />,
-                                title: "Tutorat Académique",
-                                desc: "Aide aux devoirs et soutien scolaire hebdomadaire pour renforcer les acquis et la confiance en soi."
+                                title: t('home.missions.academic.title'),
+                                desc: t('home.missions.academic.desc')
                             },
                             {
                                 icon: <Globe size={32} />,
-                                title: "Ouverture Culturelle",
-                                desc: "Sorties, voyages et ateliers pour éveiller la curiosité et découvrir de nouveaux horizons."
+                                title: t('home.missions.culture.title'),
+                                desc: t('home.missions.culture.desc')
                             },
                             {
                                 icon: <GraduationCap size={32} />,
-                                title: "Orientation",
-                                desc: "Accompagnement dans le choix des études et découverte du monde professionnel."
+                                title: t('home.missions.orientation.title'),
+                                desc: t('home.missions.orientation.desc')
                             }
                         ].map((mission, i) => (
                             <motion.div
@@ -78,7 +81,7 @@ export function Home() {
             <section className="py-32 bg-transparent transition-colors duration-300">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-16">
-                        ILS NOUS <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">SOUTIENNENT</span>
+                        {t('partners.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">{t('partners.titleHighlight')}</span>
                     </h2>
 
                     <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 mb-12 opacity-80 dark:opacity-100">
@@ -92,7 +95,7 @@ export function Home() {
                     </div>
 
                     <Link to="/partenaires" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-primary-dark transition-colors">
-                        Voir tous nos partenaires
+                        {t('partners.viewAll')}
                         <ArrowRight size={20} />
                     </Link>
                 </div>

@@ -1,13 +1,10 @@
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // --- DATA ---
-const stats = [
-    { value: 300, suffix: "+", label: "Jeunes accompagnés", color: "from-orange-500 to-orange-600" },      // Start: Pure Orange
-    { value: 150, suffix: "", label: "Étudiants bénévoles", color: "from-orange-600 to-pink-600" },       // Step 1: Orange to Pink
-    { value: 9, suffix: "", label: "Projets actifs", color: "from-pink-600 to-purple-600" },              // Step 2: Pink to Purple
-    { value: 2011, suffix: "", label: "Date de création", color: "from-purple-600 to-violet-600" },       // End: Purple to Violet
-];
+// Moved inside component for translation
+
 
 // --- COUNTER COMPONENT ---
 function AnimatedCounter({ value, suffix }: { value: number; suffix?: string }) {
@@ -33,6 +30,15 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix?: string }) 
 
 // --- MAIN SECTION ---
 export function KeyFigures() {
+    const { t } = useTranslation();
+
+    const stats = [
+        { value: 300, suffix: "+", label: t('home.impact.youth'), color: "from-orange-500 to-orange-600" },
+        { value: 150, suffix: "", label: t('home.impact.volunteers'), color: "from-orange-600 to-pink-600" },
+        { value: 9, suffix: "", label: t('home.impact.projects'), color: "from-pink-600 to-purple-600" },
+        { value: 2011, suffix: "", label: t('home.impact.creation'), color: "from-purple-600 to-violet-600" },
+    ];
+
     return (
         <section className="relative w-full py-32 md:py-48 px-6 overflow-hidden">
             {/* Background Decor - Removed, aurora provides the background */}
@@ -46,7 +52,7 @@ export function KeyFigures() {
                     className="text-center mb-24 md:mb-32"
                 >
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-6">
-                        Notre Impact sous <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">toutes ses formes</span>
+                        {t('home.impact.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">{t('home.impact.titleHighlight')}</span>
                     </h2>
                 </motion.div>
 
