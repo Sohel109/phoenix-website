@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { SelectionView } from '../components/features/contact/SelectionView';
 import { ContactForm } from '../components/features/contact/ContactForm';
+import { Recruitment } from '../components/sections/Recruitment';
+
 
 export function Contact() {
     const location = useLocation();
@@ -70,6 +72,10 @@ export function Contact() {
                         )}
                     </AnimatePresence>
                 </div>
+
+                {/* Recruitment Section */}
+                <Recruitment />
+
 
             </div>
         </div>
