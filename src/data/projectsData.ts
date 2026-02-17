@@ -11,16 +11,6 @@ export interface Project {
 
 export const projectsData: Project[] = [
     {
-        id: 1,
-        name: "Sup d'OM",
-        fullName: "Sup d'OM (Droit au Bac)",
-        type: 'soutien',
-        address: "33 Trav. de la Martine, 13012 Marseille",
-        coordinates: [43.3057, 5.4442],
-        chefs: ["Lise Dehedin", "Ilyes Lounane"],
-        description: "PROJET 100% SOUTIEN SCOLAIRE. Le seul projet uniquement dédié à l'aide aux devoirs. Séances les mardis et jeudis soir à la Commanderie."
-    },
-    {
         id: 2,
         name: "ACSE",
         fullName: "A Chacun Son Excellence",
@@ -31,26 +21,6 @@ export const projectsData: Project[] = [
         description: "PROJET CULTURE & ORIENTATION. Tutorat culturel et aide à l'orientation pour lycéens. Samedi après-midi à Kedge."
     },
     {
-        id: 3,
-        name: "MASSA 13",
-        fullName: "MASSA 13",
-        type: 'hybride',
-        address: "129 Chem. du Merlan À la Rose, 13013 Marseille",
-        coordinates: [43.3469, 5.4231],
-        chefs: ["Fabien Boles Franso", "Idriss Bahou"],
-        description: "PROJET HYBRIDE. Séance du jeudi soir : aide aux devoirs suivie d'ouverture culturelle."
-    },
-    {
-        id: 4,
-        name: "St Gabriel",
-        fullName: "Projet St Gabriel",
-        type: 'hybride',
-        address: "12 Rue Richard, 13014 Marseille",
-        coordinates: [43.3318, 5.3899],
-        chefs: ["Tessa Valente", "Eline Far"],
-        description: "PROJET HYBRIDE. Soutien scolaire avec développement de l'esprit critique via des débats."
-    },
-    {
         id: 5,
         name: "Apprentis d'Auteuil",
         fullName: "Projet Apprentis d'Auteuil",
@@ -59,6 +29,16 @@ export const projectsData: Project[] = [
         coordinates: [43.3059, 5.4055],
         chefs: ["Clara Boudeville"],
         description: "PROJET 100% OUVERTURE CULTURELLE. Séances sur thèmes d'actualité les lundis et vendredis."
+    },
+    {
+        id: 8,
+        name: "Arthur Rimbaud",
+        fullName: "Projet Arthur Rimbaud",
+        type: 'hybride',
+        address: "19 Trav. Santi, 13015 Marseille",
+        coordinates: [43.3447, 5.3535],
+        chefs: ["Salwa Guernina"],
+        description: "PROJET HYBRIDE. Mélange d'ouverture culturelle et d'aide aux devoirs les jeudis."
     },
     {
         id: 6,
@@ -81,14 +61,14 @@ export const projectsData: Project[] = [
         description: "PROJET HYBRIDE. Mélange de soutien scolaire et d'ouverture culturelle, 2 mercredis par mois."
     },
     {
-        id: 8,
-        name: "Arthur Rimbaud",
-        fullName: "Projet Arthur Rimbaud",
+        id: 3,
+        name: "MASSA 13",
+        fullName: "MASSA 13",
         type: 'hybride',
-        address: "19 Trav. Santi, 13015 Marseille",
-        coordinates: [43.3447, 5.3535],
-        chefs: ["Salwa Guernina"],
-        description: "PROJET HYBRIDE. Mélange d'ouverture culturelle et d'aide aux devoirs les jeudis."
+        address: "129 Chem. du Merlan À la Rose, 13013 Marseille",
+        coordinates: [43.3469, 5.4231],
+        chefs: ["Fabien Boles Franso", "Idriss Bahou"],
+        description: "PROJET HYBRIDE. Séance du jeudi soir : aide aux devoirs suivie d'ouverture culturelle."
     },
     {
         id: 9,
@@ -99,6 +79,26 @@ export const projectsData: Project[] = [
         coordinates: [43.2498, 5.4118],
         chefs: ["Nadir Stiti"],
         description: "PROJET HYBRIDE. Alterne entre aide aux devoirs individuelle et ouverture culturelle collective le jeudi après-midi."
+    },
+    {
+        id: 4,
+        name: "St Gabriel",
+        fullName: "Projet St Gabriel",
+        type: 'hybride',
+        address: "12 Rue Richard, 13014 Marseille",
+        coordinates: [43.3318, 5.3899],
+        chefs: ["Tessa Valente", "Eline Far"],
+        description: "PROJET HYBRIDE. Soutien scolaire avec développement de l'esprit critique via des débats."
+    },
+    {
+        id: 1,
+        name: "Sup d'OM",
+        fullName: "Sup d'OM (Droit au Bac)",
+        type: 'soutien',
+        address: "33 Trav. de la Martine, 13012 Marseille",
+        coordinates: [43.3057, 5.4442],
+        chefs: ["Lise Dehedin", "Ilyes Lounane"],
+        description: "PROJET 100% SOUTIEN SCOLAIRE. Le seul projet uniquement dédié à l'aide aux devoirs. Séances les mardis et jeudis soir à la Commanderie."
     }
 ];
 
