@@ -85,7 +85,10 @@ export function Chatbot() {
             const response = await fetch(`${API_URL}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: inputValue })
+                body: JSON.stringify({
+                    question: inputValue,
+                    history: messages
+                })
             });
 
             const data = await response.json();

@@ -112,9 +112,23 @@ function getTailoredContext(userQuestion) {
 }
 
 
-async function callCognitiveAI(question) {
+async function callCognitiveAI(question, history = []) {
     const token = process.env.HF_API_TOKEN;
     const dynamicContext = getTailoredContext(question);
+
+    // Build Prompt with History
+    let fullPrompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${dynamicContext}<|eot_id|>`;
+
+    // Add recent history (limit to last 10 messages to avoid token overflow)
+    const recentHistory = history.slice(-10);
+
+    recentHistory.forEach(msg => {
+        const role = msg.sender === 'bot' ? 'assistant' : 'user';
+        fullPrompt += `<|start_header_id|>${role}<|end_header_id|>\n\n${msg.text}<|eot_id|>`;
+    });
+
+    // Add current question
+    fullPrompt += `<|start_header_id|>user<|end_header_id|>\n\n${question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n`;
 
     // Try Llama 3.1 8B (Free, Fast, Smart)
     try {
@@ -126,7 +140,7 @@ async function callCognitiveAI(question) {
             },
             body: JSON.stringify({
                 // Llama 3 Chat Template
-                inputs: `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${dynamicContext}<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n${question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n`,
+                inputs: fullPrompt,
                 parameters: {
                     max_new_tokens: 350,
                     temperature: 0.6,
@@ -188,14 +202,14 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { question } = req.body;
+    const { question, history } = req.body;
 
     if (!question) {
         return res.status(400).json({ answer: "?" });
     }
 
     try {
-        const answer = await callCognitiveAI(question);
+        const answer = await callCognitiveAI(question, history);
         res.status(200).json({ answer });
     } catch (error) {
         console.error('Error:', error);
