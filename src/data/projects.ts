@@ -65,7 +65,7 @@ export const projects = [
         description: "En partenariat avec le centre social Saint Gabriel, on fait de l'aide aux devoirs pour des élèves de la 6ème à la terminale.",
         icon: Home,
         image: '/images/projects/saint-gabriel-modern.png',
-        banner: '/images/banners/saint-gabriel-banner.png'
+        banner: '/images/banners/saint-gabriel-new.jpg'
     },
     {
         id: 'sup-d-om',
