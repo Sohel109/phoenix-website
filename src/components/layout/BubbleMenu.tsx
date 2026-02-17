@@ -4,22 +4,27 @@ import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
-const menuItems = [
-    { label: 'Accueil', path: '/', icon: Home },
-    { label: 'Projets', path: '/projets', icon: FolderOpen },
-    { label: 'Carte', path: '/carte-des-projets', icon: Map },
-    { label: 'Événements', path: '/evenements', icon: Calendar },
-    { label: 'Partenaires', path: '/partenaires', icon: Users, hideOnMobile: true },
-    { label: 'Docs', path: '/documents', icon: FileText, hideOnMobile: true },
-    { label: 'Contact', path: '/contact', icon: Mail },
-];
+// menuItems moved inside component to use translation hook
+
 
 export function BubbleMenu() {
+    const { t } = useTranslation();
     const location = useLocation();
     const { theme } = useTheme();
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [isHeroSection, setIsHeroSection] = useState(false);
+
+    const menuItems = [
+        { label: t('nav.home'), path: '/', icon: Home },
+        { label: t('nav.projects'), path: '/projets', icon: FolderOpen },
+        { label: t('nav.map'), path: '/carte-des-projets', icon: Map },
+        { label: t('nav.events'), path: '/evenements', icon: Calendar },
+        { label: t('nav.partners'), path: '/partenaires', icon: Users, hideOnMobile: true },
+        { label: t('nav.documents'), path: '/documents', icon: FileText, hideOnMobile: true },
+        { label: t('nav.contact'), path: '/contact', icon: Mail },
+    ];
 
     // Dynamic Theme Detection
     useEffect(() => {

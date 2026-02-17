@@ -1,7 +1,10 @@
 import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export function Footer() {
+    const { t } = useTranslation();
+
     return (
         <footer className="relative bg-transparent text-white py-20 border-t border-white/10">
             <div className="container mx-auto px-6">
@@ -20,14 +23,14 @@ export function Footer() {
                             </span>
                         </div>
                         <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
-                            L'association étudiante de KEDGE Business School qui lutte pour l'égalité des chances et l'accès à l'éducation pour tous.
+                            {t('footer.description')}
                         </p>
                     </div>
 
                     {/* Contact Section */}
                     <div>
                         <h3 className="font-black text-lg mb-6 uppercase tracking-tight">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-purple-600">Contact</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-purple-600">{t('footer.contact')}</span>
                         </h3>
                         <ul className="space-y-4 text-gray-300 text-sm">
                             <li className="flex items-start gap-3 group">
@@ -53,7 +56,7 @@ export function Footer() {
                     {/* Quick Links Section */}
                     <div>
                         <h3 className="font-black text-lg mb-6 uppercase tracking-tight">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-violet-600">Liens Rapides</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-violet-600">{t('footer.quickLinks')}</span>
                         </h3>
                         <ul className="space-y-3 text-gray-300 text-sm">
                             <li>
@@ -61,7 +64,7 @@ export function Footer() {
                                     to="/projets"
                                     className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
                                 >
-                                    → Nos Projets
+                                    → {t('footer.ourProjects')}
                                 </Link>
                             </li>
                             <li>
@@ -69,7 +72,7 @@ export function Footer() {
                                     to="/evenements"
                                     className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
                                 >
-                                    → Événements
+                                    → {t('footer.events')}
                                 </Link>
                             </li>
                             <li>
@@ -77,7 +80,7 @@ export function Footer() {
                                     to="/contact?category=partenariat"
                                     className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
                                 >
-                                    → Devenir Partenaire
+                                    → {t('footer.becomePartner')}
                                 </Link>
                             </li>
                             <li>
@@ -85,7 +88,7 @@ export function Footer() {
                                     to="/transparence"
                                     className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
                                 >
-                                    → Transparence
+                                    → {t('footer.transparency')}
                                 </Link>
                             </li>
                             <li>
@@ -93,7 +96,7 @@ export function Footer() {
                                     to="/mentions-legales"
                                     className="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
                                 >
-                                    → Mentions Légales
+                                    → {t('footer.legalMentions')}
                                 </Link>
                             </li>
                         </ul>
@@ -102,7 +105,7 @@ export function Footer() {
                     {/* Social Media Section */}
                     <div>
                         <h3 className="font-black text-lg mb-6 uppercase tracking-tight">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-orange-500">Suivez-nous</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-orange-500">{t('footer.followUs')}</span>
                         </h3>
                         <div className="flex gap-4">
                             <a
@@ -148,7 +151,7 @@ export function Footer() {
                 {/* Copyright Section */}
                 <div className="text-center mt-12">
                     <p className="text-gray-400 text-sm">
-                        © {new Date().getFullYear()} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-600 font-semibold">Phoenix Égalité des Chances</span>. Tous droits réservés.
+                        © {new Date().getFullYear()} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-600 font-semibold">Phoenix Égalité des Chances</span>. {t('footer.rights')}
                     </p>
                 </div>
             </div>
