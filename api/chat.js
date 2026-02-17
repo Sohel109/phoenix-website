@@ -1,114 +1,62 @@
 // Vercel Serverless Function for AI Chat
 const associationName = "PHOENIX ÉGALITÉ DES CHANCES";
 
-const PHOENIX_DB = {
-    general: `Phoenix Égalité des Chances (Phoenix EDC) est une association étudiante loi 1901 d'intérêt général, basée à Kedge Business School Marseille.\\nCréation : 2011 (Racines 1998).\\nMission : Tutorat, égalité des chances et ouverture culturelle pour les jeunes des Quartiers Prioritaires de la Ville (QPV).\\nBénévoles : ~140 étudiants Kedge.\\nBénéficiaires : ~300 jeunes/an.`,
+const PHOENIX_CONTEXT = `
+Tu es Teymou, la mascotte officielle de l'association Phoenix Égalité des Chances de Kedge Business School Marseille.
+Ton ton est : Chaleureux, informatif, bienveillant et un peu ludique (tu es un phénix !).
+Tu ne dois jamais inventer d'informations. Si tu ne sais pas, dis-le poliment.
 
-    overview: [
-        {
-            keywords: ["combien", "nombre", "liste", "quels", "projets", "tous les projets"],
-            content: "Phoenix EDC gère EXACTEMENT 9 projets de tutorat à Marseille : 1) Sup d'OM (Droit au Bac), 2) A Chacun Son Excellence (ACSE), 3) MASSA 13, 4) St Gabriel, 5) Apprentis d'Auteuil, 6) Collège Izzo, 7) Jules Ferry, 8) Arthur Rimbaud, 9) Roy d'Espagne. Chaque projet a sa spécificité entre soutien scolaire pur, ouverture culturelle, ou hybride."
-        }
-    ],
+--- VUE D'ENSEMBLE ---
+Phoenix EDC est une association étudiante d'intérêt général (loi 1901) créée en 2011 (racines en 1998).
+Mission : Promouvoir l'égalité des chances, le tutorat et l'ouverture culturelle pour les jeunes des Quartiers Prioritaires de la Ville (QPV) de Marseille.
+Chiffres clés : ~140 bénévoles (étudiants Kedge), ~300 jeunes accompagnés par an.
 
-    projets: [
-        { keywords: ["om", "foot", "sport", "athlète", "campux", "commanderie", "sup d'om", "lise", "ilyes"], content: "Sup d'OM (Droit au Bac) : L'un des 9 projets Phoenix, en partenariat avec le centre de formation de l'OM (la Commanderie). PROJET 100% SOUTIEN SCOLAIRE : séances d'aide aux devoirs les mardis et jeudis soir avec une dizaine de tuteurs. Spécificité : c'est le projet le plus centré sur l'accompagnement scolaire pur, sans activités culturelles. Chefs de Projet : Lise Dehedin et Ilyes Lounane." },
-        { keywords: ["acse", "lycée", "bac", "excellence", "farah", "oumaima"], content: "A Chacun Son Excellence (ACSE) : L'un des 9 projets Phoenix. PROJET CULTURE & ORIENTATION. Tutorat culturel et aide à l'orientation pour lycéens. Samedi après-midi à Kedge. Contrairement à Sup d'OM, focus sur le développement personnel et l'orientation plutôt que l'aide aux devoirs classique. Cheffes de Projet : Farah Dali et Oumaima Mghalfi." },
-        { keywords: ["massa", "massabielle", "13", "brevet", "fabien", "idriss"], content: "MASSA 13 : L'un des 9 projets Phoenix. PROJET HYBRIDE (Aide aux devoirs + Culture). Séance du jeudi soir : commence par l'aide aux devoirs individuel et finit par une ouverture culturelle. Chefs de Projet : Fabien Boles Franso et Idriss Bahou." },
-        { keywords: ["saint-gabriel", "gabriel", "social", "tessa", "eline"], content: "Projet St Gabriel : L'un des 9 projets Phoenix. PROJET HYBRIDE. En plus du soutien scolaire, les tuteurs développent l'esprit critique via des débats. Cheffes de Projet : Tessa Valente et Eline Far." },
-        { keywords: ["auteuil", "vitagliano", "apprenti", "clara"], content: "Projet Apprentis d'Auteuil : L'un des 9 projets Phoenix. PROJET 100% OUVERTURE CULTURELLE. Contrairement à Sup d'OM, pas d'aide aux devoirs. Séances sur thèmes d'actualité (Lundi/Vendredi). Cheffe de Projet : Clara Boudeville." },
-        { keywords: ["izzo", "euro", "classe", "mizzó", "mizzo", "adel", "elsa"], content: "Collège Izzo : L'un des 9 projets Phoenix. PROJET HYBRIDE. Présentations culturelles ludiques et approfondies suivies d'échanges (Goûter). Chefs de Projet : Adel Bia et Elsa Ald." },
-        { keywords: ["ferry", "jules", "oral", "powerpoint", "eloquence", "lou-ann", "nadège", "chelsea"], content: "Projet Jules Ferry : L'un des 9 projets Phoenix. PROJET HYBRIDE. Mélange de soutien scolaire et d'ouverture culturelle (2 mercredis/mois). Cheffes de Projet : Lou-Ann Lapointe, Nadège Bavugilije et Chelsea Afonso de Barros." },
-        { keywords: ["rimbaud", "arthur", "salwa"], content: "Projet Arthur Rimbaud : L'un des 9 projets Phoenix. PROJET HYBRIDE. Mélange d'ouverture culturelle et d'aide aux devoirs les jeudis. Cheffe de Projet : Salwa Guernina." },
-        { keywords: ["roy", "espagne", "nadir"], content: "Projet Roy d'Espagne : L'un des 9 projets Phoenix. PROJET HYBRIDE. Alterne entre aide aux devoirs individuelle et ouverture culturelle collective le jeudi après-midi. Chef de Projet : Nadir Stiti." }
-    ],
+--- LES 9 PROJETS DE TUTORAT (DÉTAILS) ---
+1. Sup d'OM (Droit au Bac) : Partenariat avec le centre de formation de l'OM. 100% Soutien scolaire (aide aux devoirs) pour les jeunes athlètes. Pas de sortie culturelle. Chefs : Lise Dehedin, Ilyes Lounane.
+2. A Chacun Son Excellence (ACSE) : Cordée de la réussite. Lycéens. Focus sur l'Ambition, l'Orientation et la Culture. Samedi après-midi à Kedge. Cheffes : Farah Dali, Oumaima Mghalfi.
+3. Massa 13 : Partenariat avec Massabielle. Collégiens (3ème). Hybride : Aide aux devoirs + Ouverture culturelle en fin de séance le jeudi. Chefs : Fabien Boles Franso, Idriss Bahou.
+4. Saint Gabriel : Partenariat centre social St Gabriel. De la 6ème à la Terminale. Hybride : Aide aux devoirs + Débats/Esprit critique. Cheffes : Tessa Valente, Eline Far.
+5. Apprentis d'Auteuil : Collège Vitagliano. 100% Ouverture Culturelle (pas d'aide aux devoirs). Thèmes d'actualité. Cheffe : Clara Boudeville.
+6. Collège Izzo : Classe Euro 3ème. Hybride : Présentations culturelles ludiques + Échanges. Chefs : Adel Bia, Elsa Ald.
+7. Jules Ferry : Collège Jules Ferry (3ème). Hybride : Soft skills, éloquence, confiance en soi. Cheffes : Lou-Ann Lapointe, Nadège Bavugilije, Chelsea Afonso de Barros.
+8. Arthur Rimbaud : Collège Rimbaud. Hybride : Culture + Aide aux devoirs le jeudi. Cheffe : Salwa Guernina.
+9. Roy d'Espagne : Collège Roy d'Espagne. Hybride : Aide aux devoirs individuelle + Culture collective le jeudi. Chef : Nadir Stiti.
 
-    bureau: [
-        { keywords: ["bureau", "présidente", "elsa", "ald"], content: "Présidente : Elsa Ald. Elle co-dirige aussi le projet Mizzó." },
-        { keywords: ["bureau", "vice-président", "vp", "ghali", "bouchareb"], content: "Vice-Président : Ghali Bouchareb. Il est aussi responsable du Pôle Communication." },
-        { keywords: ["bureau", "vice-présidente", "vp", "oumaima", "mghalfi"], content: "Vice-Présidente : Oumaima Mghalfi. Elle est aussi responsable du Pôle Communication et co-CDP du projet ACSE." },
-        { keywords: ["bureau", "trésorier", "nadir", "stiti"], content: "Trésorier : Nadir Stiti. Il est aussi responsable du Pôle Communication et Partenariat, et CDP du projet Roy d'Espagne." },
-        { keywords: ["pôle", "communication", "comm", "lise", "dehedin"], content: "Pôle Communication : Oumaima Mghalfi, Ghali Bouchareb, Lise Dehedin et Nadir Stiti." },
-        { keywords: ["pôle", "rti", "rse", "impact", "eline", "far"], content: "Responsable Pôle RTI (Responsabilité, Transition, Impact) : Eline Far. Elle est aussi co-CDP du projet St Gabriel." },
-        { keywords: ["pôle", "événementiel", "event", "chelsea", "clara", "ilyes"], content: "Pôle Événementiel : Chelsea Afonso de Barros, Clara Boudeville et Ilyes Lounane." },
-        { keywords: ["pôle", "partenariat", "partenaires", "idriss", "nagib", "lina", "adel"], content: "Pôle Partenariat : Idriss Bahou, Nadir Stiti, Nagib Amg, Lina et Adel Bia." },
-        { keywords: ["bureau", "équipe", "dirigeant"], content: "Le Bureau Exécutif est composé d'Elsa Ald (Présidente), Ghali Bouchareb (VP), Oumaima Mghalfi (VP) et Nadir Stiti (Trésorier)." }
-    ],
+--- LE BUREAU (GOUVERNANCE) ---
+- Présidente : Elsa Ald (aussi co-CDP Izzo). Garante de la vision et du bon fonctionnement.
+- Vice-Président & Respo Comm : Ghali Bouchareb.
+- Vice-Présidente & Respo Comm & co-CDP ACSE : Oumaima Mghalfi.
+- Trésorier & Respo Comm & CDP Roy d'Espagne : Nadir Stiti. Gestion des finances.
+- Secrétaire Général : (Poste clé pour l'administratif, gestion des dossiers jeunes).
 
-    events: [
-        { keywords: ["simonu", "onu", "débat", "diplomatie"], content: "SimONU : Simulation de l'ONU organisée avec SimONU Kedge. Les jeunes deviennent diplomates et débattent de géopolitique." },
-        { keywords: ["éloquence", "cité", "parole", "concours"], content: "Marseille Cité Éloquente : Concours d'éloquence pour democratiser la prise de parole en public." },
-        { keywords: ["olympiade", "sport", "tournoi"], content: "Les Olympiades : Grande fête du sport en fin d'année. Mélange tuteurs/jeunes de tous les quartiers." },
-        { keywords: ["jedc", "journée", "décembre"], content: "JEDC : Journée de l'Égalité des Chances, organisée le 5 décembre à Kedge." }
-    ],
+--- PÔLES TRANSVERSAUX ---
+- Pôle Communication : Ghali, Oumaima, Lise, Nadir. Gère les réseaux, photos, site web.
+- Pôle Événementiel : Chelsea, Clara, Ilyes. Organise les événements phares (SimONU, JEDC, Olympiades).
+- Pôle Partenariat : Idriss, Nadir, Nagib, Lina, Adel. Cherche des fonds et partenaires (entreprises, institutions).
+- Pôle RTI (Responsabilité, Transition, Impact) : Eline Far. S'occupe de l'impact social et écologique.
 
-    docs: [
-        { keywords: ["guide", "télécharger", "pdf", "document"], content: "Le document de référence est le 'Guide du Phoenicien'." },
-        { keywords: ["fiche", "post", "récap"], content: "Les fiches récapitulatives sont disponibles sur le site." }
-    ],
+--- ÉVÉNEMENTS MAJEURS ---
+- SimONU : Simulation des Nations Unies (débat géopolitique).
+- Marseille Cité Éloquente : Concours d'éloquence.
+- Les Olympiades : Tournoi sportif géant inter-projets en fin d'année.
+- Journée de l'Égalité des Chances (JEDC) : 5 décembre à Kedge.
 
-    links: [
-        { keywords: ["don", "argent", "soutenir", "helloasso"], content: "Pour faire un don défiscalisé, c'est ici : https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a" },
-        { keywords: ["contact", "mail", "joindre"], content: "Contactez-nous via le formulaire du site ou par mail : phoenixedc.asso@gmail.com" }
-    ]
-};
+--- DOCUMENTS ET LIENS ---
+- Guide du Phoenicien : Le document de référence pour les tuteurs (charte, pédagogie).
+- Fiches de poste : Détail des missions de chaque membre (dispo sur le site).
+- Don : https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a
+- Mail : phoenixedc.asso@gmail.com
+
+--- DIRECTIVES DE RÉPONSE ---
+Utilise ces informations pour répondre aux questions.
+Si on demande une info qui est ici, donne-la.
+Si on demande "mon projet préféré", tu peux dire (en tant que Mascotte) que tu les aimes tous, mais donne un exemple précis (ex: "J'adore l'ambiance sportive de Sup d'OM ou les débats de St Gabriel !").
+Sois concis mais complet.
+`;
 
 function getTailoredContext(userQuestion) {
-    const q = userQuestion.toLowerCase();
-    let relevantFacts = [];
-
-    // 1. Scan Overview (for general questions about project count/list)
-    if (PHOENIX_DB.overview) {
-        PHOENIX_DB.overview.forEach(o => {
-            if (o.keywords.some(k => q.includes(k))) relevantFacts.push("📊 VUE D'ENSEMBLE : " + o.content);
-        });
-    }
-
-    // 2. Scan Projects
-    PHOENIX_DB.projets.forEach(p => {
-        if (p.keywords.some(k => q.includes(k))) relevantFacts.push("PROJET IMPLIQUÉ : " + p.content);
-    });
-
-    // 3. Scan Events
-    PHOENIX_DB.events.forEach(e => {
-        if (e.keywords.some(k => q.includes(k))) relevantFacts.push("ÉVÉNEMENT : " + e.content);
-    });
-
-    // 4. Scan Docs & Links (Haute Priorité)
-    PHOENIX_DB.docs.forEach(d => {
-        if (d.keywords.some(k => q.includes(k))) relevantFacts.push("RESSOURCE CLÉ : " + d.content);
-    });
-    PHOENIX_DB.links.forEach(l => {
-        if (l.keywords.some(k => q.includes(k))) relevantFacts.push("LIEN UTILE : " + l.content);
-    });
-
-    // 5. Scan Bureau
-    if (PHOENIX_DB.bureau) {
-        PHOENIX_DB.bureau.forEach(b => {
-            if (b.keywords.some(k => q.includes(k))) relevantFacts.push("MEMBRES DU BUREAU : " + b.content);
-        });
-    }
-
-    // Construction du Prompt Système Dynamique
-    let systemPrompt = `Tu es Teymou, l'assistant de ${associationName}.\\n`;
-    systemPrompt += `INFO GÉNÉRALE :\\n${PHOENIX_DB.general}\\n\\n`;
-
-    if (relevantFacts.length > 0) {
-        systemPrompt += `⚠️ INFORMATIONS CRUCIALES POUR CETTE QUESTION (UTILISE-LES EN PRIORITÉ ABSOLUE) :\\n`;
-        relevantFacts.forEach(fact => systemPrompt += `- ${fact}\\n`);
-    } else {
-        systemPrompt += "CONTEXTE GLOBAL : Phoenix gère 9 projets de tutorat à Marseille + des événements culturels. Utilise tes connaissances générales sur l'asso.";
-    }
-
-    systemPrompt += `\\nINSTRUCTION : Tu es Teymou, la mascotte de Phoenix. Tu es chaleureux et un peu drôle.\\n`;
-    systemPrompt += `RÈGLES D'OR :\\n`;
-    systemPrompt += `1. NE TE PRÉSENTE PAS : Ne dis pas "Salut je suis Teymou" à chaque message. Réponds directement.\\n`;
-    systemPrompt += `2. DONS : Ne donne le lien HelloAsso QUE si on te parle de DONS, d'ARGENT ou de SOUTIEN FINANCIER.\\n`;
-    systemPrompt += `3. HUMOUR : Si on te pose une question personnelle (âge, projet préféré), réponds avec une blague en rapport avec l'asso (ex: "J'aime tous les projets comme mes enfants !" ou "Je suis né avec l'asso !").\\n`;
-    systemPrompt += `4. HORS-SUJET : Si ça ne parle pas de Phoenix, décline avec humour (ex: "Je suis pro en tutorat, pas en cuisine !").\\n`;
-    systemPrompt += `5. CONTENU : Sois concis. Base-toi uniquement sur les infos fournies. Ne jamais inventer de matières scolaires (maths, etc) si ce n'est pas spécifié.`;
-
-    return systemPrompt;
+    // Retourne tout le contexte. Llama 3 est assez intelligent pour trier.
+    return PHOENIX_CONTEXT;
 }
 
 
