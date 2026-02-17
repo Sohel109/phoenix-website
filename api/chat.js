@@ -116,17 +116,22 @@ async function callCognitiveAI(question) {
     const token = process.env.HF_API_TOKEN;
     const dynamicContext = getTailoredContext(question);
 
-    // Try Mixtral first
+    // Try Llama 3.1 8B (Free, Fast, Smart)
     try {
-        const hfRes = await fetch('https://router.huggingface.co/hf-inference/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+        const hfRes = await fetch('https://router.huggingface.co/hf-inference/models/meta-llama/Meta-Llama-3.1-8B-Instruct', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                inputs: `${dynamicContext}\\n\\nQuestion: ${question}\\nRéponse:`,
-                parameters: { max_new_tokens: 350, temperature: 0.5 }
+                // Llama 3 Chat Template
+                inputs: `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${dynamicContext}<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n${question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n`,
+                parameters: {
+                    max_new_tokens: 350,
+                    temperature: 0.6,
+                    return_full_text: false
+                }
             })
         });
 
@@ -137,7 +142,7 @@ async function callCognitiveAI(question) {
             if (text.length > 2) return text;
         }
     } catch (e) {
-        console.log('Mixtral Fail');
+        console.log('Llama Fail');
     }
 
     // Fallback to Gemini
