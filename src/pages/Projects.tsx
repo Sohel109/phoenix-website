@@ -13,7 +13,7 @@ export function Projects() {
                     </h1>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
@@ -21,51 +21,34 @@ export function Projects() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="group"
+                            className="relative pt-10 group"
                         >
+                            {/* Logo / Icon Area */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10 w-24 h-24 bg-white dark:bg-current-card rounded-2xl shadow-lg flex items-center justify-center border-4 border-white dark:border-current-bg overflow-hidden z-20">
+                                {project.image ? (
+                                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                                ) : (
+                                    <project.icon size={40} className="text-gray-700 dark:text-white" />
+                                )}
+                            </div>
+
+                            {/* Card Body */}
                             <motion.div
-                                whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                                className="bg-white dark:bg-current-card border border-gray-100 dark:border-white/5 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-violet-900/20 transition-all relative flex flex-col"
+                                whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                                className="bg-white dark:bg-current-card border border-gray-100 dark:border-white/5 pt-16 pb-6 px-8 rounded-3xl min-h-[280px] flex flex-col items-center text-center shadow-sm hover:shadow-2xl hover:shadow-violet-900/20 transition-all relative z-10"
                             >
-                                {/* Banner Image */}
-                                <div className="relative h-44 overflow-hidden bg-gray-100 dark:bg-zinc-800">
-                                    {project.banner ? (
-                                        <img
-                                            src={project.banner}
-                                            alt={`${project.title} bannière`}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-violet-500/20 to-orange-500/20" />
-                                    )}
-                                    {/* Gradient overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 mt-2 font-display">{project.title}</h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-10 flex-grow font-medium">
+                                    {project.description}
+                                </p>
 
-                                    {/* Logo badge over the banner */}
-                                    <div className="absolute bottom-4 left-4 w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center border-2 border-white overflow-hidden">
-                                        {project.image ? (
-                                            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <project.icon size={28} className="text-gray-700" />
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Card Body */}
-                                <div className="pt-4 pb-6 px-6 flex flex-col items-start text-left flex-grow">
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 font-display">{project.title}</h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-6 flex-grow">
-                                        {project.description}
-                                    </p>
-
-                                    {/* Button */}
-                                    <Link
-                                        to={`/projets/${project.id}`}
-                                        className="px-6 py-2 bg-gradient-to-tr from-orange-500 to-pink-500 text-white font-semibold rounded-full text-sm shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-300"
-                                    >
-                                        Découvrir
-                                    </Link>
-                                </div>
+                                {/* Button */}
+                                <Link
+                                    to={`/projets/${project.id}`}
+                                    className="absolute bottom-6 right-6 px-6 py-2 bg-gradient-to-tr from-orange-500 to-pink-500 text-white font-semibold rounded-full text-sm shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-300"
+                                >
+                                    Découvrir
+                                </Link>
                             </motion.div>
                         </motion.div>
                     ))}
