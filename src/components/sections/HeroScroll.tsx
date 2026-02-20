@@ -63,16 +63,19 @@ export function HeroScroll() {
                         <motion.img
                             style={{ opacity: opacity2 }}
                             src={heroImages[1]}
+                            loading="lazy"
                             className="absolute inset-0 w-full h-full object-cover"
                         />
                         <motion.img
                             style={{ opacity: opacity3 }}
                             src={heroImages[2]}
+                            loading="lazy"
                             className="absolute inset-0 w-full h-full object-cover"
                         />
                         <motion.img
                             style={{ opacity: opacity4 }}
                             src={heroImages[3]}
+                            loading="lazy"
                             className="absolute inset-0 w-full h-full object-cover"
                         />
                     </motion.div>
