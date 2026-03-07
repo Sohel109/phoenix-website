@@ -7,7 +7,7 @@ export const projects = [
         title: 'A Chacun Son Excellence',
         description: "Projet Cordée de la réussite, ACSE accompagne tous les samedis des jeunes de la seconde à la terminale via des séances d'ouverture culturelle et l'aide à l'orientation.",
         icon: School,
-        image: '/images/projects/acse-logo-v3.jpg',
+        image: '/images/projects/acse-logo.png',
         banner: '/images/banners/acse-banner-v2.jpg'
     },
     {
@@ -15,7 +15,7 @@ export const projects = [
         title: "Apprentis d'Auteuil",
         description: "En partenariat avec la Fondation Apprentis d'Auteuil, AA intervient au collège Vitagliano auprès d'élèves de la 6ème à la 3ème via des séances d'ouverture culturelle.",
         icon: Users,
-        image: '/images/projects/apprentis-auteuil-modern.png',
+        image: '/images/projects/apprentis-auteuil.png',
         banner: '/images/banners/apprentis-auteuil-banner.png'
     },
     {
@@ -23,7 +23,7 @@ export const projects = [
         title: 'Arthur Rimbaud',
         description: "Projet cordée de la réussite, Rimbaud intervient dans le collège du même nom auprès d'élèves de 3ème pour faire des séances d'ouverture culturelle.",
         icon: BookOpen,
-        image: '/images/projects/arthur-rimbaud-modern.png',
+        image: '/images/projects/arthur-rimbaud-logo.png',
         banner: '/images/banners/arthur-rimbaud-banner.png'
     },
     {
@@ -32,7 +32,7 @@ export const projects = [
         description: "Projet cordée de la réussite, Izzo intervient au collège du même nom auprès de la classe de 3ème européenne pour faire des séances d'ouverture culturelle.",
         // color removed for neutral theme
         icon: GraduationCap,
-        image: '/images/projects/izzo-modern.png',
+        image: '/images/projects/izzo-logo.png',
         banner: '/images/banners/izzo-banner.png'
     },
     {
@@ -40,7 +40,7 @@ export const projects = [
         title: 'Jules Ferry',
         description: "Projet cordée de la réussite, Jules Ferry aide des 3ème du collège Jules Ferry à acquérir des soft skills puis les suit dans leur poursuite d'étude.",
         icon: PenTool,
-        image: '/images/projects/jules-ferry-modern.png',
+        image: '/images/projects/jules-ferry-logo.png',
         banner: '/images/banners/jules-ferry-banner.png'
     },
     {
@@ -48,7 +48,7 @@ export const projects = [
         title: 'Massa 13',
         description: "En collaboration avec l'association Massabielle, Massa 13 fait de l'aide aux devoirs pour des élèves volontaires de troisième.",
         icon: BookOpen,
-        image: '/images/projects/massa-13-modern.png',
+        image: '/images/projects/massa-13-logo.png',
         banner: '/images/banners/massa-13-banner.png'
     },
     {
@@ -56,7 +56,7 @@ export const projects = [
         title: "Roy d'Espagne",
         description: "Projet cordée de la réussite, Roy d'Espagne intervient au collège du même nom pour faire des séances d'ouverture culturelle.",
         icon: Users,
-        image: '/images/projects/roy-espagne-modern.png',
+        image: '/images/projects/roy-despagne-logo.png',
         banner: '/images/banners/roydespagne-art.jpg'
     },
     {
@@ -64,7 +64,7 @@ export const projects = [
         title: 'Saint Gabriel',
         description: "En partenariat avec le centre social Saint Gabriel, on fait de l'aide aux devoirs pour des élèves de la 6ème à la terminale.",
         icon: Home,
-        image: '/images/projects/saint-gabriel-modern.png',
+        image: '/images/projects/saint-gabriel-logo.png',
         banner: '/images/banners/saint-gabriel-new.jpeg'
     },
     {
@@ -72,7 +72,7 @@ export const projects = [
         title: "Sup d'OM",
         description: "En partenariat avec le centre de formation de l'Olympique de Marseille, Sup d'OM fait de l'aide aux devoirs auprès des sections masculines et féminines.",
         icon: School,
-        image: '/images/projects/sup-d-om-modern.png',
+        image: '/images/projects/sup-d-om-logo.png',
         banner: '/images/banners/sup-d-om-banner.png'
     }
 ];
