@@ -16,7 +16,7 @@ export const projects = [
         description: "En partenariat avec la Fondation Apprentis d'Auteuil, AA intervient au collège Vitagliano auprès d'élèves de la 6ème à la 3ème via des séances d'ouverture culturelle.",
         icon: Users,
         image: '/images/projects/apprentis-auteuil.png',
-        banner: '/images/banners/apprentis-auteuil-banner.png'
+        banner: '/images/banners/apprentis-auteuil-banner-new.jpg'
     },
     {
         id: 'arthur-rimbaud',
@@ -24,7 +24,7 @@ export const projects = [
         description: "Projet cordée de la réussite, Rimbaud intervient dans le collège du même nom auprès d'élèves de 3ème pour faire des séances d'ouverture culturelle.",
         icon: BookOpen,
         image: '/images/projects/arthur-rimbaud-logo.png',
-        banner: '/images/banners/arthur-rimbaud-banner.png'
+        banner: '/images/banners/arthur-rimbaud-banner-new.png'
     },
     {
         id: 'izzo',
@@ -41,7 +41,7 @@ export const projects = [
         description: "Projet cordée de la réussite, Jules Ferry aide des 3ème du collège Jules Ferry à acquérir des soft skills puis les suit dans leur poursuite d'étude.",
         icon: PenTool,
         image: '/images/projects/jules-ferry-logo.png',
-        banner: '/images/banners/jules-ferry-banner.png'
+        banner: '/images/banners/jules-ferry-banner-new.jpg'
     },
     {
         id: 'massa-13',
@@ -57,7 +57,7 @@ export const projects = [
         description: "Projet cordée de la réussite, Roy d'Espagne intervient au collège du même nom pour faire des séances d'ouverture culturelle.",
         icon: Users,
         image: '/images/projects/roy-despagne-logo.png',
-        banner: '/images/banners/roydespagne-art.jpg'
+        banner: '/images/banners/roy-despagne-banner-new.png'
     },
     {
         id: 'saint-gabriel',
@@ -73,6 +73,7 @@ export const projects = [
         description: "En partenariat avec le centre de formation de l'Olympique de Marseille, Sup d'OM fait de l'aide aux devoirs auprès des sections masculines et féminines.",
         icon: School,
         image: '/images/projects/sup-d-om-logo.png',
-        banner: '/images/banners/sup-d-om-banner.png'
+        banner: '/images/banners/sup-d-om-banner-new.png',
+        bannerFit: 'contain'
     }
 ];

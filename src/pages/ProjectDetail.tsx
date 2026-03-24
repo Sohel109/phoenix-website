@@ -26,12 +26,16 @@ export function ProjectDetail() {
                 <div className="bg-white dark:bg-current-card rounded-3xl shadow-xl dark:shadow-none overflow-hidden max-w-4xl mx-auto border border-gray-100 dark:border-white/5">
                     {/* Header with Color */}
                     {/* Header with Banner Image */}
-                    <div className="h-48 md:h-64 relative bg-gray-100 dark:bg-zinc-800">
+                    <div className={`h-48 md:h-64 relative ${(project as any).bannerFit === 'contain' ? 'bg-black' : 'bg-gray-100 dark:bg-zinc-800'}`}>
                         {project.banner ? (
                             <img
                                 src={project.banner}
                                 alt={`${project.title} Banner`}
-                                className={`w-full h-full object-cover ${project.id === 'acse' ? 'object-[center_25%]' : ''}`}
+                                className={`w-full h-full ${
+                                    (project as any).bannerFit === 'contain'
+                                        ? 'object-contain'
+                                        : `object-cover ${project.id === 'acse' ? 'object-[center_25%]' : ''}`
+                                }`}
                             />
                         ) : (
                             <div className="bg-gray-200 w-full h-full" />
