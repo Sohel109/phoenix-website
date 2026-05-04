@@ -29,6 +29,7 @@ export interface Booking {
     id: string;
     slotId: string;
     userId: string;
+    userName?: string;
     weekKey: string;
     status: BookingStatus;
     validatedBy?: string;

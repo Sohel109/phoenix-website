@@ -78,6 +78,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
                 id: `bk-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
                 slotId,
                 userId: currentUser.id,
+                userName: currentUser.name,
                 weekKey,
                 status: 'prevu',
             };

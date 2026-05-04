@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Users, ShieldCheck } f
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, mockUsers, formatWeekLabel, navigateWeek } from '../../data/planningData';
+import { timeSlots, formatWeekLabel, navigateWeek } from '../../data/planningData';
 
 export function PlanningValidation() {
     const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent } = usePlanning();
@@ -37,8 +37,8 @@ export function PlanningValidation() {
         const b = bookings.find(x => x.id === bookingId)!;
         const slot = timeSlots.find(s => s.id === b.slotId);
         const project = slot ? projectsData.find(p => p.id === slot.projectId) : null;
-        const user = mockUsers.find(u => u.id === b.userId);
-        return { b, slot, project, user };
+        const userName = b.userName || b.userId;
+        return { b, slot, project, userName };
     };
 
     return (
@@ -75,7 +75,7 @@ export function PlanningValidation() {
             ) : (
                 <div className="space-y-3 mb-6">
                     {prevuBookings.map((b, i) => {
-                        const { slot, project, user } = enrichBooking(b.id);
+                        const { slot, project, userName } = enrichBooking(b.id);
                         return (
                             <motion.div
                                 key={b.id}
@@ -85,10 +85,10 @@ export function PlanningValidation() {
                                 className="flex items-center gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/20"
                             >
                                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">
-                                    {user?.name.charAt(0)}
+                                    {userName.charAt(0)}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-white">{user?.name}</p>
+                                    <p className="text-sm font-semibold text-white">{userName}</p>
                                     <p className="text-xs text-white/50">{slot?.day} · {slot?.startTime}–{slot?.endTime} · {project?.name}</p>
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0">
@@ -123,15 +123,15 @@ export function PlanningValidation() {
                     </h3>
                     <div className="space-y-2">
                         {doneBookings.map(b => {
-                            const { slot, project, user } = enrichBooking(b.id);
+                            const { slot, project, userName } = enrichBooking(b.id);
                             const isConfirme = b.status === 'confirme';
                             return (
                                 <div key={b.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 opacity-70">
                                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold">
-                                        {user?.name.charAt(0)}
+                                        {userName.charAt(0)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm text-white">{user?.name}</p>
+                                        <p className="text-sm text-white">{userName}</p>
                                         <p className="text-xs text-white/40">{slot?.day} · {project?.name}</p>
                                     </div>
                                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${isConfirme ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10'}`}>
