@@ -1,39 +1,44 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarCheck, ChevronDown, LogIn, User, ShieldCheck } from 'lucide-react';
+import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
-import { mockUsers } from '../../data/planningData';
 
 export function PlanningLogin() {
     const { login } = usePlanning();
     const navigate = useNavigate();
-    const [selectedId, setSelectedId] = useState('');
+    const [loginId, setLoginId] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-
-    const tuteurs = mockUsers.filter(u => u.role === 'tuteur');
-    const chefs = mockUsers.filter(u => u.role === 'chef_projet');
+    const [isShaking, setIsShaking] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedId) { setError('Veuillez sélectionner un compte.'); return; }
-        login(selectedId);
-        navigate('/planning');
+        setError('');
+        const success = login(loginId.trim(), password);
+        if (success) {
+            navigate('/planning');
+        } else {
+            setError('Identifiant ou mot de passe incorrect.');
+            setIsShaking(true);
+            setTimeout(() => setIsShaking(false), 500);
+        }
     };
 
     return (
         <div className="min-h-screen bg-[#07071a] flex flex-col items-center justify-center px-4">
-            {/* Glow BG */}
+            {/* Ambient glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[100px]" />
-                <div className="absolute top-1/2 left-1/3 w-[300px] h-[300px] bg-orange-500/10 rounded-full blur-[80px]" />
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[120px]" />
+                <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] bg-orange-500/10 rounded-full blur-[80px]" />
             </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-                className="relative w-full max-w-md"
+                className="relative w-full max-w-sm"
             >
                 {/* Logo */}
                 <div className="text-center mb-8">
@@ -43,73 +48,86 @@ export function PlanningLogin() {
                     <h1 className="text-3xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-pink-500 to-violet-600">
                         Phoenix Planning
                     </h1>
-                    <p className="text-white/50 mt-2 text-sm">Connectez-vous pour accéder à votre espace</p>
+                    <p className="text-white/40 mt-2 text-sm">Connectez-vous à votre espace membre</p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Select */}
+                <motion.div
+                    animate={isShaking ? { x: [-8, 8, -6, 6, -4, 4, 0] } : { x: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl"
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Identifiant */}
                         <div>
-                            <label className="block text-sm font-medium text-white/70 mb-2">
-                                Choisissez votre compte
+                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
+                                Identifiant
                             </label>
                             <div className="relative">
-                                <select
-                                    value={selectedId}
-                                    onChange={e => { setSelectedId(e.target.value); setError(''); }}
-                                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-4 py-3 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all"
-                                >
-                                    <option value="" className="bg-[#1a1a2e]">— Sélectionner —</option>
-                                    <optgroup label="👑 Chefs de Projet" className="bg-[#1a1a2e]">
-                                        {chefs.map(u => (
-                                            <option key={u.id} value={u.id} className="bg-[#1a1a2e]">{u.name}</option>
-                                        ))}
-                                    </optgroup>
-                                    <optgroup label="📚 Tuteurs" className="bg-[#1a1a2e]">
-                                        {tuteurs.map(u => (
-                                            <option key={u.id} value={u.id} className="bg-[#1a1a2e]">{u.name}</option>
-                                        ))}
-                                    </optgroup>
-                                </select>
-                                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+                                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={loginId}
+                                    onChange={e => { setLoginId(e.target.value); setError(''); }}
+                                    placeholder="prenom.nom"
+                                    autoComplete="username"
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-3 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all text-sm"
+                                />
                             </div>
-                            {error && <p className="text-red-400 text-xs mt-1.5">{error}</p>}
                         </div>
 
-                        {/* Role badge preview */}
-                        {selectedId && (() => {
-                            const user = mockUsers.find(u => u.id === selectedId);
-                            return user ? (
-                                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-violet-600 flex items-center justify-center flex-shrink-0">
-                                        {user.role === 'chef_projet' ? <ShieldCheck size={16} className="text-white" /> : <User size={16} className="text-white" />}
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-white">{user.name}</p>
-                                        <p className="text-xs text-orange-400">
-                                            {user.role === 'chef_projet' ? 'Chef de Projet' : 'Tuteur'}
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : null;
-                        })()}
+                        {/* Mot de passe */}
+                        <div>
+                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
+                                Mot de passe
+                            </label>
+                            <div className="relative">
+                                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={e => { setPassword(e.target.value); setError(''); }}
+                                    placeholder="••••••••••"
+                                    autoComplete="current-password"
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-10 py-3 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all text-sm"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(v => !v)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Error message */}
+                        {error && (
+                            <motion.p
+                                initial={{ opacity: 0, y: -4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2"
+                            >
+                                {error}
+                            </motion.p>
+                        )}
 
                         {/* Submit */}
                         <motion.button
                             type="submit"
-                            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-600 text-white font-bold shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-shadow"
+                            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-600 text-white font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-shadow mt-2"
                             whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileTap={{ scale: 0.97 }}
                         >
                             <LogIn size={18} />
                             Se connecter
                         </motion.button>
                     </form>
-                </div>
+                </motion.div>
 
-                <p className="text-center text-white/30 text-xs mt-6">
-                    Espace réservé aux membres Phoenix
+                <p className="text-center text-white/20 text-xs mt-6">
+                    Espace réservé aux membres Phoenix · Identifiants fournis par l'administration
                 </p>
             </motion.div>
         </div>

@@ -7,6 +7,8 @@ export type UserRole = 'tuteur' | 'chef_projet';
 export interface PlanningUser {
     id: string;
     name: string;
+    login: string;
+    password: string;
     role: UserRole;
     projectIds: number[];
 }
@@ -36,25 +38,25 @@ export interface Booking {
 // ─── Users ────────────────────────────────────────────────────────────────────
 
 export const mockUsers: PlanningUser[] = [
-    // Chefs de projet (noms issus de projectsData)
-    { id: 'chef-1', name: 'Lise Dehedin', role: 'chef_projet', projectIds: [1] },
-    { id: 'chef-2', name: 'Farah Dali', role: 'chef_projet', projectIds: [2] },
-    { id: 'chef-3', name: 'Fabien Boles Franso', role: 'chef_projet', projectIds: [3] },
-    { id: 'chef-4', name: 'Tessa Valente', role: 'chef_projet', projectIds: [4] },
-    { id: 'chef-5', name: 'Clara Boudeville', role: 'chef_projet', projectIds: [5] },
-    { id: 'chef-6', name: 'Adel Bia', role: 'chef_projet', projectIds: [6] },
-    { id: 'chef-7', name: 'Lou-Ann Lapointe', role: 'chef_projet', projectIds: [7] },
-    { id: 'chef-8', name: 'Salwa Guernina', role: 'chef_projet', projectIds: [8] },
-    { id: 'chef-9', name: 'Nadir Stiti', role: 'chef_projet', projectIds: [9] },
-    // Tuteurs (fictifs pour la démo)
-    { id: 'tuteur-1', name: 'Amine Benali', role: 'tuteur', projectIds: [1, 3] },
-    { id: 'tuteur-2', name: 'Sara Meziani', role: 'tuteur', projectIds: [2] },
-    { id: 'tuteur-3', name: 'Youssef Karam', role: 'tuteur', projectIds: [5, 6] },
-    { id: 'tuteur-4', name: 'Inès Touati', role: 'tuteur', projectIds: [7] },
-    { id: 'tuteur-5', name: 'Rayan Chebli', role: 'tuteur', projectIds: [8, 9] },
-    { id: 'tuteur-6', name: 'Nora Hamidi', role: 'tuteur', projectIds: [1, 4] },
-    { id: 'tuteur-7', name: 'Mehdi Barra', role: 'tuteur', projectIds: [3] },
-    { id: 'tuteur-8', name: 'Lina Aouadi', role: 'tuteur', projectIds: [2] },
+    // Chefs de projet
+    { id: 'chef-1', name: 'Lise Dehedin',       login: 'lise.dehedin',       password: 'SupdOM2025!',      role: 'chef_projet', projectIds: [1] },
+    { id: 'chef-2', name: 'Farah Dali',          login: 'farah.dali',         password: 'ACSE2025!',        role: 'chef_projet', projectIds: [2] },
+    { id: 'chef-3', name: 'Fabien Boles Franso', login: 'fabien.boles',       password: 'Massa2025!',       role: 'chef_projet', projectIds: [3] },
+    { id: 'chef-4', name: 'Tessa Valente',       login: 'tessa.valente',      password: 'Gabriel2025!',     role: 'chef_projet', projectIds: [4] },
+    { id: 'chef-5', name: 'Clara Boudeville',    login: 'clara.boudeville',   password: 'Apprentis2025!',   role: 'chef_projet', projectIds: [5] },
+    { id: 'chef-6', name: 'Adel Bia',            login: 'adel.bia',           password: 'Izzo2025!',        role: 'chef_projet', projectIds: [6] },
+    { id: 'chef-7', name: 'Lou-Ann Lapointe',    login: 'louann.lapointe',    password: 'Ferry2025!',       role: 'chef_projet', projectIds: [7] },
+    { id: 'chef-8', name: 'Salwa Guernina',      login: 'salwa.guernina',     password: 'Rimbaud2025!',     role: 'chef_projet', projectIds: [8] },
+    { id: 'chef-9', name: 'Nadir Stiti',         login: 'nadir.stiti',        password: 'Roy2025!',         role: 'chef_projet', projectIds: [9] },
+    // Tuteurs
+    { id: 'tuteur-1', name: 'Amine Benali',   login: 'amine.benali',   password: 'Phoenix2025!', role: 'tuteur', projectIds: [1, 3] },
+    { id: 'tuteur-2', name: 'Sara Meziani',   login: 'sara.meziani',   password: 'Phoenix2025!', role: 'tuteur', projectIds: [2] },
+    { id: 'tuteur-3', name: 'Youssef Karam',  login: 'youssef.karam',  password: 'Phoenix2025!', role: 'tuteur', projectIds: [5, 6] },
+    { id: 'tuteur-4', name: 'Inès Touati',    login: 'ines.touati',    password: 'Phoenix2025!', role: 'tuteur', projectIds: [7] },
+    { id: 'tuteur-5', name: 'Rayan Chebli',   login: 'rayan.chebli',   password: 'Phoenix2025!', role: 'tuteur', projectIds: [8, 9] },
+    { id: 'tuteur-6', name: 'Nora Hamidi',    login: 'nora.hamidi',    password: 'Phoenix2025!', role: 'tuteur', projectIds: [1, 4] },
+    { id: 'tuteur-7', name: 'Mehdi Barra',    login: 'mehdi.barra',    password: 'Phoenix2025!', role: 'tuteur', projectIds: [3] },
+    { id: 'tuteur-8', name: 'Lina Aouadi',    login: 'lina.aouadi',    password: 'Phoenix2025!', role: 'tuteur', projectIds: [2] },
 ];
 
 // ─── Time Slots ───────────────────────────────────────────────────────────────

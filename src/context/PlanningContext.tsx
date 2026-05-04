@@ -10,7 +10,7 @@ import {
 
 interface PlanningContextType {
     currentUser: PlanningUser | null;
-    login: (userId: string) => void;
+    login: (loginId: string, password: string) => boolean;
     logout: () => void;
     bookings: Booking[];
     getWeekBookings: (weekKey: string, userId?: string) => Booking[];
@@ -47,12 +47,14 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         saveBookings(next);
     }, []);
 
-    const login = useCallback((userId: string) => {
-        const user = mockUsers.find(u => u.id === userId);
+    const login = useCallback((loginId: string, password: string): boolean => {
+        const user = mockUsers.find(u => u.login === loginId && u.password === password);
         if (user) {
             setCurrentUser(user);
-            sessionStorage.setItem(SESSION_KEY, userId);
+            sessionStorage.setItem(SESSION_KEY, user.id);
+            return true;
         }
+        return false;
     }, []);
 
     const logout = useCallback(() => {
