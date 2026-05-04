@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Home, FolderOpen, Calendar, Users, FileText, Mail, Heart, Map } from 'lucide-react';
+import { Home, FolderOpen, Calendar, Users, FileText, Mail, Heart, Map, CalendarCheck } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
@@ -24,6 +24,7 @@ export function BubbleMenu() {
         { label: t('nav.partners'), path: '/partenaires', icon: Users, hideOnMobile: true },
         { label: t('nav.documents'), path: '/documents', icon: FileText, hideOnMobile: true },
         { label: t('nav.contact'), path: '/contact', icon: Mail },
+        { label: 'Planning', path: '/planning', icon: CalendarCheck },
     ];
 
     // Dynamic Theme Detection

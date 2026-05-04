@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
@@ -12,6 +12,7 @@ import { Chatbot } from './components/features/Chatbot';
 import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
 import { CrowdfundingBanner } from './components/features/CrowdfundingBanner';
 import { ThemeProvider } from './context/ThemeContext';
+import { PlanningProvider, usePlanning } from './context/PlanningContext';
 
 // Home chargée immédiatement (page principale)
 import { Home } from './pages/Home';
@@ -28,6 +29,14 @@ const LegalMentions = lazy(() => import('./pages/LegalMentions').then(m => ({ de
 const Transparency = lazy(() => import('./pages/Transparency').then(m => ({ default: m.Transparency })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 
+// Planning module (lazy)
+const PlanningLogin = lazy(() => import('./pages/planning/PlanningLogin').then(m => ({ default: m.PlanningLogin })));
+const PlanningDashboard = lazy(() => import('./pages/planning/PlanningDashboard').then(m => ({ default: m.PlanningDashboard })));
+const PlanningDisponibilites = lazy(() => import('./pages/planning/PlanningDisponibilites').then(m => ({ default: m.PlanningDisponibilites })));
+const PlanningHoraire = lazy(() => import('./pages/planning/PlanningHoraire').then(m => ({ default: m.PlanningHoraire })));
+const PlanningCompte = lazy(() => import('./pages/planning/PlanningCompte').then(m => ({ default: m.PlanningCompte })));
+const PlanningValidation = lazy(() => import('./pages/planning/PlanningValidation').then(m => ({ default: m.PlanningValidation })));
+
 // Loader minimaliste pendant le chargement d'une page
 function PageLoader() {
   return (
@@ -35,6 +44,16 @@ function PageLoader() {
       <div className="w-8 h-8 rounded-full border-4 border-violet-500/30 border-t-violet-500 animate-spin" />
     </div>
   );
+}
+
+// Planning guard: redirects to /planning/login if not authenticated
+function PlanningGuard({ children }: { children: React.ReactNode }) {
+  const { currentUser } = usePlanning();
+  const location = useLocation();
+  if (!currentUser) {
+    return <Navigate to="/planning/login" state={{ from: location }} replace />;
+  }
+  return <>{children}</>;
 }
 
 function App() {
@@ -46,6 +65,7 @@ function App() {
 
   return (
     <ThemeProvider>
+    <PlanningProvider>
       <Router>
         <ScrollToTop />
         <AnimatePresence>
@@ -74,6 +94,13 @@ function App() {
                   <Route path="/mentions-legales" element={<LegalMentions />} />
                   <Route path="/transparence" element={<Transparency />} />
                   <Route path="/contact" element={<Contact />} />
+                  {/* Planning module */}
+                  <Route path="/planning/login" element={<PlanningLogin />} />
+                  <Route path="/planning" element={<PlanningGuard><PlanningDashboard /></PlanningGuard>} />
+                  <Route path="/planning/disponibilites" element={<PlanningGuard><PlanningDisponibilites /></PlanningGuard>} />
+                  <Route path="/planning/horaire" element={<PlanningGuard><PlanningHoraire /></PlanningGuard>} />
+                  <Route path="/planning/compte" element={<PlanningGuard><PlanningCompte /></PlanningGuard>} />
+                  <Route path="/planning/validation" element={<PlanningGuard><PlanningValidation /></PlanningGuard>} />
                 </Routes>
               </Suspense>
             </main>
@@ -81,6 +108,7 @@ function App() {
           </div>
         )}
       </Router>
+    </PlanningProvider>
     </ThemeProvider>
   );
 }
