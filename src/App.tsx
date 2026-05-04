@@ -10,6 +10,7 @@ import { IntroAnimation } from './components/layout/IntroAnimation';
 import { AuroraBackground } from './components/layout/AuroraBackground';
 import { Chatbot } from './components/features/Chatbot';
 import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
+import { CrowdfundingBanner } from './components/features/CrowdfundingBanner';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Home chargée immédiatement (page principale)
@@ -58,6 +59,7 @@ function App() {
             <BubbleMenu />
             <Chatbot />
             <IOSInstallPrompt />
+            <CrowdfundingBanner />
             <main className="flex-grow">
               <Suspense fallback={<PageLoader />}>
                 <Routes>
