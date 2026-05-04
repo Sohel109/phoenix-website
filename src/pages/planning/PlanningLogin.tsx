@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
+import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User, Loader2 } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
 
 export function PlanningLogin() {
@@ -12,17 +12,26 @@ export function PlanningLogin() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isShaking, setIsShaking] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        const success = login(loginId.trim(), password);
-        if (success) {
-            navigate('/planning');
-        } else {
-            setError('Identifiant ou mot de passe incorrect.');
-            setIsShaking(true);
-            setTimeout(() => setIsShaking(false), 500);
+        setIsLoading(true);
+        
+        try {
+            const success = await login(loginId.trim(), password);
+            if (success) {
+                navigate('/planning');
+            } else {
+                setError('Identifiant ou mot de passe incorrect.');
+                setIsShaking(true);
+                setTimeout(() => setIsShaking(false), 500);
+            }
+        } catch (err) {
+            setError('Une erreur est survenue lors de la connexion.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -116,12 +125,17 @@ export function PlanningLogin() {
                         {/* Submit */}
                         <motion.button
                             type="submit"
-                            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-600 text-white font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-shadow mt-2"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.97 }}
+                            disabled={isLoading}
+                            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-600 text-white font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all mt-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            whileHover={!isLoading ? { scale: 1.02 } : {}}
+                            whileTap={!isLoading ? { scale: 0.97 } : {}}
                         >
-                            <LogIn size={18} />
-                            Se connecter
+                            {isLoading ? (
+                                <Loader2 size={18} className="animate-spin" />
+                            ) : (
+                                <LogIn size={18} />
+                            )}
+                            {isLoading ? 'Connexion...' : 'Se connecter'}
                         </motion.button>
                     </form>
                 </motion.div>

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { PlanningUser, Booking, BookingStatus } from '../data/planningData';
 import {
-    mockUsers, loadBookings, saveBookings,
+    authenticateUser, loadBookings, saveBookings,
     loadUnavailableWeeks, saveUnavailableWeeks,
     getWeekKey,
 } from '../data/planningData';
@@ -10,7 +10,7 @@ import {
 
 interface PlanningContextType {
     currentUser: PlanningUser | null;
-    login: (loginId: string, password: string) => boolean;
+    login: (loginId: string, password: string) => Promise<boolean>;
     logout: () => void;
     bookings: Booking[];
     getWeekBookings: (weekKey: string, userId?: string) => Booking[];
@@ -33,8 +33,8 @@ const SESSION_KEY = 'phoenix_planning_session';
 export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [currentUser, setCurrentUser] = useState<PlanningUser | null>(() => {
         try {
-            const id = sessionStorage.getItem(SESSION_KEY);
-            return id ? (mockUsers.find(u => u.id === id) ?? null) : null;
+            const data = sessionStorage.getItem(SESSION_KEY);
+            return data ? JSON.parse(data) : null;
         } catch { return null; }
     });
 
@@ -47,11 +47,11 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         saveBookings(next);
     }, []);
 
-    const login = useCallback((loginId: string, password: string): boolean => {
-        const user = mockUsers.find(u => u.login === loginId && u.password === password);
+    const login = useCallback(async (loginId: string, password: string): Promise<boolean> => {
+        const user = await authenticateUser(loginId, password);
         if (user) {
             setCurrentUser(user);
-            sessionStorage.setItem(SESSION_KEY, user.id);
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
             return true;
         }
         return false;

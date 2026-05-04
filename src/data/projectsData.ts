@@ -17,7 +17,7 @@ export const projectsData: Project[] = [
         type: 'culture',
         address: "Domaine de Luminy, Rue Antoine Bourdelle, 13009 Marseille",
         coordinates: [43.2307, 5.4380],
-        chefs: ["Farah Dali", "Oumaima Mghalfi"],
+        chefs: ["Ryadh ABDELMALEK", "Elyas BOURHIS"],
         description: "PROJET CULTURE & ORIENTATION. Tutorat culturel et aide à l'orientation pour lycéens. Samedi après-midi à Kedge."
     },
     {
@@ -27,7 +27,7 @@ export const projectsData: Project[] = [
         type: 'culture',
         address: "5 Rue Antoine Pons, 13004 Marseille",
         coordinates: [43.3059, 5.4055],
-        chefs: ["Clara Boudeville"],
+        chefs: ["Damya AKILI", "Amani ZAMIT"],
         description: "PROJET 100% OUVERTURE CULTURELLE. Séances sur thèmes d'actualité les lundis et vendredis."
     },
     {
@@ -37,7 +37,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "19 Trav. Santi, 13015 Marseille",
         coordinates: [43.3447, 5.3535],
-        chefs: ["Salwa Guernina"],
+        chefs: ["Haitam BEBBI"],
         description: "PROJET HYBRIDE. Mélange d'ouverture culturelle et d'aide aux devoirs les jeudis."
     },
     {
@@ -47,7 +47,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "2 Rue d'Hozier, 13002 Marseille",
         coordinates: [43.3018, 5.3687],
-        chefs: ["Adel Bia", "Elsa Ald"],
+        chefs: ["Ryan BENYELLES", "Donia TNANI"],
         description: "PROJET HYBRIDE. Présentations culturelles ludiques et approfondies suivies d'échanges autour d'un goûter."
     },
     {
@@ -57,7 +57,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "2 Bd Ledru Rollin, 13015 Marseille",
         coordinates: [43.3580, 5.3620],
-        chefs: ["Lou-Ann Lapointe", "Nadège Bavugilije", "Chelsea Afonso de Barros"],
+        chefs: ["Nelly RANDRIAMIHAJA"],
         description: "PROJET HYBRIDE. Mélange de soutien scolaire et d'ouverture culturelle, 2 mercredis par mois."
     },
     {
@@ -67,7 +67,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "129 Chem. du Merlan À la Rose, 13013 Marseille",
         coordinates: [43.3469, 5.4231],
-        chefs: ["Fabien Boles Franso", "Idriss Bahou"],
+        chefs: ["Position vacante"],
         description: "PROJET HYBRIDE. Séance du jeudi soir : aide aux devoirs suivie d'ouverture culturelle."
     },
     {
@@ -77,7 +77,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "36 Chem. du Roy d'Espagne, 13009 Marseille",
         coordinates: [43.2498, 5.4118],
-        chefs: ["Nadir Stiti"],
+        chefs: ["Camille JOURDIN"],
         description: "PROJET HYBRIDE. Alterne entre aide aux devoirs individuelle et ouverture culturelle collective le jeudi après-midi."
     },
     {
@@ -87,7 +87,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "12 Rue Richard, 13014 Marseille",
         coordinates: [43.3318, 5.3899],
-        chefs: ["Tessa Valente", "Eline Far"],
+        chefs: ["Kahili JUVENTIN", "Abdollah JOUNOUDI"],
         description: "PROJET HYBRIDE. Soutien scolaire avec développement de l'esprit critique via des débats."
     },
     {
@@ -97,7 +97,7 @@ export const projectsData: Project[] = [
         type: 'soutien',
         address: "33 Trav. de la Martine, 13012 Marseille",
         coordinates: [43.3057, 5.4442],
-        chefs: ["Lise Dehedin", "Ilyes Lounane"],
+        chefs: ["Samy RABHI", "Eve SAMA"],
         description: "PROJET 100% SOUTIEN SCOLAIRE. Le seul projet uniquement dédié à l'aide aux devoirs. Séances les mardis et jeudis soir à la Commanderie."
     }
 ];
