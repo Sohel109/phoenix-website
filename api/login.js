@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,6 +11,21 @@ export default async function handler(req, res) {
         return;
     }
 
+    if (req.method === 'GET') {
+        const { action } = req.query;
+        if (action === 'listUsers') {
+            try {
+                const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=listUsers`);
+                if (!response.ok) return res.status(response.status).json({ success: false });
+                const data = await response.json();
+                return res.status(200).json(data);
+            } catch (error) {
+                return res.status(500).json({ success: false });
+            }
+        }
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -19,8 +35,6 @@ export default async function handler(req, res) {
     if (!login || !password) {
         return res.status(400).json({ success: false, message: 'Identifiants manquants' });
     }
-
-    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
 
     try {
         const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {

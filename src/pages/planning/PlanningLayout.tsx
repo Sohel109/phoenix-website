@@ -50,7 +50,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                         <div className="hidden sm:flex flex-col items-end">
                             <span className="text-sm font-semibold text-white leading-tight">{currentUser.name}</span>
                             <span className="text-xs text-orange-400 capitalize">
-                                {currentUser.role === 'chef_projet' ? 'Chef de Projet' : 'Tuteur'}
+                                {currentUser.role === 'bureau' ? 'Bureau' : currentUser.role === 'chef_projet' ? 'Chef de Projet' : 'Tuteur'}
                             </span>
                         </div>
                         <button

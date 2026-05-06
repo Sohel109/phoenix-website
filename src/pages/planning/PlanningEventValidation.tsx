@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, CheckCircle, Search, ShieldCheck, Users } from 'lucide-react';
+import { Download, CheckCircle, Search, ShieldCheck, Users, Loader2 } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { SPECIAL_EVENTS } from '../../data/planningData';
@@ -9,8 +9,33 @@ export function PlanningEventValidation() {
     const { currentUser, bookings, eventAttendance, toggleEventAttendance } = usePlanning();
     const [selectedEventId, setSelectedEventId] = useState(SPECIAL_EVENTS[0].id);
     const [searchTerm, setSearchTerm] = useState('');
+    const [remoteMembers, setRemoteMembers] = useState<{id: string, name: string}[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const isBureau = currentUser?.role === 'bureau';
+
+    useEffect(() => {
+        if (!isBureau) return;
+        
+        async function fetchMembers() {
+            try {
+                const API_URL = import.meta.env.VITE_API_URL || '';
+                const response = await fetch(`${API_URL}/api/login?action=listUsers`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.users) {
+                        setRemoteMembers(data.users);
+                    }
+                }
+            } catch (error) {
+                console.error("Erreur chargement membres:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        fetchMembers();
+    }, [isBureau]);
 
     if (!currentUser || !isBureau) {
         return (
@@ -24,9 +49,14 @@ export function PlanningEventValidation() {
         );
     }
 
-    // Récupérer tous les membres uniques ayant déjà fait un booking
+    // Récupérer tous les membres uniques (locaux + distants)
     const allMembers = useMemo(() => {
         const membersMap = new Map<string, string>();
+        
+        // Ajouter les membres distants (Google Sheet)
+        remoteMembers.forEach(m => membersMap.set(m.id, m.name));
+        
+        // Ajouter les membres locaux (historique bookings) au cas où
         bookings.forEach(b => {
             if (b.userName && b.userId) {
                 membersMap.set(b.userId, b.userName);
@@ -36,7 +66,7 @@ export function PlanningEventValidation() {
         return Array.from(membersMap.entries())
             .map(([id, name]) => ({ id, name }))
             .sort((a, b) => a.name.localeCompare(b.name));
-    }, [bookings]);
+    }, [bookings, remoteMembers]);
 
     const filteredMembers = allMembers.filter(m => 
         m.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -142,7 +172,12 @@ export function PlanningEventValidation() {
 
             {/* Members List */}
             <div className="space-y-3">
-                {filteredMembers.length === 0 ? (
+                {loading ? (
+                    <div className="flex flex-col items-center py-20">
+                        <Loader2 className="w-10 h-10 text-orange-500 animate-spin mb-4" />
+                        <p className="text-white/40 animate-pulse">Chargement des membres depuis Google Sheet...</p>
+                    </div>
+                ) : filteredMembers.length === 0 ? (
                     <div className="text-center py-12 rounded-3xl bg-white/5 border border-white/10">
                         <Users size={48} className="mx-auto text-white/10 mb-3" />
                         <p className="text-white/30 font-medium">Aucun membre trouvé.</p>
