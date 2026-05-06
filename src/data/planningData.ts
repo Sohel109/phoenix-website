@@ -82,30 +82,48 @@ export async function authenticateUser(loginId: string, password: string): Promi
 
 // ─── Time Slots ───────────────────────────────────────────────────────────────
 
-const STANDARD_DAYS: DayOfWeek[] = ['Lundi', 'Mardi', 'Jeudi', 'Vendredi'];
-
-const dayKey = (day: DayOfWeek) => day.toLowerCase().substring(0, 3);
-
 export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
-    if (project.id === 2) {
-        // ACSE : samedi 14h–17h30
-        return [{
-            id: `slot-${project.id}-sam`,
-            projectId: project.id,
-            day: 'Samedi' as DayOfWeek,
-            startTime: '14:00',
-            endTime: '17:30',
-        }];
+    switch (project.id) {
+        case 4: // ST GAB : 18h00-19h30 Lundi Mardi Jeudi Vendredi
+            return ['Lundi', 'Mardi', 'Jeudi', 'Vendredi'].map(day => ({
+                id: `slot-4-${day.toLowerCase().substring(0,3)}`,
+                projectId: 4, day: day as DayOfWeek, startTime: '18:00', endTime: '19:30'
+            }));
+        case 6: // Izzo : 16h30-18h30 Jeudi
+            return [{ id: 'slot-6-jeu', projectId: 6, day: 'Jeudi', startTime: '16:30', endTime: '18:30' }];
+        case 2: // ACSE : 14h00-17h30 Samedi
+            return [{ id: 'slot-2-sam', projectId: 2, day: 'Samedi', startTime: '14:00', endTime: '17:30' }];
+        case 5: // Apprentis d’Auteuil : 16h00-18h30 Mardi Jeudi
+            return ['Mardi', 'Jeudi'].map(day => ({
+                id: `slot-5-${day.toLowerCase().substring(0,3)}`,
+                projectId: 5, day: day as DayOfWeek, startTime: '16:00', endTime: '18:30'
+            }));
+        case 8: // Arthur Rimbaud : 15h30-18h00 Jeudi
+            return [{ id: 'slot-8-jeu', projectId: 8, day: 'Jeudi', startTime: '15:30', endTime: '18:00' }];
+        case 7: // Jules Ferry : 14h00-16h30 Mercredi (Bi-hebdomadaire)
+            return [{ id: 'slot-7-mer', projectId: 7, day: 'Mercredi', startTime: '14:00', endTime: '16:30' }];
+        case 1: // Supd’OM : 18h00-19h30 Mardi Jeudi
+            return ['Mardi', 'Jeudi'].map(day => ({
+                id: `slot-1-${day.toLowerCase().substring(0,3)}`,
+                projectId: 1, day: day as DayOfWeek, startTime: '18:00', endTime: '19:30'
+            }));
+        case 9: // Roy d’Espagne : 16h00-18h30 Jeudi
+            return [{ id: 'slot-9-jeu', projectId: 9, day: 'Jeudi', startTime: '16:00', endTime: '18:30' }];
+        case 3: // MASSA 13 : Jeudi 18h00-19h30 (Par défaut)
+            return [{ id: 'slot-3-jeu', projectId: 3, day: 'Jeudi', startTime: '18:00', endTime: '19:30' }];
+        default:
+            return [];
     }
-    // Tous les autres : lundi, mardi, jeudi, vendredi 18h–19h30
-    return STANDARD_DAYS.map((day) => ({
-        id: `slot-${project.id}-${dayKey(day)}`,
-        projectId: project.id,
-        day,
-        startTime: '18:00',
-        endTime: '19:30',
-    }));
 });
+
+export function isSlotActiveThisWeek(slotId: string, weekKey: string): boolean {
+    if (slotId.startsWith('slot-7-')) { // Jules Ferry
+        const weekNum = parseInt(weekKey.split('-W')[1], 10);
+        // On considère les semaines paires (ex: W02, W04) comme actives pour Jules Ferry
+        return weekNum % 2 === 0;
+    }
+    return true;
+}
 
 // ─── Slot utilities ───────────────────────────────────────────────────────────
 

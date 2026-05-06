@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER } from '../../data/planningData';
+import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWeek } from '../../data/planningData';
 
 const STATUS_CONFIG = {
     prevu:    { label: 'Prévu',     color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
@@ -24,7 +24,7 @@ export function PlanningHoraire() {
             const project = slot ? projectsData.find(p => p.id === slot.projectId) : null;
             return { booking, slot, project };
         })
-        .filter(e => e.slot && e.project)
+        .filter(e => e.slot && e.project && isSlotActiveThisWeek(e.slot.id, currentWeekKey))
         .sort((a, b) => DAY_ORDER.indexOf(a.slot!.day) - DAY_ORDER.indexOf(b.slot!.day));
 
     return (

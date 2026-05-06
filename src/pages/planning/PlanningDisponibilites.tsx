@@ -5,7 +5,7 @@ import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import {
-    timeSlots, DAY_ORDER, formatWeekLabel, navigateWeek,
+    timeSlots, DAY_ORDER, formatWeekLabel, navigateWeek, isSlotActiveThisWeek
 } from '../../data/planningData';
 
 // ─── Toggle Switch ────────────────────────────────────────────────────────────
@@ -38,12 +38,12 @@ export function PlanningDisponibilites() {
     // Tous les projets disponibles
     const allProjects = projectsData;
 
-    // Slots filtrés par le projet sélectionné (tous par défaut)
+    // Slots filtrés par le projet sélectionné (tous par défaut) + logique bi-hebdomadaire
     const filteredSlots = useMemo(() => {
         return timeSlots
-            .filter(s => activeProjectId === null || s.projectId === activeProjectId)
+            .filter(s => (activeProjectId === null || s.projectId === activeProjectId) && isSlotActiveThisWeek(s.id, currentWeekKey))
             .sort((a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day));
-    }, [activeProjectId]);
+    }, [activeProjectId, currentWeekKey]);
 
     const isBooked = (slotId: string) =>
         bookings.some(b => b.slotId === slotId && b.weekKey === currentWeekKey && b.userId === currentUser.id);
