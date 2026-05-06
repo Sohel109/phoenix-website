@@ -1,9 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, X, ExternalLink } from 'lucide-react';
 
 export function CrowdfundingModal() {
     const [visible, setVisible] = useState(false);
+    const heartRef = useRef<HTMLDivElement>(null);
+
+    const handleClose = () => {
+        if (heartRef.current) {
+            const rect = heartRef.current.getBoundingClientRect();
+            window.dispatchEvent(new CustomEvent('fly-heart', { detail: { startRect: rect, targetId: 'banner-heart' } }));
+        }
+        setVisible(false);
+    };
 
     useEffect(() => {
         // Afficher la modal après un court délai pour laisser la page charger
@@ -46,7 +55,7 @@ export function CrowdfundingModal() {
 
                         {/* Bouton de fermeture absolu */}
                         <button
-                            onClick={() => setVisible(false)}
+                            onClick={handleClose}
                             className="absolute top-4 right-4 p-2 rounded-full bg-white/5 text-white/50 hover:text-white hover:bg-white/10 transition-colors"
                         >
                             <X size={18} />
@@ -55,6 +64,7 @@ export function CrowdfundingModal() {
                         <div className="p-8 flex flex-col items-center text-center">
                             {/* Icône animée */}
                             <motion.div
+                                ref={heartRef}
                                 animate={{ scale: [1, 1.1, 1] }}
                                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                                 className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500/20 to-pink-600/20 border border-orange-500/30 flex items-center justify-center mb-6 shadow-xl shadow-orange-500/20"
@@ -74,7 +84,7 @@ export function CrowdfundingModal() {
                                     href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={() => setVisible(false)}
+                                    onClick={handleClose}
                                     className="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-400 hover:to-pink-500 text-white font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/25"
                                 >
                                     <Heart size={16} fill="white" />
@@ -82,7 +92,7 @@ export function CrowdfundingModal() {
                                     <ExternalLink size={16} className="opacity-70" />
                                 </a>
                                 <button
-                                    onClick={() => setVisible(false)}
+                                    onClick={handleClose}
                                     className="flex-1 py-3 px-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold transition-colors"
                                 >
                                     Plus tard

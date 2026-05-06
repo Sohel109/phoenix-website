@@ -146,6 +146,7 @@ export function BubbleMenu() {
                     href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                     target="_blank"
                     rel="noopener noreferrer"
+                    id="menu-heart"
                     className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
                     whileHover={{ scale: 1.1, rotate: 10 }}
                     whileTap={{ scale: 0.9 }}

@@ -12,6 +12,7 @@ import { Chatbot } from './components/features/Chatbot';
 import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
 import { CrowdfundingBanner } from './components/features/CrowdfundingBanner';
 import { CrowdfundingModal } from './components/features/CrowdfundingModal';
+import { FlyingHeart } from './components/features/FlyingHeart';
 import { ThemeProvider } from './context/ThemeContext';
 import { PlanningProvider, usePlanning } from './context/PlanningContext';
 
@@ -83,6 +84,7 @@ function App() {
             <IOSInstallPrompt />
             <CrowdfundingBanner />
             <CrowdfundingModal />
+            <FlyingHeart />
             <main className="flex-grow">
               <Suspense fallback={<PageLoader />}>
                 <Routes>

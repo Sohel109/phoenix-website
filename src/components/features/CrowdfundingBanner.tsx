@@ -1,10 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, X, ExternalLink, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function CrowdfundingBanner() {
     const [visible, setVisible] = useState(false);
+    const heartRef = useRef<HTMLDivElement>(null);
+
+    const handleClose = () => {
+        if (heartRef.current) {
+            const rect = heartRef.current.getBoundingClientRect();
+            window.dispatchEvent(new CustomEvent('fly-heart', { detail: { startRect: rect, targetId: 'menu-heart' } }));
+        }
+        setVisible(false);
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => setVisible(true), 1500);
@@ -27,7 +36,7 @@ export function CrowdfundingBanner() {
 
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 md:p-5">
                             {/* Icône */}
-                            <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-pink-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                            <div id="banner-heart" ref={heartRef} className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-pink-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
                                 <Heart className="w-5 h-5 text-white" fill="white" />
                             </div>
 
@@ -40,7 +49,7 @@ export function CrowdfundingBanner() {
                                     Chaque don nous aide à accompagner davantage de jeunes à Marseille.{' '}
                                     <Link
                                         to="/transparence"
-                                        onClick={() => setVisible(false)}
+                                        onClick={handleClose}
                                         className="text-purple-400 hover:text-purple-300 underline underline-offset-2 transition-colors inline-flex items-center gap-1"
                                     >
                                         <FileText className="w-3 h-3" />
@@ -55,7 +64,7 @@ export function CrowdfundingBanner() {
                                     href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={() => setVisible(false)}
+                                    onClick={handleClose}
                                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-400 hover:to-pink-500 text-white font-semibold text-sm transition-all shadow-lg shadow-orange-500/25 hover:scale-105 active:scale-95 whitespace-nowrap"
                                 >
                                     <Heart className="w-3.5 h-3.5" fill="white" />
@@ -63,7 +72,7 @@ export function CrowdfundingBanner() {
                                     <ExternalLink className="w-3 h-3 opacity-75" />
                                 </a>
                                 <button
-                                    onClick={() => setVisible(false)}
+                                    onClick={handleClose}
                                     className="flex-shrink-0 p-2 rounded-lg text-gray-500 hover:text-white hover:bg-white/10 transition-colors"
                                     aria-label="Fermer"
                                 >
