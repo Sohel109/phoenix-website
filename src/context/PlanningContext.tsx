@@ -19,6 +19,7 @@ interface PlanningContextType {
     toggleAvailability: (slotId: string, weekKey: string) => void;
     validatePresence: (bookingId: string) => void;
     markAbsent: (bookingId: string) => void;
+    resetValidation: (bookingId: string) => void;
     currentWeekKey: string;
     setCurrentWeekKey: (wk: string) => void;
     unavailableWeeks: string[];
@@ -105,6 +106,13 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             : b));
     }, [bookings, currentUser, persist]);
 
+    const resetValidation = useCallback((bookingId: string) => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
+        persist(bookings.map(b => b.id === bookingId
+            ? { ...b, status: 'prevu' as BookingStatus, validatedBy: undefined, validatedAt: undefined }
+            : b));
+    }, [bookings, currentUser, persist]);
+
     const isWeekUnavailable = useCallback((userId: string, weekKey: string) =>
         unavailableWeeks.includes(`${userId}-${weekKey}`), [unavailableWeeks]);
 
@@ -144,7 +152,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         <PlanningContext.Provider value={{
             currentUser, login, logout,
             bookings, getWeekBookings,
-            toggleAvailability, validatePresence, markAbsent,
+            toggleAvailability, validatePresence, markAbsent, resetValidation,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance

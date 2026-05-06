@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Users, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Users, ShieldCheck, RotateCcw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, formatWeekLabel, navigateWeek } from '../../data/planningData';
 
 export function PlanningValidation() {
-    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent } = usePlanning();
+    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent, resetValidation } = usePlanning();
 
     const isBureau = currentUser?.role === 'bureau';
 
@@ -141,6 +141,14 @@ export function PlanningValidation() {
                                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${isConfirme ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10'}`}>
                                         {isConfirme ? 'Confirmé' : 'Absent'}
                                     </span>
+                                    <motion.button
+                                        whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                                        onClick={() => resetValidation(b.id)}
+                                        className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-colors"
+                                        title="Annuler la validation (remettre en attente)"
+                                    >
+                                        <RotateCcw size={14} />
+                                    </motion.button>
                                 </div>
                             );
                         })}
