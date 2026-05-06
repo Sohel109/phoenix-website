@@ -3,8 +3,10 @@ import type { PlanningUser, Booking, BookingStatus } from '../data/planningData'
 import {
     authenticateUser, loadBookings, saveBookings,
     loadUnavailableWeeks, saveUnavailableWeeks,
+    loadEventAttendance, saveEventAttendance,
     getWeekKey,
 } from '../data/planningData';
+import type { EventAttendance } from '../data/planningData';
 
 // ─── Context type ─────────────────────────────────────────────────────────────
 
@@ -22,6 +24,8 @@ interface PlanningContextType {
     unavailableWeeks: string[];
     toggleWeekUnavailable: (userId: string, weekKey: string) => void;
     isWeekUnavailable: (userId: string, weekKey: string) => boolean;
+    eventAttendance: EventAttendance[];
+    toggleEventAttendance: (userId: string, eventId: string) => void;
 }
 
 const PlanningContext = createContext<PlanningContextType | null>(null);
@@ -40,6 +44,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
 
     const [bookings, setBookings] = useState<Booking[]>(() => loadBookings());
     const [unavailableWeeks, setUnavailableWeeks] = useState<string[]>(() => loadUnavailableWeeks());
+    const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>(() => loadEventAttendance());
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
 
     const persist = useCallback((next: Booking[]) => {
@@ -87,14 +92,14 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     }, [bookings, currentUser, persist]);
 
     const validatePresence = useCallback((bookingId: string) => {
-        if (!currentUser || currentUser.role !== 'chef_projet') return;
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
         persist(bookings.map(b => b.id === bookingId
             ? { ...b, status: 'confirme' as BookingStatus, validatedBy: currentUser.id, validatedAt: new Date().toISOString() }
             : b));
     }, [bookings, currentUser, persist]);
 
     const markAbsent = useCallback((bookingId: string) => {
-        if (!currentUser || currentUser.role !== 'chef_projet') return;
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
         persist(bookings.map(b => b.id === bookingId
             ? { ...b, status: 'absent' as BookingStatus, validatedBy: currentUser.id, validatedAt: new Date().toISOString() }
             : b));
@@ -117,6 +122,24 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         }
     }, [unavailableWeeks, bookings, persist]);
 
+    const toggleEventAttendance = useCallback((userId: string, eventId: string) => {
+        if (!currentUser || currentUser.role !== 'bureau') return;
+        
+        const existing = eventAttendance.find(a => a.userId === userId && a.eventId === eventId);
+        let next: EventAttendance[];
+        
+        if (existing) {
+            next = eventAttendance.map(a => 
+                (a.userId === userId && a.eventId === eventId) ? { ...a, present: !a.present } : a
+            );
+        } else {
+            next = [...eventAttendance, { userId, eventId, present: true }];
+        }
+        
+        setEventAttendance(next);
+        saveEventAttendance(next);
+    }, [eventAttendance, currentUser]);
+
     return (
         <PlanningContext.Provider value={{
             currentUser, login, logout,
@@ -124,6 +147,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             toggleAvailability, validatePresence, markAbsent,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
+            eventAttendance, toggleEventAttendance
         }}>
             {children}
         </PlanningContext.Provider>

@@ -8,21 +8,25 @@ import { timeSlots, formatWeekLabel, navigateWeek } from '../../data/planningDat
 export function PlanningValidation() {
     const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent } = usePlanning();
 
-    if (!currentUser || currentUser.role !== 'chef_projet') {
+    const isBureau = currentUser?.role === 'bureau';
+
+    if (!currentUser || (currentUser.role !== 'chef_projet' && !isBureau)) {
         return (
             <PlanningLayout title="Validation">
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <ShieldCheck size={48} className="text-white/20 mb-4" />
                     <p className="text-white font-bold text-lg">Accès restreint</p>
-                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux Chefs de Projet.</p>
+                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux responsables.</p>
                 </div>
             </PlanningLayout>
         );
     }
 
-    // Slots belonging to this chef's projects
+    // Slots belonging to this chef's projects (or all projects for Bureau)
     const myProjectIds = currentUser.projectIds;
-    const mySlots = timeSlots.filter(s => myProjectIds.includes(s.projectId));
+    const mySlots = isBureau 
+        ? timeSlots 
+        : timeSlots.filter(s => myProjectIds.includes(s.projectId));
     const mySlotIds = new Set(mySlots.map(s => s.id));
 
     // All bookings for this week on my slots

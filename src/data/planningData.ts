@@ -2,7 +2,7 @@ import { projectsData } from './projectsData';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type UserRole = 'tuteur' | 'chef_projet';
+export type UserRole = 'tuteur' | 'chef_projet' | 'bureau';
 
 export interface PlanningUser {
     id: string;
@@ -34,6 +34,19 @@ export interface Booking {
     status: BookingStatus;
     validatedBy?: string;
     validatedAt?: string;
+}
+
+export const SPECIAL_EVENTS = [
+    { id: 'simonu', label: 'SimONU' },
+    { id: 'entretiens', label: 'Entretiens d’Excellence' },
+    { id: 'jedc', label: 'Journée Egalité des Chances' },
+    { id: 'olympiades', label: 'Olympiades' }
+];
+
+export interface EventAttendance {
+    userId: string;
+    eventId: string;
+    present: boolean;
 }
 
 // L'URL directe n'est plus utilisée depuis le front-end pour éviter les problèmes CORS sur Vercel
@@ -108,6 +121,7 @@ export const DAY_ORDER: DayOfWeek[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'V
 
 const BOOKINGS_KEY = 'phoenix_planning_bookings';
 const UNAVAILABLE_KEY = 'phoenix_planning_unavailable';
+const EVENT_ATTENDANCE_KEY = 'phoenix_event_attendance';
 
 export function loadBookings(): Booking[] {
     try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY) ?? '[]'); }
@@ -125,6 +139,15 @@ export function loadUnavailableWeeks(): string[] {
 
 export function saveUnavailableWeeks(weeks: string[]): void {
     localStorage.setItem(UNAVAILABLE_KEY, JSON.stringify(weeks));
+}
+
+export function loadEventAttendance(): EventAttendance[] {
+    try { return JSON.parse(localStorage.getItem(EVENT_ATTENDANCE_KEY) ?? '[]'); }
+    catch { return []; }
+}
+
+export function saveEventAttendance(att: EventAttendance[]): void {
+    localStorage.setItem(EVENT_ATTENDANCE_KEY, JSON.stringify(att));
 }
 
 // ─── Week utilities ───────────────────────────────────────────────────────────

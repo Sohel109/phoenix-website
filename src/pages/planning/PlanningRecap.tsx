@@ -16,13 +16,15 @@ export function PlanningRecap() {
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
     const [selectedProjectId, setSelectedProjectId] = useState<number | 'all'>('all');
 
-    if (!currentUser || currentUser.role !== 'chef_projet') {
+    const isBureau = currentUser?.role === 'bureau';
+
+    if (!currentUser || (currentUser.role !== 'chef_projet' && !isBureau)) {
         return (
             <PlanningLayout title="Récapitulatif">
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <ShieldCheck size={48} className="text-white/20 mb-4" />
                     <p className="text-white font-bold text-lg">Accès restreint</p>
-                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux Chefs de Projet.</p>
+                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux responsables.</p>
                 </div>
             </PlanningLayout>
         );

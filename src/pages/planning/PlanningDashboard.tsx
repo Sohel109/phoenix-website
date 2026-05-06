@@ -13,6 +13,7 @@ interface DashCard {
     gradient: string;
     shadow: string;
     chefOnly?: boolean;
+    bureauOnly?: boolean;
 }
 
 const cards: DashCard[] = [
@@ -58,15 +59,29 @@ const cards: DashCard[] = [
         shadow: 'shadow-cyan-500/30',
         chefOnly: true,
     },
+    {
+        icon: <CheckSquare size={28} />,
+        label: 'Validation Événements',
+        description: 'Présences SimONU, JEDC, Olympiades...',
+        to: '/planning/events',
+        gradient: 'from-indigo-500 to-blue-700',
+        shadow: 'shadow-indigo-500/30',
+        bureauOnly: true,
+    },
 ];
 
 export function PlanningDashboard() {
     const { currentUser } = usePlanning();
     const isChef = currentUser?.role === 'chef_projet';
+    const isBureau = currentUser?.role === 'bureau';
 
     const myProjects = projectsData.filter(p => currentUser?.projectIds.includes(p.id));
 
-    const visibleCards = cards.filter(c => !c.chefOnly || isChef);
+    const visibleCards = cards.filter(c => {
+        if (c.bureauOnly) return isBureau;
+        if (c.chefOnly) return isChef || isBureau;
+        return true;
+    });
 
     return (
         <PlanningLayout showBack={false}>
@@ -80,7 +95,7 @@ export function PlanningDashboard() {
                     <p className="text-white/50 text-sm mb-1">Bienvenue,</p>
                     <h1 className="text-3xl font-black text-white">{currentUser?.name}</h1>
                     <span className="inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-500 to-violet-600 text-white">
-                        {isChef ? '👑 Chef de Projet' : '📚 Tuteur'}
+                        {isBureau ? '💎 Bureau' : isChef ? '👑 Chef de Projet' : '📚 Tuteur'}
                     </span>
                 </motion.div>
 
