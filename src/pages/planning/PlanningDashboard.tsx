@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -47,6 +47,15 @@ const cards: DashCard[] = [
         to: '/planning/validation',
         gradient: 'from-emerald-500 to-teal-600',
         shadow: 'shadow-emerald-500/30',
+        chefOnly: true,
+    },
+    {
+        icon: <FileText size={28} />,
+        label: 'Récapitulatif des heures',
+        description: 'Bilan et export des heures validées',
+        to: '/planning/recap',
+        gradient: 'from-cyan-500 to-blue-600',
+        shadow: 'shadow-cyan-500/30',
         chefOnly: true,
     },
 ];

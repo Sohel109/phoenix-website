@@ -35,16 +35,15 @@ export function PlanningDisponibilites() {
     const weekLabel = formatWeekLabel(currentWeekKey);
     const unavailable = isWeekUnavailable(currentUser.id, currentWeekKey);
 
-    // Projects this user belongs to
-    const myProjects = projectsData.filter(p => currentUser.projectIds.includes(p.id));
+    // Tous les projets disponibles
+    const allProjects = projectsData;
 
-    // Slots filtered by user's projects and optional project filter
+    // Slots filtrés par le projet sélectionné (tous par défaut)
     const filteredSlots = useMemo(() => {
         return timeSlots
-            .filter(s => currentUser.projectIds.includes(s.projectId))
             .filter(s => activeProjectId === null || s.projectId === activeProjectId)
             .sort((a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day));
-    }, [currentUser.projectIds, activeProjectId]);
+    }, [activeProjectId]);
 
     const isBooked = (slotId: string) =>
         bookings.some(b => b.slotId === slotId && b.weekKey === currentWeekKey && b.userId === currentUser.id);
@@ -88,7 +87,7 @@ export function PlanningDisponibilites() {
             </div>
 
             {/* Project filter chips */}
-            {myProjects.length > 1 && (
+            {allProjects.length > 1 && (
                 <div className="flex flex-wrap gap-2 mb-5">
                     <button
                         onClick={() => setActiveProjectId(null)}
@@ -96,7 +95,7 @@ export function PlanningDisponibilites() {
                     >
                         Tous
                     </button>
-                    {myProjects.map(p => (
+                    {allProjects.map(p => (
                         <button
                             key={p.id}
                             onClick={() => setActiveProjectId(p.id)}

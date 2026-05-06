@@ -227,6 +227,36 @@ app.post('/api/chat', async (req, res) => {
     res.json({ answer: answer });
 });
 
+// 🔐 ENDPOINT LOGIN (PROXY VERS GOOGLE APPS SCRIPT)
+app.post('/api/login', async (req, res) => {
+    const { login, password } = req.body;
+
+    if (!login || !password) {
+        return res.status(400).json({ success: false, message: 'Identifiants manquants' });
+    }
+
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
+
+    try {
+        // En local, on utilise node-fetch pour interroger Google Apps Script
+        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ login, password }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+
+        if (!response.ok) {
+            return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
+        }
+
+        const data = await response.json();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Erreur proxy login:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de la connexion' });
+    }
+});
+
 // 📧 ENDPOINT EMAIL (RECRUTEMENT / CONTACT / PARTENARIAT)
 app.post('/api/send-email', async (req, res) => {
     const { category, name, firstName, lastName, email, role, subject, partnershipType, message, fullName } = req.body;

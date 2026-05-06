@@ -36,15 +36,16 @@ export interface Booking {
     validatedAt?: string;
 }
 
-// URL du Web App Google Apps Script (à remplacer par votre URL de déploiement)
-export const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
+// L'URL directe n'est plus utilisée depuis le front-end pour éviter les problèmes CORS sur Vercel
+// export const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
 
 export async function authenticateUser(loginId: string, password: string): Promise<PlanningUser | null> {
     try {
-        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/login`, {
             method: 'POST',
             body: JSON.stringify({ login: loginId, password }),
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' } // text/plain pour éviter l'erreur CORS preflight sur Apps Script
+            headers: { 'Content-Type': 'application/json' }
         });
         
         if (!response.ok) {
@@ -61,7 +62,7 @@ export async function authenticateUser(loginId: string, password: string): Promi
             return null;
         }
     } catch (error) {
-        console.error("Erreur lors de la requête vers Google Apps Script:", error);
+        console.error("Erreur lors de la requête vers l'API de login:", error);
         return null;
     }
 }
