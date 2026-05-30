@@ -21,8 +21,8 @@ export function BubbleMenu() {
         { label: t('nav.projects'), path: '/projets', icon: FolderOpen },
         { label: t('nav.map'), path: '/carte-des-projets', icon: Map },
         { label: t('nav.events'), path: '/evenements', icon: Calendar },
-        { label: t('nav.partners'), path: '/partenaires', icon: Users, hideOnMobile: true },
-        { label: t('nav.documents'), path: '/documents', icon: FileText, hideOnMobile: true },
+        { label: t('nav.partners'), path: '/partenaires', icon: Users },
+        { label: t('nav.documents'), path: '/documents', icon: FileText },
         { label: t('nav.contact'), path: '/contact', icon: Mail },
         { label: 'Planning', path: '/planning', icon: CalendarCheck },
     ];
@@ -54,10 +54,10 @@ export function BubbleMenu() {
     const isDarkStyle = dockTheme === 'dark';
 
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000] max-w-[95vw] md:max-w-none">
             <motion.div
                 className={clsx(
-                    "flex items-center gap-2 p-2 rounded-full shadow-2xl ring-1 transition-colors duration-500",
+                    "flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 rounded-full shadow-2xl ring-1 transition-colors duration-500",
                     isDarkStyle
                         ? "bg-white/10 backdrop-blur-xl border border-white/20 ring-black/5"
                         : "bg-white/80 backdrop-blur-xl border border-white/40 ring-black/5 shadow-black/5"
@@ -76,14 +76,11 @@ export function BubbleMenu() {
                             to={item.path}
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
-                            className={clsx(
-                                "relative",
-                                item.hideOnMobile && "hidden md:block"
-                            )}
+                            className="relative"
                         >
                             <motion.div
                                 className={clsx(
-                                    "relative z-10 flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full transition-colors duration-300",
+                                    "relative z-10 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-full transition-colors duration-300",
                                     isActive
                                         ? "text-white" // Active is always white text (on orange bg)
                                         : isDarkStyle
@@ -96,7 +93,7 @@ export function BubbleMenu() {
                                 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                                <item.icon size={18} strokeWidth={2} className="md:w-5 md:h-5" />
+                                <item.icon strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5" />
 
                                 {/* Active State Dot - Only if NOT hovered (optional, keeping minimal) */}
                                 {isActive && (
@@ -137,7 +134,7 @@ export function BubbleMenu() {
 
                 {/* Separator */}
                 <div className={clsx(
-                    "w-px h-8 mx-1 transition-colors duration-500",
+                    "w-px h-6 md:h-8 mx-0.5 md:mx-1 transition-colors duration-500",
                     isDarkStyle ? "bg-white/10" : "bg-black/10"
                 )} />
 
@@ -147,11 +144,11 @@ export function BubbleMenu() {
                     target="_blank"
                     rel="noopener noreferrer"
                     id="menu-heart"
-                    className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
+                    className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
                     whileHover={{ scale: 1.1, rotate: 10 }}
                     whileTap={{ scale: 0.9 }}
                 >
-                    <Heart size={18} fill="currentColor" className="md:w-5 md:h-5" />
+                    <Heart fill="currentColor" className="w-4 h-4 md:w-5 md:h-5" />
                 </motion.a>
             </motion.div>
         </div>
