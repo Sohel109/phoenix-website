@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Home, FolderOpen, Calendar, Users, FileText, Mail, Heart, Map, CalendarCheck } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
@@ -56,6 +56,7 @@ export function BubbleMenu() {
     return (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000] max-w-[95vw] md:max-w-none">
             <motion.div
+                layout
                 className={clsx(
                     "flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 rounded-full shadow-2xl ring-1 transition-colors duration-500",
                     isDarkStyle
@@ -76,30 +77,42 @@ export function BubbleMenu() {
                             to={item.path}
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
-                            className="relative"
+                            className="relative flex items-center"
                         >
                             <motion.div
+                                layout
                                 className={clsx(
-                                    "relative z-10 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-full transition-colors duration-300",
+                                    "relative z-10 flex items-center justify-center h-8 md:h-12 rounded-full transition-colors duration-300 gap-1.5 md:gap-2",
                                     isActive
                                         ? "text-white" // Active is always white text (on orange bg)
                                         : isDarkStyle
                                             ? "text-gray-200 hover:text-white"
-                                            : "text-gray-500 hover:text-black"
+                                            : "text-gray-500 hover:text-black",
+                                    hoveredIndex === index ? "w-auto px-3 md:px-4" : "w-8 md:w-12 px-0"
                                 )}
-                                animate={{
-                                    scale: hoveredIndex === index ? 1.2 : 1,
-                                    y: hoveredIndex === index ? -4 : 0,
-                                }}
-                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                transition={{ type: "spring", stiffness: 350, damping: 30 }}
                             >
-                                <item.icon strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5" />
+                                <item.icon strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
 
-                                {/* Active State Dot - Only if NOT hovered (optional, keeping minimal) */}
-                                {isActive && (
+                                <AnimatePresence initial={false}>
+                                    {hoveredIndex === index && (
+                                        <motion.span
+                                            initial={{ opacity: 0, width: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, width: "auto", scale: 1 }}
+                                            exit={{ opacity: 0, width: 0, scale: 0.8 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="text-xs md:text-sm font-bold whitespace-nowrap overflow-hidden pr-0.5"
+                                        >
+                                            {item.label}
+                                        </motion.span>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Active State Dot - Only if NOT hovered */}
+                                {isActive && hoveredIndex !== index && (
                                     <motion.div
                                         layoutId="active-dot"
-                                        className="absolute -bottom-1 w-1 h-1 bg-white rounded-full"
+                                        className="absolute -bottom-1 w-1 h-1 bg-white rounded-full left-1/2 -translate-x-1/2"
                                         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
@@ -113,7 +126,7 @@ export function BubbleMenu() {
                                         "absolute inset-0 rounded-full z-0",
                                         isDarkStyle ? "bg-white/20" : "bg-black/5"
                                     )}
-                                    initial={{ borderRadius: 16 }}
+                                    initial={{ borderRadius: 24 }}
                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                 />
                             )}

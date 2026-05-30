@@ -84,14 +84,28 @@ export function Home() {
                         {t('partners.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">{t('partners.titleHighlight')}</span>
                     </h2>
 
-                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 mb-12 opacity-80 dark:opacity-100">
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/om.png" alt="Olympique de Marseille" className="h-20 md:h-24 hover:scale-110 transition-all duration-300 object-contain" /></div>
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/decathlon.png" alt="Decathlon" className="h-14 md:h-20 hover:scale-110 transition-all duration-300 object-contain" /></div>
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/deloitte.jpg" alt="Deloitte" className="h-10 md:h-12 hover:scale-110 transition-all duration-300 object-contain mix-blend-multiply" /></div>
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/apprentis-auteuil.png" alt="Apprentis d'Auteuil" className="h-16 md:h-20 hover:scale-110 transition-all duration-300 object-contain mix-blend-multiply" /></div>
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/lydia.png" alt="Lydia" className="h-10 md:h-12 hover:scale-110 transition-all duration-300 object-contain" /></div>
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/darty.png" alt="Darty" className="h-10 md:h-12 hover:scale-110 transition-all duration-300 object-contain" /></div>
-                        <div className="bg-white dark:bg-white/90 p-2 rounded-lg"><img src="/partners/kedge.png" alt="Kedge Business School" className="h-16 md:h-24 hover:scale-110 transition-all duration-300 object-contain" /></div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-6 justify-items-center items-center mb-12">
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/om.png" alt="Olympique de Marseille" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/decathlon.png" alt="Decathlon" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/deloitte.jpg" alt="Deloitte" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/apprentis-auteuil.png" alt="Apprentis d'Auteuil" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/lydia.png" alt="Lydia" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/darty.png" alt="Darty" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
+                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
+                            <img src="/partners/kedge.png" alt="Kedge Business School" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                        </div>
                     </div>
 
                     <Link to="/partenaires" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-primary-dark transition-colors">
