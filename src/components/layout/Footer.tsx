@@ -14,9 +14,9 @@ export function Footer() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <img
-                                src="/logo-badge.jpg"
+                                src="/logo-phoenix-footer-new.png"
                                 alt="Phoenix EDC Logo"
-                                className="w-12 h-12 object-contain bg-white rounded-full shadow-lg"
+                                className="w-16 h-16 object-contain"
                             />
                             <span className="font-black text-2xl tracking-tight">
                                 Phoenix <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">EDC</span>
