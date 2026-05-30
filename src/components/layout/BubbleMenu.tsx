@@ -15,6 +15,7 @@ export function BubbleMenu() {
     const { theme } = useTheme();
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [isHeroSection, setIsHeroSection] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const menuItems = [
         { label: t('nav.home'), path: '/', icon: Home },
@@ -26,6 +27,14 @@ export function BubbleMenu() {
         { label: t('nav.contact'), path: '/contact', icon: Mail },
         { label: 'Planning', path: '/planning', icon: CalendarCheck },
     ];
+
+    // Detect mobile viewport
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Dynamic Theme Detection
     useEffect(() => {
@@ -69,14 +78,18 @@ export function BubbleMenu() {
             >
                 {/* Navigation Items */}
                 {menuItems.map((item, index) => {
-                    const isActive = location.pathname === item.path;
+                    const isActive = item.path === '/'
+                        ? location.pathname === '/'
+                        : location.pathname.startsWith(item.path);
+
+                    const showHover = hoveredIndex === index && !isMobile;
 
                     return (
                         <Link
                             key={item.path}
                             to={item.path}
-                            onMouseEnter={() => setHoveredIndex(index)}
-                            onMouseLeave={() => setHoveredIndex(null)}
+                            onMouseEnter={() => !isMobile && setHoveredIndex(index)}
+                            onMouseLeave={() => !isMobile && setHoveredIndex(null)}
                             className="relative flex items-center"
                         >
                             <motion.div
@@ -88,14 +101,14 @@ export function BubbleMenu() {
                                         : isDarkStyle
                                             ? "text-gray-200 hover:text-white"
                                             : "text-gray-500 hover:text-black",
-                                    hoveredIndex === index ? "w-auto px-3 md:px-4" : "w-8 md:w-12 px-0"
+                                    showHover ? "w-auto px-3 md:px-4" : "w-8 md:w-12 px-0"
                                 )}
                                 transition={{ type: "spring", stiffness: 350, damping: 30 }}
                             >
                                 <item.icon strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
 
                                 <AnimatePresence initial={false}>
-                                    {hoveredIndex === index && (
+                                    {showHover && (
                                         <motion.span
                                             initial={{ opacity: 0, width: 0, scale: 0.8 }}
                                             animate={{ opacity: 1, width: "auto", scale: 1 }}
@@ -108,8 +121,15 @@ export function BubbleMenu() {
                                     )}
                                 </AnimatePresence>
 
-                                {/* Active State Dot - Only if NOT hovered */}
-                                {isActive && hoveredIndex !== index && (
+                                {/* Active State Dot - Only if NOT hovered and not mobile */}
+                                {isActive && !showHover && isMobile && (
+                                    <motion.div
+                                        layoutId="active-dot"
+                                        className="absolute -bottom-1 w-1 h-1 bg-white rounded-full left-1/2 -translate-x-1/2"
+                                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                {isActive && hoveredIndex !== index && !isMobile && (
                                     <motion.div
                                         layoutId="active-dot"
                                         className="absolute -bottom-1 w-1 h-1 bg-white rounded-full left-1/2 -translate-x-1/2"
@@ -119,7 +139,7 @@ export function BubbleMenu() {
                             </motion.div>
 
                             {/* Hover Background Bubble */}
-                            {hoveredIndex === index && (
+                            {showHover && (
                                 <motion.div
                                     layoutId="hover-bubble"
                                     className={clsx(

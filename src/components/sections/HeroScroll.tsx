@@ -66,28 +66,28 @@ export function HeroScroll() {
                 {/* 1. SCENE CONTENT: TYPOGRAPHY HERO (START) */}
                 <motion.div 
                     style={{ opacity: heroOpacity, y: heroY }}
-                    className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-6 max-w-6xl mx-auto pointer-events-none"
+                    className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-6 max-w-6xl mx-auto -mt-8 md:mt-0 pointer-events-none"
                 >
-                    <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-8 tracking-wider uppercase">
+                    <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-4 md:mb-8 tracking-wider uppercase">
                         {t('hero.since')}
                     </div>
                     
-                    <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase mb-8 select-none">
+                    <h1 className="text-4xl sm:text-7xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase mb-4 md:mb-8 select-none">
                         {t('hero.title1')} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-500 to-violet-600">
                             {t('hero.title2')}
                         </span>
                     </h1>
                     
-                    <p className="text-lg md:text-2xl font-light text-white/50 max-w-2xl leading-relaxed tracking-wide mb-12">
+                    <p className="text-sm sm:text-lg md:text-2xl font-light text-white/50 max-w-2xl leading-relaxed tracking-wide mb-6 md:mb-12">
                         L'association de KEDGE Business School engagée pour l'égalité des chances et l'ouverture culturelle des jeunes marseillais.
                     </p>
                     
                     {/* CTA Buttons in Hero View */}
-                    <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pointer-events-auto">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center pointer-events-auto">
                         <Link
                             to="/projets"
-                            className="group px-8 py-4 bg-white text-black rounded-full font-bold text-base hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl flex items-center gap-2"
+                            className="group px-6 py-3.5 sm:px-8 sm:py-4 bg-white text-black rounded-full font-bold text-sm sm:text-base hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl flex items-center gap-2"
                         >
                             {t('hero.cta1')}
                             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -95,7 +95,7 @@ export function HeroScroll() {
 
                         <Link
                             to="/contact"
-                            className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-base hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200"
+                            className="px-6 py-3.5 sm:px-8 sm:py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-sm sm:text-base hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200"
                         >
                             {t('hero.cta2')}
                         </Link>
@@ -104,7 +104,7 @@ export function HeroScroll() {
                     {/* Bouncing Scroll Indicator */}
                     <motion.div 
                         style={{ opacity: scrollIndicatorOpacity }}
-                        className="absolute bottom-12 flex flex-col items-center gap-2 text-white/30 text-xs font-bold tracking-widest uppercase cursor-pointer"
+                        className="absolute bottom-24 md:bottom-12 flex flex-col items-center gap-2 text-white/30 text-xs font-bold tracking-widest uppercase cursor-pointer"
                         animate={{ y: [0, 10, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
