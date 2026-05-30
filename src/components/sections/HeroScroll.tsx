@@ -66,7 +66,7 @@ export function HeroScroll() {
                 {/* 1. SCENE CONTENT: TYPOGRAPHY HERO (START) */}
                 <motion.div 
                     style={{ opacity: heroOpacity, y: heroY }}
-                    className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-6 max-w-6xl mx-auto -mt-8 md:mt-0 pointer-events-none"
+                    className="absolute inset-0 z-20 flex flex-col justify-start md:justify-center items-center text-center px-6 max-w-6xl mx-auto pt-24 md:pt-0 pointer-events-none"
                 >
                     <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-4 md:mb-8 tracking-wider uppercase">
                         {t('hero.since')}
@@ -104,7 +104,7 @@ export function HeroScroll() {
                     {/* Bouncing Scroll Indicator */}
                     <motion.div 
                         style={{ opacity: scrollIndicatorOpacity }}
-                        className="absolute bottom-24 md:bottom-12 flex flex-col items-center gap-2 text-white/30 text-xs font-bold tracking-widest uppercase cursor-pointer"
+                        className="absolute bottom-32 md:bottom-12 flex flex-col items-center gap-2 text-white/30 text-xs font-bold tracking-widest uppercase cursor-pointer"
                         animate={{ y: [0, 10, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
