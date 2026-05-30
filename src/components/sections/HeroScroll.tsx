@@ -68,18 +68,18 @@ export function HeroScroll() {
                     style={{ opacity: heroOpacity, y: heroY }}
                     className="absolute inset-0 z-20 flex flex-col justify-start md:justify-center items-center text-center px-6 max-w-6xl mx-auto pt-24 md:pt-0 pointer-events-none"
                 >
-                    <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-4 md:mb-8 tracking-wider uppercase">
+                    <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-6 md:mb-8 tracking-wider uppercase">
                         {t('hero.since')}
                     </div>
                     
-                    <h1 className="text-4xl sm:text-7xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase mb-4 md:mb-8 select-none">
+                    <h1 className="text-4xl sm:text-7xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase mb-6 md:mb-8 select-none">
                         {t('hero.title1')} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-500 to-violet-600">
                             {t('hero.title2')}
                         </span>
                     </h1>
                     
-                    <p className="text-sm sm:text-lg md:text-2xl font-light text-white/50 max-w-2xl leading-relaxed tracking-wide mb-6 md:mb-12">
+                    <p className="text-sm sm:text-lg md:text-2xl font-light text-white/50 max-w-2xl leading-relaxed tracking-wide mb-8 md:mb-12">
                         L'association de KEDGE Business School engagée pour l'égalité des chances et l'ouverture culturelle des jeunes marseillais.
                     </p>
                     
