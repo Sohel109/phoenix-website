@@ -144,80 +144,66 @@ function getTailoredContext(userQuestion) {
 // 🧠 COGNITIVE AI LOGIC
 // ==========================================
 async function callCognitiveAI(question) {
-    const token = process.env.HF_API_TOKEN;
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+        console.error("No GEMINI_API_KEY in environment");
+        return "Je suis Teymou. Désolé, mon module d'intelligence artificielle n'est pas configuré.";
+    }
 
-    // 🔥 GÉNÉRATION DU CONTEXTE SUR-MESURE
     const dynamicContext = getTailoredContext(question);
-    console.log("🧠 Contexte généré :", dynamicContext.split('\n')[3] || "Général");
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${key}`;
+    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${key}`;
 
-    // 1. TENTATIVE PRINCIPALE : MIXTRAL (Art&Fakt)
-    // Note : On remet le Header Authorization car sans ça il retourne 401 chez l'user aussi finalement. 
-    // L'astuce "Gemma Token" est appliquée au fallback.
-    try {
-        const hfRes = await fetch('https://router.huggingface.co/hf-inference/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Token dynamique
-            },
-            body: JSON.stringify({
-                inputs: `${dynamicContext}\n\nQuestion: ${question}\nRéponse:`,
-                parameters: { max_new_tokens: 350, temperature: 0.5 } // Temp basse pour fidélité
-            })
-        });
-
-        if (hfRes.ok) {
-            const data = await hfRes.json();
-            let text = data[0]?.generated_text || '';
-            if (text.includes('Réponse:')) text = text.split('Réponse:')[1].trim();
-            if (text.length > 2) return text;
-        }
-    } catch (e) { console.log('Mixtral Fail'); }
-
-    // 2. FALLBACK : GEMINI (Clé Art&Fakt = Gemma)
-    if (process.env.GEMINI_API_KEY) {
-        try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${process.env.GEMINI_API_KEY}`;
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: `${dynamicContext}\nQuestion: ${question}` }] }] })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) return text.trim();
+    const requestBody = {
+        systemInstruction: {
+            parts: [{ text: dynamicContext }]
+        },
+        contents: [
+            {
+                role: "user",
+                parts: [{ text: question }]
             }
-        } catch (e) { }
-    }
+        ],
+        generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 450
+        }
+    };
 
-    // 3. FALLBACK CURL
-    // 3. FALLBACK ULTIME : SYSTEM CURL (POLLINATIONS)
-    try {
-        const { exec } = await import('child_process');
-
-        // On prépare un prompt court avec le contexte CRUCIAL seulement
-        const relevantPart = dynamicContext.includes("CRUCIAL") ? dynamicContext.split("CRUCIAL")[1].split("INSTRUCTION")[0] : "";
-        const finalPrompt = `Tu es Teymou. ${relevantPart}. Question: ${question}. Réponse courte:`;
-
-        const safePrompt = finalPrompt.replace(/[^a-zA-Z0-9 àâéèêëîïôùûüçÀÂÉÈÊËÎÏÔÙÛÜÇ?.,!':/-]/g, "");
-        const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}`;
-
-        console.log("☠️ Fallback Smart Curl...");
-
-        return new Promise((resolve) => {
-            exec(`curl -s --max-time 5 "${url}"`, (err, stdout) => {
-                if (!err && stdout && stdout.length > 5 && !stdout.includes("Error")) {
-                    resolve(stdout.trim());
-                } else {
-                    resolve("Je suis Teymou. Je note votre question, mais ma connexion est instable. Reformulez ?");
-                }
-            });
+    async function makeApiCall(apiUrl) {
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
         });
-    } catch (e) {
-        return "Je suis Teymou. (Mode hors ligne)";
+        if (res.ok) {
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) return text.trim();
+        } else {
+            console.error(`Gemini call failed on model with status: ${res.status}`);
+        }
+        return null;
     }
+
+    try {
+        // 1. Primary Model: Gemini 3.5 Flash
+        const primaryAnswer = await makeApiCall(url);
+        if (primaryAnswer) return primaryAnswer;
+    } catch (e) {
+        console.error('Primary Gemini call failed:', e);
+    }
+
+    try {
+        // 2. Fallback Model: Gemini Flash Latest
+        console.log("Attempting fallback model...");
+        const fallbackAnswer = await makeApiCall(fallbackUrl);
+        if (fallbackAnswer) return fallbackAnswer;
+    } catch (e) {
+        console.error('Fallback Gemini call failed:', e);
+    }
+
+    return "Je suis Teymou. Je note votre question, mais ma connexion est instable. Reformulez ?";
 }
 
 app.post('/api/chat', async (req, res) => {

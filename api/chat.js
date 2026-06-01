@@ -7,7 +7,7 @@ Ton ton est : Chaleureux, informatif, bienveillant et un peu ludique (tu es un p
 Tu ne dois jamais inventer d'informations. Si tu ne sais pas, dis-le poliment.
 
 --- VUE D'ENSEMBLE ---
-Phoenix EDC est une association étudiante d'intérêt général (loi 1901) créée en 2011 (racines en 1998).
+Phoenix EDC é est une association étudiante d'intérêt général (loi 1901) créée en 2011 (racines en 1998).
 Mission : Promouvoir l'égalité des chances, le tutorat et l'ouverture culturelle pour les jeunes des Quartiers Prioritaires de la Ville (QPV) de Marseille.
 Chiffres clés : ~140 bénévoles (étudiants Kedge), ~300 jeunes accompagnés par an.
 
@@ -56,80 +56,82 @@ Sois concis mais complet.
 `;
 
 function getTailoredContext(userQuestion) {
-    // Retourne tout le contexte. Llama 3 est assez intelligent pour trier.
     return PHOENIX_CONTEXT;
 }
 
-
 async function callCognitiveAI(question, history = []) {
-    const token = process.env.HF_API_TOKEN;
-    const dynamicContext = getTailoredContext(question);
-
-    // Build Prompt with History
-    let fullPrompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${dynamicContext}<|eot_id|>`;
-
-    // Add recent history (limit to last 10 messages to avoid token overflow)
-    const recentHistory = history.slice(-10);
-
-    recentHistory.forEach(msg => {
-        const role = msg.sender === 'bot' ? 'assistant' : 'user';
-        fullPrompt += `<|start_header_id|>${role}<|end_header_id|>\n\n${msg.text}<|eot_id|>`;
-    });
-
-    // Add current question
-    fullPrompt += `<|start_header_id|>user<|end_header_id|>\n\n${question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n`;
-
-    // Try Llama 3.1 8B (Free, Fast, Smart)
-    try {
-        const hfRes = await fetch('https://router.huggingface.co/hf-inference/models/meta-llama/Meta-Llama-3.1-8B-Instruct', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                // Llama 3 Chat Template
-                inputs: fullPrompt,
-                parameters: {
-                    max_new_tokens: 350,
-                    temperature: 0.6,
-                    return_full_text: false
-                }
-            })
-        });
-
-        if (hfRes.ok) {
-            const data = await hfRes.json();
-            let text = data[0]?.generated_text || '';
-            if (text.includes('Réponse:')) text = text.split('Réponse:')[1].trim();
-            if (text.length > 2) return text;
-        }
-    } catch (e) {
-        console.log('Llama Fail');
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+        console.error("No GEMINI_API_KEY in environment");
+        return "Je suis Teymou. Désolé, mon module d'intelligence artificielle n'est pas configuré.";
     }
 
-    // Fallback to Gemini
-    if (process.env.GEMINI_API_KEY) {
-        try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${process.env.GEMINI_API_KEY}`;
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: `${dynamicContext}\\nQuestion: ${question}` }]
-                    }]
-                })
-            });
+    const dynamicContext = getTailoredContext(question);
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${key}`;
+    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${key}`;
 
-            if (res.ok) {
-                const data = await res.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) return text.trim();
-            }
-        } catch (e) {
-            console.log('Gemini Fail');
+    // Format chat history for Gemini API (user / model roles)
+    const contents = [];
+    if (history && Array.isArray(history)) {
+        const recentHistory = history.slice(-10); // Limit to last 10 messages
+        recentHistory.forEach(msg => {
+            const role = msg.sender === 'bot' ? 'model' : 'user';
+            contents.push({
+                role: role,
+                parts: [{ text: msg.text }]
+            });
+        });
+    }
+
+    // Add current user question
+    contents.push({
+        role: "user",
+        parts: [{ text: question }]
+    });
+
+    const requestBody = {
+        systemInstruction: {
+            parts: [{ text: dynamicContext }]
+        },
+        contents: contents,
+        generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 450
         }
+    };
+
+    // Helper function for the REST call
+    async function makeApiCall(apiUrl) {
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) return text.trim();
+        } else {
+            console.error(`Gemini call failed with status: ${res.status} ${res.statusText}`);
+        }
+        return null;
+    }
+
+    try {
+        // 1. Primary Model: Gemini 3.5 Flash
+        const primaryAnswer = await makeApiCall(url);
+        if (primaryAnswer) return primaryAnswer;
+    } catch (e) {
+        console.error('Primary Gemini model failed:', e);
+    }
+
+    try {
+        // 2. Fallback Model: Gemini Flash Latest
+        console.log("Attempting fallback model...");
+        const fallbackAnswer = await makeApiCall(fallbackUrl);
+        if (fallbackAnswer) return fallbackAnswer;
+    } catch (e) {
+        console.error('Fallback Gemini model failed:', e);
     }
 
     return "Je suis Teymou. Je note votre question, mais ma connexion est instable. Reformulez ?";
