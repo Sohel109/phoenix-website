@@ -86,13 +86,27 @@ function doPost(e) {
     try {
       var sheet = getOrCreateSheet("Bookings", ["id", "slotId", "userId", "userName", "weekKey", "status", "validatedBy", "validatedAt"]);
       var data = sheet.getDataRange().getValues();
-      for (var i = 1; i < data.length; i++) {
-        if (data[i][0] === postData.id) {
+      var deletedCount = 0;
+      
+      // On parcourt à l'envers pour pouvoir supprimer plusieurs lignes sans décalage d'index
+      for (var i = data.length - 1; i >= 1; i--) {
+        var rowId = data[i][0] ? data[i][0].toString() : "";
+        var rowSlotId = data[i][1] ? data[i][1].toString() : "";
+        var rowUserId = data[i][2] ? data[i][2].toString() : "";
+        var rowWeekKey = data[i][4] ? data[i][4].toString() : "";
+        
+        var matchesId = postData.id && rowId === postData.id.toString();
+        var matchesTriplet = postData.userId && postData.slotId && postData.weekKey && 
+                             rowUserId === postData.userId.toString() && 
+                             rowSlotId === postData.slotId.toString() && 
+                             rowWeekKey === postData.weekKey.toString();
+                             
+        if (matchesId || matchesTriplet) {
           sheet.deleteRow(i + 1);
-          break;
+          deletedCount++;
         }
       }
-      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      return ContentService.createTextOutput(JSON.stringify({ success: true, deletedCount: deletedCount }))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (err) {
       return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))

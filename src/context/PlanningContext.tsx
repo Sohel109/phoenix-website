@@ -98,7 +98,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         );
         if (existing) {
             setBookings(prev => prev.filter(b => b.id !== existing.id));
-            const success = await deleteBookingApi(existing.id);
+            const success = await deleteBookingApi(existing);
             if (!success) {
                 // Revert in case of failure
                 setBookings(prev => [...prev, existing]);
@@ -205,7 +205,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             if (!isCurrentlyUnavailable) {
                 const bookingsToDelete = originalBookings.filter(b => b.userId === userId && b.weekKey === weekKey);
                 for (const b of bookingsToDelete) {
-                    await deleteBookingApi(b.id);
+                    await deleteBookingApi(b);
                 }
             }
         }

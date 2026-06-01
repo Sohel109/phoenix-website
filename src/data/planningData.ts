@@ -240,12 +240,18 @@ export async function syncBookingApi(booking: Booking): Promise<boolean> {
     }
 }
 
-export async function deleteBookingApi(id: string): Promise<boolean> {
+export async function deleteBookingApi(booking: Booking): Promise<boolean> {
     try {
         const API_URL = import.meta.env.VITE_API_URL || '';
         const response = await fetch(`${API_URL}/api/planning`, {
             method: 'POST',
-            body: JSON.stringify({ action: 'deleteBooking', id }),
+            body: JSON.stringify({ 
+                action: 'deleteBooking', 
+                id: booking.id,
+                userId: booking.userId,
+                slotId: booking.slotId,
+                weekKey: booking.weekKey
+            }),
             headers: { 'Content-Type': 'application/json' }
         });
         return response.ok;
