@@ -201,3 +201,86 @@ export function navigateWeek(weekKey: string, direction: 'prev' | 'next'): strin
     start.setDate(start.getDate() + (direction === 'next' ? 7 : -7));
     return getWeekKey(start);
 }
+
+// ─── API Sync Utilities ───────────────────────────────────────────────────────
+
+export async function fetchPlanningData(): Promise<{ bookings: Booking[], unavailableWeeks: string[], eventAttendance: EventAttendance[] } | null> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                return {
+                    bookings: data.bookings || [],
+                    unavailableWeeks: data.unavailableWeeks || [],
+                    eventAttendance: data.eventAttendance || []
+                };
+            }
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching planning data:", error);
+        return null;
+    }
+}
+
+export async function syncBookingApi(booking: Booking): Promise<boolean> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'syncBooking', booking }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.ok;
+    } catch (error) {
+        console.error("Error syncing booking:", error);
+        return false;
+    }
+}
+
+export async function deleteBookingApi(id: string): Promise<boolean> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'deleteBooking', id }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.ok;
+    } catch (error) {
+        console.error("Error deleting booking:", error);
+        return false;
+    }
+}
+
+export async function toggleWeekUnavailableApi(userId: string, weekKey: string, isUnavailable: boolean): Promise<boolean> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'toggleWeekUnavailable', userId, weekKey, isUnavailable }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.ok;
+    } catch (error) {
+        console.error("Error toggling week unavailability:", error);
+        return false;
+    }
+}
+
+export async function syncEventAttendanceApi(attendance: EventAttendance): Promise<boolean> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'syncEventAttendance', attendance }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.ok;
+    } catch (error) {
+        console.error("Error syncing event attendance:", error);
+        return false;
+    }
+}

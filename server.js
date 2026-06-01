@@ -213,6 +213,41 @@ app.post('/api/chat', async (req, res) => {
     res.json({ answer: answer });
 });
 
+// 🗓️ ENDPOINT PLANNING (PROXY VERS GOOGLE APPS SCRIPT)
+app.get('/api/planning', async (req, res) => {
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
+    try {
+        const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getPlanningData`);
+        if (!response.ok) {
+            return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
+        }
+        const data = await response.json();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Erreur proxy get planning:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de la récupération du planning' });
+    }
+});
+
+app.post('/api/planning', async (req, res) => {
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
+    try {
+        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(req.body),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        if (!response.ok) {
+            return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
+        }
+        const data = await response.json();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Erreur proxy post planning:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de la mise à jour du planning' });
+    }
+});
+
 // 🔐 ENDPOINT LOGIN (PROXY VERS GOOGLE APPS SCRIPT)
 app.post('/api/login', async (req, res) => {
     const { login, password } = req.body;

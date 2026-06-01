@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { PlanningUser, Booking, BookingStatus } from '../data/planningData';
 import {
-    authenticateUser, loadBookings, saveBookings,
-    loadUnavailableWeeks, saveUnavailableWeeks,
-    loadEventAttendance, saveEventAttendance,
+    authenticateUser,
     getWeekKey,
+    fetchPlanningData,
+    syncBookingApi,
+    deleteBookingApi,
+    toggleWeekUnavailableApi,
+    syncEventAttendanceApi,
 } from '../data/planningData';
 import type { EventAttendance } from '../data/planningData';
 
@@ -43,15 +46,34 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         } catch { return null; }
     });
 
-    const [bookings, setBookings] = useState<Booking[]>(() => loadBookings());
-    const [unavailableWeeks, setUnavailableWeeks] = useState<string[]>(() => loadUnavailableWeeks());
-    const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>(() => loadEventAttendance());
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [unavailableWeeks, setUnavailableWeeks] = useState<string[]>([]);
+    const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
+    const [loadingData, setLoadingData] = useState(false);
 
-    const persist = useCallback((next: Booking[]) => {
-        setBookings(next);
-        saveBookings(next);
-    }, []);
+    // Charger les données de planning depuis le Google Sheet dès que l'utilisateur est connecté
+    useEffect(() => {
+        if (!currentUser) {
+            setBookings([]);
+            setUnavailableWeeks([]);
+            setEventAttendance([]);
+            return;
+        }
+
+        async function loadPlanningData() {
+            setLoadingData(true);
+            const data = await fetchPlanningData();
+            if (data) {
+                setBookings(data.bookings);
+                setUnavailableWeeks(data.unavailableWeeks);
+                setEventAttendance(data.eventAttendance);
+            }
+            setLoadingData(false);
+        }
+
+        loadPlanningData();
+    }, [currentUser]);
 
     const login = useCallback(async (loginId: string, password: string): Promise<boolean> => {
         const user = await authenticateUser(loginId, password);
@@ -72,13 +94,18 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         bookings.filter(b => b.weekKey === weekKey && (userId ? b.userId === userId : true)),
         [bookings]);
 
-    const toggleAvailability = useCallback((slotId: string, weekKey: string) => {
+    const toggleAvailability = useCallback(async (slotId: string, weekKey: string) => {
         if (!currentUser) return;
         const existing = bookings.find(
             b => b.slotId === slotId && b.weekKey === weekKey && b.userId === currentUser.id
         );
         if (existing) {
-            persist(bookings.filter(b => b.id !== existing.id));
+            setBookings(prev => prev.filter(b => b.id !== existing.id));
+            const success = await deleteBookingApi(existing.id);
+            if (!success) {
+                // Revert in case of failure
+                setBookings(prev => [...prev, existing]);
+            }
         } else {
             const newBooking: Booking = {
                 id: `bk-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -88,64 +115,127 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
                 weekKey,
                 status: 'prevu',
             };
-            persist([...bookings, newBooking]);
+            setBookings(prev => [...prev, newBooking]);
+            const success = await syncBookingApi(newBooking);
+            if (!success) {
+                // Revert in case of failure
+                setBookings(prev => prev.filter(b => b.id !== newBooking.id));
+            }
         }
-    }, [bookings, currentUser, persist]);
+    }, [bookings, currentUser]);
 
-    const validatePresence = useCallback((bookingId: string) => {
+    const validatePresence = useCallback(async (bookingId: string) => {
         if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
-        persist(bookings.map(b => b.id === bookingId
-            ? { ...b, status: 'confirme' as BookingStatus, validatedBy: currentUser.id, validatedAt: new Date().toISOString() }
-            : b));
-    }, [bookings, currentUser, persist]);
+        const booking = bookings.find(b => b.id === bookingId);
+        if (!booking) return;
+        
+        const updatedBooking = { 
+            ...booking, 
+            status: 'confirme' as BookingStatus, 
+            validatedBy: currentUser.id, 
+            validatedAt: new Date().toISOString() 
+        };
+        
+        setBookings(prev => prev.map(b => b.id === bookingId ? updatedBooking : b));
+        const success = await syncBookingApi(updatedBooking);
+        if (!success) {
+            setBookings(prev => prev.map(b => b.id === bookingId ? booking : b));
+        }
+    }, [bookings, currentUser]);
 
-    const markAbsent = useCallback((bookingId: string) => {
+    const markAbsent = useCallback(async (bookingId: string) => {
         if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
-        persist(bookings.map(b => b.id === bookingId
-            ? { ...b, status: 'absent' as BookingStatus, validatedBy: currentUser.id, validatedAt: new Date().toISOString() }
-            : b));
-    }, [bookings, currentUser, persist]);
+        const booking = bookings.find(b => b.id === bookingId);
+        if (!booking) return;
+        
+        const updatedBooking = { 
+            ...booking, 
+            status: 'absent' as BookingStatus, 
+            validatedBy: currentUser.id, 
+            validatedAt: new Date().toISOString() 
+        };
+        
+        setBookings(prev => prev.map(b => b.id === bookingId ? updatedBooking : b));
+        const success = await syncBookingApi(updatedBooking);
+        if (!success) {
+            setBookings(prev => prev.map(b => b.id === bookingId ? booking : b));
+        }
+    }, [bookings, currentUser]);
 
-    const resetValidation = useCallback((bookingId: string) => {
+    const resetValidation = useCallback(async (bookingId: string) => {
         if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
-        persist(bookings.map(b => b.id === bookingId
-            ? { ...b, status: 'prevu' as BookingStatus, validatedBy: undefined, validatedAt: undefined }
-            : b));
-    }, [bookings, currentUser, persist]);
+        const booking = bookings.find(b => b.id === bookingId);
+        if (!booking) return;
+        
+        const updatedBooking = { 
+            ...booking, 
+            status: 'prevu' as BookingStatus, 
+            validatedBy: undefined, 
+            validatedAt: undefined 
+        };
+        
+        setBookings(prev => prev.map(b => b.id === bookingId ? updatedBooking : b));
+        const success = await syncBookingApi(updatedBooking);
+        if (!success) {
+            setBookings(prev => prev.map(b => b.id === bookingId ? booking : b));
+        }
+    }, [bookings, currentUser]);
 
     const isWeekUnavailable = useCallback((userId: string, weekKey: string) =>
         unavailableWeeks.includes(`${userId}-${weekKey}`), [unavailableWeeks]);
 
-    const toggleWeekUnavailable = useCallback((userId: string, weekKey: string) => {
+    const toggleWeekUnavailable = useCallback(async (userId: string, weekKey: string) => {
         const key = `${userId}-${weekKey}`;
         const isCurrentlyUnavailable = unavailableWeeks.includes(key);
         const next = isCurrentlyUnavailable
             ? unavailableWeeks.filter(k => k !== key)
             : [...unavailableWeeks, key];
+            
         setUnavailableWeeks(next);
-        saveUnavailableWeeks(next);
-        // Si on marque comme indispo, supprimer tous les bookings de la semaine
+        
+        const originalBookings = [...bookings];
         if (!isCurrentlyUnavailable) {
-            persist(bookings.filter(b => !(b.userId === userId && b.weekKey === weekKey)));
+            setBookings(prev => prev.filter(b => !(b.userId === userId && b.weekKey === weekKey)));
         }
-    }, [unavailableWeeks, bookings, persist]);
+        
+        const success = await toggleWeekUnavailableApi(userId, weekKey, !isCurrentlyUnavailable);
+        if (!success) {
+            // Revert state
+            setUnavailableWeeks(unavailableWeeks);
+            setBookings(originalBookings);
+        } else {
+            // If they became unavailable, we also need to delete bookings from backend
+            if (!isCurrentlyUnavailable) {
+                const bookingsToDelete = originalBookings.filter(b => b.userId === userId && b.weekKey === weekKey);
+                for (const b of bookingsToDelete) {
+                    await deleteBookingApi(b.id);
+                }
+            }
+        }
+    }, [unavailableWeeks, bookings]);
 
-    const toggleEventAttendance = useCallback((userId: string, eventId: string) => {
+    const toggleEventAttendance = useCallback(async (userId: string, eventId: string) => {
         if (!currentUser || currentUser.role !== 'bureau') return;
         
         const existing = eventAttendance.find(a => a.userId === userId && a.eventId === eventId);
-        let next: EventAttendance[];
+        const nextPresentState = existing ? !existing.present : true;
         
+        let next: EventAttendance[];
         if (existing) {
             next = eventAttendance.map(a => 
-                (a.userId === userId && a.eventId === eventId) ? { ...a, present: !a.present } : a
+                (a.userId === userId && a.eventId === eventId) ? { ...a, present: nextPresentState } : a
             );
         } else {
             next = [...eventAttendance, { userId, eventId, present: true }];
         }
         
         setEventAttendance(next);
-        saveEventAttendance(next);
+        
+        const success = await syncEventAttendanceApi({ userId, eventId, present: nextPresentState });
+        if (!success) {
+            // Revert
+            setEventAttendance(eventAttendance);
+        }
     }, [eventAttendance, currentUser]);
 
     return (
