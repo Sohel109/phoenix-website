@@ -50,7 +50,6 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [unavailableWeeks, setUnavailableWeeks] = useState<string[]>([]);
     const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
-    const [loadingData, setLoadingData] = useState(false);
 
     // Charger les données de planning depuis le Google Sheet dès que l'utilisateur est connecté
     useEffect(() => {
@@ -62,14 +61,12 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         }
 
         async function loadPlanningData() {
-            setLoadingData(true);
             const data = await fetchPlanningData();
             if (data) {
                 setBookings(data.bookings);
                 setUnavailableWeeks(data.unavailableWeeks);
                 setEventAttendance(data.eventAttendance);
             }
-            setLoadingData(false);
         }
 
         loadPlanningData();
