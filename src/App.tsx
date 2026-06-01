@@ -8,7 +8,7 @@ import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { IntroAnimation } from './components/layout/IntroAnimation';
 import { AuroraBackground } from './components/layout/AuroraBackground';
-import { Chatbot } from './components/features/Chatbot';
+// Chatbot import removed
 import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
 import { CrowdfundingBanner } from './components/features/CrowdfundingBanner';
 import { FlyingHeart } from './components/features/FlyingHeart';
@@ -80,7 +80,7 @@ function App() {
             <AuroraBackground />
             <Header />
             <BubbleMenu />
-            <Chatbot />
+            {/* Chatbot removed */}
             <IOSInstallPrompt />
             <CrowdfundingBanner />
             <FlyingHeart />

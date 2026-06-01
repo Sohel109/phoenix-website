@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { KeyFigures } from '../components/sections/KeyFigures';
 import { HeroScroll } from '../components/sections/HeroScroll';
-import { AISection } from '../components/sections/AISection';
+// AISection import removed
 
 import { useTranslation } from 'react-i18next';
 
@@ -74,8 +74,7 @@ export function Home() {
                 </div>
             </section>
 
-            {/* AI Section */}
-            <AISection />
+            {/* AI Section removed */}
 
             {/* Partners Section */}
             <section className="py-32 bg-transparent transition-colors duration-300">
