@@ -76,14 +76,14 @@ const PHOENIX_DB = {
     ],
 
     docs: [
-        { keywords: ["guide", "télécharger", "pdf", "document"], content: "Le document de référence est le 'Guide du Phoenicien'. Lien : http://localhost:5174/documents/Guide%20du%20phoenicien%202025-2026.pdf" },
-        { keywords: ["fiche", "post", "récap"], content: "Les fiches récapitulatives sont dispo ici : http://localhost:5174/documents/fiches2posts%20Phoenix%20edc.pdf" }
+        { keywords: ["guide", "télécharger", "pdf", "document"], content: "Le document de référence est le 'Guide du Phoenicien'. Lien : /documents/Guide%20du%20phoenicien%202025-2026.pdf" },
+        { keywords: ["fiche", "post", "récap"], content: "Les fiches récapitulatives sont dispo ici : /documents/fiches2posts%20Phoenix%20Phoenix%20edc.pdf" }
     ],
 
     links: [
         { keywords: ["don", "argent", "soutenir", "helloasso"], content: "Pour faire un don défiscalisé, c'est ici : https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a" },
         { keywords: ["contact", "mail", "joindre"], content: "Contactez-nous via le formulaire du site ou par mail : phoenix@kedgebs.com" },
-        { keywords: ["partenaire"], content: "Nos partenaires sont visibles sur la page : http://localhost:5174/partenaires" }
+        { keywords: ["partenaire"], content: "Nos partenaires sont visibles sur la page : /partenaires" }
     ]
 };
 
