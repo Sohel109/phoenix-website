@@ -26,6 +26,8 @@ export const events = [
         image: "/images/events/simonu-new.png",
         headerImage: "/images/events/simonu-new.png",
         gallery: [
+            "/images/events/simonu/simonu-group-argentine.jpg",
+            "/images/events/simonu/simonu-speaker.jpg",
             "/images/events/simonu/img1.png",
             "/images/events/simonu/img2.png",
             "/images/events/simonu/img3.png",
