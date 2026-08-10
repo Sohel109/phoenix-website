@@ -307,20 +307,29 @@ function getPlanningDataInternal() {
 
 
 // ==========================================
-// 4. ENVOI DE MAIL DYNAMIQUE SUR CASE À COCHER (DÉJÀ CONFIGURÉ)
+// 4. ENVOI DE MAIL DYNAMIQUE SUR CASE À COCHER
 // ==========================================
 
+// Déclencheur automatique lors de la modification de la feuille
+function onEdit(e) {
+  if (e && e.range) {
+    envoyerMailConnexion(e);
+  }
+}
+
 function envoyerMailConnexion(e) {
+  if (!e || !e.source || !e.range) return;
+
   var sheet = e.source.getActiveSheet();
   var range = e.range;
   var row = range.getRow();
   var col = range.getColumn();
   
-  var COLONNE_CASE_A_COCHER = 8; // Colonne H
-  var COLONNE_EMAIL = 7;         // Colonne G
-  var COLONNE_NOM = 2;           // Colonne B
-  var COLONNE_LOGIN = 3;         // Colonne C
-  var COLONNE_MDP = 4;           // Colonne D
+  var COLONNE_CASE_A_COCHER = 8; // Colonne H (Envoyer le mail)
+  var COLONNE_EMAIL = 7;         // Colonne G (Adresse email)
+  var COLONNE_NOM = 2;           // Colonne B (Nom prénom)
+  var COLONNE_LOGIN = 3;         // Colonne C (Identifiant)
+  var COLONNE_MDP = 4;           // Colonne D (Mot de passe)
   
   if (sheet.getName() !== e.source.getSheets()[0].getName()) {
     return;
