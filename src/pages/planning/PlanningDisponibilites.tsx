@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, LoaderCircle } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -10,16 +10,18 @@ import {
 
 // ─── Toggle Switch ────────────────────────────────────────────────────────────
 
-function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: () => void; disabled?: boolean }) {
+function Toggle({ checked, onChange, disabled, loading }: { checked: boolean; onChange: () => void; disabled?: boolean; loading?: boolean }) {
     return (
         <button
             onClick={onChange}
-            disabled={disabled}
-            className={`relative inline-flex h-[18px] w-[32px] items-center rounded-full transition-colors focus:outline-none ${
-                disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+            disabled={disabled || loading}
+            className={`relative inline-flex h-[20px] w-[36px] items-center rounded-full transition-all focus:outline-none ${
+                disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
             } ${checked ? 'bg-gradient-to-r from-orange-500 to-violet-500' : 'bg-gray-200 dark:bg-white/20'}`}
         >
-            <span className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-md transition-transform ${checked ? 'translate-x-[16px]' : 'translate-x-[2px]'}`} />
+            <span className={`inline-flex items-center justify-center h-[16px] w-[16px] transform rounded-full bg-white shadow-md transition-transform ${checked ? 'translate-x-[18px]' : 'translate-x-[2px]'}`}>
+                {loading && <LoaderCircle size={10} className="animate-spin text-orange-500" />}
+            </span>
         </button>
     );
 }
@@ -27,7 +29,7 @@ function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function PlanningDisponibilites() {
-    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, toggleAvailability, isWeekUnavailable, toggleWeekUnavailable } = usePlanning();
+    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, toggleAvailability, isWeekUnavailable, toggleWeekUnavailable, isPending } = usePlanning();
     const [activeProjectId, setActiveProjectId] = useState<number | null>(null);
 
     if (!currentUser) return null;
@@ -150,7 +152,11 @@ export function PlanningDisponibilites() {
                                         <span className="text-xs md:text-sm text-gray-500 dark:text-white/60">{slot.endTime}</span>
                                         <span className="text-xs md:text-sm text-gray-600 dark:text-white/70 truncate">{project?.name ?? '—'}</span>
                                         <div className="flex justify-end">
-                                            <Toggle checked={booked} onChange={() => toggleAvailability(slot.id, currentWeekKey)} />
+                                            <Toggle 
+                                                checked={booked} 
+                                                loading={isPending(`${slot.id}_${currentWeekKey}`)}
+                                                onChange={() => toggleAvailability(slot.id, currentWeekKey)} 
+                                            />
                                         </div>
                                     </motion.div>
                                 );

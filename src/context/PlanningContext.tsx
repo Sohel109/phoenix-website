@@ -20,9 +20,9 @@ interface PlanningContextType {
     bookings: Booking[];
     getWeekBookings: (weekKey: string, userId?: string) => Booking[];
     toggleAvailability: (slotId: string, weekKey: string) => void;
-    validatePresence: (bookingId: string) => void;
-    markAbsent: (bookingId: string) => void;
-    resetValidation: (bookingId: string) => void;
+    validatePresence: (bookingId: string) => Promise<boolean>;
+    markAbsent: (bookingId: string) => Promise<boolean>;
+    resetValidation: (bookingId: string) => Promise<boolean>;
     currentWeekKey: string;
     setCurrentWeekKey: (wk: string) => void;
     unavailableWeeks: string[];
@@ -30,6 +30,7 @@ interface PlanningContextType {
     isWeekUnavailable: (userId: string, weekKey: string) => boolean;
     eventAttendance: EventAttendance[];
     toggleEventAttendance: (userId: string, eventId: string) => void;
+    isPending: (key: string) => boolean;
 }
 
 const PlanningContext = createContext<PlanningContextType | null>(null);
@@ -50,6 +51,20 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [unavailableWeeks, setUnavailableWeeks] = useState<string[]>([]);
     const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
+    const [pendingKeys, setPendingKeys] = useState<Set<string>>(new Set());
+
+    const isPending = useCallback((key: string) => pendingKeys.has(key), [pendingKeys]);
+
+    const addPendingKey = (key: string) => setPendingKeys(prev => new Set(prev).add(key));
+    const removePendingKey = (key: string) => {
+        setTimeout(() => {
+            setPendingKeys(prev => {
+                const next = new Set(prev);
+                next.delete(key);
+                return next;
+            });
+        }, 1200); // 1.2s cooldown minimum pour éviter le spam
+    };
 
     // Charger les données de planning depuis le Google Sheet et synchroniser périodiquement (polling)
     useEffect(() => {
@@ -97,6 +112,11 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
 
     const toggleAvailability = useCallback(async (slotId: string, weekKey: string) => {
         if (!currentUser) return;
+        const key = `${slotId}_${weekKey}`;
+        if (pendingKeys.has(key)) return; // Anti-spam lock
+
+        addPendingKey(key);
+
         const existing = bookings.find(
             b => b.slotId === slotId && b.weekKey === weekKey && b.userId === currentUser.id
         );
@@ -107,6 +127,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
                 // Revert in case of failure
                 setBookings(prev => [...prev, existing]);
             }
+            removePendingKey(key);
         } else {
             const newBooking: Booking = {
                 id: `bk-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -122,13 +143,18 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
                 // Revert in case of failure
                 setBookings(prev => prev.filter(b => b.id !== newBooking.id));
             }
+            removePendingKey(key);
         }
-    }, [bookings, currentUser]);
+    }, [bookings, currentUser, pendingKeys]);
 
-    const validatePresence = useCallback(async (bookingId: string) => {
-        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
+    const validatePresence = useCallback(async (bookingId: string): Promise<boolean> => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return false;
+        if (pendingKeys.has(bookingId)) return false;
+
         const booking = bookings.find(b => b.id === bookingId);
-        if (!booking) return;
+        if (!booking) return false;
+
+        addPendingKey(bookingId);
         
         const updatedBooking = { 
             ...booking, 
@@ -142,12 +168,18 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         if (!success) {
             setBookings(prev => prev.map(b => b.id === bookingId ? booking : b));
         }
-    }, [bookings, currentUser]);
+        removePendingKey(bookingId);
+        return success;
+    }, [bookings, currentUser, pendingKeys]);
 
-    const markAbsent = useCallback(async (bookingId: string) => {
-        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
+    const markAbsent = useCallback(async (bookingId: string): Promise<boolean> => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return false;
+        if (pendingKeys.has(bookingId)) return false;
+
         const booking = bookings.find(b => b.id === bookingId);
-        if (!booking) return;
+        if (!booking) return false;
+
+        addPendingKey(bookingId);
         
         const updatedBooking = { 
             ...booking, 
@@ -161,12 +193,18 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         if (!success) {
             setBookings(prev => prev.map(b => b.id === bookingId ? booking : b));
         }
-    }, [bookings, currentUser]);
+        removePendingKey(bookingId);
+        return success;
+    }, [bookings, currentUser, pendingKeys]);
 
-    const resetValidation = useCallback(async (bookingId: string) => {
-        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return;
+    const resetValidation = useCallback(async (bookingId: string): Promise<boolean> => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return false;
+        if (pendingKeys.has(bookingId)) return false;
+
         const booking = bookings.find(b => b.id === bookingId);
-        if (!booking) return;
+        if (!booking) return false;
+
+        addPendingKey(bookingId);
         
         const updatedBooking = { 
             ...booking, 
@@ -180,7 +218,9 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         if (!success) {
             setBookings(prev => prev.map(b => b.id === bookingId ? booking : b));
         }
-    }, [bookings, currentUser]);
+        removePendingKey(bookingId);
+        return success;
+    }, [bookings, currentUser, pendingKeys]);
 
     const isWeekUnavailable = useCallback((userId: string, weekKey: string) =>
         unavailableWeeks.includes(`${userId}-${weekKey}`), [unavailableWeeks]);
@@ -246,7 +286,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             toggleAvailability, validatePresence, markAbsent, resetValidation,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
-            eventAttendance, toggleEventAttendance
+            eventAttendance, toggleEventAttendance, isPending
         }}>
             {children}
         </PlanningContext.Provider>
