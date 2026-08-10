@@ -211,8 +211,20 @@ export async function fetchPlanningData(): Promise<{ bookings: Booking[], unavai
         if (response.ok) {
             const data = await response.json();
             if (data.success) {
+                const rawBookings: Booking[] = data.bookings || [];
+                
+                // Déduplication côté client
+                const bookingMap = new Map<string, Booking>();
+                for (const b of rawBookings) {
+                    const uniqueKey = `${b.userId}_${b.slotId}_${b.weekKey}`;
+                    const existing = bookingMap.get(uniqueKey);
+                    if (!existing || b.status === 'confirme' || b.status === 'absent') {
+                        bookingMap.set(uniqueKey, b);
+                    }
+                }
+
                 return {
-                    bookings: data.bookings || [],
+                    bookings: Array.from(bookingMap.values()),
                     unavailableWeeks: data.unavailableWeeks || [],
                     eventAttendance: data.eventAttendance || []
                 };

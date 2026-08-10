@@ -50,11 +50,29 @@ function doPost(e) {
       var sheet = getOrCreateSheet("Bookings", ["id", "slotId", "userId", "userName", "weekKey", "status", "validatedBy", "validatedAt"]);
       var data = sheet.getDataRange().getValues();
       var foundRow = -1;
+      var duplicateRows = [];
+      
+      var targetId = postData.booking.id ? postData.booking.id.toString() : "";
+      var targetUserId = postData.booking.userId ? postData.booking.userId.toString() : "";
+      var targetSlotId = postData.booking.slotId ? postData.booking.slotId.toString() : "";
+      var targetWeekKey = postData.booking.weekKey ? postData.booking.weekKey.toString() : "";
       
       for (var i = 1; i < data.length; i++) {
-        if (data[i][0] && data[i][0].toString() === postData.booking.id.toString()) {
-          foundRow = i + 1;
-          break;
+        var rowId = data[i][0] ? data[i][0].toString() : "";
+        var rowSlotId = data[i][1] ? data[i][1].toString() : "";
+        var rowUserId = data[i][2] ? data[i][2].toString() : "";
+        var rowWeekKey = data[i][4] ? data[i][4].toString() : "";
+        
+        var matchesId = targetId !== "" && rowId === targetId;
+        var matchesTriplet = targetUserId !== "" && targetSlotId !== "" && targetWeekKey !== "" &&
+                             rowUserId === targetUserId && rowSlotId === targetSlotId && rowWeekKey === targetWeekKey;
+                             
+        if (matchesId || matchesTriplet) {
+          if (foundRow === -1) {
+            foundRow = i + 1;
+          } else {
+            duplicateRows.push(i + 1);
+          }
         }
       }
       
@@ -74,6 +92,12 @@ function doPost(e) {
       } else {
         sheet.appendRow(rowValues);
       }
+      
+      // Supprimer les doublons en partant de la fin pour conserver les bons index
+      for (var d = duplicateRows.length - 1; d >= 0; d--) {
+        sheet.deleteRow(duplicateRows[d]);
+      }
+
       return ContentService.createTextOutput(JSON.stringify({ success: true }))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (err) {
@@ -219,13 +243,13 @@ function getOrCreateSheet(name, headers) {
 function getPlanningDataInternal() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // 1. Lire les bookings
-  var bookings = [];
+  // 1. Lire les bookings (avec déduplication)
+  var bookingsMap = {};
   var sheetBookings = getOrCreateSheet("Bookings", ["id", "slotId", "userId", "userName", "weekKey", "status", "validatedBy", "validatedAt"]);
   var dataBookings = sheetBookings.getDataRange().getValues();
   for (var i = 1; i < dataBookings.length; i++) {
     if (dataBookings[i][0]) {
-      bookings.push({
+      var item = {
         id: dataBookings[i][0].toString(),
         slotId: dataBookings[i][1].toString(),
         userId: dataBookings[i][2].toString(),
@@ -234,8 +258,19 @@ function getPlanningDataInternal() {
         status: dataBookings[i][5].toString(),
         validatedBy: dataBookings[i][6] ? dataBookings[i][6].toString() : undefined,
         validatedAt: dataBookings[i][7] ? dataBookings[i][7].toString() : undefined
-      });
+      };
+      
+      var key = item.userId + "_" + item.slotId + "_" + item.weekKey;
+      var existing = bookingsMap[key];
+      // Si déjà existant, privilégier le statut confirmé ou validé
+      if (!existing || item.status === 'confirme' || item.status === 'absent') {
+        bookingsMap[key] = item;
+      }
     }
+  }
+  var bookings = [];
+  for (var k in bookingsMap) {
+    bookings.push(bookingsMap[k]);
   }
   
   // 2. Lire les indisponibilités
