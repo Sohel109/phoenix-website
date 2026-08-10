@@ -36,3 +36,23 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* ── iOS Safe Area Helpers ───────────────────────────────────────── */
+/* Adds bottom padding equal to the iOS home-bar safe area + nav height */
+.pb-safe-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Standalone safe-area bottom padding (no nav offset) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Prevent content from being hidden behind the floating bottom navbar on mobile */
+@media (max-width: 767px) {
+  /* Every page wrapper gets clearance for the 72px navbar + safe area */
+  main,
+  .page-content {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}

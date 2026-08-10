@@ -40,7 +40,7 @@ export function KeyFigures() {
     ];
 
     return (
-        <section className="relative w-full py-32 md:py-48 px-6 overflow-hidden">
+        <section className="relative w-full py-20 md:py-48 px-6 overflow-hidden pb-safe-nav md:pb-0">
             {/* Background Decor - Removed, aurora provides the background */}
 
             <div className="max-w-[90rem] mx-auto">
@@ -72,8 +72,11 @@ export function KeyFigures() {
                         >
                             {/* Card Content */}
                             <div className="flex flex-col items-center text-center relative z-10">
-                                {/* Number - Uses individual card gradient */}
-                                <div className={`text-5xl md:text-6xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-br ${stat.color}`}>
+                                {/* Number - bright gradient, with filter for guaranteed visibility */}
+                                <div
+                                    className={`text-5xl md:text-6xl font-black mb-2 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}
+                                    style={{ filter: 'brightness(1.1) saturate(1.3)' }}
+                                >
                                     <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                                 </div>
 

@@ -77,13 +77,13 @@ export function Home() {
             {/* AI Section removed */}
 
             {/* Partners Section */}
-            <section className="py-32 bg-transparent transition-colors duration-300">
+            <section className="py-20 md:py-32 bg-transparent transition-colors duration-300 pb-safe-nav md:pb-0">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-16">
                         {t('partners.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">{t('partners.titleHighlight')}</span>
                     </h2>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-6 justify-items-center items-center mb-12">
+                    <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6 justify-items-center items-center mb-12">
                         <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
                             <img src="/partners/om.png" alt="Olympique de Marseille" className="max-h-full max-w-full object-contain mix-blend-multiply" />
                         </div>

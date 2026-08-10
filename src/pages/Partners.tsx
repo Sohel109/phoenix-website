@@ -5,7 +5,7 @@ import { ArrowRight, Handshake } from 'lucide-react';
 
 export function Partners() {
     return (
-        <div className="min-h-screen bg-transparent pt-32 pb-20 transition-colors duration-300">
+        <div className="min-h-screen bg-transparent pt-28 md:pt-32 pb-safe-nav md:pb-20 transition-colors duration-300">
             <div className="container mx-auto px-4 max-w-4xl">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -36,9 +36,9 @@ export function Partners() {
                                     {category.subcategories.map((sub, subIndex) => (
                                         <div key={subIndex} className="pl-4 border-l-2 border-primary/20">
                                             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">{sub.name} :</h3>
-                                            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-white">
+                                            <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-200">
                                                 {sub.items.map((item, i) => (
-                                                    <li key={i}>{item}</li>
+                                                    <li key={i} className="text-sm leading-relaxed">{item}</li>
                                                 ))}
                                             </ul>
                                         </div>

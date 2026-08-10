@@ -63,11 +63,14 @@ export function BubbleMenu() {
     const isDarkStyle = dockTheme === 'dark';
 
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1000] max-w-[95vw] md:max-w-none">
+        <div
+            className="fixed left-1/2 -translate-x-1/2 z-[1000] max-w-[95vw] md:max-w-none"
+            style={{ bottom: `calc(1.5rem + env(safe-area-inset-bottom, 0px))` }}
+        >
             <motion.div
                 layout
                 className={clsx(
-                    "flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 rounded-full shadow-2xl ring-1 transition-colors duration-500",
+                    "flex items-center gap-1 xs:gap-1.5 md:gap-2 p-1 xs:p-1.5 md:p-2 rounded-full shadow-2xl ring-1 transition-colors duration-500",
                     isDarkStyle
                         ? "bg-white/10 backdrop-blur-xl border border-white/20 ring-black/5"
                         : "bg-white/80 backdrop-blur-xl border border-white/40 ring-black/5 shadow-black/5"
@@ -95,17 +98,17 @@ export function BubbleMenu() {
                             <motion.div
                                 layout
                                 className={clsx(
-                                    "relative z-10 flex items-center justify-center h-8 md:h-12 rounded-full transition-colors duration-300 gap-1.5 md:gap-2",
+                                    "relative z-10 flex items-center justify-center h-7 xs:h-8 md:h-12 rounded-full transition-colors duration-300 gap-1 xs:gap-1.5 md:gap-2",
                                     isActive
                                         ? "text-white" // Active is always white text (on orange bg)
                                         : isDarkStyle
                                             ? "text-gray-200 hover:text-white"
                                             : "text-gray-500 hover:text-black",
-                                    showHover ? "w-auto px-3 md:px-4" : "w-8 md:w-12 px-0"
+                                    showHover ? "w-auto px-2 xs:px-3 md:px-4" : "w-7 xs:w-8 md:w-12 px-0"
                                 )}
                                 transition={{ type: "spring", stiffness: 350, damping: 30 }}
                             >
-                                <item.icon strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
+                                <item.icon strokeWidth={2} className="w-3.5 h-3.5 xs:w-4 xs:h-4 md:w-5 md:h-5 shrink-0" />
 
                                 <AnimatePresence initial={false}>
                                     {showHover && (
@@ -177,11 +180,11 @@ export function BubbleMenu() {
                     target="_blank"
                     rel="noopener noreferrer"
                     id="menu-heart"
-                    className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
+                    className="flex items-center justify-center w-7 h-7 xs:w-8 xs:h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-500/30"
                     whileHover={{ scale: 1.1, rotate: 10 }}
                     whileTap={{ scale: 0.9 }}
                 >
-                    <Heart fill="currentColor" className="w-4 h-4 md:w-5 md:h-5" />
+                    <Heart fill="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 md:w-5 md:h-5" />
                 </motion.a>
             </motion.div>
         </div>
