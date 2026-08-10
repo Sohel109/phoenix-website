@@ -22,11 +22,11 @@ export function PlanningValidation() {
         );
     }
 
-    // Slots belonging to this chef's projects (or all projects for Bureau)
-    const myProjectIds = currentUser.projectIds;
-    const mySlots = isBureau 
+    // Slots belonging to this chef's projects (or all projects for Bureau/unassigned chefs)
+    const myProjectIds = (currentUser?.projectIds || []).map(Number);
+    const mySlots = isBureau || myProjectIds.length === 0
         ? timeSlots 
-        : timeSlots.filter(s => myProjectIds.includes(s.projectId));
+        : timeSlots.filter(s => myProjectIds.includes(Number(s.projectId)));
     const mySlotIds = new Set(mySlots.map(s => s.id));
 
     // All bookings for this week on my slots

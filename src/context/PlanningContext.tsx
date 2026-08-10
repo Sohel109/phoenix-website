@@ -51,7 +51,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
 
-    // Charger les données de planning depuis le Google Sheet dès que l'utilisateur est connecté
+    // Charger les données de planning depuis le Google Sheet et synchroniser périodiquement (polling)
     useEffect(() => {
         if (!currentUser) {
             setBookings([]);
@@ -70,6 +70,10 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         }
 
         loadPlanningData();
+
+        // Polling automatique toutes les 10 secondes pour synchroniser les données entre utilisateurs sur Vercel
+        const intervalId = setInterval(loadPlanningData, 10000);
+        return () => clearInterval(intervalId);
     }, [currentUser]);
 
     const login = useCallback(async (loginId: string, password: string): Promise<boolean> => {

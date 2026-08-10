@@ -52,7 +52,7 @@ function doPost(e) {
       var foundRow = -1;
       
       for (var i = 1; i < data.length; i++) {
-        if (data[i][0] === postData.booking.id) {
+        if (data[i][0] && data[i][0].toString() === postData.booking.id.toString()) {
           foundRow = i + 1;
           break;
         }
@@ -120,7 +120,7 @@ function doPost(e) {
       var data = sheet.getDataRange().getValues();
       var foundRow = -1;
       for (var i = 1; i < data.length; i++) {
-        if (data[i][0] === postData.userId && data[i][1] === postData.weekKey) {
+        if (data[i][0].toString() === postData.userId.toString() && data[i][1].toString() === postData.weekKey.toString()) {
           foundRow = i + 1;
           break;
         }
@@ -149,7 +149,7 @@ function doPost(e) {
       var data = sheet.getDataRange().getValues();
       var foundRow = -1;
       for (var i = 1; i < data.length; i++) {
-        if (data[i][0] === postData.attendance.userId && data[i][1] === postData.attendance.eventId) {
+        if (data[i][0].toString() === postData.attendance.userId.toString() && data[i][1].toString() === postData.attendance.eventId.toString()) {
           foundRow = i + 1;
           break;
         }
@@ -168,7 +168,7 @@ function doPost(e) {
     }
   }
   
-  // Par défaut, c'est l'action de login existante (inchangée)
+  // Par défaut, c'est l'action de login existante
   var login = postData.login;
   var password = postData.password;
   
@@ -177,12 +177,18 @@ function doPost(e) {
   
   for (var i = 1; i < data.length; i++) {
     if (data[i][2] == login && data[i][3] == password) {
+      var rawProjects = data[i][5] ? data[i][5].toString() : "";
+      var projectIds = rawProjects
+        .split(',')
+        .map(function(item) { return parseInt(item.trim(), 10); })
+        .filter(function(num) { return !isNaN(num); });
+
       var user = {
         id: data[i][0].toString(),
         name: data[i][1].toString(),
         login: data[i][2].toString(),
         role: data[i][4].toString(),
-        projectIds: data[i][5] ? data[i][5].toString().split(',').map(Number) : []
+        projectIds: projectIds
       };
       return ContentService.createTextOutput(JSON.stringify({ success: true, user: user }))
         .setMimeType(ContentService.MimeType.JSON);
