@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     try {
         const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ login, password }),
+            body: JSON.stringify({ login: login.trim(), password: password.trim() }),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
 
@@ -47,8 +47,14 @@ export default async function handler(req, res) {
             return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
         }
 
-        const data = await response.json();
-        res.status(200).json(data);
+        const text = await response.text();
+        try {
+            const data = JSON.parse(text);
+            return res.status(200).json(data);
+        } catch (err) {
+            console.error('Non-JSON response from Google Apps Script in login:', text.slice(0, 200));
+            return res.status(502).json({ success: false, message: 'Google Apps Script a renvoyé du contenu non-JSON (vérifier les permissions).' });
+        }
     } catch (error) {
         console.error('Erreur proxy login:', error);
         res.status(500).json({ success: false, message: 'Erreur serveur lors de la connexion' });
