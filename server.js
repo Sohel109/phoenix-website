@@ -260,9 +260,9 @@ app.post('/api/login', async (req, res) => {
 
     try {
         // En local, on utilise node-fetch pour interroger Google Apps Script
-        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        let response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ login, password }),
+            body: JSON.stringify({ login: login.trim(), password: password.trim() }),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
 
@@ -270,7 +270,25 @@ app.post('/api/login', async (req, res) => {
             return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
         }
 
-        const data = await response.json();
+        let data = await response.json();
+
+        // Si échec, tentative automatique avec un \t (au cas où une tabulation a été insérée dans Google Sheets)
+        if (!data.success) {
+            const retryResponse = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ login: login.trim() + '\t', password: password.trim() }),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            });
+            if (retryResponse.ok) {
+                try {
+                    const retryData = await retryResponse.json();
+                    if (retryData.success) {
+                        data = retryData;
+                    }
+                } catch (e) {}
+            }
+        }
+
         res.status(200).json(data);
     } catch (error) {
         console.error('Erreur proxy login:', error);

@@ -193,14 +193,17 @@ function doPost(e) {
   }
   
   // Par défaut, c'est l'action de login existante
-  var login = postData.login;
-  var password = postData.password;
+  var login = postData.login ? postData.login.toString().trim() : "";
+  var password = postData.password ? postData.password.toString().trim() : "";
   
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
   var data = sheet.getDataRange().getValues();
   
   for (var i = 1; i < data.length; i++) {
-    if (data[i][2] == login && data[i][3] == password) {
+    var sheetLogin = data[i][2] ? data[i][2].toString().trim() : "";
+    var sheetPass = data[i][3] ? data[i][3].toString().trim() : "";
+    
+    if (sheetLogin === login && sheetPass === password) {
       var rawProjects = data[i][5] ? data[i][5].toString() : "";
       var projectIds = rawProjects
         .split(',')
@@ -210,7 +213,7 @@ function doPost(e) {
       var user = {
         id: data[i][0].toString(),
         name: data[i][1].toString(),
-        login: data[i][2].toString(),
+        login: sheetLogin,
         role: data[i][4].toString(),
         projectIds: projectIds
       };
@@ -222,7 +225,6 @@ function doPost(e) {
   return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Identifiants incorrects" }))
     .setMimeType(ContentService.MimeType.JSON);
 }
-
 
 // ==========================================
 // 3. FONCTIONS UTILITAIRES INTERNES
@@ -304,7 +306,6 @@ function getPlanningDataInternal() {
     eventAttendance: eventAttendance
   };
 }
-
 
 // ==========================================
 // 4. ENVOI DE MAIL DYNAMIQUE SUR CASE À COCHER

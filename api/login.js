@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        let response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ login: login.trim(), password: password.trim() }),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
@@ -47,9 +47,30 @@ export default async function handler(req, res) {
             return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
         }
 
-        const text = await response.text();
+        let text = await response.text();
         try {
-            const data = JSON.parse(text);
+            let data = JSON.parse(text);
+            
+            // Si échec, tentative automatique avec un \t (au cas où une tabulation a été insérée dans Google Sheets)
+            if (!data.success) {
+                const retryResponse = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ login: login.trim() + '\t', password: password.trim() }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                if (retryResponse.ok) {
+                    const retryText = await retryResponse.text();
+                    try {
+                        const retryData = JSON.parse(retryText);
+                        if (retryData.success) {
+                            data = retryData;
+                        }
+                    } catch (e) {
+                        // ignore retry parse error
+                    }
+                }
+            }
+
             return res.status(200).json(data);
         } catch (err) {
             console.error('Non-JSON response from Google Apps Script in login:', text.slice(0, 200));
