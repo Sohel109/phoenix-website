@@ -503,3 +503,15 @@ function envoyerMailConnexion(e) {
     }
   }
 }
+
+/**
+ * Exécutez cette fonction UNE FOIS dans l'éditeur Apps Script (sélectionnez-la dans le menu déroulant en haut et cliquez sur 'Exécuter')
+ * pour accorder à Google les autorisations d'envoi d'e-mails.
+ */
+function validerAutorisationsMail() {
+  var quota = MailApp.getRemainingDailyQuota();
+  try {
+    GmailApp.getAliases();
+  } catch (e) {}
+  SpreadsheetApp.getUi().alert("✅ Autorisations validées ! Quota d'e-mails disponible : " + quota + ". Vous pouvez désormais cocher les cases dans le Sheet pour envoyer les accès.");
+}
