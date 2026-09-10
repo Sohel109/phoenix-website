@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, ChevronLeft, CalendarCheck } from 'lucide-react';
+import { LogOut, ChevronLeft, CalendarCheck, Bell } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
+import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
+import { PlanningNotificationsDrawer } from '../../components/planning/PlanningNotificationsDrawer';
 
 interface PlanningLayoutProps {
     children: React.ReactNode;
@@ -12,6 +15,8 @@ interface PlanningLayoutProps {
 export function PlanningLayout({ children, title, showBack = true, backTo = '/planning' }: PlanningLayoutProps) {
     const { currentUser, logout } = usePlanning();
     const navigate = useNavigate();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const { unreadCount } = usePlanningNotifications();
 
     const handleLogout = () => {
         logout();
@@ -46,7 +51,22 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                 </div>
 
                 {currentUser && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        {/* Notification Bell Button */}
+                        <button
+                            type="button"
+                            onClick={() => setIsDrawerOpen(true)}
+                            className="relative p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                            title="Notifications"
+                        >
+                            <Bell size={16} />
+                            {unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center shadow-md animate-pulse">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
+                        </button>
+
                         <div className="hidden sm:flex flex-col items-end">
                             <span className="text-sm font-semibold text-white leading-tight">{currentUser.name}</span>
                             <span className="text-xs text-orange-400 capitalize">
@@ -63,6 +83,12 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                     </div>
                 )}
             </header>
+
+            {/* Notification Drawer */}
+            <PlanningNotificationsDrawer 
+                isOpen={isDrawerOpen} 
+                onClose={() => setIsDrawerOpen(false)} 
+            />
 
             {/* Content */}
             <main className="pt-20 pb-10 px-4 max-w-4xl mx-auto">

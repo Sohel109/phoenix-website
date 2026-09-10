@@ -40,6 +40,7 @@ const PlanningValidation = lazy(() => import('./pages/planning/PlanningValidatio
 const PlanningRecap = lazy(() => import('./pages/planning/PlanningRecap').then(m => ({ default: m.PlanningRecap })));
 const PlanningEventValidation = lazy(() => import('./pages/planning/PlanningEventValidation').then(m => ({ default: m.PlanningEventValidation })));
 const PlanningMesEvenements = lazy(() => import('./pages/planning/PlanningMesEvenements').then(m => ({ default: m.PlanningMesEvenements })));
+const PlanningNotifications = lazy(() => import('./pages/planning/PlanningNotifications').then(m => ({ default: m.PlanningNotifications })));
 
 // Loader minimaliste pendant le chargement d'une page
 function PageLoader() {
@@ -109,6 +110,7 @@ function App() {
                   <Route path="/planning/recap" element={<PlanningGuard><PlanningRecap /></PlanningGuard>} />
                   <Route path="/planning/events" element={<PlanningGuard><PlanningEventValidation /></PlanningGuard>} />
                   <Route path="/planning/mes-evenements" element={<PlanningGuard><PlanningMesEvenements /></PlanningGuard>} />
+                  <Route path="/planning/notifications" element={<PlanningGuard><PlanningNotifications /></PlanningGuard>} />
                 </Routes>
               </Suspense>
             </main>

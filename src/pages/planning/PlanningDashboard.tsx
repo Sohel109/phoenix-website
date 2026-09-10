@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
+import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
 import { projectsData } from '../../data/projectsData';
 
 interface DashCard {
@@ -12,6 +13,7 @@ interface DashCard {
     to: string;
     gradient: string;
     shadow: string;
+    badge?: number;
     chefOnly?: boolean;
     bureauOnly?: boolean;
 }
@@ -39,6 +41,14 @@ const cards: DashCard[] = [
         description: 'Présence SimONU, JEDC, Olympiades...',
         to: '/planning/mes-evenements',
         gradient: 'from-amber-500 to-orange-600',
+        shadow: 'shadow-orange-500/30',
+    },
+    {
+        icon: <Bell size={28} />,
+        label: 'Notifications',
+        description: 'Suivi des validations & présences',
+        to: '/planning/notifications',
+        gradient: 'from-orange-500 to-amber-600',
         shadow: 'shadow-orange-500/30',
     },
     {
@@ -80,6 +90,7 @@ const cards: DashCard[] = [
 
 export function PlanningDashboard() {
     const { currentUser } = usePlanning();
+    const { unreadCount } = usePlanningNotifications();
     const isChef = currentUser?.role === 'chef_projet';
     const isBureau = currentUser?.role === 'bureau';
 
@@ -89,6 +100,11 @@ export function PlanningDashboard() {
         if (c.bureauOnly) return isBureau;
         if (c.chefOnly) return isChef || isBureau;
         return true;
+    }).map(c => {
+        if (c.to === '/planning/notifications') {
+            return { ...c, badge: unreadCount };
+        }
+        return c;
     });
 
     return (
@@ -117,6 +133,35 @@ export function PlanningDashboard() {
                 </div>
             </div>
 
+            {/* Notification alert banner if unread */}
+            {unreadCount > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-between gap-4"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                            <Bell size={18} />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-white">
+                                Vous avez {unreadCount} notification{unreadCount > 1 ? 's' : ''} en attente
+                            </p>
+                            <p className="text-xs text-white/60">
+                                Vérifiez la validation de vos séances ou déclarez vos présences aux événements
+                            </p>
+                        </div>
+                    </div>
+                    <Link
+                        to="/planning/notifications"
+                        className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-xs font-bold transition-colors whitespace-nowrap shadow-sm"
+                    >
+                        Consulter
+                    </Link>
+                </motion.div>
+            )}
+
             {/* Dashboard cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {visibleCards.map((card, i) => (
@@ -132,8 +177,13 @@ export function PlanningDashboard() {
                             to={card.to}
                             className={`flex flex-col gap-4 p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group`}
                         >
-                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center text-white`}>
+                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center text-white relative`}>
                                 {card.icon}
+                                {card.badge !== undefined && card.badge > 0 && (
+                                    <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#07071a]">
+                                        {card.badge > 9 ? '9+' : card.badge}
+                                    </span>
+                                )}
                             </div>
                             <div>
                                 <p className="text-white font-bold text-lg leading-tight">{card.label}</p>
