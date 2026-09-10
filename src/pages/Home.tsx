@@ -83,28 +83,33 @@ export function Home() {
                         {t('partners.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-500">{t('partners.titleHighlight')}</span>
                     </h2>
 
-                    <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6 justify-items-center items-center mb-12">
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/om.png" alt="Olympique de Marseille" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/decathlon.png" alt="Decathlon" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/deloitte.jpg" alt="Deloitte" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/apprentis-auteuil.png" alt="Apprentis d'Auteuil" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/lydia.png" alt="Lydia" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/darty.png" alt="Darty" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
-                        <div className="bg-white border border-gray-200/60 shadow-sm rounded-2xl p-4 w-full h-24 flex items-center justify-center hover:shadow-md hover:scale-105 transition-all duration-300">
-                            <img src="/partners/kedge.png" alt="Kedge Business School" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                        </div>
+                    <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 md:gap-6 justify-items-center items-center mb-12">
+                        {[
+                            { name: "Olympique de Marseille", src: "/partners/om.png" },
+                            { name: "Decathlon", src: "/partners/decathlon.png" },
+                            { name: "Deloitte", src: "/partners/deloitte.jpg" },
+                            { name: "Apprentis d'Auteuil", src: "/partners/apprentis-auteuil.png", rounded: true },
+                            { name: "Lydia", src: "/partners/lydia.png" },
+                            { name: "Darty", src: "/partners/darty.png", rounded: true },
+                            { name: "Kedge Business School", src: "/partners/kedge.png" },
+                        ].map((partner, index, arr) => (
+                            <div
+                                key={partner.name}
+                                className={`bg-white border border-gray-200/60 shadow-sm rounded-2xl p-3 sm:p-4 w-full h-20 sm:h-24 flex items-center justify-center overflow-hidden hover:shadow-md hover:scale-105 transition-all duration-300 ${
+                                    index === arr.length - 1
+                                        ? "col-span-2 xs:col-span-1 max-w-[calc(50%-0.375rem)] xs:max-w-none justify-self-center"
+                                        : ""
+                                }`}
+                            >
+                                <img
+                                    src={partner.src}
+                                    alt={partner.name}
+                                    className={`max-h-12 sm:max-h-14 max-w-[80%] w-auto h-auto object-contain mix-blend-multiply ${
+                                        partner.rounded ? "rounded-md" : ""
+                                    }`}
+                                />
+                            </div>
+                        ))}
                     </div>
 
                     <Link to="/partenaires" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-primary-dark transition-colors">
