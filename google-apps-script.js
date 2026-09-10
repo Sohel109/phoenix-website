@@ -412,14 +412,14 @@ function envoyerMailConnexion(e) {
       + "• Mot de passe : " + mdp + "\n\n"
       + "Pour vous connecter, rendez-vous sur le planning en ligne :\n"
       + siteUrl + "\n\n"
-      + "💡 En cas de difficulté pour vous connecter ou pour toute question, vous pouvez contacter directement Sohel à l'adresse suivante : haggui.sohel@gmail.com (ou répondre simplement à cet e-mail).\n\n"
+      + "En cas de difficulté pour vous connecter ou pour toute question, vous pouvez contacter directement Sohel à l'adresse suivante : haggui.sohel@gmail.com (ou répondre simplement à cet e-mail).\n\n"
       + "À très vite,\n"
       + "L'équipe Phoenix Égalité des Chances\n"
       + "phoenixedc.asso@gmail.com";
 
     var messageHtml = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #222; max-width: 580px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
-        <div style="background: #1A103C; padding: 24px; text-align: center;">
+        <div style="background-color: #1A103C; padding: 24px; text-align: center;">
           <h2 style="color: #ffffff; margin: 0; text-transform: uppercase; font-size: 17px; letter-spacing: 2px; font-weight: 800;">Phoenix Égalité des Chances</h2>
           <p style="color: #cbd5e1; margin: 6px 0 0 0; font-size: 12px;">Espace Tuteurs & Bénévoles</p>
         </div>
@@ -428,28 +428,37 @@ function envoyerMailConnexion(e) {
           <p style="font-size: 15px; margin-top: 0;">Bonjour <strong>${nom}</strong>,</p>
           <p style="font-size: 14px; color: #4b5563;">Bienvenue dans l'équipe ! Voici vos identifiants personnels pour vous connecter à votre espace tuteur sur notre site :</p>
           
-          <div style="background: #f8fafc; padding: 18px 20px; border-radius: 10px; margin: 22px 0; border: 1px solid #e2e8f0; border-left: 4px solid #FF6B00;">
+          <div style="background-color: #f8fafc; padding: 18px 20px; border-radius: 10px; margin: 22px 0; border: 1px solid #e2e8f0; border-left: 4px solid #FF6B00;">
             <p style="margin: 4px 0; font-size: 14px; color: #1e293b;">
               <strong style="color: #0f172a;">Identifiant :</strong> 
-              <span style="font-family: monospace; font-size: 15px; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-left: 6px; color: #0f172a;">${login}</span>
+              <span style="font-family: monospace; font-size: 15px; background-color: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-left: 6px; color: #0f172a;">${login}</span>
             </p>
             <p style="margin: 10px 0 4px 0; font-size: 14px; color: #1e293b;">
               <strong style="color: #0f172a;">Mot de passe :</strong> 
-              <span style="font-family: monospace; font-size: 15px; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-left: 6px; color: #0f172a;">${mdp}</span>
+              <span style="font-family: monospace; font-size: 15px; background-color: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-left: 6px; color: #0f172a;">${mdp}</span>
             </p>
           </div>
           
           <div style="text-align: center; margin: 28px 0 20px 0;">
-            <a href="${siteUrl}" style="display: inline-block; background: linear-gradient(135deg, #FF6B00, #7C3AED); color: #ffffff; padding: 12px 28px; border-radius: 50px; font-weight: bold; font-size: 14px; text-decoration: none; box-shadow: 0 4px 12px rgba(255, 107, 0, 0.25);">
-              Accéder au Planning
+            <!--[if mso]>
+            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${siteUrl}" style="height:42px;v-text-anchor:middle;width:220px;" arcsize="50%" stroke="f" fillcolor="#FF6B00">
+            <w:anchorlock/>
+            <center>
+            <![endif]-->
+            <a href="${siteUrl}" target="_blank" style="display: inline-block; background-color: #FF6B00; background-image: linear-gradient(135deg, #FF6B00, #7C3AED); color: #ffffff !important; padding: 12px 28px; border-radius: 50px; font-weight: bold; font-size: 14px; text-decoration: none; box-shadow: 0 4px 12px rgba(255, 107, 0, 0.25);">
+              Accéder au Planning &rarr;
             </a>
+            <!--[if mso]>
+            </center>
+            </v:roundrect>
+            <![endif]-->
           </div>
 
           <p style="font-size: 12px; color: #64748b; text-align: center; margin-bottom: 20px;">
             Lien direct : <a href="${siteUrl}" style="color: #FF6B00;">${siteUrl}</a>
           </p>
 
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #7C3AED; border-radius: 8px; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #334155; line-height: 1.5;">
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #7C3AED; border-radius: 8px; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #334155; line-height: 1.5;">
             <strong>Besoin d'aide pour vous connecter ?</strong><br/>
             En cas de problème technique ou d'identifiant incorrect, vous pouvez contacter directement <strong>Sohel</strong> à l'adresse suivante : <a href="mailto:haggui.sohel@gmail.com" style="color: #7C3AED; font-weight: 600; text-decoration: underline;">haggui.sohel@gmail.com</a> (ou en répondant simplement à cet e-mail).
           </div>
@@ -457,10 +466,10 @@ function envoyerMailConnexion(e) {
           <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0 16px 0;" />
           
           <p style="font-size: 14px; margin: 0; color: #334155;">À très bientôt,</p>
-          <p style="font-size: 14px; font-weight: bold; margin: 4px 0 0 0; color: #0f172a;">L'équipe Phoenix Égalité des Chances 🦅</p>
+          <p style="font-size: 14px; font-weight: bold; margin: 4px 0 0 0; color: #0f172a;">L'équipe Phoenix Égalité des Chances</p>
         </div>
         
-        <div style="background: #f8fafc; padding: 14px 20px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
+        <div style="background-color: #f8fafc; padding: 14px 20px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
           Phoenix Égalité des Chances • Support : <a href="mailto:haggui.sohel@gmail.com" style="color: #64748b; text-decoration: underline;">haggui.sohel@gmail.com</a> ou <a href="mailto:phoenixedc.asso@gmail.com" style="color: #64748b; text-decoration: underline;">phoenixedc.asso@gmail.com</a>
         </div>
       </div>
