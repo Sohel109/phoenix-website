@@ -66,7 +66,7 @@ export function HeroScroll() {
                 {/* 1. SCENE CONTENT: TYPOGRAPHY HERO (START) */}
                 <motion.div 
                     style={{ opacity: heroOpacity, y: heroY }}
-                    className="absolute inset-0 z-20 flex flex-col justify-start md:justify-center items-center text-center px-6 max-w-6xl mx-auto pt-24 md:pt-0 pointer-events-none"
+                    className="absolute inset-0 z-20 flex flex-col justify-start md:justify-center items-center text-center px-6 max-w-6xl mx-auto pt-[calc(max(6.5rem,env(safe-area-inset-top,0px)+5.5rem))] md:pt-0 pointer-events-none"
                 >
                     <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-6 md:mb-8 tracking-wider uppercase">
                         {t('hero.since')}

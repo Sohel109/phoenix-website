@@ -26,7 +26,10 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
     return (
         <div className="min-h-screen bg-[#07071a] text-white">
             {/* Top bar */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-[#07071a]/90 backdrop-blur-md border-b border-white/10">
+            <header 
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 pb-3 bg-[#07071a]/90 backdrop-blur-md border-b border-white/10"
+                style={{ paddingTop: 'calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 0.25rem)' }}
+            >
                 <div className="flex items-center gap-3">
                     {showBack && (
                         <Link
@@ -91,7 +94,10 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
             />
 
             {/* Content */}
-            <main className="pt-20 pb-10 px-4 max-w-4xl mx-auto">
+            <main 
+                className="pb-10 px-4 max-w-4xl mx-auto"
+                style={{ paddingTop: 'calc(max(5rem, env(safe-area-inset-top, 0px) + 4rem))' }}
+            >
                 {children}
             </main>
         </div>

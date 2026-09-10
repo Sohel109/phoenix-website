@@ -59,7 +59,10 @@ export function PlanningNotificationsDrawer({ isOpen, onClose }: PlanningNotific
                         className="fixed top-0 right-0 bottom-0 w-full sm:w-[420px] bg-[#0d0d22] border-l border-white/10 z-[101] flex flex-col shadow-2xl"
                     >
                         {/* Header */}
-                        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                        <div 
+                            className="p-4 border-b border-white/10 flex items-center justify-between"
+                            style={{ paddingTop: 'calc(max(1rem, env(safe-area-inset-top, 0px) + 0.5rem))' }}
+                        >
                             <div className="flex items-center gap-2.5">
                                 <div className="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center">
                                     <Bell size={16} />
