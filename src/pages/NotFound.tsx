@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, FolderOpen, Calendar, Mail, Compass, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Home, FolderOpen, Calendar, Mail, Compass, ArrowLeft, ArrowRight, ShieldCheck, Map } from 'lucide-react';
 
 export function NotFound() {
     const location = useLocation();
@@ -10,10 +10,62 @@ export function NotFound() {
 
     useEffect(() => {
         document.title = 'Page introuvable (404) | Phoenix Égalité des Chances';
+        return () => {
+            document.title = 'Phoenix Égalité des Chances';
+        };
     }, []);
 
-    // Détection intelligente d'une page correspondante pour les anciens liens
+    // Détection intelligente d'une page correspondante pour les anciens liens Wix
     const suggestedRedirect = useMemo(() => {
+        // Simonu
+        if (path.includes('simonu')) {
+            return {
+                label: 'Simulation ONU (SimONU)',
+                to: '/evenements/simonu',
+                icon: <Calendar size={18} className="text-orange-400" />
+            };
+        }
+        // Dons / Donner
+        if (path.includes('don') || path.includes('donner') || path.includes('soutenir')) {
+            return {
+                label: 'Transparence & Soutien',
+                to: '/transparence',
+                icon: <ShieldCheck size={18} className="text-orange-400" />
+            };
+        }
+        // Olympiades
+        if (path.includes('olympiade')) {
+            return {
+                label: 'Les Olympiades Phoenix',
+                to: '/evenements/olympiades',
+                icon: <Calendar size={18} className="text-orange-400" />
+            };
+        }
+        // Plan / Carte des projets
+        if (path.includes('plan') || path.includes('carte') || path.includes('map')) {
+            return {
+                label: 'Carte & Plan des Projets',
+                to: '/carte-des-projets',
+                icon: <Map size={18} className="text-orange-400" />
+            };
+        }
+        // Devenir partenaire / Recrutement / Contact
+        if (path.includes('devenir-partenaire') || path.includes('devenir-parteniare') || path.includes('contact') || path.includes('rejoindre') || path.includes('recrutement') || path.includes('tuteur')) {
+            return {
+                label: 'Contact & Devenir Partenaire',
+                to: '/contact',
+                icon: <Mail size={18} className="text-orange-400" />
+            };
+        }
+        // JEDC / MEC
+        if (path.includes('mec') || path.includes('jedc') || path.includes('journee')) {
+            return {
+                label: 'Journée Égalité des Chances (JEDC)',
+                to: '/evenements/jedc',
+                icon: <Calendar size={18} className="text-orange-400" />
+            };
+        }
+        // Projets
         if (path.includes('projet') || path.includes('tutorat') || path.includes('gabriel') || path.includes('acse') || path.includes('massalia') || path.includes('izzo') || path.includes('auteuil') || path.includes('rimbaud')) {
             return {
                 label: 'Nos Projets de tutorat',
@@ -21,25 +73,12 @@ export function NotFound() {
                 icon: <FolderOpen size={18} className="text-orange-400" />
             };
         }
-        if (path.includes('mec') || path.includes('jedc') || path.includes('simonu') || path.includes('olympiade') || path.includes('entretien') || path.includes('event')) {
-            return {
-                label: 'Nos Événements phares',
-                to: '/evenements',
-                icon: <Calendar size={18} className="text-orange-400" />
-            };
-        }
+        // Partenaires
         if (path.includes('partenaire')) {
             return {
                 label: 'Nos Partenaires',
                 to: '/partenaires',
                 icon: <Compass size={18} className="text-orange-400" />
-            };
-        }
-        if (path.includes('contact') || path.includes('rejoindre') || path.includes('recrutement')) {
-            return {
-                label: 'Nous Contacter',
-                to: '/contact',
-                icon: <Mail size={18} className="text-orange-400" />
             };
         }
         return null;
