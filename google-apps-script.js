@@ -354,44 +354,90 @@ function envoyerMailConnexion(e) {
       return;
     }
     
-    var sujet = "🔑 Vos identifiants de connexion - Phoenix EDC";
+    var sujet = "Phoenix EDC - Vos accès à votre espace planning";
+    var siteUrl = "https://www.phoenix-egalite-des-chances.com/planning";
+    
+    var messageTexte = "Bonjour " + nom + ",\n\n"
+      + "Bienvenue dans l'équipe Phoenix Égalité des Chances !\n\n"
+      + "Voici vos identifiants personnels pour accéder à votre espace de gestion et planning :\n\n"
+      + "• Identifiant (Login) : " + login + "\n"
+      + "• Mot de passe : " + mdp + "\n\n"
+      + "Pour vous connecter, rendez-vous sur le planning en ligne :\n"
+      + siteUrl + "\n\n"
+      + "En cas de question ou de difficulté de connexion, vous pouvez répondre directement à cet e-mail.\n\n"
+      + "À très vite,\n"
+      + "L'équipe Phoenix Égalité des Chances\n"
+      + "phoenixedc.asso@gmail.com";
+
     var messageHtml = `
-      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-        <div style="background: #1A103C; padding: 25px; text-align: center;">
-          <h2 style="color: #fff; margin: 0; text-transform: uppercase; font-size: 18px; letter-spacing: 2px;">Phoenix Égalité des Chances</h2>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #222; max-width: 580px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
+        <div style="background: #1A103C; padding: 24px; text-align: center;">
+          <h2 style="color: #ffffff; margin: 0; text-transform: uppercase; font-size: 17px; letter-spacing: 2px; font-weight: 800;">Phoenix Égalité des Chances</h2>
+          <p style="color: #cbd5e1; margin: 6px 0 0 0; font-size: 12px;">Espace Tuteurs & Bénévoles</p>
         </div>
-        <div style="padding: 30px; background: #fff; line-height: 1.6;">
-          <p>Bonjour <strong>${nom}</strong>,</p>
-          <p>Bienvenue chez Phoenix ! Voici vos identifiants personnels pour accéder à votre espace de gestion et planning :</p>
+        
+        <div style="padding: 28px 24px; line-height: 1.6;">
+          <p style="font-size: 15px; margin-top: 0;">Bonjour <strong>${nom}</strong>,</p>
+          <p style="font-size: 14px; color: #4b5563;">Bienvenue dans l'équipe ! Voici vos identifiants personnels pour vous connecter à votre espace tuteur sur notre site :</p>
           
-          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #FF6B00;">
-            <p style="margin: 5px 0; font-size: 15px;"><strong>Identifiant (Login) :</strong> <code>${login}</code></p>
-            <p style="margin: 5px 0; font-size: 15px;"><strong>Mot de passe :</strong> <code>${mdp}</code></p>
+          <div style="background: #f8fafc; padding: 18px 20px; border-radius: 10px; margin: 22px 0; border: 1px solid #e2e8f0; border-left: 4px solid #FF6B00;">
+            <p style="margin: 4px 0; font-size: 14px; color: #1e293b;">
+              <strong style="color: #0f172a;">Identifiant :</strong> 
+              <span style="font-family: monospace; font-size: 15px; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-left: 6px; color: #0f172a;">${login}</span>
+            </p>
+            <p style="margin: 10px 0 4px 0; font-size: 14px; color: #1e293b;">
+              <strong style="color: #0f172a;">Mot de passe :</strong> 
+              <span style="font-family: monospace; font-size: 15px; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-left: 6px; color: #0f172a;">${mdp}</span>
+            </p>
           </div>
           
-          <p>Pour vous connecter, rendez-vous sur : <a href="https://phoenixedc.asso.fr/planning" style="color: #FF6B00; font-weight: bold; text-decoration: none;">phoenixedc.asso.fr/planning</a></p>
+          <div style="text-align: center; margin: 28px 0 20px 0;">
+            <a href="${siteUrl}" style="display: inline-block; background: linear-gradient(135deg, #FF6B00, #7C3AED); color: #ffffff; padding: 12px 28px; border-radius: 50px; font-weight: bold; font-size: 14px; text-decoration: none; box-shadow: 0 4px 12px rgba(255, 107, 0, 0.25);">
+              Accéder au Planning
+            </a>
+          </div>
+
+          <p style="font-size: 12px; color: #64748b; text-align: center; margin-bottom: 24px;">
+            Lien direct : <a href="${siteUrl}" style="color: #FF6B00;">${siteUrl}</a>
+          </p>
           
-          <br>
-          <p>À très vite,</p>
-          <p><strong>L'équipe Phoenix EDC</strong> 🦅</p>
+          <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0 16px 0;" />
+          
+          <p style="font-size: 14px; margin: 0; color: #334155;">À très bientôt,</p>
+          <p style="font-size: 14px; font-weight: bold; margin: 4px 0 0 0; color: #0f172a;">L'équipe Phoenix Égalité des Chances 🦅</p>
         </div>
-        <div style="background: #f1f1f1; padding: 15px; text-align: center; font-size: 11px; color: #888;">
-          Cet e-mail est automatisé. Merci de ne pas y répondre directement.
+        
+        <div style="background: #f8fafc; padding: 14px 20px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
+          Une question ? Répondez simplement à cet e-mail ou contactez-nous sur <a href="mailto:phoenixedc.asso@gmail.com" style="color: #64748b;">phoenixedc.asso@gmail.com</a>.
         </div>
       </div>
     `;
     
     try {
-      MailApp.sendEmail({
-        to: email.toString().trim(),
-        subject: sujet,
-        htmlBody: messageHtml
+      // 1. Priorité à GmailApp : envoyé depuis l'authentique boîte Gmail, stocké dans les envoyés
+      GmailApp.sendEmail(email.toString().trim(), sujet, messageTexte, {
+        htmlBody: messageHtml,
+        name: "Phoenix Égalité des Chances",
+        replyTo: "phoenixedc.asso@gmail.com"
       });
       sheet.getRange(row, COLONNE_CASE_A_COCHER + 1).setValue("Envoyé le " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy à HH:mm"));
     } catch (error) {
-      Logger.log("Erreur lors de l'envoi de l'email : " + error.toString());
-      SpreadsheetApp.getUi().alert("❌ Impossible d'envoyer l'e-mail à la ligne " + row + " : " + error.toString());
-      range.setValue(false);
+      // 2. Fallback avec MailApp si le quota ou les permissions GmailApp diffèrent
+      try {
+        MailApp.sendEmail({
+          to: email.toString().trim(),
+          subject: sujet,
+          body: messageTexte,
+          htmlBody: messageHtml,
+          name: "Phoenix Égalité des Chances",
+          replyTo: "phoenixedc.asso@gmail.com"
+        });
+        sheet.getRange(row, COLONNE_CASE_A_COCHER + 1).setValue("Envoyé le " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy à HH:mm"));
+      } catch (errFallback) {
+        Logger.log("Erreur lors de l'envoi de l'email : " + errFallback.toString());
+        SpreadsheetApp.getUi().alert("❌ Impossible d'envoyer l'e-mail à la ligne " + row + " : " + errFallback.toString());
+        range.setValue(false);
+      }
     }
   }
 }
