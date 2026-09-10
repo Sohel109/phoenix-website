@@ -302,3 +302,25 @@ export async function syncEventAttendanceApi(attendance: EventAttendance): Promi
         return false;
     }
 }
+
+export async function changePasswordApi(userId: string, oldPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'changePassword', userId, oldPassword, newPassword }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            return { success: false, message: 'Erreur réseau avec le serveur' };
+        }
+        const data = await response.json();
+        return {
+            success: !!data.success,
+            message: data.message || (data.success ? 'Mot de passe modifié avec succès' : 'Échec de la modification')
+        };
+    } catch (error) {
+        console.error("Error changing password:", error);
+        return { success: false, message: "Erreur serveur lors du changement de mot de passe" };
+    }
+}

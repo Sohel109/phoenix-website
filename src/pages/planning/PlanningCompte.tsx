@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, XCircle, AlertTriangle, User, ShieldCheck } from 'lucide-react';
+import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -35,7 +36,17 @@ function StatCard({ icon, label, value, unit, gradient, shadow: _shadow }: StatC
 }
 
 export function PlanningCompte() {
-    const { currentUser, bookings } = usePlanning();
+    const { currentUser, bookings, changePassword } = usePlanning();
+    
+    // Password change state
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showOld, setShowOld] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
     if (!currentUser) return null;
 
     const myBookings = bookings.filter(b => b.userId === currentUser.id);
@@ -74,6 +85,43 @@ export function PlanningCompte() {
         prevu: 'Prévu', confirme: 'Confirmé', absent: 'Absent', annule: 'Annulé',
     };
 
+    const handlePasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setFeedback(null);
+
+        if (!oldPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
+            setFeedback({ type: 'error', text: 'Veuillez remplir tous les champs.' });
+            return;
+        }
+
+        if (newPassword.length < 4) {
+            setFeedback({ type: 'error', text: 'Le nouveau mot de passe doit comporter au moins 4 caractères.' });
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setFeedback({ type: 'error', text: 'Les deux nouveaux mots de passe ne correspondent pas.' });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const res = await changePassword(oldPassword, newPassword);
+            if (res.success) {
+                setFeedback({ type: 'success', text: res.message || 'Mot de passe modifié avec succès !' });
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+            } else {
+                setFeedback({ type: 'error', text: res.message || "Impossible de modifier le mot de passe." });
+            }
+        } catch (err: any) {
+            setFeedback({ type: 'error', text: 'Une erreur est survenue lors de la mise à jour.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <PlanningLayout title="Mon compte">
             {/* Profile header */}
@@ -96,6 +144,130 @@ export function PlanningCompte() {
                         ))}
                     </div>
                 </div>
+            </motion.div>
+
+            {/* Modifier mon mot de passe */}
+            <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-5 rounded-2xl bg-white/5 border border-white/10 mb-6 relative overflow-hidden"
+            >
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="w-9 h-9 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                        <KeyRound size={18} />
+                    </div>
+                    <div>
+                        <h3 className="text-base font-bold text-white">Modifier mon mot de passe</h3>
+                        <p className="text-xs text-white/50">Mettez à jour votre mot de passe de connexion en toute sécurité.</p>
+                    </div>
+                </div>
+
+                {feedback && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex items-start gap-2.5 p-3.5 rounded-xl mb-4 text-xs font-medium border ${
+                            feedback.type === 'success'
+                                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+                                : 'bg-red-500/10 border-red-500/20 text-red-300'
+                        }`}
+                    >
+                        {feedback.type === 'success' ? (
+                            <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-400" />
+                        ) : (
+                            <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-400" />
+                        )}
+                        <span>{feedback.text}</span>
+                    </motion.div>
+                )}
+
+                <form onSubmit={handlePasswordSubmit} className="space-y-3.5">
+                    {/* Ancien mot de passe */}
+                    <div>
+                        <label className="block text-xs font-medium text-white/70 mb-1">
+                            Ancien mot de passe
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showOld ? 'text' : 'password'}
+                                value={oldPassword}
+                                onChange={(e) => setOldPassword(e.target.value)}
+                                placeholder="Votre mot de passe actuel"
+                                className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-orange-500/60 transition-colors pr-10"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowOld(!showOld)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                                tabIndex={-1}
+                            >
+                                {showOld ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Nouveau mot de passe + Confirmation */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-xs font-medium text-white/70 mb-1">
+                                Nouveau mot de passe
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showNew ? 'text' : 'password'}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="Au moins 4 caractères"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-orange-500/60 transition-colors pr-10"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNew(!showNew)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                                    tabIndex={-1}
+                                >
+                                    {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-white/70 mb-1">
+                                Confirmer le nouveau mot de passe
+                            </label>
+                            <input
+                                type={showNew ? 'text' : 'password'}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Répéter le mot de passe"
+                                className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-orange-500/60 transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white font-semibold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-md hover:shadow-orange-500/20 active:scale-98"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 size={15} className="animate-spin" />
+                                    <span>Modification...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <KeyRound size={15} />
+                                    <span>Enregistrer le mot de passe</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </motion.div>
 
             {/* Stats */}

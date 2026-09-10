@@ -191,6 +191,54 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
+
+  if (action === 'changePassword') {
+    try {
+      var userId = postData.userId ? postData.userId.toString().trim() : "";
+      var oldPassword = postData.oldPassword ? postData.oldPassword.toString().trim() : "";
+      var newPassword = postData.newPassword ? postData.newPassword.toString().trim() : "";
+
+      if (!userId || !oldPassword || !newPassword) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Tous les champs sont requis." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      if (newPassword.length < 4) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Le nouveau mot de passe doit comporter au moins 4 caractères." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+
+      for (var i = 1; i < data.length; i++) {
+        var rowId = data[i][0] ? data[i][0].toString().trim() : "";
+        var rowPass = data[i][3] ? data[i][3].toString().trim() : "";
+
+        if (rowId === userId) {
+          if (rowPass !== oldPassword) {
+            return ContentService.createTextOutput(JSON.stringify({ success: false, message: "L'ancien mot de passe est incorrect." }))
+              .setMimeType(ContentService.MimeType.JSON);
+          }
+          foundRow = i + 1;
+          break;
+        }
+      }
+
+      if (foundRow !== -1) {
+        sheet.getRange(foundRow, 4).setValue(newPassword); // Colonne D (mot de passe)
+        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Votre mot de passe a été modifié avec succès !" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Utilisateur non trouvé." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
   
   // Par défaut, c'est l'action de login existante
   var login = postData.login ? postData.login.toString().trim() : "";

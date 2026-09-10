@@ -8,6 +8,7 @@ import {
     deleteBookingApi,
     toggleWeekUnavailableApi,
     syncEventAttendanceApi,
+    changePasswordApi,
 } from '../data/planningData';
 import type { EventAttendance } from '../data/planningData';
 
@@ -32,6 +33,7 @@ interface PlanningContextType {
     toggleEventAttendance: (userId: string, eventId: string) => void;
     setEventAttendanceStatus: (userId: string, eventId: string, present: boolean) => Promise<void>;
     refreshPlanningData: () => Promise<void>;
+    changePassword: (oldPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
     isPending: (key: string) => boolean;
 }
 
@@ -307,6 +309,19 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         }
     }, [eventAttendance, currentUser]);
 
+    const changePassword = useCallback(async (oldPassword: string, newPassword: string) => {
+        if (!currentUser) return { success: false, message: 'Non connecté' };
+        const res = await changePasswordApi(currentUser.id, oldPassword, newPassword);
+        if (res.success) {
+            const updated = { ...currentUser, password: newPassword };
+            setCurrentUser(updated);
+            try {
+                sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+            } catch {}
+        }
+        return res;
+    }, [currentUser]);
+
     return (
         <PlanningContext.Provider value={{
             currentUser, login, logout,
@@ -315,7 +330,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,
-            refreshPlanningData, isPending
+            refreshPlanningData, changePassword, isPending
         }}>
             {children}
         </PlanningContext.Provider>
