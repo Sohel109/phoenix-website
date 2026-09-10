@@ -29,6 +29,7 @@ const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m
 const LegalMentions = lazy(() => import('./pages/LegalMentions').then(m => ({ default: m.LegalMentions })));
 const Transparency = lazy(() => import('./pages/Transparency').then(m => ({ default: m.Transparency })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
+const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Planning module (lazy)
 const PlanningLogin = lazy(() => import('./pages/planning/PlanningLogin').then(m => ({ default: m.PlanningLogin })));
@@ -111,6 +112,7 @@ function App() {
                   <Route path="/planning/events" element={<PlanningGuard><PlanningEventValidation /></PlanningGuard>} />
                   <Route path="/planning/mes-evenements" element={<PlanningGuard><PlanningMesEvenements /></PlanningGuard>} />
                   <Route path="/planning/notifications" element={<PlanningGuard><PlanningNotifications /></PlanningGuard>} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
             </main>
