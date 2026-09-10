@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
 import { Icon, type LatLngExpression } from 'leaflet';
 import { motion } from 'framer-motion';
-import { MapPin, Users, ArrowLeft, Navigation } from 'lucide-react';
+import { MapPin, Users, ArrowLeft, Navigation, ArrowUpRight } from 'lucide-react';
 import { projectsData, projectTypeColors, projectTypeLabels } from '../data/projectsData';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icon in production
@@ -157,16 +157,28 @@ export function ProjectMap() {
                                             </div>
                                         </div>
 
-                                        {/* Directions Button */}
-                                        <a
-                                            href={getDirectionsUrl(project.address)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-lg hover:from-orange-600 hover:to-purple-700 transition-all font-medium text-sm"
-                                        >
-                                            <Navigation size={16} />
-                                            Itinéraire
-                                        </a>
+                                        {/* Actions */}
+                                        <div className="flex flex-col gap-2 mt-3 pt-2 border-t border-gray-100">
+                                            {/* View Project Page Button */}
+                                            <Link
+                                                to={`/projets/${project.slug || project.id}`}
+                                                className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white rounded-lg transition-all font-semibold text-sm shadow-md hover:shadow-lg active:scale-98"
+                                            >
+                                                <span>Voir la fiche du projet</span>
+                                                <ArrowUpRight size={16} />
+                                            </Link>
+
+                                            {/* Directions Button */}
+                                            <a
+                                                href={getDirectionsUrl(project.address)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all font-medium text-sm border border-gray-200"
+                                            >
+                                                <Navigation size={15} />
+                                                <span>Itinéraire</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </Popup>
                             </Marker>

@@ -2,9 +2,22 @@ import { useParams, Link } from 'react-router-dom';
 import { projects } from '../data/projects';
 import { ArrowLeft } from 'lucide-react';
 
+const projectMapById: Record<string, string> = {
+    '1': 'sup-d-om',
+    '2': 'acse',
+    '3': 'massa-13',
+    '4': 'saint-gabriel',
+    '5': 'apprentis-d-auteuil',
+    '6': 'izzo',
+    '7': 'jules-ferry',
+    '8': 'arthur-rimbaud',
+    '9': 'roy-despagne',
+};
+
 export function ProjectDetail() {
     const { id } = useParams();
-    const project = projects.find(p => p.id === id);
+    const resolvedId = (id && projectMapById[id]) ? projectMapById[id] : id;
+    const project = projects.find(p => p.id === resolvedId);
 
     if (!project) {
         return (

@@ -1,5 +1,6 @@
 export interface Project {
     id: number;
+    slug: string;
     name: string;
     fullName: string;
     type: 'soutien' | 'culture' | 'hybride';
@@ -12,6 +13,7 @@ export interface Project {
 export const projectsData: Project[] = [
     {
         id: 2,
+        slug: "acse",
         name: "ACSE",
         fullName: "A Chacun Son Excellence",
         type: 'culture',
@@ -22,6 +24,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 5,
+        slug: "apprentis-d-auteuil",
         name: "Apprentis d'Auteuil",
         fullName: "Projet Apprentis d'Auteuil",
         type: 'culture',
@@ -32,6 +35,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 8,
+        slug: "arthur-rimbaud",
         name: "Arthur Rimbaud",
         fullName: "Projet Arthur Rimbaud",
         type: 'hybride',
@@ -42,6 +46,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 6,
+        slug: "izzo",
         name: "Collège Izzo",
         fullName: "Collège Izzo",
         type: 'hybride',
@@ -52,6 +57,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 7,
+        slug: "jules-ferry",
         name: "Jules Ferry",
         fullName: "Projet Jules Ferry",
         type: 'hybride',
@@ -62,6 +68,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 3,
+        slug: "massa-13",
         name: "MASSA 13",
         fullName: "MASSA 13",
         type: 'hybride',
@@ -72,6 +79,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 9,
+        slug: "roy-despagne",
         name: "Roy d'Espagne",
         fullName: "Projet Roy d'Espagne",
         type: 'hybride',
@@ -82,6 +90,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 4,
+        slug: "saint-gabriel",
         name: "St Gabriel",
         fullName: "Projet St Gabriel",
         type: 'hybride',
@@ -92,6 +101,7 @@ export const projectsData: Project[] = [
     },
     {
         id: 1,
+        slug: "sup-d-om",
         name: "Sup d'OM",
         fullName: "Sup d'OM (Droit au Bac)",
         type: 'soutien',
