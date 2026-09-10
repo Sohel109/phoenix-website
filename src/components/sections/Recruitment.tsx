@@ -61,16 +61,15 @@ export function Recruitment() {
                         className="text-center"
                     >
                         <div className="inline-block p-[1px] rounded-full bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">
-                            <button
-                                onClick={() => {
-                                    // Scroll to top to select recruitment category
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }}
+                            <a
+                                href="https://www.facebook.com/phoenix.egalitedeschances/?locale=fr_FR"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="group relative px-8 py-4 bg-[#130b2e] rounded-full transition-all duration-300 hover:bg-[#1A103C] flex items-center gap-3"
                             >
                                 <span className="text-white font-bold uppercase tracking-wider">Postuler Maintenant</span>
                                 <ArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            </a>
                         </div>
                         <p className="mt-4 text-xs text-gray-500 uppercase tracking-widest">
                             Prochaine session de recrutement : Octobre 2026

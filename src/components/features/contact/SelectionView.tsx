@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Info, Handshake, Users } from 'lucide-react';
+import { Info, Handshake } from 'lucide-react';
 
 interface SelectionViewProps {
     onSelect: (category: string) => void;
@@ -19,19 +19,12 @@ const categories = [
         icon: Handshake,
         gradient: 'from-purple-600 to-pink-500',
         description: 'Soutenir l\'ambition'
-    },
-    {
-        id: 'recrutement',
-        label: 'Recrutement',
-        icon: Users,
-        gradient: 'from-orange-500 to-red-500',
-        description: 'Rejoindre l\'équipe'
     }
 ];
 
 export function SelectionView({ onSelect }: SelectionViewProps) {
     return (
-        <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 w-full max-w-6xl mx-auto px-4">
+        <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 w-full max-w-4xl mx-auto px-4">
             {categories.map((cat, index) => (
                 <Card key={cat.id} category={cat} index={index} onSelect={onSelect} />
             ))}
