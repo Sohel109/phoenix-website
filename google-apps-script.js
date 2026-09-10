@@ -358,13 +358,9 @@ function getPlanningDataInternal() {
 // ==========================================
 // 4. ENVOI DE MAIL DYNAMIQUE SUR CASE À COCHER
 // ==========================================
-
-// Déclencheur automatique lors de la modification de la feuille
-function onEdit(e) {
-  if (e && e.range) {
-    envoyerMailConnexion(e);
-  }
-}
+// FONCTION D'ENVOI D'E-MAIL PAR CASE À COCHER
+// (Déclenchée uniquement par le déclencheur installable 'envoyerMailConnexion')
+// ==========================================
 
 function envoyerMailConnexion(e) {
   if (!e || !e.source || !e.range) return;
