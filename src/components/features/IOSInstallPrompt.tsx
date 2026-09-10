@@ -2,8 +2,23 @@ import { useState, useEffect } from 'react';
 import { X, Share, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+declare global {
+    interface Window {
+        __isCrowdfundingVisible?: boolean;
+        __isIOSPromptVisible?: boolean;
+    }
+}
+
 export function IOSInstallPrompt() {
     const [showPrompt, setShowPrompt] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
 
     useEffect(() => {
         // Improved detection of iOS including Safari on iPad / iPhone / iPod
@@ -15,21 +30,61 @@ export function IOSInstallPrompt() {
                              (window.navigator as any).standalone === true;
 
         // Check if user has already dismissed the prompt
-        const hasBeenDismissed = localStorage.getItem('ios-install-dismissed') === 'true';
-
-        // Show prompt only if on iOS, not standalone, and not previously dismissed
-        if (isIOS && !isStandalone && !hasBeenDismissed) {
-            // Show after 2.5 seconds
-            const timer = setTimeout(() => {
-                setShowPrompt(true);
-            }, 2500);
-            return () => clearTimeout(timer);
+        let hasBeenDismissed = false;
+        try {
+            hasBeenDismissed = localStorage.getItem('ios-install-dismissed') === 'true';
+        } catch {
+            hasBeenDismissed = false;
         }
+
+        if (!isIOS || isStandalone || hasBeenDismissed) {
+            return;
+        }
+
+        // Check if crowdfunding banner is already dismissed
+        let isCrowdfundingDismissed = false;
+        try {
+            isCrowdfundingDismissed = sessionStorage.getItem('crowdfunding-banner-dismissed') === 'true';
+        } catch {
+            isCrowdfundingDismissed = false;
+        }
+
+        let timer: any = null;
+
+        if (isCrowdfundingDismissed && !window.__isCrowdfundingVisible) {
+            // Crowdfunding banner is dismissed and not visible: display prompt after 2.5s
+            timer = setTimeout(() => {
+                setShowPrompt(true);
+                window.__isIOSPromptVisible = true;
+            }, 2500);
+        } else {
+            // Crowdfunding banner is pending or visible: wait until it is closed!
+            const handleCrowdfundingClosed = () => {
+                timer = setTimeout(() => {
+                    setShowPrompt(true);
+                    window.__isIOSPromptVisible = true;
+                }, 1800);
+            };
+
+            window.addEventListener('crowdfunding-closed', handleCrowdfundingClosed, { once: true });
+            return () => {
+                window.removeEventListener('crowdfunding-closed', handleCrowdfundingClosed);
+                if (timer) clearTimeout(timer);
+            };
+        }
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
     }, []);
 
     const handleDismiss = () => {
         setShowPrompt(false);
-        localStorage.setItem('ios-install-dismissed', 'true');
+        window.__isIOSPromptVisible = false;
+        try {
+            localStorage.setItem('ios-install-dismissed', 'true');
+        } catch {}
+        window.dispatchEvent(new CustomEvent('ios-prompt-closed'));
     };
 
     return (
@@ -40,9 +95,14 @@ export function IOSInstallPrompt() {
                     animate={{ y: 0, opacity: 1, scale: 1 }}
                     exit={{ y: 30, opacity: 0, scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                    className="fixed bottom-28 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-[1001]"
+                    className="fixed left-4 right-4 md:left-auto md:right-6 md:max-w-sm z-[1001]"
+                    style={{
+                        bottom: isMobile 
+                            ? 'calc(5.75rem + env(safe-area-inset-bottom, 0px))' 
+                            : '1.5rem'
+                    }}
                 >
-                    <div className="bg-zinc-950/85 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 shadow-2xl relative overflow-hidden">
+                    <div className="bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 sm:p-5 shadow-2xl relative overflow-hidden">
                         {/* Elegant background highlight blur */}
                         <div className="absolute -top-12 -left-12 w-24 h-24 bg-orange-500/20 rounded-full blur-2xl pointer-events-none" />
                         <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-purple-600/20 rounded-full blur-2xl pointer-events-none" />
@@ -50,19 +110,19 @@ export function IOSInstallPrompt() {
                         {/* Close button */}
                         <button
                             onClick={handleDismiss}
-                            className="absolute top-4 right-4 p-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-colors z-10"
+                            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-colors z-10"
                             aria-label="Fermer"
                         >
                             <X size={16} />
                         </button>
 
                         {/* Content */}
-                        <div className="relative z-10 flex flex-col gap-4">
-                            <div className="flex items-center gap-3">
+                        <div className="relative z-10 flex flex-col gap-3 sm:gap-4">
+                            <div className="flex items-center gap-3 pr-8">
                                 <img 
                                     src="/app-icon.png" 
                                     alt="Phoenix Logo" 
-                                    className="w-12 h-12 rounded-2xl border border-white/10 object-contain bg-zinc-900" 
+                                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl border border-white/10 object-contain bg-zinc-900 shrink-0" 
                                 />
                                 <div>
                                     <h3 className="font-extrabold text-sm text-white tracking-tight">
@@ -78,8 +138,8 @@ export function IOSInstallPrompt() {
                                 Accédez à Phoenix directement depuis votre écran d'accueil en suivant ces étapes rapides :
                             </p>
 
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5">
+                            <div className="space-y-2.5 sm:space-y-3">
+                                <div className="flex items-center gap-3 bg-white/5 p-2.5 sm:p-3 rounded-2xl border border-white/5">
                                     <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 shrink-0">
                                         <Share size={16} />
                                     </div>
@@ -90,7 +150,7 @@ export function IOSInstallPrompt() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5">
+                                <div className="flex items-center gap-3 bg-white/5 p-2.5 sm:p-3 rounded-2xl border border-white/5">
                                     <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 shrink-0">
                                         <Plus size={16} />
                                     </div>
@@ -104,7 +164,7 @@ export function IOSInstallPrompt() {
                         </div>
 
                         {/* Subtle arrow indicator pointing down (for Safari bar on iPhone) */}
-                        <div className="flex justify-center mt-3 -mb-2">
+                        <div className="flex justify-center mt-3 -mb-1">
                             <motion.div
                                 animate={{ y: [0, 4, 0] }}
                                 transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
