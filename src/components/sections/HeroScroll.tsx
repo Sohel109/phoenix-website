@@ -58,6 +58,16 @@ export function HeroScroll() {
     const text3Opacity = useTransform(scrollYProgress, [0.78, 0.86], [0, 1]);
     const text3Y = useTransform(scrollYProgress, [0.78, 0.86], ["50px", "0px"]);
 
+    // --- DISPLAY & VISIBILITY GUARDS (PREVENTS GHOST LAYERS IN SAFARI ON SCROLL UP/DOWN) ---
+    const section1Display = useTransform(scrollYProgress, (v) => v <= 0.20 ? "flex" : "none");
+    const section2Display = useTransform(scrollYProgress, (v) => (v >= 0.10 && v <= 0.52 ? "flex" : "none"));
+    const section3Display = useTransform(scrollYProgress, (v) => (v >= 0.40 && v <= 0.80 ? "flex" : "none"));
+    const section4Display = useTransform(scrollYProgress, (v) => v >= 0.70 ? "flex" : "none");
+
+    const text1Visibility = useTransform(scrollYProgress, (v) => (v >= 0.16 && v <= 0.50 ? "visible" : "hidden"));
+    const text2Visibility = useTransform(scrollYProgress, (v) => (v >= 0.46 && v <= 0.78 ? "visible" : "hidden"));
+    const text3Visibility = useTransform(scrollYProgress, (v) => v >= 0.74 ? "visible" : "hidden");
+
     return (
         <div ref={targetRef} className="relative h-[400vh] bg-transparent">
             {/* Sticky Viewport */}
@@ -65,7 +75,7 @@ export function HeroScroll() {
                 
                 {/* 1. SCENE CONTENT: TYPOGRAPHY HERO (START) */}
                 <motion.div 
-                    style={{ opacity: heroOpacity, y: heroY }}
+                    style={{ opacity: heroOpacity, y: heroY, display: section1Display }}
                     className="absolute inset-0 z-20 flex flex-col justify-start md:justify-center items-center text-center px-6 max-w-6xl mx-auto pt-[calc(max(6.5rem,env(safe-area-inset-top,0px)+5.5rem))] md:pt-0 pointer-events-none"
                 >
                     <div className="inline-block py-2 px-6 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/60 font-semibold text-xs md:text-sm mb-6 md:mb-8 tracking-wider uppercase">
@@ -112,10 +122,13 @@ export function HeroScroll() {
                 </motion.div>
 
                 {/* 2. SCENE CONTENT: SECTION 2 - CIRCLE (S'ENGAGER) */}
-                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center px-6 md:px-24">
+                <motion.div 
+                    style={{ display: section2Display }}
+                    className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center px-6 md:px-24"
+                >
                     {/* Text block (Left) */}
                     <motion.div 
-                        style={{ opacity: text1Opacity, x: text1X }}
+                        style={{ opacity: text1Opacity, x: text1X, visibility: text1Visibility }}
                         className="absolute left-6 md:left-24 max-w-md flex flex-col gap-4 text-left z-20"
                     >
                         <span className="text-xs md:text-sm font-bold tracking-widest bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent uppercase">
@@ -152,10 +165,13 @@ export function HeroScroll() {
                             <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="0.5" strokeDasharray="3 3" fill="none" />
                         </svg>
                     </motion.div>
-                </div>
+                </motion.div>
 
                 {/* 3. SCENE CONTENT: SECTION 3 - CAPSULE (TRANSMETTRE) */}
-                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center px-6 md:px-24">
+                <motion.div 
+                    style={{ display: section3Display }}
+                    className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center px-6 md:px-24"
+                >
                     {/* Shape block (Capsule on the Left) */}
                     <motion.div
                         style={{ 
@@ -187,7 +203,7 @@ export function HeroScroll() {
 
                     {/* Text block (Right) */}
                     <motion.div 
-                        style={{ opacity: text2Opacity, x: text2X }}
+                        style={{ opacity: text2Opacity, x: text2X, visibility: text2Visibility }}
                         className="absolute right-6 md:right-24 max-w-md flex flex-col gap-4 text-left md:text-right z-20"
                     >
                         <span className="text-xs md:text-sm font-bold tracking-widest bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent uppercase">
@@ -201,10 +217,13 @@ export function HeroScroll() {
                             Organiser des sorties, des projets artistiques et des ateliers pour stimuler la curiosité et lever les barrières culturelles.
                         </p>
                     </motion.div>
-                </div>
+                </motion.div>
 
                 {/* 4. SCENE CONTENT: SECTION 4 - DIAMOND / FULL CANVAS REVEAL (RÉUSSIR) */}
-                <div className="absolute inset-0 z-10 flex items-center justify-center">
+                <motion.div 
+                    style={{ display: section4Display }}
+                    className="absolute inset-0 z-10 flex items-center justify-center"
+                >
                     {/* Full Canvas masked image */}
                     <motion.div
                         style={{ opacity: diamondOpacity, scale: diamondScale, clipPath: diamondClip }}
@@ -221,7 +240,7 @@ export function HeroScroll() {
 
                     {/* Text and CTA Layer */}
                     <motion.div
-                        style={{ opacity: text3Opacity, y: text3Y }}
+                        style={{ opacity: text3Opacity, y: text3Y, visibility: text3Visibility }}
                         className="relative z-20 max-w-3xl text-center px-6 flex flex-col items-center gap-8"
                     >
                         <span className="text-xs md:text-sm font-bold tracking-widest bg-gradient-to-r from-orange-400 via-pink-500 to-violet-500 bg-clip-text text-transparent uppercase">
@@ -253,7 +272,7 @@ export function HeroScroll() {
                             </Link>
                         </div>
                     </motion.div>
-                </div>
+                </motion.div>
 
             </div>
         </div>
