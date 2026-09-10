@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -32,6 +32,14 @@ const cards: DashCard[] = [
         to: '/planning/horaire',
         gradient: 'from-violet-500 to-purple-700',
         shadow: 'shadow-violet-500/30',
+    },
+    {
+        icon: <Sparkles size={28} />,
+        label: 'Mes événements',
+        description: 'Présence SimONU, JEDC, Olympiades...',
+        to: '/planning/mes-evenements',
+        gradient: 'from-amber-500 to-orange-600',
+        shadow: 'shadow-orange-500/30',
     },
     {
         icon: <User size={28} />,
@@ -94,8 +102,8 @@ export function PlanningDashboard() {
                 >
                     <p className="text-white/50 text-sm mb-1">Bienvenue,</p>
                     <h1 className="text-3xl font-black text-white">{currentUser?.name}</h1>
-                    <span className="inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-500 to-violet-600 text-white">
-                        {isBureau ? '💎 Bureau' : isChef ? '👑 Chef de Projet' : '📚 Tuteur'}
+                    <span className="inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-primary/20 border border-primary/30 text-orange-400">
+                        {isBureau ? 'Bureau' : isChef ? 'Chef de Projet' : 'Tuteur'}
                     </span>
                 </motion.div>
 
@@ -117,14 +125,14 @@ export function PlanningDashboard() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + i * 0.08, type: 'spring', stiffness: 260, damping: 24 }}
-                        whileHover={{ y: -4, scale: 1.02 }}
+                        whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.98 }}
                     >
                         <Link
                             to={card.to}
-                            className={`flex flex-col gap-4 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:border-white/20 transition-all shadow-xl ${card.shadow} group`}
+                            className={`flex flex-col gap-4 p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group`}
                         >
-                            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center text-white shadow-lg ${card.shadow} group-hover:scale-110 transition-transform`}>
+                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center text-white`}>
                                 {card.icon}
                             </div>
                             <div>

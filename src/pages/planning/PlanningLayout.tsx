@@ -21,7 +21,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
     return (
         <div className="min-h-screen bg-[#07071a] text-white">
             {/* Top bar */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-[#07071a]/80 backdrop-blur-xl border-b border-white/10">
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-[#07071a]/90 backdrop-blur-md border-b border-white/10">
                 <div className="flex items-center gap-3">
                     {showBack && (
                         <Link
@@ -33,8 +33,8 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                     )}
                     <div className="flex items-center gap-2">
                         <CalendarCheck size={18} className="text-orange-400" />
-                        <span className="font-black text-base bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-violet-500 uppercase tracking-tight">
-                            Phoenix Planning
+                        <span className="font-black text-base text-white uppercase tracking-tight">
+                            Phoenix <span className="text-orange-400">Planning</span>
                         </span>
                         {title && (
                             <>

@@ -52,7 +52,7 @@ export function KeyFigures() {
                     className="text-center mb-24 md:mb-32"
                 >
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-6">
-                        {t('home.impact.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">{t('home.impact.titleHighlight')}</span>
+                        {t('home.impact.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-500">{t('home.impact.titleHighlight')}</span>
                     </h2>
                 </motion.div>
 
@@ -68,7 +68,7 @@ export function KeyFigures() {
                                 delay: i * 0.15,
                                 ease: [0.2, 0.65, 0.3, 0.9]
                             }}
-                            className="group relative p-10 lg:p-12 rounded-[2rem] bg-gray-50 dark:bg-current-card border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-3 overflow-hidden"
+                            className="group relative p-10 lg:p-12 rounded-xl bg-gray-50 dark:bg-current-card border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 overflow-hidden"
                         >
                             {/* Card Content */}
                             <div className="flex flex-col items-center text-center relative z-10">
@@ -88,12 +88,6 @@ export function KeyFigures() {
                                     {stat.label}
                                 </h3>
                             </div>
-
-                            {/* Hover Glow Effect - Specific to card part of spectrum */}
-                            <div className={`absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-br ${stat.color} blur-2xl -z-0`} />
-
-                            {/* Subtle Border Hover */}
-                            <div className="absolute inset-0 rounded-[2rem] border-2 border-transparent group-hover:border-purple-200/50 transition-colors duration-500 pointer-events-none" />
                         </motion.div>
                     ))}
                 </div>

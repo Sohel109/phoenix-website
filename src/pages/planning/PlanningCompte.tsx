@@ -14,14 +14,14 @@ interface StatCardProps {
     shadow: string;
 }
 
-function StatCard({ icon, label, value, unit, gradient, shadow }: StatCardProps) {
+function StatCard({ icon, label, value, unit, gradient, shadow: _shadow }: StatCardProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`flex flex-col gap-3 p-5 rounded-2xl bg-white/5 border border-white/10 shadow-xl ${shadow}`}
+            className="flex flex-col gap-3 p-5 rounded-xl bg-white/5 border border-white/10"
         >
-            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shadow-lg ${shadow}`}>
+            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center text-white`}>
                 {icon}
             </div>
             <div>
@@ -80,10 +80,10 @@ export function PlanningCompte() {
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 mb-6 mt-2"
+                className="flex items-center gap-4 p-5 rounded-xl bg-white/5 border border-white/10 mb-6 mt-2"
             >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-violet-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/20">
-                    {isChef ? <ShieldCheck size={28} className="text-white" /> : <User size={28} className="text-white" />}
+                <div className="w-14 h-14 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                    {isChef ? <ShieldCheck size={26} className="text-orange-400" /> : <User size={26} className="text-orange-400" />}
                 </div>
                 <div>
                     <h2 className="text-xl font-black text-white">{currentUser.name}</h2>

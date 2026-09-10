@@ -74,7 +74,7 @@ export function HeroScroll() {
                     
                     <h1 className="text-4xl sm:text-7xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase mb-6 md:mb-8 select-none">
                         {t('hero.title1')} <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-500 to-violet-600">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-500">
                             {t('hero.title2')}
                         </span>
                     </h1>
@@ -90,7 +90,7 @@ export function HeroScroll() {
                             className="group px-6 py-3.5 sm:px-8 sm:py-4 bg-white text-black rounded-full font-bold text-sm sm:text-base hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl flex items-center gap-2"
                         >
                             {t('hero.cta1')}
-                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                            <ArrowRight size={18} />
                         </Link>
 
                         <Link
@@ -105,8 +105,6 @@ export function HeroScroll() {
                     <motion.div 
                         style={{ opacity: scrollIndicatorOpacity }}
                         className="absolute bottom-32 md:bottom-12 flex flex-col items-center gap-2 text-white/30 text-xs font-bold tracking-widest uppercase cursor-pointer"
-                        animate={{ y: [0, 10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
                         <span>Scroll</span>
                         <ChevronDown size={16} />
@@ -244,7 +242,7 @@ export function HeroScroll() {
                                 className="group px-10 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl flex items-center gap-3 pointer-events-auto"
                             >
                                 {t('hero.cta1')}
-                                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                                <ArrowRight />
                             </Link>
 
                             <Link

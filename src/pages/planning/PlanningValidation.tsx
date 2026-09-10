@@ -136,9 +136,9 @@ export function PlanningValidation() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                                className="flex items-center gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/20"
+                                className="flex items-center gap-3 p-4 rounded-xl bg-blue-500/5 border border-blue-500/20"
                             >
-                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">
+                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-bold text-sm">
                                     {userName.charAt(0)}
                                 </div>
                                 <div className="flex-1 min-w-0">

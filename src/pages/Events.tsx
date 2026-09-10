@@ -14,12 +14,6 @@ export function Events() {
     return (
         <div ref={containerRef} className="min-h-screen bg-transparent overflow-hidden relative transition-colors duration-300">
 
-            {/* Abstract Background Orbs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-50 dark:opacity-30">
-                <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-secondary/20 rounded-full blur-[100px] animate-pulse-slow" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-primary/20 rounded-full blur-[100px] animate-pulse-slow delay-1000" />
-            </div>
-
             <div className="relative z-10 container mx-auto px-4 pt-32 pb-20">
                 <div className="text-center mb-20">
                     <motion.h1
@@ -50,18 +44,18 @@ function EventCard({ event, index }: { event: any, index: number }) {
             transition={{ delay: index * 0.2 }}
             className="group relative h-full"
         >
-            <div className="absolute inset-0 bg-white dark:bg-current-card rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-xl transition-all duration-500 group-hover:shadow-violet-900/20 group-hover:-translate-y-2" />
+            <div className="absolute inset-0 bg-white dark:bg-current-card rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm transition-all duration-500 group-hover:shadow-lg group-hover:-translate-y-1" />
 
             <div className="relative p-6 h-full flex flex-col z-10">
                 {/* Image Container */}
-                <div className="relative h-64 w-full rounded-[2rem] overflow-hidden mb-8 shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="relative h-64 w-full rounded-xl overflow-hidden mb-8 shadow-sm">
                     <img
                         src={event.image}
                         alt={event.title}
                         className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${event.id === 'jedc' ? 'object-left' : 'object-center'}`}
                     />
                     {/* Floating Date Badge */}
-                    <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-4 py-2 rounded-full text-sm font-semibold text-gray-800 dark:text-white border border-white/40 dark:border-white/10 shadow-sm flex items-center gap-2">
+                    <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-semibold text-gray-800 dark:text-white border border-white/40 dark:border-white/10 shadow-sm flex items-center gap-2">
                         <Calendar size={14} className="text-primary" />
                         {event.date}
                     </div>
@@ -81,7 +75,7 @@ function EventCard({ event, index }: { event: any, index: number }) {
 
                     <Link
                         to={`/evenements/${event.id}`}
-                        className="px-8 py-3 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white font-semibold text-sm shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2"
+                        className="px-8 py-3 rounded-full bg-primary hover:bg-primary-dark text-white font-semibold text-sm shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-2"
                     >
                         En savoir plus
                         <ArrowRight size={16} />

@@ -30,6 +30,8 @@ interface PlanningContextType {
     isWeekUnavailable: (userId: string, weekKey: string) => boolean;
     eventAttendance: EventAttendance[];
     toggleEventAttendance: (userId: string, eventId: string) => void;
+    setEventAttendanceStatus: (userId: string, eventId: string, present: boolean) => Promise<void>;
+    refreshPlanningData: () => Promise<void>;
     isPending: (key: string) => boolean;
 }
 
@@ -66,6 +68,15 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         }, 1200); // 1.2s cooldown minimum pour éviter le spam
     };
 
+    const refreshPlanningData = useCallback(async () => {
+        const data = await fetchPlanningData();
+        if (data) {
+            setBookings(data.bookings);
+            setUnavailableWeeks(data.unavailableWeeks);
+            setEventAttendance(data.eventAttendance);
+        }
+    }, []);
+
     // Charger les données de planning depuis le Google Sheet et synchroniser périodiquement (polling)
     useEffect(() => {
         if (!currentUser) {
@@ -75,21 +86,12 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        async function loadPlanningData() {
-            const data = await fetchPlanningData();
-            if (data) {
-                setBookings(data.bookings);
-                setUnavailableWeeks(data.unavailableWeeks);
-                setEventAttendance(data.eventAttendance);
-            }
-        }
-
-        loadPlanningData();
+        refreshPlanningData();
 
         // Polling automatique toutes les 10 secondes pour synchroniser les données entre utilisateurs sur Vercel
-        const intervalId = setInterval(loadPlanningData, 10000);
+        const intervalId = setInterval(refreshPlanningData, 10000);
         return () => clearInterval(intervalId);
-    }, [currentUser]);
+    }, [currentUser, refreshPlanningData]);
 
     const login = useCallback(async (loginId: string, password: string): Promise<boolean> => {
         const user = await authenticateUser(loginId, password);
@@ -256,7 +258,8 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     }, [unavailableWeeks, bookings]);
 
     const toggleEventAttendance = useCallback(async (userId: string, eventId: string) => {
-        if (!currentUser || currentUser.role !== 'bureau') return;
+        if (!currentUser) return;
+        if (currentUser.role !== 'bureau' && userId !== currentUser.id) return;
         
         const existing = eventAttendance.find(a => a.userId === userId && a.eventId === eventId);
         const nextPresentState = existing ? !existing.present : true;
@@ -279,6 +282,31 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         }
     }, [eventAttendance, currentUser]);
 
+    const setEventAttendanceStatus = useCallback(async (userId: string, eventId: string, present: boolean) => {
+        if (!currentUser) return;
+        if (currentUser.role !== 'bureau' && userId !== currentUser.id) return;
+        
+        const existing = eventAttendance.find(a => a.userId === userId && a.eventId === eventId);
+        if (existing && existing.present === present) return;
+
+        let next: EventAttendance[];
+        if (existing) {
+            next = eventAttendance.map(a => 
+                (a.userId === userId && a.eventId === eventId) ? { ...a, present } : a
+            );
+        } else {
+            next = [...eventAttendance, { userId, eventId, present }];
+        }
+        
+        setEventAttendance(next);
+        
+        const success = await syncEventAttendanceApi({ userId, eventId, present });
+        if (!success) {
+            // Revert
+            setEventAttendance(eventAttendance);
+        }
+    }, [eventAttendance, currentUser]);
+
     return (
         <PlanningContext.Provider value={{
             currentUser, login, logout,
@@ -286,7 +314,8 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             toggleAvailability, validatePresence, markAbsent, resetValidation,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
-            eventAttendance, toggleEventAttendance, isPending
+            eventAttendance, toggleEventAttendance, setEventAttendanceStatus,
+            refreshPlanningData, isPending
         }}>
             {children}
         </PlanningContext.Provider>

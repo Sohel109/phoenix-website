@@ -37,11 +37,6 @@ export function PlanningLogin() {
 
     return (
         <div className="min-h-screen bg-[#07071a] flex flex-col items-center justify-center px-4">
-            {/* Ambient glow */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[120px]" />
-                <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] bg-orange-500/10 rounded-full blur-[80px]" />
-            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -51,10 +46,10 @@ export function PlanningLogin() {
             >
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-violet-600 mb-4 shadow-2xl shadow-orange-500/30">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4">
                         <CalendarCheck size={30} className="text-white" />
                     </div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-pink-500 to-violet-600">
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-500">
                         Phoenix Planning
                     </h1>
                     <p className="text-white/40 mt-2 text-sm">Connectez-vous à votre espace membre</p>
@@ -64,7 +59,7 @@ export function PlanningLogin() {
                 <motion.div
                     animate={isShaking ? { x: [-8, 8, -6, 6, -4, 4, 0] } : { x: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl"
+                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-lg"
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Identifiant */}
@@ -126,7 +121,7 @@ export function PlanningLogin() {
                         <motion.button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-600 text-white font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all mt-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 text-white font-bold shadow-md transition-all mt-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             whileHover={!isLoading ? { scale: 1.02 } : {}}
                             whileTap={!isLoading ? { scale: 0.97 } : {}}
                         >

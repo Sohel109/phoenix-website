@@ -1,41 +1,44 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Download, CheckCircle, Search, ShieldCheck, Users, Loader2 } from 'lucide-react';
+import { Download, CheckCircle, Search, ShieldCheck, Users, Loader2, RotateCcw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { SPECIAL_EVENTS } from '../../data/planningData';
 
 export function PlanningEventValidation() {
-    const { currentUser, bookings, eventAttendance, toggleEventAttendance } = usePlanning();
+    const { currentUser, bookings, eventAttendance, toggleEventAttendance, refreshPlanningData } = usePlanning();
     const [selectedEventId, setSelectedEventId] = useState(SPECIAL_EVENTS[0].id);
     const [searchTerm, setSearchTerm] = useState('');
     const [remoteMembers, setRemoteMembers] = useState<{id: string, name: string}[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const isBureau = currentUser?.role === 'bureau';
 
-    useEffect(() => {
+    const loadData = useCallback(async () => {
         if (!isBureau) return;
-        
-        async function fetchMembers() {
-            try {
-                const API_URL = import.meta.env.VITE_API_URL || '';
-                const response = await fetch(`${API_URL}/api/login?action=listUsers`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.users) {
-                        setRemoteMembers(data.users);
-                    }
+        setIsRefreshing(true);
+        try {
+            await refreshPlanningData();
+            const API_URL = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${API_URL}/api/login?action=listUsers`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.users) {
+                    setRemoteMembers(data.users);
                 }
-            } catch (error) {
-                console.error("Erreur chargement membres:", error);
-            } finally {
-                setLoading(false);
             }
+        } catch (error) {
+            console.error("Erreur chargement membres:", error);
+        } finally {
+            setLoading(false);
+            setIsRefreshing(false);
         }
-        
-        fetchMembers();
-    }, [isBureau]);
+    }, [isBureau, refreshPlanningData]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     if (!currentUser || !isBureau) {
         return (
@@ -54,19 +57,26 @@ export function PlanningEventValidation() {
         const membersMap = new Map<string, string>();
         
         // Ajouter les membres distants (Google Sheet)
-        remoteMembers.forEach(m => membersMap.set(m.id, m.name));
+        remoteMembers.forEach(m => membersMap.set(m.id, m.name.trim()));
         
         // Ajouter les membres locaux (historique bookings) au cas où
         bookings.forEach(b => {
             if (b.userName && b.userId) {
-                membersMap.set(b.userId, b.userName);
+                membersMap.set(b.userId, b.userName.trim());
+            }
+        });
+
+        // Ajouter les membres présents dans eventAttendance au cas où
+        eventAttendance.forEach(a => {
+            if (a.userId && !membersMap.has(a.userId)) {
+                membersMap.set(a.userId, a.userId);
             }
         });
         
         return Array.from(membersMap.entries())
             .map(([id, name]) => ({ id, name }))
             .sort((a, b) => a.name.localeCompare(b.name));
-    }, [bookings, remoteMembers]);
+    }, [bookings, remoteMembers, eventAttendance]);
 
     const filteredMembers = allMembers.filter(m => 
         m.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -115,14 +125,26 @@ export function PlanningEventValidation() {
                     <h1 className="text-2xl font-black text-white">Validation Événements</h1>
                     <p className="text-white/50 text-sm mt-1">Gérez les présences pour les grands événements.</p>
                 </div>
-                <motion.button
-                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    onClick={handleExport}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold shadow-lg shadow-emerald-500/20"
-                >
-                    <Download size={18} />
-                    Exporter CSV
-                </motion.button>
+                <div className="flex items-center gap-2">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={loadData}
+                        disabled={isRefreshing}
+                        className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/10 transition-colors"
+                        title="Rafraîchir les données"
+                    >
+                        <RotateCcw size={16} className={isRefreshing ? "animate-spin" : ""} />
+                        <span className="hidden sm:inline">Actualiser</span>
+                    </motion.button>
+                    <motion.button
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={handleExport}
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm"
+                    >
+                        <Download size={18} />
+                        Exporter CSV
+                    </motion.button>
+                </div>
             </div>
 
             {/* Event Tabs */}
@@ -178,7 +200,7 @@ export function PlanningEventValidation() {
                         <p className="text-white/40 animate-pulse">Chargement des membres depuis Google Sheet...</p>
                     </div>
                 ) : filteredMembers.length === 0 ? (
-                    <div className="text-center py-12 rounded-3xl bg-white/5 border border-white/10">
+                    <div className="text-center py-12 rounded-xl bg-white/5 border border-white/10">
                         <Users size={48} className="mx-auto text-white/10 mb-3" />
                         <p className="text-white/30 font-medium">Aucun membre trouvé.</p>
                     </div>
@@ -192,7 +214,7 @@ export function PlanningEventValidation() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.02 }}
                                 onClick={() => toggleEventAttendance(member.id, selectedEventId)}
-                                className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${
+                                className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${
                                     isPresent 
                                         ? 'bg-emerald-500/10 border-emerald-500/30' 
                                         : 'bg-white/5 border-white/10 hover:border-white/20'

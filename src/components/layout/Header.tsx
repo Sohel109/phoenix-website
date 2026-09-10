@@ -15,7 +15,7 @@ export function Header() {
                 href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-purple-600 text-white font-bold text-xs md:text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-violet-500 text-white font-bold text-xs md:text-sm hover:scale-105 active:scale-95 transition-all duration-200"
             >
                 <Heart size={13} fill="currentColor" />
                 <span className="hidden xs:inline">Faire un don</span>

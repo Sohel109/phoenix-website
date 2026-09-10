@@ -6,10 +6,10 @@ export function AuroraBackground() {
 
     return (
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-            {/* Base Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-violet-900/15 to-gray-900" />
+            {/* Base Gradient — neutre, sans teinte violette envahissante */}
+            <div className="absolute inset-0 bg-gray-950" />
 
-            {/* Animated Aurora Blobs - Only on desktop */}
+            {/* Animated Aurora Blobs - Only on desktop, opacités et tailles réduites */}
             {!isMobile && (
                 <>
                     <motion.div
@@ -23,7 +23,7 @@ export function AuroraBackground() {
                             repeat: Infinity,
                             ease: "easeInOut"
                         }}
-                        className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-violet-500/25 rounded-full blur-[120px]"
+                        className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-[120px]"
                     />
 
                     <motion.div
@@ -38,7 +38,7 @@ export function AuroraBackground() {
                             ease: "easeInOut",
                             delay: 2
                         }}
-                        className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-orange-500/15 rounded-full blur-[100px]"
+                        className="absolute bottom-0 right-1/4 w-[450px] h-[450px] bg-orange-500/8 rounded-full blur-[100px]"
                     />
 
                     <motion.div
@@ -53,7 +53,7 @@ export function AuroraBackground() {
                             ease: "easeInOut",
                             delay: 5
                         }}
-                        className="absolute top-1/2 left-1/2 w-[700px] h-[700px] bg-purple-400/20 rounded-full blur-[110px]"
+                        className="absolute top-1/2 left-1/2 w-[550px] h-[550px] bg-purple-400/8 rounded-full blur-[110px]"
                     />
                 </>
             )}

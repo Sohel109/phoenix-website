@@ -249,6 +249,24 @@ app.post('/api/planning', async (req, res) => {
 });
 
 // 🔐 ENDPOINT LOGIN (PROXY VERS GOOGLE APPS SCRIPT)
+app.get('/api/login', async (req, res) => {
+    const { action } = req.query;
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
+
+    if (action === 'listUsers') {
+        try {
+            const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=listUsers`);
+            if (!response.ok) return res.status(response.status).json({ success: false });
+            const data = await response.json();
+            return res.status(200).json(data);
+        } catch (error) {
+            console.error('Erreur proxy listUsers:', error);
+            return res.status(500).json({ success: false });
+        }
+    }
+    return res.status(405).json({ error: 'Method not allowed' });
+});
+
 app.post('/api/login', async (req, res) => {
     const { login, password } = req.body;
 

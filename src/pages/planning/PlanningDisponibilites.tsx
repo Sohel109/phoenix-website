@@ -17,7 +17,7 @@ function Toggle({ checked, onChange, disabled, loading }: { checked: boolean; on
             disabled={disabled || loading}
             className={`relative inline-flex h-[20px] w-[36px] items-center rounded-full transition-all focus:outline-none ${
                 disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-            } ${checked ? 'bg-gradient-to-r from-orange-500 to-violet-500' : 'bg-gray-200 dark:bg-white/20'}`}
+            } ${checked ? 'bg-primary' : 'bg-gray-200 dark:bg-white/20'}`}
         >
             <span className={`inline-flex items-center justify-center h-[16px] w-[16px] transform rounded-full bg-white shadow-md transition-transform ${checked ? 'translate-x-[18px]' : 'translate-x-[2px]'}`}>
                 {loading && <LoaderCircle size={10} className="animate-spin text-orange-500" />}
@@ -93,7 +93,7 @@ export function PlanningDisponibilites() {
                 <div className="flex flex-wrap gap-1.5 mb-4">
                     <button
                         onClick={() => setActiveProjectId(null)}
-                        className={`px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold transition-colors ${activeProjectId === null ? 'bg-gradient-to-r from-orange-500 to-violet-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/20'}`}
+                        className={`px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold transition-colors ${activeProjectId === null ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/20'}`}
                     >
                         Tous
                     </button>
@@ -101,7 +101,7 @@ export function PlanningDisponibilites() {
                         <button
                             key={p.id}
                             onClick={() => setActiveProjectId(p.id)}
-                            className={`px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold transition-colors ${activeProjectId === p.id ? 'bg-gradient-to-r from-orange-500 to-violet-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/20'}`}
+                            className={`px-2.5 py-1 rounded-full text-[10px] md:text-xs font-semibold transition-colors ${activeProjectId === p.id ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/20'}`}
                         >
                             {p.name}
                         </button>

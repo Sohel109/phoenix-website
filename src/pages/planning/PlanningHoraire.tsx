@@ -64,10 +64,10 @@ export function PlanningHoraire() {
                                 initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.06, type: 'spring', stiffness: 260, damping: 24 }}
-                                className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
+                                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
                             >
                                 {/* Day pill */}
-                                <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-gradient-to-br from-orange-500/20 to-violet-600/20 border border-white/10 flex flex-col items-center justify-center text-center">
+                                <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-white/10 border border-white/10 flex flex-col items-center justify-center text-center">
                                     <span className="text-xs text-white/50 leading-none">{slot!.day.slice(0, 3)}</span>
                                     <span className="text-lg font-black text-white mt-0.5">{slot!.startTime}</span>
                                 </div>

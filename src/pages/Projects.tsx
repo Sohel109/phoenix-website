@@ -34,8 +34,8 @@ export function Projects() {
 
                             {/* Card Body */}
                             <motion.div
-                                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                                className="bg-white dark:bg-current-card border border-gray-100 dark:border-white/5 pt-16 pb-6 px-8 rounded-3xl min-h-[280px] flex flex-col items-center text-center shadow-sm hover:shadow-2xl hover:shadow-violet-900/20 transition-all relative z-10"
+                                whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                                className="bg-white dark:bg-current-card border border-gray-100 dark:border-white/5 pt-16 pb-6 px-8 rounded-2xl min-h-[280px] flex flex-col items-center text-center shadow-sm hover:shadow-lg transition-all relative z-10"
                             >
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 mt-2 font-display">{project.title}</h3>
                                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-10 flex-grow font-medium">
@@ -45,7 +45,7 @@ export function Projects() {
                                 {/* Button */}
                                 <Link
                                     to={`/projets/${project.id}`}
-                                    className="absolute bottom-6 right-6 px-6 py-2 bg-gradient-to-tr from-orange-500 to-pink-500 text-white font-semibold rounded-full text-sm shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-300"
+                                    className="absolute bottom-6 right-6 px-6 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-full text-sm shadow-sm hover:shadow-md transition-all duration-300"
                                 >
                                     Découvrir
                                 </Link>
