@@ -62,7 +62,7 @@ export function Recruitment() {
                     >
                         <div className="inline-block p-[1px] rounded-full bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600">
                             <a
-                                href="https://www.facebook.com/phoenix.egalitedeschances/?locale=fr_FR"
+                                href="https://m.facebook.com/groups/1045459488302373/?ref=share"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="group relative px-8 py-4 bg-[#130b2e] rounded-full transition-all duration-300 hover:bg-[#1A103C] flex items-center gap-3"
