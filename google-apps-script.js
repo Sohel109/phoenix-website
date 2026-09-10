@@ -412,7 +412,7 @@ function envoyerMailConnexion(e) {
       + "• Mot de passe : " + mdp + "\n\n"
       + "Pour vous connecter, rendez-vous sur le planning en ligne :\n"
       + siteUrl + "\n\n"
-      + "En cas de question ou de difficulté de connexion, vous pouvez répondre directement à cet e-mail.\n\n"
+      + "💡 En cas de difficulté pour vous connecter ou pour toute question, vous pouvez contacter directement Sohel à l'adresse suivante : haggui.sohel@gmail.com (ou répondre simplement à cet e-mail).\n\n"
       + "À très vite,\n"
       + "L'équipe Phoenix Égalité des Chances\n"
       + "phoenixedc.asso@gmail.com";
@@ -445,9 +445,14 @@ function envoyerMailConnexion(e) {
             </a>
           </div>
 
-          <p style="font-size: 12px; color: #64748b; text-align: center; margin-bottom: 24px;">
+          <p style="font-size: 12px; color: #64748b; text-align: center; margin-bottom: 20px;">
             Lien direct : <a href="${siteUrl}" style="color: #FF6B00;">${siteUrl}</a>
           </p>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #7C3AED; border-radius: 8px; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #334155; line-height: 1.5;">
+            <strong>Besoin d'aide pour vous connecter ?</strong><br/>
+            En cas de problème technique ou d'identifiant incorrect, vous pouvez contacter directement <strong>Sohel</strong> à l'adresse suivante : <a href="mailto:haggui.sohel@gmail.com" style="color: #7C3AED; font-weight: 600; text-decoration: underline;">haggui.sohel@gmail.com</a> (ou en répondant simplement à cet e-mail).
+          </div>
           
           <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0 16px 0;" />
           
@@ -456,7 +461,7 @@ function envoyerMailConnexion(e) {
         </div>
         
         <div style="background: #f8fafc; padding: 14px 20px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
-          Une question ? Répondez simplement à cet e-mail ou contactez-nous sur <a href="mailto:phoenixedc.asso@gmail.com" style="color: #64748b;">phoenixedc.asso@gmail.com</a>.
+          Phoenix Égalité des Chances • Support : <a href="mailto:haggui.sohel@gmail.com" style="color: #64748b; text-decoration: underline;">haggui.sohel@gmail.com</a> ou <a href="mailto:phoenixedc.asso@gmail.com" style="color: #64748b; text-decoration: underline;">phoenixedc.asso@gmail.com</a>
         </div>
       </div>
     `;
