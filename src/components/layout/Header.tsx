@@ -9,7 +9,7 @@ export function Header() {
             style={{ paddingTop: 'calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 0.35rem)' }}
         >
             <Link to="/" className="flex items-center gap-2 group pointer-events-auto">
-                <span className="text-xl md:text-2xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600 drop-shadow-sm font-sans">
+                <span translate="no" className="notranslate text-xl md:text-2xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600 drop-shadow-sm font-sans">
                     PHOENIX
                 </span>
             </Link>

@@ -120,9 +120,10 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
                         <div className="flex flex-col items-center justify-center text-center px-4">
 
                             {/* "PHOENIX" - GIANT GRADIENT STAGGER */}
-                            <div className="overflow-hidden py-4 -my-4">
+                            <div translate="no" className="notranslate overflow-hidden py-4 -my-4">
                                 <motion.h1
-                                    className="text-6xl md:text-9xl lg:text-[10rem] font-black uppercase tracking-tighter flex items-center justify-center leading-none"
+                                    translate="no"
+                                    className="notranslate text-6xl md:text-9xl lg:text-[10rem] font-black uppercase tracking-tighter flex items-center justify-center leading-none"
                                     variants={titleContainer}
                                     initial="hidden"
                                     animate="visible"

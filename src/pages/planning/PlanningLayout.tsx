@@ -41,7 +41,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                     )}
                     <div className="flex items-center gap-2">
                         <CalendarCheck size={18} className="text-orange-400" />
-                        <span className="font-black text-base text-white uppercase tracking-tight">
+                        <span translate="no" className="notranslate font-black text-base text-white uppercase tracking-tight">
                             Phoenix <span className="text-orange-400">Planning</span>
                         </span>
                         {title && (

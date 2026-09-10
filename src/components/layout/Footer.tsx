@@ -18,7 +18,7 @@ export function Footer() {
                                 alt="Phoenix EDC Logo"
                                 className="w-16 h-16 object-contain"
                             />
-                            <span className="font-black text-2xl tracking-tight">
+                            <span translate="no" className="notranslate font-black text-2xl tracking-tight">
                                 Phoenix <span className="text-orange-500">EDC</span>
                             </span>
                         </div>
