@@ -135,38 +135,6 @@ export function getSlotDuration(slot: TimeSlot): number {
 
 export const DAY_ORDER: DayOfWeek[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
-// ─── localStorage ─────────────────────────────────────────────────────────────
-
-const BOOKINGS_KEY = 'phoenix_planning_bookings';
-const UNAVAILABLE_KEY = 'phoenix_planning_unavailable';
-const EVENT_ATTENDANCE_KEY = 'phoenix_event_attendance';
-
-export function loadBookings(): Booking[] {
-    try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY) ?? '[]'); }
-    catch { return []; }
-}
-
-export function saveBookings(b: Booking[]): void {
-    localStorage.setItem(BOOKINGS_KEY, JSON.stringify(b));
-}
-
-export function loadUnavailableWeeks(): string[] {
-    try { return JSON.parse(localStorage.getItem(UNAVAILABLE_KEY) ?? '[]'); }
-    catch { return []; }
-}
-
-export function saveUnavailableWeeks(weeks: string[]): void {
-    localStorage.setItem(UNAVAILABLE_KEY, JSON.stringify(weeks));
-}
-
-export function loadEventAttendance(): EventAttendance[] {
-    try { return JSON.parse(localStorage.getItem(EVENT_ATTENDANCE_KEY) ?? '[]'); }
-    catch { return []; }
-}
-
-export function saveEventAttendance(att: EventAttendance[]): void {
-    localStorage.setItem(EVENT_ATTENDANCE_KEY, JSON.stringify(att));
-}
 
 // ─── Week utilities ───────────────────────────────────────────────────────────
 

@@ -1,6 +1,10 @@
 // Vercel Serverless Function for Planning Sync
 export default async function handler(req, res) {
-    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyMsp23ni8GWsIVXrj8xuBpjLLNgqRsxlsyEBWmQt4xAlKDBHzLqXtKW5vAdzMESMeXg/exec";
+    const GOOGLE_APPS_SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
+    if (!GOOGLE_APPS_SCRIPT_URL) {
+        console.error('GOOGLE_APPS_SCRIPT_URL is not set in environment variables.');
+        return res.status(500).json({ success: false, message: 'Erreur de configuration serveur.' });
+    }
     
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);

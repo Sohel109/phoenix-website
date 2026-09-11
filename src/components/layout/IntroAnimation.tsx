@@ -8,25 +8,22 @@ interface IntroAnimationProps {
 export function IntroAnimation({ onComplete }: IntroAnimationProps) {
     const [isVisible, setIsVisible] = useState(true);
 
-    // Skip animation on mobile for performance
-    // This check should ideally be done using a more robust method like media queries or a custom hook
-    // that listens to window resize events, but for a quick check, window.innerWidth is used here.
+    // Détection mobile : pas de useState pour éviter un flash, lecture directe au mount
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    if (isMobile) {
-        useEffect(() => {
-            // If animation is skipped, call onComplete immediately
-            onComplete();
-        }, [onComplete]);
-        return null;
-    }
 
+    // Un seul useEffect toujours appelé (respect des Rules of Hooks)
     useEffect(() => {
+        // Sur mobile on saute l'animation pour éviter la surcharge GPU
+        if (isMobile) {
+            onComplete();
+            return;
+        }
+
         // Sequence (Turbo Mode - Max 2s):
         // 0s: Background
         // 0.1s: PHOENIX Explodes in
         // 0.4s: Subtitle Wipe
         // 1.8s: Fade out
-
         const timer1 = setTimeout(() => setIsVisible(false), 1800);
         const timer2 = setTimeout(() => onComplete(), 2300);
 
@@ -34,7 +31,10 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
-    }, [onComplete]);
+    }, [onComplete, isMobile]);
+
+    // Sur mobile : rendu nul (onComplete déjà appelé dans l'effect)
+    if (isMobile) return null;
 
     // --- ANIMATIONS ---
 

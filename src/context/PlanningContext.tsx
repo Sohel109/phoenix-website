@@ -47,7 +47,12 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [currentUser, setCurrentUser] = useState<PlanningUser | null>(() => {
         try {
             const data = sessionStorage.getItem(SESSION_KEY);
-            return data ? JSON.parse(data) : null;
+            if (!data) return null;
+            const parsed = JSON.parse(data);
+            // Sécurité : le password n'est jamais stocké en session
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { password: _pwd, ...userWithoutPassword } = parsed;
+            return userWithoutPassword as PlanningUser;
         } catch { return null; }
     });
 
@@ -90,16 +95,19 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
 
         refreshPlanningData();
 
-        // Polling automatique toutes les 10 secondes pour synchroniser les données entre utilisateurs sur Vercel
-        const intervalId = setInterval(refreshPlanningData, 10000);
+        // Polling automatique toutes les 30 secondes pour synchroniser les données entre utilisateurs sur Vercel
+        const intervalId = setInterval(refreshPlanningData, 30000);
         return () => clearInterval(intervalId);
     }, [currentUser, refreshPlanningData]);
 
     const login = useCallback(async (loginId: string, password: string): Promise<boolean> => {
         const user = await authenticateUser(loginId, password);
         if (user) {
-            setCurrentUser(user);
-            sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+            // Sécurité : on ne stocke jamais le mot de passe en session
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { password: _pwd, ...userWithoutPassword } = user;
+            setCurrentUser(userWithoutPassword as PlanningUser);
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(userWithoutPassword));
             return true;
         }
         return false;
@@ -312,13 +320,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const changePassword = useCallback(async (oldPassword: string, newPassword: string) => {
         if (!currentUser) return { success: false, message: 'Non connecté' };
         const res = await changePasswordApi(currentUser.id, oldPassword, newPassword);
-        if (res.success) {
-            const updated = { ...currentUser, password: newPassword };
-            setCurrentUser(updated);
-            try {
-                sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
-            } catch {}
-        }
+        // Sécurité : on ne stocke pas le nouveau mot de passe dans le state ou la session
         return res;
     }, [currentUser]);
 

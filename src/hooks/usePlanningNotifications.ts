@@ -62,16 +62,8 @@ export function usePlanningNotifications() {
         });
     }, [currentUser]);
 
-    const markAllAsRead = useCallback(() => {
-        if (!currentUser) return;
-        const allIds = notifications.map(n => n.id);
-        setReadIds(allIds);
-        try {
-            localStorage.setItem(`phoenix_read_notifs_${currentUser.id}`, JSON.stringify(allIds));
-        } catch (e) {
-            console.error(e);
-        }
-    }, [currentUser]);
+    // markAllAsRead est déclaré APRÈS notifications (voir ci-dessous) pour éviter la stale closure
+
 
     const notifications = useMemo(() => {
         if (!currentUser) return [];
@@ -233,6 +225,18 @@ export function usePlanningNotifications() {
     const unreadCount = useMemo(() => {
         return notifications.filter(n => !n.read).length;
     }, [notifications]);
+
+    // Déclaré APRÈS notifications pour avoir accès aux IDs à jour sans stale closure
+    const markAllAsRead = useCallback(() => {
+        if (!currentUser) return;
+        const allIds = notifications.map(n => n.id);
+        setReadIds(allIds);
+        try {
+            localStorage.setItem(`phoenix_read_notifs_${currentUser.id}`, JSON.stringify(allIds));
+        } catch (e) {
+            console.error(e);
+        }
+    }, [currentUser, notifications]);
 
     return {
         notifications,

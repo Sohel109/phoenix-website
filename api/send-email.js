@@ -1,6 +1,17 @@
 // Vercel Serverless Function for Email Sending
 import nodemailer from 'nodemailer';
 
+// Sanitisation HTML pour éviter l'injection de balises dans les emails
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;');
+}
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -36,22 +47,28 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: "Champs manquants" });
     }
 
-    const displayName = fullName || name || (firstName && lastName ? `${firstName} ${lastName}` : 'Inconnu');
+    // Toutes les variables utilisateur sont échappées avant injection dans le HTML
+    const rawDisplayName = fullName || name || (firstName && lastName ? `${firstName} ${lastName}` : 'Inconnu');
+    const displayName = escapeHtml(rawDisplayName);
+    const safeEmail = escapeHtml(email);
+    const safeCategory = escapeHtml(category);
+    const safeMessage = escapeHtml(message);
 
     let detailsHtml = '';
     if (category === 'recrutement' && role) {
-        detailsHtml = `<p><strong>Poste visé :</strong> ${role}</p>`;
+        detailsHtml = `<p><strong>Poste visé :</strong> ${escapeHtml(role)}</p>`;
     } else if (category === 'information' && subject) {
-        detailsHtml = `<p><strong>Sujet :</strong> ${subject}</p>`;
+        detailsHtml = `<p><strong>Sujet :</strong> ${escapeHtml(subject)}</p>`;
     } else if (category === 'partenariat' && partnershipType) {
-        detailsHtml = `<p><strong>Type de Partenariat :</strong> ${partnershipType}</p>`;
+        detailsHtml = `<p><strong>Type de Partenariat :</strong> ${escapeHtml(partnershipType)}</p>`;
     }
+
 
     try {
         const mailOptionsAdmin = {
             from: process.env.EMAIL_USER,
             to: 'phoenixedc.asso@gmail.com',
-            subject: `[Phoenix Web] ${category.toUpperCase()} - ${displayName}`,
+            subject: `[Phoenix Web] ${safeCategory.toUpperCase()} - ${displayName}`,
             html: `
                 <div style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
                     <div style="background: #1A103C; padding: 20px; text-align: center;">
@@ -59,17 +76,17 @@ export default async function handler(req, res) {
                     </div>
                     <div style="padding: 30px; background: #fff;">
                         <p style="color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Catégorie</p>
-                        <h3 style="color: #FF6B00; margin: 0 0 20px 0; font-size: 24px;">${category.toUpperCase()}</h3>
+                        <h3 style="color: #FF6B00; margin: 0 0 20px 0; font-size: 24px;">${safeCategory.toUpperCase()}</h3>
                         
                         <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
                             <p style="margin: 5px 0;"><strong>Nom :</strong> ${displayName}</p>
-                            <p style="margin: 5px 0;"><strong>Email :</strong> <a href="mailto:${email}" style="color: #666;">${email}</a></p>
+                            <p style="margin: 5px 0;"><strong>Email :</strong> <a href="mailto:${safeEmail}" style="color: #666;">${safeEmail}</a></p>
                             ${detailsHtml}
                         </div>
 
                         <p style="color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Message</p>
                         <blockquote style="background: #fff; padding: 15px; border-left: 4px solid #FF6B00; margin: 0; font-style: italic; color: #555; line-height: 1.6;">
-                            "${message}"
+                            "${safeMessage}"
                         </blockquote>
                     </div>
                     <div style="background: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #999;">
@@ -87,7 +104,7 @@ export default async function handler(req, res) {
                 <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #FF6B00;">Merci de nous avoir contactés !</h2>
                     <p>Bonjour <strong>${displayName}</strong>,</p>
-                    <p>Nous confirmons la bonne réception de votre message concernant : <strong>${category}</strong>.</p>
+                    <p>Nous confirmons la bonne réception de votre message concernant : <strong>${safeCategory}</strong>.</p>
                     <p>Notre équipe va traiter votre demande dans les plus brefs délais.</p>
                     <br>
                     <p>À très vite,</p>
@@ -95,6 +112,7 @@ export default async function handler(req, res) {
                 </div>
             `
         };
+
 
         await Promise.all([
             transporter.sendMail(mailOptionsAdmin),
