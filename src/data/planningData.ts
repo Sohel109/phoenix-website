@@ -293,12 +293,35 @@ export async function changePasswordApi(userId: string, oldPassword: string, new
     }
 }
 
-export async function resetPasswordApi(loginId: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+export async function requestResetCodeApi(loginId: string): Promise<{ success: boolean; message: string; maskedEmail?: string }> {
     try {
         const API_URL = import.meta.env.VITE_API_URL || '';
         const response = await fetch(`${API_URL}/api/planning`, {
             method: 'POST',
-            body: JSON.stringify({ action: 'resetPassword', login: loginId, newPassword }),
+            body: JSON.stringify({ action: 'requestResetCode', login: loginId }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            return { success: false, message: 'Erreur réseau avec le serveur' };
+        }
+        const data = await response.json();
+        return {
+            success: !!data.success,
+            message: data.message || (data.success ? 'Code envoyé avec succès' : 'Échec de l’envoi'),
+            maskedEmail: data.maskedEmail
+        };
+    } catch (error) {
+        console.error("Error requesting reset code:", error);
+        return { success: false, message: "Erreur serveur lors de la demande de code" };
+    }
+}
+
+export async function confirmResetPasswordApi(loginId: string, code: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'confirmResetPassword', login: loginId, code, newPassword }),
             headers: { 'Content-Type': 'application/json' }
         });
         if (!response.ok) {
@@ -310,8 +333,9 @@ export async function resetPasswordApi(loginId: string, newPassword: string): Pr
             message: data.message || (data.success ? 'Mot de passe réinitialisé avec succès' : 'Échec de la réinitialisation')
         };
     } catch (error) {
-        console.error("Error resetting password:", error);
-        return { success: false, message: "Erreur serveur lors de la réinitialisation" };
+        console.error("Error confirming reset password:", error);
+        return { success: false, message: "Erreur serveur lors de la confirmation du mot de passe" };
     }
 }
+
 

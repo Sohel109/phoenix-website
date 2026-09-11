@@ -240,21 +240,113 @@ function doPost(e) {
     }
   }
 
-  if (action === 'resetPassword' || action === 'forgotPassword') {
+  if (action === 'requestResetCode') {
     try {
-      var loginInput = postData.login ? postData.login.toString().trim() : (postData.userId ? postData.userId.toString().trim() : "");
+      var loginInput = postData.login ? postData.login.toString().trim().toLowerCase() : "";
+      if (!loginInput) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Veuillez saisir votre identifiant." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+      var data = sheet.getDataRange().getValues();
+      var foundUser = null;
+
+      for (var i = 1; i < data.length; i++) {
+        var rowId = data[i][0] ? data[i][0].toString().trim().toLowerCase() : "";
+        var rowLogin = data[i][2] ? data[i][2].toString().trim().toLowerCase() : "";
+        if (rowId === loginInput || rowLogin === loginInput) {
+          foundUser = {
+            row: i + 1,
+            name: data[i][1] ? data[i][1].toString().trim() : "Membre",
+            login: rowLogin || rowId,
+            email: data[i][6] ? data[i][6].toString().trim() : ""
+          };
+          break;
+        }
+      }
+
+      if (!foundUser) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Aucun compte trouvé avec cet identifiant." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      if (!foundUser.email) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Aucune adresse e-mail rattachée à ce compte dans le Google Sheet (colonne G)." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      // Génération d'un code OTP à 6 chiffres
+      var code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Stockage en cache pour 15 minutes (900s)
+      var cache = CacheService.getScriptCache();
+      cache.put("reset_code_" + foundUser.login, code, 900);
+
+      // Masquage de l'email pour l'affichage (ex: s***l@gmail.com)
+      var emailParts = foundUser.email.split("@");
+      var maskedLocal = emailParts[0].length > 2 
+        ? emailParts[0][0] + "***" + emailParts[0][emailParts[0].length - 1] 
+        : emailParts[0][0] + "***";
+      var maskedEmail = maskedLocal + "@" + (emailParts[1] || "");
+
+      // Envoi du mail avec le code
+      var sujet = "🔑 Code de réinitialisation Phoenix Planning";
+      var messageTexte = "Bonjour " + foundUser.name + ",\n\nVotre code de réinitialisation de mot de passe est : " + code + "\n\nCe code est valable 15 minutes.\n\nL'équipe Phoenix Égalité des Chances";
+      var messageHtml = "<div style='font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto;border:1px solid #eee;border-radius:10px;'>" +
+        "<h2 style='color:#FF6B00;margin-top:0;'>Réinitialisation de mot de passe</h2>" +
+        "<p>Bonjour <strong>" + foundUser.name + "</strong>,</p>" +
+        "<p>Voici votre code de vérification à 6 chiffres pour définir votre nouveau mot de passe :</p>" +
+        "<div style='background:#1A103C;color:#FF6B00;font-size:28px;font-weight:bold;letter-spacing:6px;padding:15px;text-align:center;border-radius:8px;margin:20px 0;'>" + code + "</div>" +
+        "<p style='font-size:12px;color:#666;'>Ce code expire dans 15 minutes. Si vous n'avez pas demandé ce changement, vous pouvez ignorer ce message.</p>" +
+        "<hr style='border:none;border-top:1px solid #eee;margin:20px 0;'/>" +
+        "<p style='font-size:12px;color:#999;margin:0;'>Phoenix Égalité des Chances</p>" +
+        "</div>";
+
+      try {
+        GmailApp.sendEmail(foundUser.email, sujet, messageTexte, { htmlBody: messageHtml, name: "Phoenix Planning" });
+      } catch (e1) {
+        MailApp.sendEmail({ to: foundUser.email, subject: sujet, body: messageTexte, htmlBody: messageHtml, name: "Phoenix Planning" });
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({ 
+        success: true, 
+        message: "Code envoyé par e-mail avec succès !",
+        maskedEmail: maskedEmail
+      })).setMimeType(ContentService.MimeType.JSON);
+
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  if (action === 'confirmResetPassword') {
+    try {
+      var loginInput = postData.login ? postData.login.toString().trim().toLowerCase() : "";
+      var inputCode = postData.code ? postData.code.toString().trim() : "";
       var newPassword = postData.newPassword ? postData.newPassword.toString().trim() : "";
 
-      if (!loginInput || !newPassword) {
-        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "L'identifiant et le nouveau mot de passe sont requis." }))
+      if (!loginInput || !inputCode || !newPassword) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Tous les champs sont requis." }))
           .setMimeType(ContentService.MimeType.JSON);
       }
 
       if (newPassword.length < 4) {
-        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Le nouveau mot de passe doit comporter au moins 4 caractères." }))
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Le mot de passe doit comporter au moins 4 caractères." }))
           .setMimeType(ContentService.MimeType.JSON);
       }
 
+      // Vérification du code temporaire en cache
+      var cache = CacheService.getScriptCache();
+      var savedCode = cache.get("reset_code_" + loginInput);
+
+      if (!savedCode || savedCode !== inputCode) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Code de vérification incorrect ou expiré. Veuillez refaire une demande." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      // Recherche et mise à jour dans le Google Sheet
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
       var data = sheet.getDataRange().getValues();
       var foundRow = -1;
@@ -262,9 +354,7 @@ function doPost(e) {
       for (var i = 1; i < data.length; i++) {
         var rowId = data[i][0] ? data[i][0].toString().trim().toLowerCase() : "";
         var rowLogin = data[i][2] ? data[i][2].toString().trim().toLowerCase() : "";
-        var targetLogin = loginInput.toLowerCase();
-
-        if (rowId === targetLogin || rowLogin === targetLogin) {
+        if (rowId === loginInput || rowLogin === loginInput) {
           foundRow = i + 1;
           break;
         }
@@ -272,10 +362,11 @@ function doPost(e) {
 
       if (foundRow !== -1) {
         sheet.getRange(foundRow, 4).setValue(newPassword); // Colonne D (mot de passe)
-        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Mot de passe réinitialisé avec succès !" }))
+        cache.remove("reset_code_" + loginInput); // Suppression du code une fois utilisé
+        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Votre mot de passe a été réinitialisé avec succès !" }))
           .setMimeType(ContentService.MimeType.JSON);
       } else {
-        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Identifiant introuvable. Vérifiez votre saisie (ex: prenom.nom)." }))
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Utilisateur non trouvé." }))
           .setMimeType(ContentService.MimeType.JSON);
       }
     } catch (err) {
@@ -283,6 +374,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
+
 
   
   // Par défaut, c'est l'action de login existante

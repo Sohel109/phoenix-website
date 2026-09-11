@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User, Loader2, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
+import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User, Loader2, KeyRound, CheckCircle2, AlertCircle, Mail, ArrowLeft } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
-import { resetPasswordApi } from '../../data/planningData';
+import { requestResetCodeApi, confirmResetPasswordApi } from '../../data/planningData';
 
 export function PlanningLogin() {
     const { login } = usePlanning();
@@ -15,9 +15,12 @@ export function PlanningLogin() {
     const [isShaking, setIsShaking] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Mot de passe oublié (autonome)
+    // Mot de passe oublié (sécurisé par OTP e-mail)
     const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [resetStep, setResetStep] = useState<1 | 2>(1);
     const [resetLoginId, setResetLoginId] = useState('');
+    const [maskedEmail, setMaskedEmail] = useState('');
+    const [otpCode, setOtpCode] = useState('');
     const [resetNewPassword, setResetNewPassword] = useState('');
     const [resetConfirmPassword, setResetConfirmPassword] = useState('');
     const [showResetNew, setShowResetNew] = useState(false);
@@ -45,11 +48,39 @@ export function PlanningLogin() {
         }
     };
 
-    const handleResetSubmit = async (e: React.FormEvent) => {
+    // Étape 1 : Demander l'envoi du code OTP par email
+    const handleRequestCode = async (e: React.FormEvent) => {
         e.preventDefault();
         setResetFeedback(null);
 
-        if (!resetLoginId.trim() || !resetNewPassword.trim() || !resetConfirmPassword.trim()) {
+        if (!resetLoginId.trim()) {
+            setResetFeedback({ type: 'error', text: 'Veuillez saisir votre identifiant.' });
+            return;
+        }
+
+        setIsResetting(true);
+        try {
+            const res = await requestResetCodeApi(resetLoginId.trim());
+            if (res.success) {
+                setMaskedEmail(res.maskedEmail || '');
+                setResetStep(2);
+                setResetFeedback({ type: 'success', text: res.message || 'Code envoyé par e-mail !' });
+            } else {
+                setResetFeedback({ type: 'error', text: res.message || 'Impossible d’envoyer le code.' });
+            }
+        } catch (err) {
+            setResetFeedback({ type: 'error', text: 'Une erreur réseau est survenue.' });
+        } finally {
+            setIsResetting(false);
+        }
+    };
+
+    // Étape 2 : Valider le code OTP et réinitialiser le mot de passe
+    const handleConfirmReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setResetFeedback(null);
+
+        if (!otpCode.trim() || !resetNewPassword.trim() || !resetConfirmPassword.trim()) {
             setResetFeedback({ type: 'error', text: 'Veuillez remplir tous les champs.' });
             return;
         }
@@ -66,27 +97,34 @@ export function PlanningLogin() {
 
         setIsResetting(true);
         try {
-            const res = await resetPasswordApi(resetLoginId.trim(), resetNewPassword.trim());
+            const res = await confirmResetPasswordApi(resetLoginId.trim(), otpCode.trim(), resetNewPassword.trim());
             if (res.success) {
                 setResetFeedback({ type: 'success', text: res.message || 'Mot de passe réinitialisé avec succès !' });
-                // Pré-remplir la mire de connexion principale
+                // Pré-remplir la connexion principale
                 setLoginId(resetLoginId.trim());
                 setPassword(resetNewPassword.trim());
                 setTimeout(() => {
-                    setShowForgotPassword(false);
-                    setResetFeedback(null);
-                    setResetLoginId('');
-                    setResetNewPassword('');
-                    setResetConfirmPassword('');
-                }, 1600);
+                    closeResetModal();
+                }, 1800);
             } else {
-                setResetFeedback({ type: 'error', text: res.message || 'Impossible de réinitialiser le mot de passe.' });
+                setResetFeedback({ type: 'error', text: res.message || 'Code incorrect ou expiré.' });
             }
         } catch (err) {
             setResetFeedback({ type: 'error', text: 'Une erreur réseau est survenue.' });
         } finally {
             setIsResetting(false);
         }
+    };
+
+    const closeResetModal = () => {
+        setShowForgotPassword(false);
+        setResetStep(1);
+        setResetFeedback(null);
+        setResetLoginId('');
+        setMaskedEmail('');
+        setOtpCode('');
+        setResetNewPassword('');
+        setResetConfirmPassword('');
     };
 
     return (
@@ -206,7 +244,7 @@ export function PlanningLogin() {
                 </p>
             </motion.div>
 
-            {/* Modale de réinitialisation autonome du mot de passe */}
+            {/* Modale de réinitialisation sécurisée par e-mail (OTP) */}
             {showForgotPassword && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
                     <motion.div
@@ -217,11 +255,13 @@ export function PlanningLogin() {
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
-                                <KeyRound size={22} />
+                                {resetStep === 1 ? <Mail size={22} /> : <KeyRound size={22} />}
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-white leading-tight">Mot de passe oublié</h3>
-                                <p className="text-white/50 text-xs mt-0.5">Réinitialisation immédiate</p>
+                                <p className="text-white/50 text-xs mt-0.5">
+                                    {resetStep === 1 ? 'Vérification de compte par e-mail' : 'Validation du code de sécurité'}
+                                </p>
                             </div>
                         </div>
 
@@ -244,99 +284,157 @@ export function PlanningLogin() {
                             </motion.div>
                         )}
 
-                        <form onSubmit={handleResetSubmit} className="space-y-3.5">
-                            {/* Identifiant */}
-                            <div>
-                                <label className="block text-xs font-medium text-white/70 mb-1">
-                                    Votre Identifiant
-                                </label>
-                                <div className="relative">
-                                    <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
-                                    <input
-                                        type="text"
-                                        value={resetLoginId}
-                                        onChange={e => setResetLoginId(e.target.value)}
-                                        placeholder="ex: prenom.nom"
-                                        className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
-                                        required
-                                    />
-                                </div>
-                            </div>
+                        {/* ÉTAPE 1 : Saisir l'identifiant pour envoyer le code par email */}
+                        {resetStep === 1 && (
+                            <form onSubmit={handleRequestCode} className="space-y-3.5">
+                                <p className="text-white/70 text-xs leading-relaxed">
+                                    Saisissez votre identifiant. Un code de sécurité à 6 chiffres sera envoyé à l'adresse e-mail enregistrée sur votre compte.
+                                </p>
 
-                            {/* Nouveau mot de passe */}
-                            <div>
-                                <label className="block text-xs font-medium text-white/70 mb-1">
-                                    Nouveau mot de passe
-                                </label>
-                                <div className="relative">
-                                    <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
-                                    <input
-                                        type={showResetNew ? 'text' : 'password'}
-                                        value={resetNewPassword}
-                                        onChange={e => setResetNewPassword(e.target.value)}
-                                        placeholder="Au moins 4 caractères"
-                                        className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-9 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
-                                        required
-                                    />
+                                <div>
+                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                        Identifiant
+                                    </label>
+                                    <div className="relative">
+                                        <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                        <input
+                                            type="text"
+                                            value={resetLoginId}
+                                            onChange={e => setResetLoginId(e.target.value)}
+                                            placeholder="ex: prenom.nom"
+                                            className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2 pt-2">
                                     <button
                                         type="button"
-                                        onClick={() => setShowResetNew(!showResetNew)}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
-                                        tabIndex={-1}
+                                        onClick={closeResetModal}
+                                        className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors"
                                     >
-                                        {showResetNew ? <EyeOff size={15} /> : <Eye size={15} />}
+                                        Annuler
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isResetting}
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 hover:opacity-95 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                                    >
+                                        {isResetting ? (
+                                            <Loader2 size={15} className="animate-spin" />
+                                        ) : (
+                                            <Mail size={15} />
+                                        )}
+                                        {isResetting ? 'Envoi...' : 'Envoyer le code'}
                                     </button>
                                 </div>
-                            </div>
+                            </form>
+                        )}
 
-                            {/* Confirmation */}
-                            <div>
-                                <label className="block text-xs font-medium text-white/70 mb-1">
-                                    Confirmer le mot de passe
-                                </label>
-                                <div className="relative">
-                                    <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                        {/* ÉTAPE 2 : Saisir le code OTP + le nouveau mot de passe */}
+                        {resetStep === 2 && (
+                            <form onSubmit={handleConfirmReset} className="space-y-3.5">
+                                {maskedEmail && (
+                                    <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white/70 flex items-center gap-2">
+                                        <Mail size={14} className="text-orange-400 shrink-0" />
+                                        <span>Code envoyé à <strong className="text-white">{maskedEmail}</strong></span>
+                                    </div>
+                                )}
+
+                                {/* Code 6 chiffres */}
+                                <div>
+                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                        Code de vérification (6 chiffres)
+                                    </label>
                                     <input
-                                        type={showResetNew ? 'text' : 'password'}
-                                        value={resetConfirmPassword}
-                                        onChange={e => setResetConfirmPassword(e.target.value)}
-                                        placeholder="Répéter le mot de passe"
-                                        className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                        type="text"
+                                        maxLength={6}
+                                        value={otpCode}
+                                        onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                                        placeholder="Ex: 583920"
+                                        className="w-full bg-white/5 border border-white/15 rounded-xl px-3 py-2.5 text-white placeholder-white/20 text-center tracking-[0.3em] font-mono text-base font-bold focus:outline-none focus:border-orange-500/60 transition-all"
                                         required
                                     />
                                 </div>
-                            </div>
 
-                            <div className="flex gap-2 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowForgotPassword(false);
-                                        setResetFeedback(null);
-                                    }}
-                                    className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors"
-                                >
-                                    Annuler
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isResetting}
-                                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 hover:opacity-95 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
-                                >
-                                    {isResetting ? (
-                                        <Loader2 size={15} className="animate-spin" />
-                                    ) : (
-                                        <KeyRound size={15} />
-                                    )}
-                                    {isResetting ? 'Validation...' : 'Réinitialiser'}
-                                </button>
-                            </div>
-                        </form>
+                                {/* Nouveau mot de passe */}
+                                <div>
+                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                        Nouveau mot de passe
+                                    </label>
+                                    <div className="relative">
+                                        <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                        <input
+                                            type={showResetNew ? 'text' : 'password'}
+                                            value={resetNewPassword}
+                                            onChange={e => setResetNewPassword(e.target.value)}
+                                            placeholder="Au moins 4 caractères"
+                                            className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-9 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowResetNew(!showResetNew)}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                                            tabIndex={-1}
+                                        >
+                                            {showResetNew ? <EyeOff size={15} /> : <Eye size={15} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Confirmation */}
+                                <div>
+                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                        Confirmer le mot de passe
+                                    </label>
+                                    <div className="relative">
+                                        <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                        <input
+                                            type={showResetNew ? 'text' : 'password'}
+                                            value={resetConfirmPassword}
+                                            onChange={e => setResetConfirmPassword(e.target.value)}
+                                            placeholder="Répéter le mot de passe"
+                                            className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setResetStep(1);
+                                            setResetFeedback(null);
+                                        }}
+                                        className="flex items-center justify-center px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors shrink-0"
+                                        title="Retour"
+                                    >
+                                        <ArrowLeft size={15} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isResetting}
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 hover:opacity-95 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                                    >
+                                        {isResetting ? (
+                                            <Loader2 size={15} className="animate-spin" />
+                                        ) : (
+                                            <KeyRound size={15} />
+                                        )}
+                                        {isResetting ? 'Validation...' : 'Valider'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </motion.div>
                 </div>
             )}
         </div>
     );
 }
+
 
 
