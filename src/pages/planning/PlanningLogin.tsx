@@ -14,6 +14,8 @@ export function PlanningLogin() {
     const [isShaking, setIsShaking] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -82,9 +84,18 @@ export function PlanningLogin() {
 
                         {/* Mot de passe */}
                         <div>
-                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
-                                Mot de passe
-                            </label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wide">
+                                    Mot de passe
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForgotPassword(true)}
+                                    className="text-xs text-orange-400/90 hover:text-orange-300 transition-colors font-medium hover:underline"
+                                >
+                                    Mot de passe oublié ?
+                                </button>
+                            </div>
                             <div className="relative">
                                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
                                 <input
@@ -139,6 +150,54 @@ export function PlanningLogin() {
                     Espace réservé aux membres Phoenix · Identifiants fournis par l'administration
                 </p>
             </motion.div>
+
+            {/* Modale Mot de passe oublié */}
+            {showForgotPassword && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                        className="bg-[#120e2e] border border-white/15 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative"
+                    >
+                        <div className="w-12 h-12 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center mb-4">
+                            <Lock size={24} />
+                        </div>
+
+                        <h3 className="text-xl font-bold text-white mb-2">Mot de passe oublié ?</h3>
+                        <p className="text-white/70 text-sm leading-relaxed mb-6">
+                            Pour réinitialiser votre mot de passe, contactez Sohel en lui indiquant votre nom et votre projet.
+                        </p>
+
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-3.5 mb-6 text-xs text-white/80">
+                            <span className="text-white/40 block mb-1">Contact administrateur :</span>
+                            <a
+                                href="mailto:haggui.sohel@gmail.com?subject=Demande%20de%20r%C3%A9initialisation%20de%20mot%20de%20passe%20Phoenix&body=Bonjour%20Sohel,%0A%0AJ'ai%20oubli%C3%A9%20mon%20mot%20de%20passe%20pour%20l'espace%20Planning.%0A%0ANom%20/%20Pr%C3%A9nom%20:%20%0AProjet%20:%20%0A%0AMerci%20!"
+                                className="font-semibold text-orange-400 hover:underline break-all text-sm block"
+                            >
+                                haggui.sohel@gmail.com
+                            </a>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <a
+                                href="mailto:haggui.sohel@gmail.com?subject=Demande%20de%20r%C3%A9initialisation%20de%20mot%20de%20passe%20Phoenix&body=Bonjour%20Sohel,%0A%0AJ'ai%20oubli%C3%A9%20mon%20mot%20de%20passe%20pour%20l'espace%20Planning.%0A%0ANom%20/%20Pr%C3%A9nom%20:%20%0AProjet%20:%20%0A%0AMerci%20!"
+                                className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 text-white font-bold text-xs text-center shadow-md hover:opacity-95 transition-opacity"
+                            >
+                                Contacter Sohel
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => setShowForgotPassword(false)}
+                                className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors"
+                            >
+                                Fermer
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }
+
