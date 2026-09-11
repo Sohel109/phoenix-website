@@ -239,6 +239,51 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
+
+  if (action === 'resetPassword' || action === 'forgotPassword') {
+    try {
+      var loginInput = postData.login ? postData.login.toString().trim() : (postData.userId ? postData.userId.toString().trim() : "");
+      var newPassword = postData.newPassword ? postData.newPassword.toString().trim() : "";
+
+      if (!loginInput || !newPassword) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "L'identifiant et le nouveau mot de passe sont requis." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      if (newPassword.length < 4) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Le nouveau mot de passe doit comporter au moins 4 caractères." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+
+      for (var i = 1; i < data.length; i++) {
+        var rowId = data[i][0] ? data[i][0].toString().trim().toLowerCase() : "";
+        var rowLogin = data[i][2] ? data[i][2].toString().trim().toLowerCase() : "";
+        var targetLogin = loginInput.toLowerCase();
+
+        if (rowId === targetLogin || rowLogin === targetLogin) {
+          foundRow = i + 1;
+          break;
+        }
+      }
+
+      if (foundRow !== -1) {
+        sheet.getRange(foundRow, 4).setValue(newPassword); // Colonne D (mot de passe)
+        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Mot de passe réinitialisé avec succès !" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Identifiant introuvable. Vérifiez votre saisie (ex: prenom.nom)." }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   
   // Par défaut, c'est l'action de login existante
   var login = postData.login ? postData.login.toString().trim() : "";

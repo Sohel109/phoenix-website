@@ -292,3 +292,26 @@ export async function changePasswordApi(userId: string, oldPassword: string, new
         return { success: false, message: "Erreur serveur lors du changement de mot de passe" };
     }
 }
+
+export async function resetPasswordApi(loginId: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'resetPassword', login: loginId, newPassword }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            return { success: false, message: 'Erreur réseau avec le serveur' };
+        }
+        const data = await response.json();
+        return {
+            success: !!data.success,
+            message: data.message || (data.success ? 'Mot de passe réinitialisé avec succès' : 'Échec de la réinitialisation')
+        };
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        return { success: false, message: "Erreur serveur lors de la réinitialisation" };
+    }
+}
+
