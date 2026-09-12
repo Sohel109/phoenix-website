@@ -215,6 +215,30 @@ export function usePlanningNotifications() {
             }
         }
 
+        // 5. ALERTE CRÉNEAU SANS TUTEUR ("Besoin d'un tuteur !")
+        const userProjectSlots = timeSlots.filter(s => currentUser.projectIds.includes(s.projectId));
+        userProjectSlots.forEach(slot => {
+            const bookingsForSlot = bookings.filter(b => b.slotId === slot.id && b.weekKey === currentWeekKey && b.status !== 'annule');
+            if (bookingsForSlot.length === 0) {
+                const project = projectsData.find(p => p.id === slot.projectId);
+                const projName = project?.name || 'Projet';
+                const id = `notif-unassigned-${slot.id}-${currentWeekKey}`;
+                notifs.push({
+                    id,
+                    category: 'seance',
+                    type: 'dispo_manquante',
+                    status: 'warning',
+                    title: `Besoin d'un tuteur ! · ${projName}`,
+                    description: `Personne ne s'est encore assigné sur le créneau du ${slot.day} (${slot.startTime}–${slot.endTime}) sur ${projName}.`,
+                    dateLabel: currentWeekKey,
+                    to: '/planning/disponibilites',
+                    timestamp: Date.now() - 120000,
+                    read: readIds.includes(id)
+                });
+            }
+        });
+
+
         // Tri : les non lues d'abord, puis par timestamp décroissant
         return notifs.sort((a, b) => {
             if (a.read !== b.read) return a.read ? 1 : -1;

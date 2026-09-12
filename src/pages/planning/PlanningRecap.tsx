@@ -242,8 +242,8 @@ export function PlanningRecap() {
             </div>
 
             {/* Global Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
                     <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Heures totales</p>
                     <p className="text-3xl font-black text-white mt-1">{totalPeriodHours} <span className="text-lg text-white/40 font-medium">h</span></p>
                 </div>
@@ -251,7 +251,110 @@ export function PlanningRecap() {
                     <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Membres actifs</p>
                     <p className="text-3xl font-black text-white mt-1">{recapData.length}</p>
                 </div>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
+                    <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Taux de présence</p>
+                    <p className="text-3xl font-black text-emerald-400 mt-1">
+                        {bookings.filter(b => b.status === 'confirme').length > 0
+                            ? Math.round((bookings.filter(b => b.status === 'confirme').length / (bookings.filter(b => b.status === 'confirme' || b.status === 'absent').length || 1)) * 100)
+                            : 100}%
+                    </p>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
+                    <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Moyenne / Tuteur</p>
+                    <p className="text-3xl font-black text-orange-400 mt-1">
+                        {recapData.length > 0 ? (totalPeriodHours / recapData.length).toFixed(1) : 0} <span className="text-lg text-white/40 font-medium">h</span>
+                    </p>
+                </div>
             </div>
+
+            {/* Visual Impact Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* Chart 1: Répartition des heures par Projet */}
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center justify-between">
+                        <span>Répartition des Heures par Projet</span>
+                        <span className="text-xs font-normal text-white/40">{projectsData.length} programmes</span>
+                    </h3>
+                    <div className="space-y-3">
+                        {projectsData.map(proj => {
+                            const projHours = recapData.reduce((sum, u) => sum + (u.byProject[proj.id] || 0), 0);
+                            const pct = totalPeriodHours > 0 ? Math.round((projHours / totalPeriodHours) * 100) : 0;
+                            return (
+                                <div key={proj.id} className="space-y-1">
+                                    <div className="flex items-center justify-between text-xs font-semibold">
+                                        <span className="text-white/80">{proj.name}</span>
+                                        <span className="text-orange-400 font-bold">{projHours} h ({pct}%)</span>
+                                    </div>
+                                    <div className="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${pct}%` }}
+                                            transition={{ duration: 0.8, ease: "easeOut" }}
+                                            className="h-full bg-gradient-to-r from-orange-500 to-violet-500 rounded-full"
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Chart 2: Répartition de présence (Confirmé vs Prévu vs Absent) */}
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
+                        Assiduité & Présences Globales
+                    </h3>
+                    {(() => {
+                        const totalB = bookings.length || 1;
+                        const confCount = bookings.filter(b => b.status === 'confirme').length;
+                        const prevuCount = bookings.filter(b => b.status === 'prevu').length;
+                        const absentCount = bookings.filter(b => b.status === 'absent').length;
+                        const annuleCount = bookings.filter(b => b.status === 'annule').length;
+
+                        const confPct = Math.round((confCount / totalB) * 100);
+                        const prevuPct = Math.round((prevuCount / totalB) * 100);
+                        const absentPct = Math.round((absentCount / totalB) * 100);
+                        const annulePct = Math.round((annuleCount / totalB) * 100);
+
+                        return (
+                            <div className="space-y-4">
+                                {/* Stacked progress bar */}
+                                <div className="w-full h-4 rounded-full bg-white/10 overflow-hidden flex">
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${confPct}%` }} className="h-full bg-emerald-500" title={`Confirmé (${confCount})`} />
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${prevuPct}%` }} className="h-full bg-blue-500" title={`Prévu (${prevuCount})`} />
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${absentPct}%` }} className="h-full bg-red-500" title={`Absent (${absentCount})`} />
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${annulePct}%` }} className="h-full bg-gray-500" title={`Annulé (${annuleCount})`} />
+                                </div>
+
+                                {/* Legend */}
+                                <div className="grid grid-cols-2 gap-3 text-xs pt-2">
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                        <span className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
+                                        <span className="text-white/60">Confirmés :</span>
+                                        <strong className="text-emerald-400 font-bold ml-auto">{confCount} ({confPct}%)</strong>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                        <span className="w-3 h-3 rounded-full bg-blue-500 shrink-0" />
+                                        <span className="text-white/60">Prévus :</span>
+                                        <strong className="text-blue-300 font-bold ml-auto">{prevuCount} ({prevuPct}%)</strong>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                        <span className="w-3 h-3 rounded-full bg-red-500 shrink-0" />
+                                        <span className="text-white/60">Absences :</span>
+                                        <strong className="text-red-400 font-bold ml-auto">{absentCount} ({absentPct}%)</strong>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                        <span className="w-3 h-3 rounded-full bg-gray-500 shrink-0" />
+                                        <span className="text-white/60">Annulés :</span>
+                                        <strong className="text-gray-400 font-bold ml-auto">{annuleCount} ({annulePct}%)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </div>
+            </div>
+
 
             {/* List */}
             <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">

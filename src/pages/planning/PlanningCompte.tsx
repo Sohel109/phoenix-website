@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration } from '../../data/planningData';
+import { AttestationModal } from '../../components/planning/AttestationModal';
 
 interface StatCardProps {
     icon: React.ReactNode;
@@ -46,6 +47,9 @@ export function PlanningCompte() {
     const [showNew, setShowNew] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    // Attestation PDF state
+    const [showAttestation, setShowAttestation] = useState(false);
 
     if (!currentUser) return null;
 
@@ -128,23 +132,37 @@ export function PlanningCompte() {
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 p-5 rounded-xl bg-white/5 border border-white/10 mb-6 mt-2"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-white/5 border border-white/10 mb-6 mt-2"
             >
-                <div className="w-14 h-14 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
-                    {isChef ? <ShieldCheck size={26} className="text-orange-400" /> : <User size={26} className="text-orange-400" />}
-                </div>
-                <div>
-                    <h2 className="text-xl font-black text-white">{currentUser.name}</h2>
-                    <p className="text-orange-400 text-sm font-semibold">{isChef ? 'Chef de Projet' : 'Tuteur'}</p>
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                        {myProjects.map(p => (
-                            <span key={p.id} className="px-2 py-0.5 rounded-full text-xs bg-white/10 border border-white/20 text-white/60">
-                                {p.name}
-                            </span>
-                        ))}
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                        {isChef ? <ShieldCheck size={26} className="text-orange-400" /> : <User size={26} className="text-orange-400" />}
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black text-white">{currentUser.name}</h2>
+                        <p className="text-orange-400 text-sm font-semibold">{isChef ? 'Chef de Projet' : 'Tuteur'}</p>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                            {myProjects.map(p => (
+                                <span key={p.id} className="px-2 py-0.5 rounded-full text-xs bg-white/10 border border-white/20 text-white/60">
+                                    {p.name}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
+
+                {/* Attestation PDF button */}
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowAttestation(true)}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-xs shadow-md transition-all self-start sm:self-auto"
+                >
+                    <Award size={16} />
+                    <span>Attestation d'Heures (PDF)</span>
+                </motion.button>
             </motion.div>
+
 
             {/* Modifier mon mot de passe */}
             <motion.div
@@ -316,6 +334,17 @@ export function PlanningCompte() {
                     ))}
                 </div>
             )}
+
+            {/* Modale Attestation PDF */}
+            {showAttestation && (
+                <AttestationModal
+                    user={currentUser}
+                    bookings={bookings}
+                    onClose={() => setShowAttestation(false)}
+                />
+            )}
         </PlanningLayout>
     );
 }
+
+
