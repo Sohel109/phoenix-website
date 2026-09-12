@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Clock, MapPin, Calendar, Users, X, Download,
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWeek, type TimeSlot, type DayOfWeek } from '../../data/planningData';
+import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWeek, type TimeSlot } from '../../data/planningData';
 import { generateICS, downloadICSFile } from '../../utils/icsExport';
 
 const STATUS_CONFIG = {
