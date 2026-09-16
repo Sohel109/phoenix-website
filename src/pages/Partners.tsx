@@ -1,84 +1,218 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { partnerCategories } from '../data/partners';
-import { ArrowRight, Handshake } from 'lucide-react';
+import { ArrowRight, Handshake, School, GraduationCap, Building2, Gift, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+
+const majorPartners = [
+    { name: "Olympique de Marseille", logo: "/partners/om.png", desc: "Soutien et accueil des séances OM Campus & Commanderie" },
+    { name: "KEDGE Business School", logo: "/partners/kedge.png", desc: "École de rattachement, hébergement et accompagnement" },
+    { name: "Decathlon", logo: "/partners/decathlon.png", desc: "Partenaire solidaire et opérations papiers cadeaux" },
+    { name: "Deloitte", logo: "/partners/deloitte.jpg", desc: "Mécénat et soutien aux initiatives d'égalité des chances" },
+    { name: "Apprentis d'Auteuil", logo: "/partners/apprentis-auteuil.png", desc: "Tutorat et ouverture culturelle au collège Vitagliano" },
+    { name: "Darty", logo: "/partners/darty.png", desc: "Partenaire des Terrasses du Port pour l'autofinancement" },
+    { name: "Lydia", logo: "/partners/lydia.png", desc: "Partenaire digital pour nos projets solidaires" },
+];
+
+const schoolPartners = {
+    colleges: [
+        { name: "Collège Jean-Claude Izzo", city: "Marseille (2e)", project: "Projet IZZO" },
+        { name: "Collège Roy d'Espagne", city: "Marseille (9e)", project: "Projet Roy d'Espagne" },
+        { name: "Collège Vitagliano", city: "Marseille (4e)", project: "Projet Apprentis d'Auteuil" },
+        { name: "Collège Jules Ferry", city: "Marseille (15e)", project: "Projet Jules Ferry" },
+    ],
+    lycees: [
+        { name: "Lycée Saint-Exupéry", city: "Marseille (15e)", project: "Projet ACSE" },
+        { name: "Lycée Victor Hugo", city: "Marseille (3e)", project: "Projet ACSE" },
+    ],
+    centres: [
+        { name: "Fondation Apprentis d'Auteuil", type: "Fondation reconnue d'utilité publique" },
+        { name: "Association Massabielle", type: "Maison de quartier Bernadette (13e)" },
+        { name: "Centre Social Saint Gabriel", type: "Centre d'animation sociale (14e)" },
+        { name: "Centre de Formation de l'OM", type: "La Commanderie & OM Campus" },
+    ]
+};
+
+const otherPartners = [
+    { name: "Le Mucem", category: "Culture", icon: Sparkles },
+    { name: "La Fnac", category: "Culture & Savoir", icon: Gift },
+    { name: "LCL", category: "Banque & Mécénat", icon: Building2 },
+    { name: "Plum Énergie", category: "Énergie Verte", icon: Building2 },
+    { name: "SimONU Marseille", category: "Association étudiante", icon: Handshake },
+    { name: "Échanges Phocéens", category: "Association étudiante", icon: Handshake },
+];
 
 export function Partners() {
+    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+
     return (
-        <div className="min-h-screen bg-transparent pt-28 md:pt-32 pb-safe-nav md:pb-20 transition-colors duration-300">
-            <div className="container mx-auto px-4 max-w-4xl">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-16"
-                >
-                    <h1 className="text-4xl font-bold mb-4 uppercase tracking-wider relative inline-block text-gray-900 dark:text-white">
-                        Nos Partenaires
-                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-orange-500 rounded-full"></span>
+        <div className="pt-28 sm:pt-32 pb-24 min-h-screen bg-transparent">
+            <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-200/60 px-4 py-1.5 rounded-full inline-block mb-3">
+                        Réseau & Écosystème
+                    </span>
+                    <h1 className="text-3xl sm:text-5xl font-black text-slate-900 uppercase tracking-tight mb-4">
+                        Nos Partenaires Engagés
                     </h1>
-                </motion.div>
-
-                <div className="prose prose-lg max-w-none space-y-12">
-                    {partnerCategories.map((category, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white dark:bg-current-card rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-shadow dark:shadow-none"
-                        >
-                            <h2 className="text-2xl font-bold text-secondary dark:text-secondary-light mb-6 flex items-center gap-3">
-                                {category.title}
-                            </h2>
-
-                            {category.subcategories ? (
-                                <div className="space-y-6">
-                                    {category.subcategories.map((sub, subIndex) => (
-                                        <div key={subIndex} className="pl-4 border-l-2 border-primary/20">
-                                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">{sub.name} :</h3>
-                                            <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-200">
-                                                {sub.items.map((item, i) => (
-                                                    <li key={i} className="text-sm leading-relaxed">{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <ul className="list-none grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {category.items?.map((item, i) => (
-                                        <li key={i} className="flex items-center gap-2 text-gray-600 dark:text-white p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </motion.div>
-                    ))}
+                    <p className="text-slate-500 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-normal">
+                        L'action de Phoenix EDC repose sur la confiance de grandes entreprises, d'institutions éducatives et d'associations locales mobilisées pour l'égalité des chances à Marseille.
+                    </p>
                 </div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 bg-secondary text-white p-8 rounded-3xl shadow-xl dark:shadow-none"
-                >
-                    <div>
-                        <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                            <Handshake className="text-primary" />
-                            Devenir Partenaire ?
-                        </h3>
-                        <p className="text-gray-300">Rejoignez l'aventure Phoenix et soutenez l'égalité des chances.</p>
+                {/* Section 1: Grands Partenaires (Logo Grid) */}
+                <div className="mb-20">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-2.5">
+                        <Building2 className="text-orange-500" size={24} />
+                        <span>Grands Partenaires & Entreprises</span>
+                    </h2>
+
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {majorPartners.map((partner, index) => (
+                            <motion.div
+                                key={partner.name}
+                                initial={isMobile ? false : { opacity: 0, y: 20 }}
+                                whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={isMobile ? undefined : { delay: index * 0.06 }}
+                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border-2 border-slate-200 hover:border-orange-400 rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 group"
+                            >
+                                <div className="h-20 w-full flex items-center justify-center p-2 mb-4 bg-slate-50 rounded-xl border border-slate-100 group-hover:bg-white transition-colors">
+                                    <img
+                                        src={partner.logo}
+                                        alt={partner.name}
+                                        className="max-h-14 max-w-[85%] object-contain filter transition-all group-hover:scale-105"
+                                    />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-base mb-1 group-hover:text-orange-600 transition-colors">
+                                        {partner.name}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                                        {partner.desc}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
+                </div>
+
+                {/* Section 2: Établissements Scolaires (Collèges & Lycées) */}
+                <div className="mb-20">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-2.5">
+                        <School className="text-orange-500" size={24} />
+                        <span>Établissements Scolaires & Structures Partenaires</span>
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Collèges */}
+                        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
+                                <School size={18} className="text-orange-500" />
+                                <h3 className="font-bold text-slate-900 text-base">Collèges</h3>
+                            </div>
+                            <div className="space-y-3">
+                                {schoolPartners.colleges.map((college) => (
+                                    <div key={college.name} className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-100 transition-colors">
+                                        <p className="font-bold text-sm text-slate-900">{college.name}</p>
+                                        <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                                            <span>{college.city}</span>
+                                            <span className="font-semibold text-orange-600 bg-orange-100/70 px-2 py-0.5 rounded-md text-[10px]">
+                                                {college.project}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Lycées */}
+                        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
+                                <GraduationCap size={18} className="text-orange-500" />
+                                <h3 className="font-bold text-slate-900 text-base">Lycées</h3>
+                            </div>
+                            <div className="space-y-3">
+                                {schoolPartners.lycees.map((lycee) => (
+                                    <div key={lycee.name} className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-100 transition-colors">
+                                        <p className="font-bold text-sm text-slate-900">{lycee.name}</p>
+                                        <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                                            <span>{lycee.city}</span>
+                                            <span className="font-semibold text-orange-600 bg-orange-100/70 px-2 py-0.5 rounded-md text-[10px]">
+                                                {lycee.project}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Centres sociaux & structures */}
+                        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
+                                <Building2 size={18} className="text-orange-500" />
+                                <h3 className="font-bold text-slate-900 text-base">Centres & Fondations</h3>
+                            </div>
+                            <div className="space-y-3">
+                                {schoolPartners.centres.map((centre) => (
+                                    <div key={centre.name} className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-100 transition-colors">
+                                        <p className="font-bold text-sm text-slate-900">{centre.name}</p>
+                                        <p className="text-xs text-slate-500 mt-0.5">{centre.type}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section 3: Culture & Associatifs */}
+                <div className="mb-20">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-6 flex items-center gap-2.5">
+                        <Sparkles className="text-orange-500" size={24} />
+                        <span>Partenaires Culturels & Associatifs</span>
+                    </h2>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {otherPartners.map((item) => (
+                            <div
+                                key={item.name}
+                                className="bg-white border-2 border-slate-200 hover:border-orange-400 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-all duration-300"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center mb-2.5">
+                                    <item.icon size={20} />
+                                </div>
+                                <p className="font-bold text-sm text-slate-900 leading-snug">{item.name}</p>
+                                <span className="text-[10px] font-semibold text-slate-500 mt-1 uppercase tracking-wider">
+                                    {item.category}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* CTA Devenir Partenaire */}
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-700">
+                    <div className="max-w-xl">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold mb-4">
+                            <Handshake size={14} />
+                            <span>Rejoindre notre réseau</span>
+                        </div>
+                        <h3 className="text-2xl sm:text-3xl font-black tracking-tight mb-3">
+                            Vous souhaitez devenir partenaire ?
+                        </h3>
+                        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
+                            Participez au développement de l'égalité des chances à Marseille en soutenant nos projets de tutorat, nos sorties culturelles et nos événements annuels.
+                        </p>
+                    </div>
+
                     <Link
-                        to="/contact"
-                        className="px-8 py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all transform hover:scale-105 shadow-lg shadow-primary/25 flex items-center gap-2"
+                        to="/contact?category=partenariat"
+                        className="shrink-0 inline-flex items-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-bold text-sm sm:text-base shadow-lg shadow-orange-500/30 hover:scale-105 active:scale-95 transition-all"
                     >
-                        Nous contacter
-                        <ArrowRight size={20} />
+                        <span>Nous contacter</span>
+                        <ArrowRight size={18} />
                     </Link>
-                </motion.div>
+                </div>
             </div>
         </div>
     );

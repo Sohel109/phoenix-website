@@ -130,20 +130,6 @@
             "volunteers": "Student volunteers",
             "projects": "Active projects",
             "creation": "Creation date"
-        },
-        "ai": {
-            "badge": "NEW: PHOENIX AI",
-            "title": "CHAT WITH",
-            "titleHighlight": "OUR INTELLIGENCE",
-            "description": "A question about our programs? Need help with your orientation? Our virtual assistant is here to answer you instantly, 24/7. It's completely free and accessible to everyone.",
-            "cta": "Try now",
-            "features": {
-                "title": "Why Phoenix AI?",
-                "subtitle": "Intelligent Assistant",
-                "instant": "Instant answers",
-                "available": "Available 24/7",
-                "free": "100% Free"
-            }
         }
     }
 }

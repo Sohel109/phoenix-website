@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon, type LatLngExpression } from 'leaflet';
 import { motion } from 'framer-motion';
 import { MapPin, Users, ArrowLeft, Navigation, ArrowUpRight } from 'lucide-react';
@@ -36,8 +36,8 @@ export function ProjectMap() {
     const createCustomIcon = (color: string) => {
         const svgIcon = `
             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="12" fill="${color}" opacity="0.9"/>
-                <circle cx="16" cy="16" r="8" fill="white" opacity="0.3"/>
+                <circle cx="16" cy="16" r="12" fill="${color}" opacity="0.95"/>
+                <circle cx="16" cy="16" r="8" fill="white" opacity="0.35"/>
                 <circle cx="16" cy="16" r="5" fill="white"/>
             </svg>
         `;
@@ -51,55 +51,55 @@ export function ProjectMap() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A103C] to-[#0A0118] pt-20 pb-12">
-            <div className="container mx-auto px-4">
+        <div className="min-h-screen bg-transparent pt-28 sm:pt-32 pb-24">
+            <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
                 {/* Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: -15 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
                     <button
                         onClick={() => navigate(-1)}
-                        className="mb-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                        className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900 transition-colors group cursor-pointer"
                     >
-                        <ArrowLeft size={20} />
-                        Retour
+                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                        <span>Retour</span>
                     </button>
 
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 bg-gradient-to-br from-orange-500 to-purple-600 rounded-2xl">
-                            <MapPin className="w-8 h-8 text-white" />
+                        <div className="p-3 bg-orange-500 text-white rounded-2xl shadow-sm">
+                            <MapPin className="w-7 h-7" />
                         </div>
                         <div>
-                            <h1 className="text-4xl font-bold text-white">Carte des Projets</h1>
-                            <p className="text-gray-400 mt-1">Découvrez nos 9 projets à travers Marseille</p>
+                            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Carte des Projets</h1>
+                            <p className="text-slate-600 text-sm mt-0.5 font-normal">Découvrez nos 9 projets implantés à travers Marseille</p>
                         </div>
                     </div>
 
                     {/* Legend */}
-                    <div className="flex flex-wrap gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
+                    <div className="flex flex-wrap gap-4 p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: projectTypeColors.soutien }} />
-                            <span className="text-sm text-gray-300">{projectTypeLabels.soutien}</span>
+                            <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: projectTypeColors.soutien }} />
+                            <span className="text-xs font-bold text-slate-700">{projectTypeLabels.soutien}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: projectTypeColors.culture }} />
-                            <span className="text-sm text-gray-300">{projectTypeLabels.culture}</span>
+                            <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: projectTypeColors.culture }} />
+                            <span className="text-xs font-bold text-slate-700">{projectTypeLabels.culture}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: projectTypeColors.hybride }} />
-                            <span className="text-sm text-gray-300">{projectTypeLabels.hybride}</span>
+                            <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: projectTypeColors.hybride }} />
+                            <span className="text-xs font-bold text-slate-700">{projectTypeLabels.hybride}</span>
                         </div>
                     </div>
                 </motion.div>
 
                 {/* Map */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+                    transition={{ delay: 0.15 }}
+                    className="rounded-3xl overflow-hidden border-2 border-slate-200 shadow-md"
                     style={{ height: '600px' }}
                 >
                     <MapContainer
@@ -109,7 +109,7 @@ export function ProjectMap() {
                         scrollWheelZoom={true}
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
 
@@ -119,14 +119,10 @@ export function ProjectMap() {
                                 position={project.coordinates}
                                 icon={createCustomIcon(projectTypeColors[project.type])}
                             >
-                                <Tooltip direction="top" offset={[0, -20]} opacity={0.9}>
-                                    <div className="font-semibold">{project.fullName}</div>
-                                </Tooltip>
-
-                                <Popup>
-                                    <div className="p-2 min-w-[250px]">
-                                        <h3 className="text-lg font-bold mb-2 text-gray-900">
-                                            {project.fullName}
+                                <Popup className="custom-popup">
+                                    <div className="p-3 max-w-xs">
+                                        <h3 className="font-bold text-lg text-slate-900 mb-1">
+                                            {project.name}
                                         </h3>
 
                                         <div className="flex items-center gap-2 mb-3">
@@ -134,48 +130,46 @@ export function ProjectMap() {
                                                 className="w-3 h-3 rounded-full"
                                                 style={{ backgroundColor: projectTypeColors[project.type] }}
                                             />
-                                            <span className="text-sm font-medium text-gray-700">
+                                            <span className="text-xs font-semibold text-slate-600">
                                                 {projectTypeLabels[project.type]}
                                             </span>
                                         </div>
 
-                                        <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                                        <p className="text-xs text-slate-600 mb-3 leading-relaxed">
                                             {project.description}
                                         </p>
 
                                         <div className="flex items-start gap-2 mb-2">
-                                            <MapPin size={16} className="text-gray-500 mt-0.5 flex-shrink-0" />
-                                            <p className="text-xs text-gray-500">{project.address}</p>
+                                            <MapPin size={15} className="text-orange-500 mt-0.5 flex-shrink-0" />
+                                            <p className="text-xs text-slate-600">{project.address}</p>
                                         </div>
 
                                         <div className="flex items-start gap-2 mb-3">
-                                            <Users size={16} className="text-gray-500 mt-0.5 flex-shrink-0" />
-                                            <div className="text-xs text-gray-500">
-                                                <span className="font-medium">Chefs de projet :</span>
+                                            <Users size={15} className="text-orange-500 mt-0.5 flex-shrink-0" />
+                                            <div className="text-xs text-slate-600">
+                                                <span className="font-bold text-slate-800">Chefs de projet :</span>
                                                 <br />
                                                 {project.chefs.join(', ')}
                                             </div>
                                         </div>
 
                                         {/* Actions */}
-                                        <div className="flex flex-col gap-2 mt-3 pt-2 border-t border-gray-100">
-                                            {/* View Project Page Button */}
+                                        <div className="flex flex-col gap-2 mt-3 pt-2 border-t border-slate-100">
                                             <Link
                                                 to={`/projets/${project.slug || project.id}`}
-                                                className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white rounded-lg transition-all font-semibold text-sm shadow-md hover:shadow-lg active:scale-98"
+                                                className="flex items-center justify-center gap-1.5 w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl transition-all font-bold text-xs shadow-xs"
                                             >
                                                 <span>Voir la fiche du projet</span>
-                                                <ArrowUpRight size={16} />
+                                                <ArrowUpRight size={14} />
                                             </Link>
 
-                                            {/* Directions Button */}
                                             <a
                                                 href={getDirectionsUrl(project.address)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all font-medium text-sm border border-gray-200"
+                                                className="flex items-center justify-center gap-1.5 w-full px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all font-semibold text-xs border border-slate-200"
                                             >
-                                                <Navigation size={15} />
+                                                <Navigation size={13} />
                                                 <span>Itinéraire</span>
                                             </a>
                                         </div>
@@ -190,20 +184,20 @@ export function ProjectMap() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"
+                    transition={{ delay: 0.3 }}
+                    className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5"
                 >
-                    <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                        <div className="text-3xl font-bold text-orange-500 mb-1">9</div>
-                        <div className="text-sm text-gray-400">Projets actifs</div>
+                    <div className="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
+                        <div className="text-3xl font-black text-orange-500 mb-1">9</div>
+                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Projets actifs à Marseille</div>
                     </div>
-                    <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                        <div className="text-3xl font-bold text-purple-500 mb-1">~300</div>
-                        <div className="text-sm text-gray-400">Jeunes accompagnés/an</div>
+                    <div className="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
+                        <div className="text-3xl font-black text-orange-600 mb-1">~300</div>
+                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Jeunes accompagnés / an</div>
                     </div>
-                    <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                        <div className="text-3xl font-bold text-pink-500 mb-1">~140</div>
-                        <div className="text-sm text-gray-400">Bénévoles Kedge</div>
+                    <div className="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
+                        <div className="text-3xl font-black text-amber-500 mb-1">~140</div>
+                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Bénévoles Kedge mobilisés</div>
                     </div>
                 </motion.div>
             </div>

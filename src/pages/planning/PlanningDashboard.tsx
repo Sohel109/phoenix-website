@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
@@ -192,6 +192,26 @@ export function PlanningDashboard() {
                         </Link>
                     </motion.div>
                 ))}
+            </div>
+
+            {/* Naviguer vers le site public sans se déconnecter */}
+            <div className="mt-8 p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/30 text-orange-400 flex items-center justify-center shrink-0">
+                        <Globe size={20} />
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-white">Naviguer sur le site public Phoenix</p>
+                        <p className="text-xs text-white/50">Consultez les actualités, projets et documents associatifs tout en restant connecté</p>
+                    </div>
+                </div>
+                <Link
+                    to="/"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-bold transition-all border border-white/15 hover:border-orange-500/50 shadow-sm whitespace-nowrap"
+                >
+                    <span>Accéder au site public</span>
+                    <ArrowRight size={15} className="text-orange-400" />
+                </Link>
             </div>
         </PlanningLayout>
     );

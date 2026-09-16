@@ -13,9 +13,9 @@ const donationBreakdown = [
     {
         category: 'Matériel pédagogique & activités',
         percentage: 25,
-        color: '#FF6B00', // Orange
+        color: '#F97316', // Orange
         icon: BookOpen,
-        description: 'Fournitures scolaires, livres, matériel éducatif et supports d\'activités pour les jeunes.'
+        description: "Fournitures scolaires, livres, matériel éducatif et supports d'activités pour les jeunes."
     },
     {
         category: 'Frais administratifs',
@@ -37,11 +37,11 @@ const impactExamples = [
     },
     {
         amount: '250€',
-        impact: 'Organisation d\'une sortie culturelle pour un groupe'
+        impact: "Organisation d'une sortie culturelle pour un groupe"
     },
     {
         amount: '500€',
-        impact: 'Financement d\'un événement majeur (SimONU, Olympiades)'
+        impact: "Financement d'un événement majeur (SimONU, Olympiades)"
     }
 ];
 
@@ -49,16 +49,16 @@ export function Transparency() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A103C] to-[#0A0118] pt-20 pb-12">
-            <div className="container mx-auto px-4 max-w-6xl">
+        <div className="min-h-screen bg-slate-50 pt-28 pb-16">
+            <div className="container mx-auto px-4 max-w-5xl">
                 {/* Back Button */}
                 <motion.button
                     onClick={() => navigate(-1)}
-                    className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                    className="mb-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                 >
-                    <ArrowLeft size={20} />
+                    <ArrowLeft size={18} />
                     Retour
                 </motion.button>
 
@@ -68,32 +68,38 @@ export function Transparency() {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <div className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-orange-500 to-purple-600 rounded-2xl mb-4">
-                        <PieChart className="w-12 h-12 text-white" />
+                    <div className="inline-flex items-center justify-center p-4 bg-orange-100 rounded-2xl mb-5">
+                        <PieChart className="w-10 h-10 text-orange-600" />
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <span className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-200/60 px-4 py-1.5 rounded-full inline-block mb-4">
                         Transparence Financière
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                        Comment sont utilisés<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">vos dons ?</span>
                     </h1>
-                    <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                        Découvrez comment vos dons sont utilisés pour transformer la vie de 300 jeunes chaque année
+                    <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                        Découvrez comment vos dons transforment la vie de 300 jeunes chaque année à Marseille.
                     </p>
                 </motion.div>
 
                 {/* Trust Message */}
                 <motion.div
-                    className="bg-gradient-to-br from-orange-500/10 to-purple-600/10 border border-orange-500/20 rounded-2xl p-6 md:p-8 mb-12"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    className="bg-white border border-orange-200/70 rounded-2xl p-6 md:p-8 mb-12 shadow-sm"
+                    initial={{ opacity: 0, scale: 0.97 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
                 >
                     <div className="flex items-start gap-4">
-                        <Heart className="w-8 h-8 text-orange-500 flex-shrink-0 mt-1" />
+                        <div className="p-3 bg-orange-100 rounded-xl flex-shrink-0">
+                            <Heart className="w-6 h-6 text-orange-600" />
+                        </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-white mb-2">Notre engagement</h2>
-                            <p className="text-gray-300 leading-relaxed">
-                                Phoenix Égalité des Chances est une association <span className="text-orange-500 font-semibold">reconnue d'intérêt général</span>.
-                                Vos dons sont <span className="text-purple-500 font-semibold">déductibles des impôts à hauteur de 66%</span>.
-                                Nous nous engageons à une <span className="text-pink-500 font-semibold">transparence totale</span> sur l'utilisation de chaque euro reçu.
+                            <h2 className="text-xl font-bold text-slate-900 mb-2">Notre engagement envers vous</h2>
+                            <p className="text-slate-600 leading-relaxed">
+                                Phoenix Égalité des Chances est une association <span className="text-orange-600 font-semibold">reconnue d'intérêt général</span>.
+                                Vos dons sont <span className="text-emerald-600 font-semibold">déductibles des impôts à hauteur de 66%</span>.
+                                Nous nous engageons à une <span className="text-slate-900 font-semibold">transparence totale</span> sur l'utilisation de chaque euro reçu.
                             </p>
                         </div>
                     </div>
@@ -106,10 +112,9 @@ export function Transparency() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                 >
-                    <h2 className="text-3xl font-bold text-white mb-8 text-center">Répartition des Dons</h2>
+                    <h2 className="text-2xl font-black text-slate-900 mb-6 text-center tracking-tight">Répartition des Dons</h2>
 
-                    {/* Simple Visual Bars */}
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8">
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
                         <div className="space-y-6">
                             {donationBreakdown.map((item, index) => (
                                 <motion.div
@@ -121,16 +126,16 @@ export function Transparency() {
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center gap-3">
                                             <div
-                                                className="w-3 h-3 rounded-full"
+                                                className="w-3 h-3 rounded-full flex-shrink-0"
                                                 style={{ backgroundColor: item.color }}
                                             />
-                                            <span className="text-white font-medium">{item.category}</span>
+                                            <span className="text-slate-800 font-semibold text-sm">{item.category}</span>
                                         </div>
-                                        <span className="text-2xl font-bold text-white min-w-[60px] text-right">
+                                        <span className="text-2xl font-black text-slate-900 min-w-[60px] text-right">
                                             {item.percentage}%
                                         </span>
                                     </div>
-                                    <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+                                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                                         <motion.div
                                             className="h-full rounded-full"
                                             style={{ backgroundColor: item.color }}
@@ -152,30 +157,30 @@ export function Transparency() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                 >
-                    <h2 className="text-3xl font-bold text-white mb-8 text-center">Détails par Catégorie</h2>
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <h2 className="text-2xl font-black text-slate-900 mb-6 text-center tracking-tight">Détails par Catégorie</h2>
+                    <div className="grid md:grid-cols-2 gap-5">
                         {donationBreakdown.map((item, index) => {
                             const Icon = item.icon;
                             return (
                                 <motion.div
                                     key={item.category}
-                                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all"
+                                    className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-0.5 shadow-sm"
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.6 + index * 0.1 }}
-                                    whileHover={{ scale: 1.02 }}
+                                    whileHover={{ scale: 1.01 }}
                                 >
                                     <div className="flex items-start gap-4">
                                         <div
                                             className="p-3 rounded-xl flex-shrink-0"
-                                            style={{ backgroundColor: `${item.color}20` }}
+                                            style={{ backgroundColor: `${item.color}18` }}
                                         >
                                             <Icon className="w-6 h-6" style={{ color: item.color }} />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-xl font-bold text-white mb-2">{item.category}</h3>
-                                            <p className="text-gray-400 text-sm mb-3">{item.description}</p>
-                                            <span className="text-2xl font-bold" style={{ color: item.color }}>
+                                            <h3 className="text-lg font-bold text-slate-900 mb-1">{item.category}</h3>
+                                            <p className="text-slate-500 text-sm mb-3 leading-relaxed">{item.description}</p>
+                                            <span className="text-2xl font-black" style={{ color: item.color }}>
                                                 {item.percentage}%
                                             </span>
                                         </div>
@@ -193,21 +198,23 @@ export function Transparency() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
                 >
-                    <h2 className="text-3xl font-bold text-white mb-8 text-center">Impact Concret de Vos Dons</h2>
+                    <h2 className="text-2xl font-black text-slate-900 mb-6 text-center tracking-tight">Impact Concret de Vos Dons</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         {impactExamples.map((example, index) => (
                             <motion.div
                                 key={example.amount}
-                                className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-orange-500/50 transition-all"
+                                className="bg-white border border-slate-200 rounded-xl p-6 hover:border-orange-300 hover:shadow-md transition-all shadow-sm"
                                 initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.8 + index * 0.1 }}
                             >
                                 <div className="flex items-start gap-4">
-                                    <TrendingUp className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
+                                    <div className="p-2 bg-orange-100 rounded-lg flex-shrink-0 mt-0.5">
+                                        <TrendingUp className="w-5 h-5 text-orange-600" />
+                                    </div>
                                     <div>
-                                        <div className="text-2xl font-bold text-orange-500 mb-2">{example.amount}</div>
-                                        <p className="text-gray-300">{example.impact}</p>
+                                        <div className="text-2xl font-black text-orange-500 mb-1">{example.amount}</div>
+                                        <p className="text-slate-600 text-sm leading-relaxed">{example.impact}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -217,27 +224,29 @@ export function Transparency() {
 
                 {/* CTA Section */}
                 <motion.div
-                    className="text-center bg-gradient-to-br from-orange-500 to-purple-600 rounded-2xl p-8 md:p-12"
+                    className="text-center bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 md:p-12 shadow-lg"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.9 }}
                 >
-                    <Heart className="w-16 h-16 text-white mx-auto mb-4" fill="currentColor" />
-                    <h2 className="text-3xl font-bold text-white mb-4">Soutenez Notre Mission</h2>
-                    <p className="text-white/90 mb-6 max-w-2xl mx-auto">
+                    <div className="p-4 bg-white/20 rounded-full w-fit mx-auto mb-5">
+                        <Heart className="w-12 h-12 text-white" fill="currentColor" />
+                    </div>
+                    <h2 className="text-3xl font-black text-white mb-3">Soutenez Notre Mission</h2>
+                    <p className="text-white/90 mb-7 max-w-2xl mx-auto leading-relaxed">
                         Chaque don compte. Ensemble, donnons à tous les jeunes les mêmes chances de réussir.
                     </p>
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-8 py-4 bg-white text-orange-600 rounded-xl font-bold hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-white text-orange-600 rounded-xl font-bold text-base hover:bg-orange-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                         <Heart size={20} fill="currentColor" />
                         Faire un don déductible
                     </a>
-                    <p className="text-white/70 text-sm mt-4">
-                        66% de réduction d'impôts • Reçu fiscal automatique
+                    <p className="text-white/75 text-sm mt-4">
+                        66% de réduction d'impôts · Reçu fiscal automatique
                     </p>
                 </motion.div>
             </div>

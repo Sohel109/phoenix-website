@@ -53,7 +53,7 @@ export function generateICS(
     projects: Project[],
     userName: string
 ): string {
-    let icsContent = [
+    const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
         'PRODID:-//Phoenix EDC//Planning Tutorat//FR',

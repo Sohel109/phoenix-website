@@ -86,18 +86,22 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
 
     // Charger les données de planning depuis le Google Sheet et synchroniser périodiquement (polling)
     useEffect(() => {
-        if (!currentUser) {
-            setBookings([]);
-            setUnavailableWeeks([]);
-            setEventAttendance([]);
-            return;
-        }
+        if (!currentUser) return;
 
-        refreshPlanningData();
+        let isMounted = true;
+        fetchPlanningData().then(data => {
+            if (!isMounted || !data) return;
+            setBookings(data.bookings);
+            setUnavailableWeeks(data.unavailableWeeks);
+            setEventAttendance(data.eventAttendance);
+        });
 
         // Polling automatique toutes les 30 secondes pour synchroniser les données entre utilisateurs sur Vercel
         const intervalId = setInterval(refreshPlanningData, 30000);
-        return () => clearInterval(intervalId);
+        return () => {
+            isMounted = false;
+            clearInterval(intervalId);
+        };
     }, [currentUser, refreshPlanningData]);
 
     const login = useCallback(async (loginId: string, password: string): Promise<boolean> => {
@@ -115,6 +119,9 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
 
     const logout = useCallback(() => {
         setCurrentUser(null);
+        setBookings([]);
+        setUnavailableWeeks([]);
+        setEventAttendance([]);
         sessionStorage.removeItem(SESSION_KEY);
     }, []);
 

@@ -10,21 +10,21 @@ const categories = [
         id: 'information',
         label: 'Information',
         icon: Info,
-        gradient: 'from-blue-500 to-cyan-400',
-        description: 'Découvrir notre vision'
+        gradient: 'from-orange-500 to-amber-500',
+        description: 'Découvrir nos actions et projets'
     },
     {
         id: 'partenariat',
         label: 'Partenariat',
         icon: Handshake,
-        gradient: 'from-purple-600 to-pink-500',
-        description: 'Soutenir l\'ambition'
+        gradient: 'from-orange-600 to-violet-600',
+        description: 'Soutenir notre engagement'
     }
 ];
 
 export function SelectionView({ onSelect }: SelectionViewProps) {
     return (
-        <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 w-full max-w-4xl mx-auto px-4">
+        <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 w-full max-w-3xl mx-auto px-4">
             {categories.map((cat, index) => (
                 <Card key={cat.id} category={cat} index={index} onSelect={onSelect} />
             ))}
@@ -35,44 +35,42 @@ export function SelectionView({ onSelect }: SelectionViewProps) {
 function Card({ category, index, onSelect }: { category: any, index: number, onSelect: (id: string) => void }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-                duration: 0.5,
+                duration: 0.4,
                 delay: index * 0.1
             }}
             onClick={() => onSelect(category.id)}
             className="flex-1 group cursor-pointer relative"
         >
-            {/* Card Container - Correct Deep Violet Background */}
-            <div className="relative h-72 md:h-96 bg-[#1A103C]/90 backdrop-blur-md rounded-3xl border border-white/5 overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 group-hover:border-white/20 shadow-xl shadow-black/20 group-hover:shadow-violet-900/10">
-
-                {/* Subtle Inner Glow on Hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500 -z-10`} />
+            {/* Card Container */}
+            <div className="relative h-64 md:h-80 bg-white rounded-3xl border-2 border-slate-300/80 hover:border-orange-500 overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
 
                 {/* Content */}
-                <div className="relative z-10 flex flex-col items-center space-y-6">
-
-                    {/* Icon Container - Darker, less flashy */}
-                    <div className={`p-5 rounded-2xl bg-white/5 border border-white/5 group-hover:scale-110 transition-transform duration-500 group-hover:border-white/20 shadow-inner group-hover:bg-white/10`}>
-                        <category.icon strokeWidth={1.5} size={36} className="text-gray-300 group-hover:text-white transition-colors" />
+                <div className="relative z-10 flex flex-col items-center space-y-4">
+                    {/* Icon Container */}
+                    <div className="p-4 rounded-2xl bg-orange-50 text-orange-600 border-2 border-orange-200/80 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white group-hover:border-orange-500 transition-all duration-300 shadow-xs">
+                        <category.icon strokeWidth={2} size={32} />
                     </div>
 
                     <div className="text-center">
-                        {/* Title - Gradient on Hover only */}
-                        <h3 className={`text-2xl font-bold uppercase tracking-wider text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${category.gradient} transition-all duration-300 font-display`}>
+                        <h3 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-slate-900 mb-1 group-hover:text-orange-600 transition-colors">
                             {category.label}
                         </h3>
 
-                        <p className="text-xs font-medium text-gray-400 group-hover:text-gray-300 transition-colors uppercase tracking-widest">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                             {category.description}
                         </p>
                     </div>
+
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border-2 border-slate-200 group-hover:border-orange-500 group-hover:bg-orange-50 text-xs font-bold text-slate-700 group-hover:text-orange-600 transition-all">
+                        Sélectionner →
+                    </span>
                 </div>
 
-                {/* Bottom decorative bar - Thinner */}
-                <div className={`absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r ${category.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
-
+                {/* Bottom decorative bar */}
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
         </motion.div>
     );

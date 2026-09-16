@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { usePlanning } from '../context/PlanningContext';
 import { timeSlots, SPECIAL_EVENTS, formatWeekLabel } from '../data/planningData';
 import { projectsData } from '../data/projectsData';
@@ -26,27 +26,26 @@ export interface PlanningNotification {
     read: boolean;
 }
 
+function loadReadIds(userId?: string): string[] {
+    if (!userId) return [];
+    try {
+        const raw = localStorage.getItem(`phoenix_read_notifs_${userId}`);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
 export function usePlanningNotifications() {
     const { currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable } = usePlanning();
-    const [readIds, setReadIds] = useState<string[]>(() => {
-        if (!currentUser) return [];
-        try {
-            const raw = localStorage.getItem(`phoenix_read_notifs_${currentUser.id}`);
-            return raw ? JSON.parse(raw) : [];
-        } catch {
-            return [];
-        }
-    });
+    const [referenceTime] = useState(() => Date.now());
+    const [readIds, setReadIds] = useState<string[]>(() => loadReadIds(currentUser?.id));
+    const [prevUserId, setPrevUserId] = useState(currentUser?.id);
 
-    useEffect(() => {
-        if (!currentUser) return;
-        try {
-            const raw = localStorage.getItem(`phoenix_read_notifs_${currentUser.id}`);
-            setReadIds(raw ? JSON.parse(raw) : []);
-        } catch {
-            setReadIds([]);
-        }
-    }, [currentUser]);
+    if (currentUser?.id !== prevUserId) {
+        setPrevUserId(currentUser?.id);
+        setReadIds(loadReadIds(currentUser?.id));
+    }
 
     const markAsRead = useCallback((id: string) => {
         if (!currentUser) return;
@@ -84,7 +83,7 @@ export function usePlanningNotifications() {
                     title: `Présence confirmée · ${event.label}`,
                     description: `Votre participation à l'événement ${event.label} est bien enregistrée et confirmée.`,
                     to: '/planning/mes-evenements',
-                    timestamp: Date.now() - (index * 60000),
+                    timestamp: referenceTime - (index * 60000),
                     read: isRead(id)
                 });
             } else if (att && att.present === false) {
@@ -97,7 +96,7 @@ export function usePlanningNotifications() {
                     title: `Non-participation · ${event.label}`,
                     description: `Absence enregistrée pour ${event.label}. Cas exceptionnel à justifier auprès d'un membre du bureau.`,
                     to: '/planning/mes-evenements',
-                    timestamp: Date.now() - (index * 60000),
+                    timestamp: referenceTime - (index * 60000),
                     read: isRead(id)
                 });
             } else {
@@ -110,7 +109,7 @@ export function usePlanningNotifications() {
                     title: `Participation à renseigner · ${event.label}`,
                     description: `Vous n'avez pas encore indiqué si vous participez ou non à l'événement ${event.label}.`,
                     to: '/planning/mes-evenements',
-                    timestamp: Date.now() - (index * 60000),
+                    timestamp: referenceTime - (index * 60000),
                     read: isRead(id)
                 });
             }
@@ -136,7 +135,7 @@ export function usePlanningNotifications() {
                     description: `Votre présence à la séance du ${slot?.day || ''} (${slot?.startTime || ''}–${slot?.endTime || ''}, sem. ${b.weekKey}) a été validée.`,
                     dateLabel: b.weekKey,
                     to: '/planning/compte',
-                    timestamp: b.validatedAt ? new Date(b.validatedAt).getTime() : Date.now(),
+                    timestamp: b.validatedAt ? new Date(b.validatedAt).getTime() : referenceTime,
                     read: isRead(id)
                 });
             } else if (b.status === 'absent') {
@@ -150,7 +149,7 @@ export function usePlanningNotifications() {
                     description: `Vous avez été marqué absent à la séance du ${slot?.day || ''} (${slot?.startTime || ''}–${slot?.endTime || ''}, sem. ${b.weekKey}).`,
                     dateLabel: b.weekKey,
                     to: '/planning/compte',
-                    timestamp: b.validatedAt ? new Date(b.validatedAt).getTime() : Date.now(),
+                    timestamp: b.validatedAt ? new Date(b.validatedAt).getTime() : referenceTime,
                     read: isRead(id)
                 });
             } else if (b.status === 'prevu' && b.weekKey === currentWeekKey) {
@@ -164,7 +163,7 @@ export function usePlanningNotifications() {
                     description: `Séance programmée le ${slot?.day || ''} de ${slot?.startTime || ''} à ${slot?.endTime || ''}.`,
                     dateLabel: b.weekKey,
                     to: '/planning/horaire',
-                    timestamp: Date.now() - 3600000,
+                    timestamp: referenceTime - 3600000,
                     read: isRead(id)
                 });
             }
@@ -185,7 +184,7 @@ export function usePlanningNotifications() {
                 description: `Vous n'avez sélectionné aucun créneau pour la semaine en cours (${formatWeekLabel(currentWeekKey)}).`,
                 dateLabel: currentWeekKey,
                 to: '/planning/disponibilites',
-                timestamp: Date.now(),
+                timestamp: referenceTime,
                 read: readIds.includes(id)
             });
         }
@@ -209,7 +208,7 @@ export function usePlanningNotifications() {
                     title: `Présences à valider (${pendingValidations.length})`,
                     description: `Il y a ${pendingValidations.length} présence(s) de tuteur(s) en attente de confirmation pour cette semaine.`,
                     to: '/planning/validation',
-                    timestamp: Date.now(),
+                    timestamp: referenceTime,
                     read: readIds.includes(id)
                 });
             }
@@ -220,7 +219,7 @@ export function usePlanningNotifications() {
             if (a.read !== b.read) return a.read ? 1 : -1;
             return b.timestamp - a.timestamp;
         });
-    }, [currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable, readIds]);
+    }, [currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable, readIds, referenceTime]);
 
     const unreadCount = useMemo(() => {
         return notifications.filter(n => !n.read).length;

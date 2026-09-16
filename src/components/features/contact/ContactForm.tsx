@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 
@@ -14,9 +14,12 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
         message: ''
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const isSubmittingRef = useRef(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
         setStatus('loading');
 
         try {
@@ -40,6 +43,8 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
         } catch (error) {
             console.error(error);
             setStatus('error');
+        } finally {
+            isSubmittingRef.current = false;
         }
     };
 
@@ -48,31 +53,27 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full max-w-2xl mx-auto bg-[#1A103C]/90 backdrop-blur-md rounded-3xl p-16 text-center border border-white/5 shadow-2xl"
+                transition={{ duration: 0.6 }}
+                className="w-full max-w-xl mx-auto bg-white rounded-3xl p-10 sm:p-14 text-center border border-slate-200 shadow-md"
             >
-                <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 1, delay: 0.2 }}
-                    className="w-20 h-20 border border-green-500/20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-8"
-                >
-                    <CheckCircle strokeWidth={1} className="w-8 h-8 text-green-400" />
-                </motion.div>
+                <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-100">
+                    <CheckCircle size={32} />
+                </div>
 
-                <h2 className="text-2xl font-light uppercase tracking-widest text-white mb-4">Message Transmis</h2>
-                <div className="w-12 h-[1px] bg-white/20 mx-auto mb-6" />
+                <h2 className="text-2xl font-black text-slate-900 mb-3">Message bien reçu !</h2>
+                <div className="w-12 h-1 bg-orange-500 mx-auto mb-6 rounded-full" />
 
-                <p className="text-gray-400 font-light mb-12 leading-relaxed">
-                    Nous avons bien reçu votre demande concernant <span className="text-white uppercase tracking-wider text-sm border-b border-white/20 pb-0.5">{category}</span>.<br />
-                    Une confirmation a été envoyée à votre adresse email.
+                <p className="text-slate-600 font-normal mb-8 leading-relaxed text-sm sm:text-base">
+                    Merci pour votre message concernant <span className="font-bold text-slate-900">{category}</span>.<br />
+                    Notre équipe vous répondra dans les plus brefs délais.
                 </p>
 
                 <button
                     onClick={onBack}
-                    className="group relative px-8 py-3 overflow-hidden rounded-full bg-white/5 border border-white/10 hover:border-white/30 transition-colors duration-500"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-sm font-semibold transition-all"
                 >
-                    <span className="relative z-10 text-xs uppercase tracking-[0.2em] text-gray-300 group-hover:text-white transition-colors duration-500">Retour à l'accueil</span>
+                    <ArrowLeft size={16} />
+                    <span>Retour au choix</span>
                 </button>
             </motion.div>
         );
@@ -80,91 +81,96 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.4 }}
             className="w-full max-w-xl mx-auto"
         >
             <button
                 onClick={onBack}
-                className="mb-8 flex items-center gap-3 text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors duration-500 group"
+                className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border-2 border-slate-300 hover:border-orange-500 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-orange-600 shadow-xs transition-all group cursor-pointer"
             >
-                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform duration-500" />
-                Retour
+                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                <span>Changer de motif</span>
             </button>
 
-            {/* Form Container - Matches Card Style */}
-            <div className="bg-[#1A103C]/90 backdrop-blur-md border border-white/5 rounded-3xl p-10 md:p-14 shadow-2xl relative overflow-hidden">
-
-                {/* Subtle top light */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-                <div className="text-center mb-10">
-                    <span className="text-xs font-light uppercase tracking-[0.3em] text-white/50 mb-2 block">Formulaire</span>
-                    <h2 className="text-2xl font-bold text-white uppercase tracking-wider font-display">
+            {/* Form Container */}
+            <div className="bg-white border-2 border-slate-300/80 rounded-3xl p-8 sm:p-12 shadow-lg relative overflow-hidden">
+                <div className="text-center mb-8">
+                    <span className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full mb-3 inline-block">
+                        Demande de contact
+                    </span>
+                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tight">
                         {category}
                     </h2>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                    <div className="group">
-                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 group-focus-within:text-white transition-colors duration-500">Nom Complet</label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">
+                            Nom Complet
+                        </label>
                         <input
                             type="text"
                             required
                             value={formData.name}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full bg-white/5 rounded-lg border border-white/5 px-4 py-3 text-white font-light focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all duration-300 placeholder-white/20"
-                            placeholder="Votre nom"
+                            className="w-full bg-white rounded-xl border-2 border-slate-300 px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-orange-500 transition-all placeholder-slate-400 text-sm shadow-xs"
+                            placeholder="Ex: Camille Dupont"
                         />
                     </div>
 
-                    <div className="group">
-                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 group-focus-within:text-white transition-colors duration-500">Email</label>
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">
+                            Adresse Email
+                        </label>
                         <input
                             type="email"
                             required
                             value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full bg-white/5 rounded-lg border border-white/5 px-4 py-3 text-white font-light focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all duration-300 placeholder-white/20"
-                            placeholder="votre@email.com"
+                            className="w-full bg-white rounded-xl border-2 border-slate-300 px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-orange-500 transition-all placeholder-slate-400 text-sm shadow-xs"
+                            placeholder="Ex: contact@exemple.fr"
                         />
                     </div>
 
                     {status === 'error' && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
-                            <p className="text-red-400 text-xs uppercase tracking-wider">
-                                Erreur lors de l'envoi. Veuillez réessayer.
+                        <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3.5 text-center">
+                            <p className="text-red-700 text-xs font-bold">
+                                Une erreur est survenue lors de l'envoi. Veuillez réessayer.
                             </p>
                         </div>
                     )}
 
-                    <div className="group">
-                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 group-focus-within:text-white transition-colors duration-500">Message</label>
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">
+                            Votre Message
+                        </label>
                         <textarea
                             required
                             rows={4}
                             value={formData.message}
                             onChange={e => setFormData({ ...formData, message: e.target.value })}
-                            className="w-full bg-white/5 rounded-lg border border-white/5 px-4 py-3 text-white font-light focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all duration-300 resize-none placeholder-white/20"
-                            placeholder="Votre message"
+                            className="w-full bg-white rounded-xl border-2 border-slate-300 px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-orange-500 transition-all resize-none placeholder-slate-400 text-sm shadow-xs"
+                            placeholder="Expliquez-nous votre projet ou votre demande..."
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="w-full mt-8 group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-purple-600 rounded-xl shadow-lg shadow-purple-900/20 hover:shadow-purple-900/40 transition-all duration-300 flex items-center justify-center gap-4 disabled:opacity-50 hover:scale-[1.02]"
+                        className="w-full py-4 px-6 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl border-2 border-orange-500 shadow-md shadow-orange-500/25 hover:shadow-orange-500/40 active:scale-98 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
                     >
                         {status === 'loading' ? (
-                            <Loader2 className="animate-spin text-white/80" />
+                            <>
+                                <Loader2 size={18} className="animate-spin" />
+                                <span>Envoi en cours...</span>
+                            </>
                         ) : (
                             <>
-                                <span className="text-sm font-bold uppercase tracking-wider text-white">
-                                    Envoyer
-                                </span>
-                                <Send size={16} className="text-white group-hover:translate-x-1 transition-transform duration-300" />
+                                <Send size={16} />
+                                <span>Envoyer le message</span>
                             </>
                         )}
                     </button>

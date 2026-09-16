@@ -15,10 +15,43 @@
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Phoenix</title>
+  <meta name="theme-color" content="#F97316" />
+  <meta name="description" content="Association étudiante de KEDGE Business School œuvrant pour l'égalité des chances à Marseille : tutorat académique, ouverture culturelle et accompagnement des jeunes." />
+  <meta name="keywords" content="Phoenix, égalité des chances, tutorat, Marseille, KEDGE Business School, association étudiante, éducation, mentorat" />
+  <meta name="author" content="Phoenix Égalité des Chances" />
+
+  <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="Phoenix Égalité des Chances" />
+  <meta property="og:title" content="Phoenix Égalité des Chances | KEDGE Business School" />
+  <meta property="og:description" content="Association étudiante de KEDGE Business School œuvrant pour l'égalité des chances à Marseille : tutorat académique, ouverture culturelle et projets d'avenir." />
+  <meta property="og:image" content="/logo-badge.jpg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Phoenix Égalité des Chances | KEDGE Business School" />
+  <meta name="twitter:description" content="Association étudiante de KEDGE Business School œuvrant pour l'égalité des chances à Marseille : tutorat et ouverture culturelle." />
+  <meta name="twitter:image" content="/logo-badge.jpg" />
+
+  <title>Phoenix Égalité des Chances | KEDGE Business School Marseille</title>
+  <script>
+    try {
+      localStorage.removeItem('theme');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    } catch (e) {}
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let r of registrations) {
+          r.unregister();
+        }
+      });
+    }
+  </script>
 </head>
 
-<body>
+<body class="bg-slate-50 text-slate-900">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

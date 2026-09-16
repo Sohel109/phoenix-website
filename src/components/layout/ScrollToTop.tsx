@@ -27,7 +27,10 @@ export function ScrollToTop() {
     const { pathname } = useLocation();
 
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Force instant scroll reset on route change
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
 
         if (PAGE_TITLES[pathname]) {
             document.title = PAGE_TITLES[pathname];

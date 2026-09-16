@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { SelectionView } from '../components/features/contact/SelectionView';
@@ -8,15 +8,10 @@ import { Recruitment } from '../components/sections/Recruitment';
 
 export function Contact() {
     const location = useLocation();
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const queryCategory = new URLSearchParams(location.search).get('category');
+    const [overrideCategory, setOverrideCategory] = useState<string | null | undefined>(undefined);
 
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const category = params.get('category');
-        if (category) {
-            setSelectedCategory(category);
-        }
-    }, [location.search]);
+    const selectedCategory = overrideCategory !== undefined ? overrideCategory : queryCategory;
 
     return (
         <div className="min-h-screen bg-transparent pt-40 pb-20 transition-colors duration-300">
@@ -24,21 +19,26 @@ export function Contact() {
 
                 {/* Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 25 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
                     className="text-center mb-12"
                 >
-                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-purple-600 to-violet-600 drop-shadow-lg">
-                            {selectedCategory ? 'Votre Demande' : 'Contactez-nous'}
+                    <div className="flex items-center justify-center gap-2.5 mb-3">
+                        <span className="w-5 h-0.5 bg-orange-500 rounded-full" />
+                        <span className="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-orange-600">
+                            Écrivez-nous
                         </span>
+                        <span className="w-5 h-0.5 bg-orange-500 rounded-full" />
+                    </div>
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight mb-4 text-slate-900">
+                        {selectedCategory ? 'Votre Demande' : 'Contactez-nous'}
                     </h1>
-                    {selectedCategory && (
-                        <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
-                            Dites-nous en plus sur votre projet ou votre question.
-                        </p>
-                    )}
+                    <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                        {selectedCategory 
+                            ? 'Dites-nous en plus sur votre projet ou votre question.'
+                            : 'Une question sur nos programmes, envie de devenir partenaire ou bénévole ? Choisissez votre motif ci-dessous.'}
+                    </p>
                 </motion.div>
 
                 {/* Main Content Area */}
@@ -53,7 +53,7 @@ export function Contact() {
                                 transition={{ duration: 0.5 }}
                                 className="w-full"
                             >
-                                <SelectionView onSelect={setSelectedCategory} />
+                                <SelectionView onSelect={setOverrideCategory} />
                             </motion.div>
                         ) : (
                             <motion.div
@@ -66,7 +66,7 @@ export function Contact() {
                             >
                                 <ContactForm
                                     category={selectedCategory}
-                                    onBack={() => setSelectedCategory(null)}
+                                    onBack={() => setOverrideCategory(null)}
                                 />
                             </motion.div>
                         )}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User, Loader2, KeyRound, CheckCircle2, AlertCircle, Mail, ArrowLeft } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
@@ -41,7 +41,7 @@ export function PlanningLogin() {
                 setIsShaking(true);
                 setTimeout(() => setIsShaking(false), 500);
             }
-        } catch (err) {
+        } catch {
             setError('Une erreur est survenue lors de la connexion.');
         } finally {
             setIsLoading(false);
@@ -68,7 +68,7 @@ export function PlanningLogin() {
             } else {
                 setResetFeedback({ type: 'error', text: res.message || 'Impossible d’envoyer le code.' });
             }
-        } catch (err) {
+        } catch {
             setResetFeedback({ type: 'error', text: 'Une erreur réseau est survenue.' });
         } finally {
             setIsResetting(false);
@@ -109,7 +109,7 @@ export function PlanningLogin() {
             } else {
                 setResetFeedback({ type: 'error', text: res.message || 'Code incorrect ou expiré.' });
             }
-        } catch (err) {
+        } catch {
             setResetFeedback({ type: 'error', text: 'Une erreur réseau est survenue.' });
         } finally {
             setIsResetting(false);
@@ -128,7 +128,18 @@ export function PlanningLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-[#07071a] flex flex-col items-center justify-center px-4">
+        <div className="min-h-screen bg-[#07071a] flex flex-col items-center justify-center px-4 relative py-12">
+            {/* Bouton retour au site public */}
+            <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-20">
+                <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-xs sm:text-sm font-semibold backdrop-blur-md border border-white/15 transition-all shadow-md group"
+                    title="Retourner à l'accueil du site Phoenix"
+                >
+                    <ArrowLeft size={16} className="text-orange-400 group-hover:-translate-x-0.5 transition-transform" />
+                    <span>Retour au site</span>
+                </Link>
+            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -239,7 +250,17 @@ export function PlanningLogin() {
                     </form>
                 </motion.div>
 
-                <p className="text-center text-white/20 text-xs mt-6">
+                <div className="mt-4 text-center">
+                    <Link
+                        to="/"
+                        className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-orange-400 transition-colors py-1 px-3 rounded-lg hover:bg-white/5"
+                    >
+                        <ArrowLeft size={13} />
+                        <span>Quitter et retourner au site public</span>
+                    </Link>
+                </div>
+
+                <p className="text-center text-white/20 text-xs mt-3">
                     Espace réservé aux membres Phoenix · Identifiants fournis par l'administration
                 </p>
             </motion.div>

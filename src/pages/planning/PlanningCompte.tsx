@@ -13,10 +13,10 @@ interface StatCardProps {
     value: number | string;
     unit?: string;
     gradient: string;
-    shadow: string;
+    shadow?: string;
 }
 
-function StatCard({ icon, label, value, unit, gradient, shadow: _shadow }: StatCardProps) {
+function StatCard({ icon, label, value, unit, gradient }: StatCardProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -119,7 +119,7 @@ export function PlanningCompte() {
             } else {
                 setFeedback({ type: 'error', text: res.message || "Impossible de modifier le mot de passe." });
             }
-        } catch (err: any) {
+        } catch {
             setFeedback({ type: 'error', text: 'Une erreur est survenue lors de la mise à jour.' });
         } finally {
             setIsSubmitting(false);

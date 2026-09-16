@@ -40,18 +40,6 @@ export function PlanningEventValidation() {
         loadData();
     }, [loadData]);
 
-    if (!currentUser || !isBureau) {
-        return (
-            <PlanningLayout title="Événements">
-                <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <ShieldCheck size={48} className="text-white/20 mb-4" />
-                    <p className="text-white font-bold text-lg">Accès restreint</p>
-                    <p className="text-white/40 text-sm mt-1">Cette page est réservée au Bureau.</p>
-                </div>
-            </PlanningLayout>
-        );
-    }
-
     // Récupérer tous les membres uniques (locaux + distants)
     const allMembers = useMemo(() => {
         const membersMap = new Map<string, string>();
@@ -117,6 +105,18 @@ export function PlanningEventValidation() {
             percent: allMembers.length > 0 ? Math.round((presentCount / allMembers.length) * 100) : 0
         };
     }, [allMembers, selectedEventId, eventAttendance]);
+
+    if (!currentUser || !isBureau) {
+        return (
+            <PlanningLayout title="Événements">
+                <div className="flex flex-col items-center justify-center py-24 text-center">
+                    <ShieldCheck size={48} className="text-white/20 mb-4" />
+                    <p className="text-white font-bold text-lg">Accès restreint</p>
+                    <p className="text-white/40 text-sm mt-1">Cette page est réservée au Bureau.</p>
+                </div>
+            </PlanningLayout>
+        );
+    }
 
     return (
         <PlanningLayout title="Validation Événements">

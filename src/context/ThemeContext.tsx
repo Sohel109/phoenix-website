@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'light';
 
 interface ThemeContextType {
     theme: Theme;
@@ -10,35 +10,29 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<Theme>(() => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            localStorage.setItem('theme', 'dark');
-            return 'dark';
-        }
-        return (savedTheme as Theme) || 'dark';
-    });
-
     useEffect(() => {
+        // Force light mode permanently on public site.
+        // Planning pages use their own dark background via inline classes in PlanningLayout.
         const root = window.document.documentElement;
         const body = window.document.body;
 
-        // Apply to both html and body for maximum compatibility
-        root.classList.remove('light', 'dark');
-        root.classList.add(theme);
+        root.classList.remove('dark');
+        root.classList.add('light');
 
-        body.classList.remove('light', 'dark');
-        body.classList.add(theme);
+        body.classList.remove('dark');
+        body.classList.add('light');
 
-        localStorage.setItem('theme', theme);
-    }, [theme]);
+        // Clear any stale dark theme from localStorage
+        localStorage.removeItem('theme');
+    }, []);
 
     const toggleTheme = () => {
-        setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+        // No-op: public site is always light mode.
+        // Planning dark mode is handled by PlanningLayout's own classes.
     };
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme: 'light', toggleTheme }}>
             {children}
         </ThemeContext.Provider>
     );

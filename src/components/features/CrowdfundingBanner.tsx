@@ -46,7 +46,9 @@ export function CrowdfundingBanner() {
                     let dismissed = false;
                     try {
                         dismissed = sessionStorage.getItem('crowdfunding-banner-dismissed') === 'true';
-                    } catch {}
+                    } catch {
+                        // ignore storage access errors
+                    }
                     if (!dismissed) {
                         setVisible(true);
                         window.__isCrowdfundingVisible = true;

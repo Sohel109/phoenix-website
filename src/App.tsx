@@ -3,15 +3,11 @@ import { lazy, Suspense, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
 import { ScrollToTop } from './components/layout/ScrollToTop';
-import { BubbleMenu } from './components/layout/BubbleMenu';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { IntroAnimation } from './components/layout/IntroAnimation';
 import { AuroraBackground } from './components/layout/AuroraBackground';
-// Chatbot import removed
-import { IOSInstallPrompt } from './components/features/IOSInstallPrompt';
-import { CrowdfundingBanner } from './components/features/CrowdfundingBanner';
-import { FlyingHeart } from './components/features/FlyingHeart';
+
 import { ThemeProvider } from './context/ThemeContext';
 import { PlanningProvider, usePlanning } from './context/PlanningContext';
 
@@ -47,7 +43,7 @@ const PlanningNotifications = lazy(() => import('./pages/planning/PlanningNotifi
 function PageLoader() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="w-8 h-8 rounded-full border-4 border-violet-500/30 border-t-violet-500 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-orange-500/30 border-t-orange-500 animate-spin" />
     </div>
   );
 }
@@ -79,14 +75,12 @@ function App() {
         </AnimatePresence>
 
         {!showIntro && (
-          <div className="flex flex-col min-h-screen font-sans animate-in fade-in duration-1000">
+          <div className="flex flex-col min-h-screen font-sans animate-in fade-in duration-1000 bg-slate-50 text-slate-900">
             <AuroraBackground />
             <Header />
-            <BubbleMenu />
-            {/* Chatbot removed */}
-            <IOSInstallPrompt />
-            <CrowdfundingBanner />
-            <FlyingHeart />
+            {/* Popups désactivés à la demande de l'utilisateur */}
+            {/* <IOSInstallPrompt /> */}
+            {/* <CrowdfundingBanner /> */}
             <main className="flex-grow">
               <Suspense fallback={<PageLoader />}>
                 <Routes>

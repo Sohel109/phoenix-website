@@ -83,7 +83,9 @@ export function IOSInstallPrompt() {
         window.__isIOSPromptVisible = false;
         try {
             localStorage.setItem('ios-install-dismissed', 'true');
-        } catch {}
+        } catch {
+            // ignore storage access errors
+        }
         window.dispatchEvent(new CustomEvent('ios-prompt-closed'));
     };
 

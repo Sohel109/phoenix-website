@@ -8,10 +8,10 @@ import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWe
 import { generateICS, downloadICSFile } from '../../utils/icsExport';
 
 const STATUS_CONFIG = {
-    prevu:    { label: 'Prévu',     color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-    confirme: { label: 'Confirmé',  color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
-    absent:   { label: 'Absent',    color: 'bg-red-500/20 text-red-300 border-red-500/30' },
-    annule:   { label: 'Annulé',    color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+    prevu:    { label: 'Prévu',     color: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
+    confirme: { label: 'Confirmé',  color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+    absent:   { label: 'Absent',    color: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+    annule:   { label: 'Annulé',    color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' },
 };
 
 export function PlanningHoraire() {
@@ -62,13 +62,13 @@ export function PlanningHoraire() {
         <PlanningLayout title="Horaire">
             {/* Navigation Tabs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
-                <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
+                <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
                     <button
                         onClick={() => setActiveTab('global')}
-                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
                             activeTab === 'global'
-                                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/20'
-                                : 'text-white/60 hover:text-white hover:bg-white/5'
+                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
                         }`}
                     >
                         <Grid size={15} />
@@ -77,10 +77,10 @@ export function PlanningHoraire() {
 
                     <button
                         onClick={() => setActiveTab('mine')}
-                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
                             activeTab === 'mine'
-                                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/20'
-                                : 'text-white/60 hover:text-white hover:bg-white/5'
+                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
                         }`}
                     >
                         <User size={15} />
@@ -92,7 +92,7 @@ export function PlanningHoraire() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleExportCalendar}
-                    className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 text-xs font-bold border border-orange-500/30 transition-all self-stretch sm:self-auto shrink-0"
+                    className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-bold border border-orange-500/30 transition-all self-stretch sm:self-auto shrink-0"
                 >
                     <Download size={14} />
                     <span>Exporter mon agenda (.ics)</span>
@@ -100,22 +100,22 @@ export function PlanningHoraire() {
             </div>
 
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-6 p-3 rounded-xl bg-white/5 border border-white/10">
+            <div className="flex items-center justify-between mb-6 p-3 rounded-xl bg-slate-900 border border-slate-800">
                 <motion.button
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors border border-slate-700/60"
                 >
                     <ChevronLeft size={18} />
                 </motion.button>
                 <div className="text-center">
-                    <p className="text-white font-bold text-sm">{formatWeekLabel(currentWeekKey)}</p>
-                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-semibold mt-0.5">{currentWeekKey}</p>
+                    <p className="text-white font-bold text-sm sm:text-base">{formatWeekLabel(currentWeekKey)}</p>
+                    <p className="text-slate-400 text-[10px] uppercase tracking-wider font-semibold mt-0.5">{currentWeekKey}</p>
                 </div>
                 <motion.button
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'next'))}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors border border-slate-700/60"
                 >
                     <ChevronRight size={18} />
                 </motion.button>
@@ -182,15 +182,15 @@ export function PlanningHoraire() {
             {activeTab === 'global' && (
                 <div className="space-y-6">
                     {/* Project Filter Toolbar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
-                        <div className="flex items-center gap-2 text-white/70 text-xs font-bold uppercase tracking-wider">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-900 border border-slate-800">
+                        <div className="flex items-center gap-2 text-slate-300 text-xs font-bold uppercase tracking-wider">
                             <Filter size={14} className="text-orange-400" />
                             <span>Filtrer par projet :</span>
                         </div>
                         <select
                             value={selectedProjectId}
                             onChange={(e) => setSelectedProjectId(e.target.value)}
-                            className="bg-[#1a1438] text-white text-xs font-medium border border-white/15 rounded-xl px-3 py-2 focus:outline-none focus:border-orange-500 transition-colors cursor-pointer"
+                            className="bg-slate-800 text-white text-xs font-medium border border-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:border-orange-500 transition-colors cursor-pointer"
                         >
                             <option value="all">Tous les projets ({projectsData.length})</option>
                             {projectsData.map(p => (
@@ -200,17 +200,17 @@ export function PlanningHoraire() {
                     </div>
 
                     {slotsByDay.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-white/5 border border-white/10">
-                            <Clock size={40} className="text-white/20 mb-3" />
-                            <p className="text-white/50 font-medium">Aucun créneau programmé pour ce filtre cette semaine</p>
+                        <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-slate-900 border border-slate-800">
+                            <Clock size={40} className="text-slate-600 mb-3" />
+                            <p className="text-slate-400 font-medium">Aucun créneau programmé pour ce filtre cette semaine</p>
                         </div>
                     ) : (
                         slotsByDay.map(({ day, slots }) => (
                             <div key={day} className="space-y-3">
-                                <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                                <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
                                     <Calendar size={14} className="text-orange-400" />
                                     <h3 className="text-sm font-black uppercase tracking-wider text-white">{day}</h3>
-                                    <span className="text-xs text-white/40 font-medium">({slots.length} séance{slots.length > 1 ? 's' : ''})</span>
+                                    <span className="text-xs text-slate-400 font-medium">({slots.length} séance{slots.length > 1 ? 's' : ''})</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -226,7 +226,7 @@ export function PlanningHoraire() {
                                                 onClick={() => setSelectedSlotForModal(slot)}
                                                 className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                                                     hasAttendees
-                                                        ? 'bg-white/5 border-white/10 hover:border-orange-500/40 hover:bg-white/[0.08]'
+                                                        ? 'bg-slate-900 border-slate-800 hover:border-orange-500/40 hover:bg-slate-850 shadow-xs'
                                                         : 'bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50 hover:bg-amber-500/10'
                                                 }`}
                                             >
@@ -305,7 +305,7 @@ export function PlanningHoraire() {
                         initial={{ opacity: 0, scale: 0.9, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="bg-[#120e2e] border border-white/15 rounded-2xl p-6 max-w-md w-full shadow-2xl relative"
+                        className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative"
                     >
                         <button
                             onClick={() => setSelectedSlotForModal(null)}

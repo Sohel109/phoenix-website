@@ -8,40 +8,27 @@ import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '.
 
 export function PlanningRecap() {
     const { currentUser, bookings, currentWeekKey } = usePlanning();
-    
-    const currentDate = new Date();
     const [filterType, setFilterType] = useState<'week' | 'month' | 'year' | 'all'>('all');
     const [selectedWeek, setSelectedWeek] = useState(currentWeekKey);
-    const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
-    const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
+    const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
     const [selectedProjectId, setSelectedProjectId] = useState<number | 'all'>('all');
 
     const isBureau = currentUser?.role === 'bureau';
-
-    if (!currentUser || (currentUser.role !== 'chef_projet' && !isBureau)) {
-        return (
-            <PlanningLayout title="Récapitulatif">
-                <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <ShieldCheck size={48} className="text-white/20 mb-4" />
-                    <p className="text-white font-bold text-lg">Accès restreint</p>
-                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux responsables.</p>
-                </div>
-            </PlanningLayout>
-        );
-    }
+    const isAuthorized = Boolean(currentUser && (currentUser.role === 'chef_projet' || isBureau));
 
     const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
     
     // Obtenir toutes les années uniques des bookings
     const availableYears = useMemo(() => {
         const years = new Set<number>();
-        years.add(currentDate.getFullYear());
+        years.add(new Date().getFullYear());
         bookings.forEach(b => {
             const y = parseInt(b.weekKey.split('-')[0], 10);
             if (!isNaN(y)) years.add(y);
         });
         return Array.from(years).sort((a, b) => b - a);
-    }, [bookings, currentDate]);
+    }, [bookings]);
 
     // Calculer les heures
     const recapData = useMemo(() => {
@@ -141,6 +128,18 @@ export function PlanningRecap() {
         URL.revokeObjectURL(url);
     };
 
+    if (!isAuthorized) {
+        return (
+            <PlanningLayout title="Récapitulatif">
+                <div className="flex flex-col items-center justify-center py-24 text-center">
+                    <ShieldCheck size={48} className="text-white/20 mb-4" />
+                    <p className="text-white font-bold text-lg">Accès restreint</p>
+                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux responsables.</p>
+                </div>
+            </PlanningLayout>
+        );
+    }
+
     return (
         <PlanningLayout title="Récapitulatif">
             <div className="mb-6 pt-4 flex items-center justify-between">
@@ -169,7 +168,7 @@ export function PlanningRecap() {
                     {/* Filter Type */}
                     <select
                         value={filterType}
-                        onChange={(e) => setFilterType(e.target.value as any)}
+                        onChange={(e) => setFilterType(e.target.value as 'week' | 'month' | 'year' | 'all')}
                         className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40"
                     >
                         <option value="all" className="bg-gray-900">Toutes les dates</option>

@@ -15,8 +15,8 @@ const backend = spawn('node', [join(__dirname, 'server.js')], {
 });
 
 // Start Vite Frontend
-console.log('🎨 Starting Vite Frontend client on port 5175...');
-const frontend = spawn('npx', ['vite', '--port', '5175'], {
+console.log('🎨 Starting Vite Frontend client on port 5175 (force recompile)...');
+const frontend = spawn('npx', ['vite', '--port', '5175', '--force'], {
     stdio: 'inherit',
     shell: true
 });
