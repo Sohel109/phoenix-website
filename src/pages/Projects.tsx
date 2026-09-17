@@ -197,11 +197,11 @@ export function Projects() {
 
                                     {/* Round Macaron Logo Pastille bottom right (CERCLE AVANT LE RECTANGLE) */}
                                     {project.image && (
-                                        <div className="absolute bottom-3 right-3 w-13 h-13 rounded-full bg-white p-1.5 shadow-soft border-2 border-white flex items-center justify-center overflow-hidden z-10">
+                                        <div className="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-white p-1 shadow-md border border-slate-200 flex items-center justify-center overflow-hidden z-10">
                                             <img
                                                 src={project.image}
                                                 alt={`${project.title} logo`}
-                                                className="w-full h-full object-contain rounded-full"
+                                                className="w-full h-full object-contain"
                                             />
                                         </div>
                                     )}

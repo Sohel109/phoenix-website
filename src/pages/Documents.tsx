@@ -103,7 +103,7 @@ export function Documents() {
                             </div>
 
                             <div className="pt-5 border-t border-[#ECDDFD]/60 flex items-center justify-between mt-auto">
-                                <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-500">
+                                <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-600">
                                     <span className="bg-[#ECDDFD]/50 px-3 py-1 rounded-full text-[#6F2B75]">{doc.type}</span>
                                     <span>{doc.size}</span>
                                 </div>
@@ -141,7 +141,7 @@ export function Documents() {
                                         {archiveDocuments.length} document{archiveDocuments.length > 1 ? 's' : ''}
                                     </span>
                                 </div>
-                                <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                                <p className="text-xs text-slate-600 mt-0.5 font-medium">
                                     {isArchiveOpen ? "Cliquez pour masquer les anciennes éditions" : "Cliquez pour afficher les anciennes éditions"}
                                 </p>
                             </div>
@@ -191,7 +191,7 @@ export function Documents() {
                                             </div>
 
                                             <div className="mt-4 flex items-center justify-between pt-4 border-t border-[#ECDDFD]/60">
-                                                <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-500">
+                                                <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-600">
                                                     <span className="bg-[#ECDDFD]/50 px-2.5 py-0.5 rounded-full text-[11px] text-[#6F2B75]">{doc.type}</span>
                                                     <span>{doc.size}</span>
                                                 </div>

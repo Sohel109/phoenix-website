@@ -108,14 +108,14 @@ export function ProjectDetail() {
 
                         {/* Round Macaron Logo Overlay (CERCLE AVANT LE RECTANGLE) */}
                         {project.image && (
-                            <div className="absolute -bottom-10 left-6 sm:left-10 w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-full shadow-soft-lg flex items-center justify-center border-4 border-white overflow-hidden p-2 z-10">
-                                <img src={project.image} alt={project.title} className="w-full h-full object-contain rounded-full" />
+                            <div className="absolute -bottom-8 left-6 sm:left-10 w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center border-2 border-white overflow-hidden p-1.5 z-10">
+                                <img src={project.image} alt={project.title} className="w-full h-full object-contain" />
                             </div>
                         )}
                     </div>
 
                     {/* Content Section */}
-                    <div className="pt-16 sm:pt-18 px-6 sm:px-10 pb-12">
+                    <div className="pt-12 sm:pt-14 px-6 sm:px-10 pb-12">
                         {/* Tags Header */}
                         <div className="flex flex-wrap items-center gap-2.5 mb-4">
                             <span className="px-4 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#ECDDFD] text-[#6F2B75] shadow-soft">

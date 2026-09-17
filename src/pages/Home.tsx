@@ -48,7 +48,7 @@ export function Home() {
                         Entreprises engagées, fondations et institutions marseillaises : ils soutiennent nos actions pour l'égalité des chances.
                     </p>
 
-                    <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-5 items-center mb-10 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 justify-items-center mb-10 max-w-4xl mx-auto">
                         {[
                             { name: "Olympique de Marseille", src: "/partners/om.png" },
                             { name: "Decathlon", src: "/partners/decathlon.png" },
@@ -60,7 +60,7 @@ export function Home() {
                         ].map((partner) => (
                             <div
                                 key={partner.name}
-                                className="bg-white border border-[#ECDDFD] rounded-2xl p-3 sm:p-4 w-[calc(50%-0.5rem)] xs:w-[calc(33.333%-0.75rem)] sm:w-[calc(25%-0.75rem)] lg:w-36 xl:w-40 h-20 sm:h-24 flex items-center justify-center overflow-hidden shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
+                                className="bg-white border border-[#ECDDFD] rounded-2xl p-3 sm:p-4 w-full h-20 sm:h-24 flex items-center justify-center overflow-hidden shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
                             >
                                 <img
                                     src={partner.src}

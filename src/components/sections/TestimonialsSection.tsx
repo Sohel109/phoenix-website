@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Quote, Heart, ArrowRight, CheckCircle2, GraduationCap, Sparkles } from 'lucide-react';
+import { Quote, Heart, ArrowRight, CheckCircle2, GraduationCap, Sparkles, ChevronDown } from 'lucide-react';
 
 export function TestimonialsSection() {
+    const [isExpanded, setIsExpanded] = useState(false);
+
     return (
         <section className="relative py-16 md:py-26 bg-transparent overflow-hidden">
             {/* Subtle background glow */}
@@ -38,7 +41,7 @@ export function TestimonialsSection() {
                     </p>
                 </div>
 
-                {/* ──────────────── UNIQUE CARTE ÉDITORIALE DE NABIL (BULLE DOUCE LILAS CHARTE) ──────────────── */}
+                {/* ──────────────── UNIQUE CARTE ÉDITORIALE DE NABIL ──────────────── */}
                 <motion.div
                     initial={{ opacity: 0, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -84,15 +87,43 @@ export function TestimonialsSection() {
                         </div>
                     </div>
 
-                    {/* Testimonial Quote Text */}
-                    <div className="text-[#2A082D] font-medium text-sm sm:text-[15px] leading-relaxed italic space-y-4 mb-8 text-left">
+                    {/* Citation choc — toujours visible */}
+                    <div className="text-[#2A082D] font-medium text-sm sm:text-[15px] leading-relaxed italic mb-4 text-left">
                         <p>
-                            « En arrivant en 2023 en seconde à Saint-Exupéry, franchement, je ne croyais pas du tout en moi. Dans ma tête, le plan était basique : finir les études le plus vite possible avec un diplôme court et partir loin du quartier. Je ne voyais pas plus loin que le bout de mon nez. Et puis Phoenix est arrivé.
-                        </p>
-                        <p>
-                            Au début, tu viens pour voir, et au final, ça change tout. Les tuteurs m'ont débloqué sur tellement de trucs : oser prendre la parole sans bégayer, m'intéresser à des sujets dont je n'avais jamais entendu parler, me créer des contacts, et surtout trouver une vraie deuxième famille qui ne te lâche jamais. C’est ça la force d’ACSE. Ils prennent des jeunes comme nous, un peu bruts et pleins de doutes, et ils nous font comprendre qu'on a de la valeur. Ça t'ouvre les yeux : tu te rends compte que la case où on veut te ranger n'est pas une fatalité. C’est vrai qu'on ne part pas avec les mêmes cartes en main que d'autres, mais grandir ici, ça nous donne aussi une dalle, une débrouillardise et un mental d'acier que personne ne peut nous enlever. »
+                            « En arrivant en 2023 en seconde à Saint-Exupéry, franchement, je ne croyais pas du tout en moi. Dans ma tête, le plan était basique : finir les études le plus vite possible. Et puis Phoenix est arrivé. »
                         </p>
                     </div>
+
+                    {/* Accordéon — suite du témoignage */}
+                    {isExpanded && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            className="overflow-hidden text-[#2A082D] font-medium text-sm sm:text-[15px] leading-relaxed italic mb-4 text-left space-y-3"
+                        >
+                            <p>
+                                Au début, tu viens pour voir, et au final, ça change tout. Les tuteurs m'ont débloqué sur tellement de trucs : oser prendre la parole sans bégayer, m'intéresser à des sujets dont je n'avais jamais entendu parler, me créer des contacts, et surtout trouver une vraie deuxième famille qui ne te lâche jamais.
+                            </p>
+                            <p>
+                                C'est ça la force d'ACSE. Ils prennent des jeunes comme nous, un peu bruts et pleins de doutes, et ils nous font comprendre qu'on a de la valeur. Tu te rends compte que la case où on veut te ranger n'est pas une fatalité. Grandir ici, ça nous donne une dalle, une débrouillardise et un mental d'acier que personne ne peut nous enlever. »
+                            </p>
+                        </motion.div>
+                    )}
+
+                    {/* Bouton accordéon */}
+                    <button
+                        type="button"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="flex items-center gap-1.5 text-xs font-school font-bold text-[#6F2B75] hover:text-[#EC602B] transition-colors mb-6 group"
+                    >
+                        <span>{isExpanded ? 'Réduire le témoignage' : 'Lire tout son témoignage'}</span>
+                        <ChevronDown
+                            size={15}
+                            className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                        />
+                    </button>
 
                     {/* Card Bottom: ACSE Link */}
                     <div className="pt-5 border-t border-[#6F2B75]/15 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -131,4 +162,3 @@ export function TestimonialsSection() {
         </section>
     );
 }
-
