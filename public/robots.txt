@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /planning/
+
+Sitemap: https://www.phoenix-egalite-des-chances.com/sitemap.xml

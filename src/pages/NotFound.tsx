@@ -65,8 +65,72 @@ export function NotFound() {
                 icon: <Calendar size={18} className="text-orange-500" />
             };
         }
-        // Projets
-        if (path.includes('projet') || path.includes('tutorat') || path.includes('gabriel') || path.includes('acse') || path.includes('massalia') || path.includes('izzo') || path.includes('auteuil') || path.includes('rimbaud')) {
+        // Projets spécifiques
+        if (path.includes('massa')) {
+            return {
+                label: 'Projet Massa 13',
+                to: '/projets/massa-13',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('acse')) {
+            return {
+                label: 'Projet ACSE',
+                to: '/projets/acse',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('gabriel')) {
+            return {
+                label: 'Projet Saint Gabriel',
+                to: '/projets/saint-gabriel',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('auteuil')) {
+            return {
+                label: "Projet Apprentis d'Auteuil",
+                to: '/projets/apprentis-d-auteuil',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('rimbaud')) {
+            return {
+                label: 'Projet Arthur Rimbaud',
+                to: '/projets/arthur-rimbaud',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('izzo')) {
+            return {
+                label: 'Projet Collège Izzo',
+                to: '/projets/izzo',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('ferry')) {
+            return {
+                label: 'Projet Jules Ferry',
+                to: '/projets/jules-ferry',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('roy') || path.includes('espagne')) {
+            return {
+                label: "Projet Roy d'Espagne",
+                to: '/projets/roy-despagne',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        if (path.includes('sup') || path.includes('om')) {
+            return {
+                label: "Projet Sup d'OM",
+                to: '/projets/sup-d-om',
+                icon: <FolderOpen size={18} className="text-orange-500" />
+            };
+        }
+        // Fallback global projets
+        if (path.includes('projet') || path.includes('tutorat') || path.includes('massalia')) {
             return {
                 label: 'Nos Projets de tutorat',
                 to: '/projets',

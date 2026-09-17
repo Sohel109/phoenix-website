@@ -95,6 +95,42 @@ function App() {
                   <Route path="/mentions-legales" element={<LegalMentions />} />
                   <Route path="/transparence" element={<Transparency />} />
                   <Route path="/contact" element={<Contact />} />
+                  {/* Redirections SEO / Anciens liens indexés (ex: Wix) */}
+                  <Route path="/massa-13" element={<Navigate to="/projets/massa-13" replace />} />
+                  <Route path="/massa" element={<Navigate to="/projets/massa-13" replace />} />
+                  <Route path="/massa13" element={<Navigate to="/projets/massa-13" replace />} />
+                  <Route path="/acse" element={<Navigate to="/projets/acse" replace />} />
+                  <Route path="/a-chacun-son-excellence" element={<Navigate to="/projets/acse" replace />} />
+                  <Route path="/saint-gabriel" element={<Navigate to="/projets/saint-gabriel" replace />} />
+                  <Route path="/st-gabriel" element={<Navigate to="/projets/saint-gabriel" replace />} />
+                  <Route path="/apprentis-d-auteuil" element={<Navigate to="/projets/apprentis-d-auteuil" replace />} />
+                  <Route path="/apprentis-dauteuil" element={<Navigate to="/projets/apprentis-d-auteuil" replace />} />
+                  <Route path="/apprentis" element={<Navigate to="/projets/apprentis-d-auteuil" replace />} />
+                  <Route path="/arthur-rimbaud" element={<Navigate to="/projets/arthur-rimbaud" replace />} />
+                  <Route path="/rimbaud" element={<Navigate to="/projets/arthur-rimbaud" replace />} />
+                  <Route path="/izzo" element={<Navigate to="/projets/izzo" replace />} />
+                  <Route path="/jean-claude-izzo" element={<Navigate to="/projets/izzo" replace />} />
+                  <Route path="/jules-ferry" element={<Navigate to="/projets/jules-ferry" replace />} />
+                  <Route path="/roy-despagne" element={<Navigate to="/projets/roy-despagne" replace />} />
+                  <Route path="/roy-d-espagne" element={<Navigate to="/projets/roy-despagne" replace />} />
+                  <Route path="/sup-d-om" element={<Navigate to="/projets/sup-d-om" replace />} />
+                  <Route path="/supdom" element={<Navigate to="/projets/sup-d-om" replace />} />
+                  <Route path="/massalia" element={<Navigate to="/projets" replace />} />
+                  <Route path="/simonu" element={<Navigate to="/evenements/simonu" replace />} />
+                  <Route path="/simonu-edc" element={<Navigate to="/evenements/simonu" replace />} />
+                  <Route path="/olympiades" element={<Navigate to="/evenements/olympiades" replace />} />
+                  <Route path="/les-olympiades" element={<Navigate to="/evenements/olympiades" replace />} />
+                  <Route path="/jedc" element={<Navigate to="/evenements/jedc" replace />} />
+                  <Route path="/journee-mec" element={<Navigate to="/evenements/jedc" replace />} />
+                  <Route path="/journee-egalite-des-chances" element={<Navigate to="/evenements/jedc" replace />} />
+                  <Route path="/donner" element={<Navigate to="/transparence" replace />} />
+                  <Route path="/don" element={<Navigate to="/transparence" replace />} />
+                  <Route path="/dons" element={<Navigate to="/transparence" replace />} />
+                  <Route path="/soutenir" element={<Navigate to="/transparence" replace />} />
+                  <Route path="/plan" element={<Navigate to="/carte-des-projets" replace />} />
+                  <Route path="/carte" element={<Navigate to="/carte-des-projets" replace />} />
+                  <Route path="/devenir-partenaire" element={<Navigate to="/contact" replace />} />
+
                   {/* Planning module */}
                   <Route path="/planning/login" element={<PlanningLogin />} />
                   <Route path="/planning" element={<PlanningGuard><PlanningDashboard /></PlanningGuard>} />
