@@ -43,14 +43,50 @@ export function KeyFigures() {
     const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
     const stats = [
-        { value: 300, suffix: "+", label: t('home.impact.youth'), color: "from-orange-500 to-orange-600", animated: true },
-        { value: 150, suffix: "", label: t('home.impact.volunteers'), color: "from-orange-600 to-amber-500", animated: true },
-        { value: 9, suffix: "", label: t('home.impact.projects'), color: "from-amber-500 to-yellow-500", animated: true },
-        { value: 2011, suffix: "", label: t('home.impact.creation'), color: "from-amber-500 to-orange-600", animated: false },
+        { 
+            value: 300, 
+            suffix: "+", 
+            label: t('home.impact.youth'), 
+            subtitle: "Collégiens et lycéens suivis du lundi au samedi",
+            color: "from-orange-500 to-amber-500", 
+            borderColor: "hover:border-orange-400",
+            bgTint: "group-hover:bg-orange-50/20",
+            animated: true 
+        },
+        { 
+            value: 150, 
+            suffix: "", 
+            label: t('home.impact.volunteers'), 
+            subtitle: "Étudiants tuteurs engagés de KEDGE BS",
+            color: "from-purple-600 to-indigo-600", 
+            borderColor: "hover:border-purple-400",
+            bgTint: "group-hover:bg-purple-50/20",
+            animated: true 
+        },
+        { 
+            value: 9, 
+            suffix: "", 
+            label: t('home.impact.projects'), 
+            subtitle: "Antennes de terrain dans tout Marseille",
+            color: "from-orange-600 to-orange-400", 
+            borderColor: "hover:border-orange-400",
+            bgTint: "group-hover:bg-orange-50/20",
+            animated: true 
+        },
+        { 
+            value: 2011, 
+            suffix: "", 
+            label: t('home.impact.creation'), 
+            subtitle: "15 ans de transmission et d'ambition",
+            color: "from-indigo-600 to-purple-600", 
+            borderColor: "hover:border-indigo-400",
+            bgTint: "group-hover:bg-indigo-50/20",
+            animated: false 
+        },
     ];
 
     return (
-        <section className="relative w-full pt-12 md:pt-20 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8">
+        <section className="relative w-full pt-12 md:pt-20 pb-10 md:pb-14 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <motion.div
@@ -60,20 +96,25 @@ export function KeyFigures() {
                     transition={{ duration: 0.6, ease: "easeOut" }}
                     className="text-center mb-10 md:mb-14"
                 >
-                    <div className="flex items-center justify-center gap-2.5 mb-3">
-                        <span className="w-5 h-0.5 bg-orange-500 rounded-full" />
-                        <span className="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-orange-600">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs mb-3 rotate-1">
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-800">
                             Impact & Résultats
                         </span>
-                        <span className="w-5 h-0.5 bg-orange-500 rounded-full" />
+                        <span className="text-xs text-slate-300">·</span>
+                        <span className="text-xs font-bold text-orange-600">
+                            Chiffres Clés
+                        </span>
                     </div>
                     <h2 className="text-2xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-slate-900">
-                        {t('home.impact.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">{t('home.impact.titleHighlight')}</span>
+                        {t('home.impact.title')}{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-orange-600 to-purple-600">
+                            {t('home.impact.titleHighlight')}
+                        </span>
                     </h2>
                 </motion.div>
 
                 {/* 4 Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8 mb-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
                     {stats.map((stat, i) => (
                         <motion.div
                             key={i}
@@ -85,26 +126,33 @@ export function KeyFigures() {
                                 delay: i * 0.08,
                                 ease: [0.22, 1, 0.36, 1]
                             }}
-                            className="group relative p-6 sm:p-8 rounded-xl bg-white border border-slate-200/90 hover:border-orange-400 shadow-xs hover:shadow-sm transition-colors duration-200 flex flex-col items-center text-center"
+                            className={`group relative p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 ${stat.borderColor} ${stat.bgTint} shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center justify-between`}
                         >
                             {/* Number */}
-                            <div
-                                className={`text-4xl sm:text-5xl md:text-6xl font-black mb-2 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent leading-none`}
-                            >
-                                {stat.animated ? (
-                                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                                ) : (
-                                    <span>{stat.value}{stat.suffix}</span>
-                                )}
+                            <div>
+                                <div
+                                    className={`text-4xl sm:text-5xl md:text-6xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent leading-none`}
+                                >
+                                    {stat.animated ? (
+                                        <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                                    ) : (
+                                        <span>{stat.value}{stat.suffix}</span>
+                                    )}
+                                </div>
+
+                                {/* Decor Line */}
+                                <div className={`w-10 h-1 rounded-full bg-gradient-to-r ${stat.color} my-3 mx-auto opacity-70`} />
+
+                                {/* Label */}
+                                <h3 className="text-sm sm:text-base font-black text-slate-900 uppercase tracking-wide mb-1.5">
+                                    {stat.label}
+                                </h3>
                             </div>
 
-                            {/* Decor Line */}
-                            <div className={`w-10 h-0.5 rounded-full bg-gradient-to-r ${stat.color} my-3 opacity-70`} />
-
-                            {/* Label */}
-                            <h3 className="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-wide">
-                                {stat.label}
-                            </h3>
+                            {/* Human Subtitle */}
+                            <p className="text-xs text-slate-500 font-medium leading-snug mt-2">
+                                {stat.subtitle}
+                            </p>
                         </motion.div>
                     ))}
                 </div>

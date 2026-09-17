@@ -114,6 +114,16 @@ export function HeroScroll() {
                         >
                             {/* Titre éditorial H1 */}
                             <div>
+                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs mb-5 -rotate-1 hover:rotate-0 transition-transform">
+                                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                                    <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                                        Association étudiante · KEDGE BS
+                                    </span>
+                                    <span className="text-xs text-slate-300">|</span>
+                                    <span className="text-xs font-bold text-orange-600">
+                                        100% bénévole
+                                    </span>
+                                </div>
                                 <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[1.0] tracking-tight text-slate-900 uppercase">
                                     Faire briller <br />
                                     <span
@@ -245,6 +255,14 @@ export function HeroScroll() {
                 SECTION MOBILE (< 768px) — EMPILÉ COMPACT & ÉPURÉ
             ══════════════════════════════════════════════════════ */}
             <section className="md:hidden relative w-full pt-28 pb-10 px-5 bg-[#FAFAFA] overflow-hidden flex flex-col items-center text-center">
+
+                {/* Badge sticker mobile */}
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-xs mb-3 -rotate-1">
+                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-800">
+                        Association étudiante · 100% bénévole
+                    </span>
+                </div>
 
                 {/* H1 mobile */}
                 <motion.h1
