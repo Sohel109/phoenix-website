@@ -9,6 +9,7 @@ import {
     UserCheck, 
     Compass, 
     Instagram, 
+    Facebook, 
     Sparkles, 
     ArrowRight,
     CheckCircle2
@@ -235,6 +236,18 @@ export function ProjectDetail() {
                                     >
                                         <Instagram size={15} />
                                         <span>@{project.instagram}</span>
+                                    </a>
+                                )}
+
+                                {project.facebook && (
+                                    <a
+                                        href={project.facebook.startsWith('http') ? project.facebook : `https://facebook.com/${project.facebook}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:opacity-95 transition-all"
+                                    >
+                                        <Facebook size={15} />
+                                        <span>{project.facebook.startsWith('http') ? 'Facebook' : `@${project.facebook}`}</span>
                                     </a>
                                 )}
 

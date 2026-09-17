@@ -20,6 +20,7 @@ export interface ProjectItem {
     axes: string[];
     chefs: string[];
     instagram?: string;
+    facebook?: string;
     trip?: string;
 }
 
@@ -105,7 +106,7 @@ export const projects: ProjectItem[] = [
         schedule: "Chaque jeudi après-midi de 16h30 à 18h30",
         axes: ["Ouverture culturelle", "Aide à l'orientation", "Développement personnel"],
         chefs: ["Ryan BENYELLES", "Donia TNANI"],
-        instagram: "izzo.phoenix",
+        facebook: "phoenix.izzo",
         trip: "Voyage de fin d’année à Montpellier & sorties culturelles"
     },
     {
