@@ -196,7 +196,7 @@ export function ProjectMap() {
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Jeunes accompagnés / an</div>
                     </div>
                     <div className="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
-                        <div className="text-3xl font-black text-amber-500 mb-1">~140</div>
+                        <div className="text-3xl font-black text-amber-500 mb-1">+100</div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Bénévoles Kedge mobilisés</div>
                     </div>
                 </motion.div>

@@ -126,10 +126,12 @@
         "impact": {
             "title": "تأثيرنا",
             "titleHighlight": "بكل أشكاله",
+            "badge": "الأثر والنتائج",
             "youth": "شاب مدعوم",
             "volunteers": "طالب متطوع",
             "projects": "مشاريع نشطة",
-            "creation": "تاريخ الإنشاء"
+            "creation": "تاريخ الإنشاء",
+            "success": "نسبة النجاح"
         }
     }
 }

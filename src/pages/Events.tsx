@@ -58,15 +58,28 @@ function EventCard({ event, index }: { event: any, index: number }) {
                     <Calendar size={13} className="text-orange-500" />
                     <span>{event.date}</span>
                 </div>
+
+                {/* Event Category Badge */}
+                {event.badge && (
+                    <div className="absolute top-3.5 left-3.5 bg-slate-900/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-xs">
+                        {event.badge}
+                    </div>
+                )}
             </div>
 
             {/* Content */}
             <div className="flex flex-col flex-grow text-center items-center">
-                <Link to={`/evenements/${event.id}`} className="block mb-3">
+                <Link to={`/evenements/${event.id}`} className="block mb-2">
                     <h3 className="text-xl sm:text-2xl font-bold text-slate-900 group-hover:text-orange-600 transition-colors tracking-tight">
                         {event.title}
                     </h3>
                 </Link>
+
+                {event.location && (
+                    <div className="text-xs text-slate-400 font-medium mb-3">
+                        {event.location}
+                    </div>
+                )}
 
                 <p className="text-slate-500 leading-relaxed text-sm font-normal mb-6 flex-grow line-clamp-3">
                     {event.description}

@@ -85,8 +85,8 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "36 Chem. du Roy d'Espagne, 13009 Marseille",
         coordinates: [43.2498, 5.4118],
-        chefs: ["Camille JOURDIN"],
-        description: "PROJET HYBRIDE. Alterne entre aide aux devoirs individuelle et ouverture culturelle collective le jeudi après-midi."
+        chefs: ["Lina EL KEDDAH"],
+        description: "PROJET HYBRIDE. Alterne entre aide aux devoirs individuelle et ouverture culturelle collective le vendredi après-midi."
     },
     {
         id: 4,
@@ -96,7 +96,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "12 Rue Richard, 13014 Marseille",
         coordinates: [43.3318, 5.3899],
-        chefs: ["Kahili JUVENTIN", "Abdollah JOUNOUDI"],
+        chefs: ["Abdollah JOUNOUDI", "Cannelle JUVENTIN"],
         description: "PROJET HYBRIDE. Soutien scolaire avec développement de l'esprit critique via des débats."
     },
     {

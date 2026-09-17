@@ -34,6 +34,11 @@ export function Footer() {
                         </h3>
                         <ul className="space-y-2 text-xs sm:text-sm">
                             <li>
+                                <Link to="/association" className="text-slate-400 hover:text-white transition-colors duration-200">
+                                    L'Association (Histoire & Valeurs)
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/projets" className="text-slate-400 hover:text-white transition-colors duration-200">
                                     {t('footer.ourProjects')}
                                 </Link>

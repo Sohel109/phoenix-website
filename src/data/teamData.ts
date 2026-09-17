@@ -1,0 +1,52 @@
+import bureauMembersRaw from './bureauMembers.json';
+
+export interface BureauMember {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    photo?: string;
+    linkedin?: string;
+}
+
+export interface PoleTeam {
+    id: string;
+    title: string;
+    lead: string;
+    members: string[];
+    description: string;
+}
+
+export const defaultBureauMembers: BureauMember[] = bureauMembersRaw as BureauMember[];
+
+
+export const defaultPoles: PoleTeam[] = [
+    {
+        id: "com",
+        title: "Pôle Communication",
+        lead: "Sohel (Responsable)",
+        members: ["Maxime", "Samy"],
+        description: "Réseaux sociaux, création visuelle, site web et rayonnement de l'association."
+    },
+    {
+        id: "partenariats",
+        title: "Pôle Partenariats",
+        lead: "Héloïse (Responsable)",
+        members: ["Kayna", "Sarah", "Eve", "Maxime"],
+        description: "Mécénat d'entreprise, subventions et logistique des dotations pour les événements."
+    },
+    {
+        id: "evenementiel",
+        title: "Pôle Événementiel",
+        lead: "Haïtam (Responsable)",
+        members: ["Samy", "Samir", "Damya"],
+        description: "Pilotage des grands rendez-vous : JEDC, SimONU EDC, Olympiades et cérémonies."
+    },
+    {
+        id: "rse",
+        title: "Pôle RSE & Développement",
+        lead: "Équipe RSE",
+        members: ["Jihane", "Sarah"],
+        description: "Sensibilisation écologique, inclusion et bien-être des tuteurs sur le terrain."
+    }
+];

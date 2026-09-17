@@ -18,6 +18,7 @@ import { Home } from './pages/Home';
 const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.Projects })));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
 const ProjectMap = lazy(() => import('./pages/ProjectMap').then(m => ({ default: m.ProjectMap })));
+const Association = lazy(() => import('./pages/Association').then(m => ({ default: m.Association })));
 const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
 const EventDetail = lazy(() => import('./pages/EventDetail').then(m => ({ default: m.EventDetail })));
 const Partners = lazy(() => import('./pages/Partners').then(m => ({ default: m.Partners })));
@@ -85,6 +86,7 @@ function App() {
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/association" element={<Association />} />
                   <Route path="/projets" element={<Projects />} />
                   <Route path="/projets/:id" element={<ProjectDetail />} />
                   <Route path="/carte-des-projets" element={<ProjectMap />} />
@@ -95,6 +97,11 @@ function App() {
                   <Route path="/mentions-legales" element={<LegalMentions />} />
                   <Route path="/transparence" element={<Transparency />} />
                   <Route path="/contact" element={<Contact />} />
+                  {/* Alias / Redirections Association */}
+                  <Route path="/qui-sommes-nous" element={<Navigate to="/association" replace />} />
+                  <Route path="/histoire" element={<Navigate to="/association" replace />} />
+                  <Route path="/valeurs" element={<Navigate to="/association" replace />} />
+                  <Route path="/organigramme" element={<Navigate to="/association" replace />} />
                   {/* Redirections SEO / Anciens liens indexés (ex: Wix) */}
                   <Route path="/massa-13" element={<Navigate to="/projets/massa-13" replace />} />
                   <Route path="/massa" element={<Navigate to="/projets/massa-13" replace />} />

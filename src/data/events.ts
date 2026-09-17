@@ -1,12 +1,29 @@
-export const events = [
+export interface EventItem {
+    id: string;
+    title: string;
+    description: string;
+    fullDescription: string;
+    image: string;
+    headerImage: string;
+    gallery?: string[];
+    externalLinks?: { label: string; url: string; logo?: string }[];
+    date: string;
+    monthOrder?: number;
+    color: string;
+    location?: string;
+    badge?: string;
+}
+
+export const events: EventItem[] = [
     {
         id: "jedc",
         title: "Journée d'Égalité des Chances (JEDC)",
-        description: "Cette journée, liée à la Journée mondiale de l'égalité des chances du 5 décembre, réunit les lycéens de l'association Phoenix pour favoriser leur développement, leur préparation à l'entreprise et leur confiance en eux.",
-        fullDescription: `Cette journée, en lien avec la Journée mondiale de l'égalité des chances célébrée le 5 décembre, s'adresse aux lycéens tuteurés de l'association Phoenix issus des quartiers prioritaires. Elle réunit les participants des projets « À chacun son excellence» et « Saint Gabriel ». L'objectif est de favoriser leur développement personnel et leur préparation à l'univers de l'entreprise, tout en renforçant leur confiance en eux.\n\nEt notre fameux concours d'éloquence est de retour ! Le thème de cette année sera :\n\n« Quartiers prioritaires: enclaves d'inégalités ou viviers de talents méconnus ? »`,
+        description: "Inscrite dans la lignée de la Journée mondiale de l'égalité des chances du 5 décembre, cette journée réunit les jeunes à KEDGE : grand concours d'éloquence, conférences interactives et ateliers stimulants.",
+        fullDescription: `La "Journée Égalité des Chances" (JEDC) est un événement symbolique et fondateur de Phoenix Égalité des Chances. Elle s’inscrit dans la lignée directe de la journée mondiale de l’égalité des chances célébrée chaque année le 5 décembre.\n\nOrganisée sur le campus de KEDGE Business School, la journée accueille les élèves de nos projets pour des conférences interactives animées par des intervenants inspirants, des ateliers de prise de parole et un grand concours d'éloquence.\n\nLes jeunes y débattent avec brio sur des sujets de société majeurs, à l'image du thème marquant : « L’égalité des chances en France : idéal ou réalité ? » ou « Quartiers prioritaires : enclaves d’inégalités ou viviers de talents méconnus ? ». Un tremplin exceptionnel pour développer leur confiance et leur force de conviction.`,
         image: "/images/events/jedc-new.png",
         headerImage: "/images/events/jedc-new.png",
         gallery: [
+            "/images/home/jedc-discours.png",
             "/images/events/jedc/affiche_2024.png",
             "/images/events/jedc/programme_2024.png"
         ],
@@ -16,13 +33,29 @@ export const events = [
             { label: "Edition 2017", url: "https://www.facebook.com/events/134953097140968/" }
         ],
         date: "5 Décembre",
-        color: "from-secondary/20 to-secondary/40"
+        monthOrder: 12,
+        color: "from-secondary/20 to-secondary/40",
+        location: "Campus KEDGE Business School",
+        badge: "Concours d'Éloquence"
+    },
+    {
+        id: "entretiens-excellence",
+        title: "Les Entretiens de l'Excellence",
+        description: "Journée de mentorat et d'inspiration permettant aux collégiens et lycéens d'échanger directement avec des professionnels de divers secteurs pour briser l'autocensure.",
+        fullDescription: `Chaque année en mars, Phoenix mobilise ses tuteurs et ses partenaires lors des Entretiens de l'Excellence.\n\nCet événement offre l'opportunité à nos jeunes de rencontrer des professionnels accomplis (cadres dirigeants, ingénieurs, juristes, entrepreneurs, médecins, artistes...) ayant souvent des parcours atypiques.\n\nAu travers d'ateliers thématiques en petits groupes, les jeunes posent leurs questions sans filtre, découvrent les réalités des métiers et comprennent que toutes les voies d'excellence leur sont accessibles. Une démarche clé pour élargir leurs ambitions et construire un projet d'orientation solide.`,
+        image: "/images/events/eloquence-art.jpg",
+        headerImage: "/images/events/eloquence-art.jpg",
+        date: "Mars",
+        monthOrder: 3,
+        color: "from-purple-500/20 to-indigo-500/20",
+        location: "KEDGE BS & Établissements Partenaires",
+        badge: "Orientation & Mentorat"
     },
     {
         id: "simonu",
         title: "SimONU Égalité Des Chances",
-        description: "Simonu Égalité Des Chances est une simulation d'Assemblée Générale des Nation Unies organisée par deux associations de KEDGE Business School Marseille: Phoenix Égalité des Chances et SimONU, depuis 2008.",
-        fullDescription: `Simonu Égalité Des Chances est une simulation d'Assemblée Générale des Nation Unies organisée par deux associations de KEDGE Business School Marseille: Phoenix Égalité des Chances et SimONU, depuis 2008.\n\nLe temps d'une journée, nos jeunes glissent dans la peau de diplomates afin de défendre les intérêts du pays qu'ils représenteront. Cet événement réunit chaque année plus de 150 élèves.\n\nCette journée est l'occasion pour les jeunes de réfléchir aux enjeux soulevés par le thème proposé, d'apprendre à négocier et de développer leurs qualités d'orateurs.\n\nPour la 13ème édition, le thème abordé était la sécurité alimentaire dans le monde où les jeunes devaient trouver une résolution à la problématique: Comment établir la sécurité alimentaire dans le monde?`,
+        description: "Simulation d'Assemblée Générale de l'ONU en partenariat avec SimONU Marseille. Les lycéens deviennent diplomates et négocient des résolutions sur les Objectifs de Développement Durable (ODD).",
+        fullDescription: `SimONU Égalité des Chances est un événement d'envergure co-organisé par Phœnix EDC et l'association SimONU de KEDGE BS depuis 2008.\n\nPendant une journée entière, nos lycéens se glissent dans la peau de délégués diplomatiques représentant différentes nations. Ils défendent les intérêts de leur pays tout en respectant scrupuleusement le protocole des Nations Unies.\n\nL'événement les met au défi de s'exprimer devant une assemblée plénière, de négocier en commission et de bâtir des coalitions pour résoudre des problématiques mondiales cruciales (sécurité alimentaire, transition écologique, égalité des droits). Ils y développent leur éloquence, leur sens du compromis et une vision éclairée de la géopolitique contemporaine.`,
         image: "/images/events/simonu-new.png",
         headerImage: "/images/events/simonu-new.png",
         gallery: [
@@ -30,20 +63,37 @@ export const events = [
             "/images/events/simonu/simonu-speaker.jpg",
             "/images/events/simonu/img1.png",
             "/images/events/simonu/img2.png",
-            "/images/events/simonu/img3.png",
-            "/images/events/simonu/img4.png",
-            "/images/events/simonu/img5.png",
-            "/images/events/simonu/img6.png",
-            "/images/events/simonu/img7.png"
+            "/images/events/simonu/img3.png"
         ],
-        date: "Mars",
-        color: "from-primary/20 to-secondary/20"
+        date: "Avril",
+        monthOrder: 4,
+        color: "from-primary/20 to-secondary/20",
+        location: "Amphithéâtres KEDGE BS",
+        badge: "Simulation Diplomatique ONU"
+    },
+    {
+        id: "voyages",
+        title: "Voyages de Fin d'Année",
+        description: "Moments d'évasion inoubliables et d'ouverture culturelle : séjours en Espagne, découvertes européennes et grands voyages de fin d'année pour sortir de Marseille et élargir les horizons de nos jeunes.",
+        fullDescription: `Les voyages que nous organisons permettent de réduire concrètement les inégalités socio-culturelles en offrant à nos tutorés l'opportunité de sortir de Marseille et de découvrir de nouveaux horizons.\n\nChaque projet bâtit son propre séjour : voyage à Montpellier pour les collégiens d'Izzo, séjour patrimonial à Arles pour Roy d'Espagne, découverte du littoral à Hyères pour Massa 13, ou double voyage culturel et de révisions pour les lycéens d'ACSE.\n\nCes séjours sont le fruit d'un remarquable engagement collectif tout au long de l'année pour leur autofinancement : campagnes de crowdfunding, opération papiers cadeaux (PPK) de Noël, ventes de goûters au foyer associatif et recherche de partenaires entreprises. Ils renforcent durablement la cohésion et ouvrent l'esprit des jeunes sur le monde.`,
+        image: "/images/home/voyage-culturel-1.jpg",
+        headerImage: "/images/home/voyage-culturel-2.jpg",
+        gallery: [
+            "/images/home/voyage-culturel-1.jpg",
+            "/images/home/voyage-culturel-2.jpg",
+            "/images/home/voyage-culturel-3.jpg"
+        ],
+        date: "Mai - Juin",
+        monthOrder: 5,
+        color: "from-emerald-500/20 to-teal-500/20",
+        location: "Espagne · Séjours Européens & Évasion",
+        badge: "Évasion & Culture"
     },
     {
         id: "olympiades",
-        title: "Les Olympiades",
-        description: "Depuis 2014, les élèves suivis par des projets de Phoenix et leurs tuteurs se réunissent et s'affrontent lors d'épreuves sportives afin de bien terminer l'année.",
-        fullDescription: `Créées en 2014, les Olympiades sont le plus gros événement de Phoenix Égalité Des Chances. A la fin de chaque année scolaire les Olympiades rassemblent plus de 200 personnes, tuteurs comme tuteurés, issus de tous les projets de Phoenix.\n\nDurant toute une journée, des équipes formées avec des élèves et tuteurs de différents projets s'affrontent sur de nombreuses épreuves sportives (foot, tire à la corde, basket, béret, ...). A la fin de la journée des prix sont décernés aux meilleures équipes sur différents critères, dont le fair-play qui entre bien évidemment en compte dans la notation.\n\nCette journée de compétition sportive permet aux tuteurés de rencontrer les autres membres des projets de Phoenix, tout en étant réunis sous les valeurs de l'association : partage, respect, solidarité et égalité des chances !`,
+        title: "Les Olympiades Phoenix",
+        description: "Rassemblement sportif annuel de plus de 300 personnes dans un stade marseillais : 20 équipes mixtes de tuteurs et tutorés s'affrontent dans un esprit d'équipe et de fair-play.",
+        fullDescription: `Créées en 2014, les Olympiades constituent le plus grand rassemblement de fin d'année de Phoenix Égalité Des Chances. Cet événement convivial réunit jusqu'à 300 participants (collégiens, lycéens, tuteurs et anciens) dans un grand complexe sportif marseillais.\n\nLes tutorés sont répartis en une vingtaine d'équipes mixtes inter-projets et s'affrontent tout au long de la journée dans une dizaine d'épreuves sportives et ludiques (football, relais, tir à la corde, basket, parcours d'agilité, béret).\n\nEn clôture de l'événement, toutes les équipes sont récompensées selon leur classement, avec un accent tout particulier porté sur le trophée du Fair-play, illustrant les valeurs cardinales de l'association : respect, solidarité, dépassement de soi et fraternité.`,
         image: "/images/events/olympiades-new.png",
         headerImage: "/images/events/olympiades-banner-new.jpg",
         gallery: [
@@ -51,18 +101,32 @@ export const events = [
             "/images/events/olympiades/olympiades-group-1.png",
             "/images/events/olympiades/olympiades-group-3.jpg",
             "/images/events/olympiades/img1.png",
-            "/images/events/olympiades/img2.png",
-            "/images/events/olympiades/img3.png",
-            "/images/events/olympiades/img4.png"
+            "/images/events/olympiades/img2.png"
         ],
         externalLinks: [
             {
-                label: "Retrouvez l'article sur les olympiades 2016 par l'express",
+                label: "Retrouvez l'article sur les olympiades par L'Express",
                 url: "https://www.lexpress.fr/societe/education/les-grandes-ecoles-de-commerce-dans-le-grand-bain-de-l-innovation_1963416.html",
                 logo: "/partners/lexpress.png"
             }
         ],
-        date: "Mai",
-        color: "from-primary/20 to-primary/40"
+        date: "Juin",
+        monthOrder: 6,
+        color: "from-primary/20 to-primary/40",
+        location: "Stade & Complexe Sportif (Marseille)",
+        badge: "Sport & Esprit d'Équipe"
+    },
+    {
+        id: "ceremonies",
+        title: "Cérémonies de Fin de Parcours",
+        description: "Clôture solennelle de l'année scolaire : célébration des progrès des jeunes, remise des certificats de tutorat et cadeaux en présence des familles et partenaires.",
+        fullDescription: `Organisées à la fin du mois de juin, les Cérémonies de Fin de Parcours marquent l'aboutissement d'une année d'efforts, d'apprentissage et de dépassement de soi pour nos 300 élèves.\n\nDans chaque projet et au sein des établissements partenaires, tuteurs, tutorés, parents d'élèves, professeurs et responsables associatifs se réunissent pour célébrer les réussites individuelles et collectives.\n\nChaque jeune reçoit son certificat d'assiduité et d'engagement Phoenix, ainsi que des cadeaux symboliques préparés par le pôle partenariats. Ce moment d'émotion partagée consacre la fierté des familles et encourage les jeunes à poursuivre leur trajectoire vers l'excellence.`,
+        image: "/images/home/voyage-culturel-3.jpg",
+        headerImage: "/images/home/voyage-culturel-3.jpg",
+        date: "Fin Juin",
+        monthOrder: 6.5,
+        color: "from-amber-500/20 to-orange-500/20",
+        location: "KEDGE BS & Centres Partenaires",
+        badge: "Diplômes & Célébration"
     }
 ];

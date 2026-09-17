@@ -126,10 +126,12 @@
         "impact": {
             "title": "Our Impact in",
             "titleHighlight": "all its forms",
+            "badge": "Impact & Results",
             "youth": "Young people supported",
             "volunteers": "Student volunteers",
             "projects": "Active projects",
-            "creation": "Creation date"
+            "creation": "Creation date",
+            "success": "Success rate"
         }
     }
 }

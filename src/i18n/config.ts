@@ -132,10 +132,12 @@ const resources = {
                 "impact": {
                     "title": "Notre Impact sous",
                     "titleHighlight": "toutes ses formes",
+                    "badge": "Impact & Résultats",
                     "youth": "Jeunes accompagnés",
                     "volunteers": "Étudiants bénévoles",
                     "projects": "Projets actifs",
-                    "creation": "Date de création"
+                    "creation": "Date de création",
+                    "success": "Taux de réussite"
                 }
             }
         }

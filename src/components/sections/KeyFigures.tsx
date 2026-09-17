@@ -1,14 +1,20 @@
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // --- COUNTER COMPONENT ---
-function AnimatedCounter({ value, suffix }: { value: number; suffix?: string }) {
-    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-10px" });
+    const isInView = useInView(ref, { once: true, margin: "-20px" });
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-    const spring = useSpring(0, { mass: 1, stiffness: 50, damping: 20 });
+    const spring = useSpring(0, {
+        mass: 0.8,
+        stiffness: 75,
+        damping: 15
+    });
+
     const displayValue = useTransform(spring, (current) => Math.round(current));
 
     useEffect(() => {
@@ -22,17 +28,19 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix?: string }) 
     // Sur mobile : affichage instantané sans spring ni délai
     if (isMobile) {
         return (
-            <span className="flex items-center">
+            <span className="inline-flex items-center justify-center">
+                {prefix && <span>{prefix}</span>}
                 <span>{value}</span>
-                <span>{suffix}</span>
+                {suffix && <span>{suffix}</span>}
             </span>
         );
     }
 
     return (
-        <span ref={ref} className="flex items-center">
+        <span ref={ref} className="inline-flex items-center justify-center">
+            {prefix && <span>{prefix}</span>}
             <motion.span>{displayValue}</motion.span>
-            <span>{suffix}</span>
+            {suffix && <span>{suffix}</span>}
         </span>
     );
 }
@@ -45,6 +53,7 @@ export function KeyFigures() {
     const stats = [
         { 
             value: 300, 
+            prefix: "",
             suffix: "+", 
             label: t('home.impact.youth'), 
             subtitle: "Collégiens et lycéens suivis du lundi au samedi",
@@ -54,7 +63,8 @@ export function KeyFigures() {
             animated: true 
         },
         { 
-            value: 150, 
+            value: 100, 
+            prefix: "+",
             suffix: "", 
             label: t('home.impact.volunteers'), 
             subtitle: "Étudiants tuteurs engagés de KEDGE BS",
@@ -65,6 +75,7 @@ export function KeyFigures() {
         },
         { 
             value: 9, 
+            prefix: "",
             suffix: "", 
             label: t('home.impact.projects'), 
             subtitle: "Antennes de terrain dans tout Marseille",
@@ -74,38 +85,35 @@ export function KeyFigures() {
             animated: true 
         },
         { 
-            value: 2011, 
-            suffix: "", 
-            label: t('home.impact.creation'), 
-            subtitle: "15 ans de transmission et d'ambition",
-            color: "from-indigo-600 to-purple-600", 
-            borderColor: "hover:border-indigo-400",
-            bgTint: "group-hover:bg-indigo-50/20",
-            animated: false 
-        },
+            value: 100, 
+            prefix: "",
+            suffix: "%", 
+            label: t('home.impact.success', 'Taux de réussite'), 
+            subtitle: "Au brevet et au baccalauréat",
+            color: "from-amber-500 to-orange-500", 
+            borderColor: "hover:border-amber-400",
+            bgTint: "group-hover:bg-amber-50/20",
+            animated: true 
+        }
     ];
 
     return (
-        <section className="relative w-full pt-12 md:pt-20 pb-10 md:pb-14 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
+        <section className="relative py-12 md:py-20 bg-slate-50/50">
+            <div className="container mx-auto px-4 max-w-6xl">
+                {/* Header with badge */}
                 <motion.div
                     initial={isMobile ? false : { opacity: 0, y: 15 }}
                     whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-20px" }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     className="text-center mb-10 md:mb-14"
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs mb-3 rotate-1">
-                        <span className="text-xs font-black uppercase tracking-wider text-slate-800">
-                            Impact & Résultats
-                        </span>
-                        <span className="text-xs text-slate-300">·</span>
-                        <span className="text-xs font-bold text-orange-600">
-                            Chiffres Clés
-                        </span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold uppercase tracking-wider mb-3">
+                        <Sparkles size={14} />
+                        <span>{t('home.impact.badge', 'Impact & Résultats')}</span>
                     </div>
-                    <h2 className="text-2xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-slate-900">
+
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
                         {t('home.impact.title')}{' '}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-orange-600 to-purple-600">
                             {t('home.impact.titleHighlight')}
@@ -129,14 +137,14 @@ export function KeyFigures() {
                             className={`group relative p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 ${stat.borderColor} ${stat.bgTint} shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center justify-between`}
                         >
                             {/* Number */}
-                            <div>
+                            <div className="w-full flex flex-col items-center justify-center">
                                 <div
-                                    className={`text-4xl sm:text-5xl md:text-6xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent leading-none`}
+                                    className={`text-4xl sm:text-5xl md:text-6xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent leading-none flex items-center justify-center text-center`}
                                 >
                                     {stat.animated ? (
-                                        <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                                        <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
                                     ) : (
-                                        <span>{stat.value}{stat.suffix}</span>
+                                        <span className="inline-flex items-center justify-center">{stat.prefix || ''}{stat.value}{stat.suffix}</span>
                                     )}
                                 </div>
 

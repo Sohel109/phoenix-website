@@ -32,6 +32,7 @@ export function Header() {
 
     const navLinks = [
         { label: 'Accueil', path: '/' },
+        { label: "L'Association", path: '/association' },
         { label: 'Nos Projets', path: '/projets' },
         { label: 'Événements', path: '/evenements' },
         { label: 'Partenaires', path: '/partenaires' },

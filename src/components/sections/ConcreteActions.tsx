@@ -79,7 +79,7 @@ export function ConcreteActions() {
                     </h2>
 
                     <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                        Du lundi au samedi, nos 150 étudiants bénévoles retrouvent 300 jeunes marseillais dans leurs collèges, lycées et maisons de quartier.
+                        Du lundi au samedi, nos +100 étudiants bénévoles retrouvent 300 jeunes marseillais dans leurs collèges, lycées et maisons de quartier.
                     </p>
                 </div>
 

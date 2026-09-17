@@ -4,6 +4,12 @@ import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import nodemailer from 'nodemailer';
 import dns from 'dns';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Force IPV4 to avoid EHOSTUNREACH on IPv6
 if (dns.setDefaultResultOrder) {
@@ -28,7 +34,78 @@ const app = express();
 const port = 3002;
 
 app.use(cors());
-app.use(express.json({ limit: '50kb' }));
+app.use(express.json({ limit: '15mb' }));
+
+// ─── Gestion de l'équipe du Bureau (Persistance locale pour Git) ─────────────
+
+// GET /api/team/members
+app.get('/api/team/members', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'bureauMembers.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, members: JSON.parse(data) });
+        }
+        return res.json({ success: true, members: [] });
+    } catch (err) {
+        console.error('Erreur lecture membres:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les membres' });
+    }
+});
+
+// POST /api/team/members
+app.post('/api/team/members', (req, res) => {
+    try {
+        const { members } = req.body;
+        if (!Array.isArray(members)) {
+            return res.status(400).json({ success: false, error: 'Format invalide: members doit être un tableau' });
+        }
+
+        const teamImagesDir = path.join(__dirname, 'public', 'images', 'team');
+        if (!fs.existsSync(teamImagesDir)) {
+            fs.mkdirSync(teamImagesDir, { recursive: true });
+        }
+
+        // Traitement des photos si envoyées en base64
+        const processedMembers = members.map((member) => {
+            if (member.photo && typeof member.photo === 'string' && member.photo.startsWith('data:image/')) {
+                const match = member.photo.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+                if (match) {
+                    let ext = match[1].toLowerCase();
+                    if (ext === 'jpeg') ext = 'jpg';
+                    if (ext === 'svg+xml') ext = 'svg';
+                    const base64Data = match[2];
+                    const safeId = (member.id || 'member').replace(/[^a-zA-Z0-9-_]/g, '');
+                    const filename = `${safeId}-${Date.now()}.${ext}`;
+                    const targetFile = path.join(teamImagesDir, filename);
+
+                    fs.writeFileSync(targetFile, Buffer.from(base64Data, 'base64'));
+                    console.log(`📸 Photo sauvegardée pour ${member.firstName} ${member.lastName}: /images/team/${filename}`);
+                    return {
+                        ...member,
+                        photo: `/images/team/${filename}`
+                    };
+                }
+            }
+            return member;
+        });
+
+        // Écriture dans src/data/bureauMembers.json
+        const dataFilePath = path.join(__dirname, 'src', 'data', 'bureauMembers.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(processedMembers, null, 2), 'utf-8');
+        console.log(`💾 ${processedMembers.length} membres enregistrés dans src/data/bureauMembers.json`);
+
+        return res.json({
+            success: true,
+            message: 'Membres enregistrés avec succès dans le fichier du projet',
+            members: processedMembers
+        });
+    } catch (err) {
+        console.error('Erreur sauvegarde membres:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde' });
+    }
+});
+
 
 // 🛡️ Rate Limiter en mémoire (sécurisation anti-spam et anti-bruteforce)
 function createRateLimiter({ windowMs, maxRequests, message }) {
