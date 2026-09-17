@@ -93,8 +93,8 @@ export const projects: ProjectItem[] = [
         title: 'Jean-Claude Izzo',
         category: 'Collège',
         type: 'Cordée de la Réussite',
-        description: "Lauréat du Trophée Pro-Act, Izzo accompagne 30 élèves de 4e et 3e au collège Jean-Claude Izzo (13002) : présentations ludiques, ouverture culturelle et voyage à Montpellier.",
-        fullDescription: "IZZO intervient auprès de 30 collégiens de 4ème et de 3ème au collège Jean-Claude Izzo (13002). Bien que ces élèves n'aient pas de difficultés scolaires majeures, ils ont une véritable soif d'apprendre et ont besoin d'un accompagnement personnalisé dans leur orientation. Chaque jeudi après-midi de 16h30 à 18h30, une dizaine de tuteurs animent des présentations ludiques et approfondies sur un thème culturel, suivies d'un échange privilégié tuteur-tutoré autour d'un goûter. Le projet organise aussi des sorties sportives et culturelles et un voyage de fin d'année à Montpellier.",
+        description: "Lauréat du Trophée Pro-Act, Izzo accompagne 30 élèves de 4e et 3e au collège Jean-Claude Izzo (13002) : présentations ludiques, ouverture culturelle et voyage de fin d'année.",
+        fullDescription: "IZZO intervient auprès de 30 collégiens de 4ème et de 3ème au collège Jean-Claude Izzo (13002). Bien que ces élèves n'aient pas de difficultés scolaires majeures, ils ont une véritable soif d'apprendre et ont besoin d'un accompagnement personnalisé dans leur orientation. Chaque jeudi après-midi de 16h30 à 18h30, une dizaine de tuteurs animent des présentations ludiques et approfondies sur un thème culturel, suivies d'un échange privilégié tuteur-tutoré autour d'un goûter. Le projet organise aussi des sorties sportives et culturelles et un voyage de fin d'année.",
         icon: GraduationCap,
         image: '/images/projects/izzo-logo.png',
         banner: '/images/banners/izzo-banner-new.jpg',
@@ -107,7 +107,7 @@ export const projects: ProjectItem[] = [
         axes: ["Ouverture culturelle", "Aide à l'orientation", "Développement personnel"],
         chefs: ["Ryan BENYELLES", "Donia TNANI"],
         facebook: "phoenix.izzo",
-        trip: "Voyage de fin d’année à Montpellier & sorties culturelles"
+        trip: "Voyage de fin d’année & sorties culturelles"
     },
     {
         id: 'jules-ferry',
