@@ -45,12 +45,18 @@ function EventCard({ event, index }: { event: any, index: number }) {
             className="bg-white border-2 border-slate-200 hover:border-orange-400 rounded-2xl p-6 flex flex-col h-full shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 ease-out group"
         >
             {/* Image Container with strict 16:9 fixed aspect ratio */}
-            <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-6 border border-slate-100 shadow-xs bg-slate-100 flex items-center justify-center">
+            <div className={`relative aspect-video w-full rounded-xl overflow-hidden mb-6 border border-slate-100 shadow-xs flex items-center justify-center ${
+                event.id === 'entretiens-excellence' ? 'bg-white p-5' : 'bg-slate-100'
+            }`}>
                 <img
                     src={event.image}
                     alt={event.title}
-                    className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 ease-out ${
-                        event.id === 'jedc' ? 'object-left' : 'object-center'
+                    className={`w-full h-full transform group-hover:scale-105 transition-transform duration-500 ease-out ${
+                        event.id === 'entretiens-excellence'
+                            ? 'object-contain'
+                            : event.id === 'jedc'
+                            ? 'object-cover object-left'
+                            : 'object-cover object-center'
                     }`}
                 />
                 {/* Date Badge */}

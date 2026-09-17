@@ -57,13 +57,19 @@ export function EventDetail() {
 
                 <div className="bg-white dark:bg-current-card rounded-[2rem] shadow-xl dark:shadow-none overflow-hidden border border-gray-100 dark:border-white/5 mt-8">
                     {/* Header Image */}
-                    <div className="relative h-64 md:h-96 w-full">
+                    <div className={`relative h-64 md:h-96 w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : ''}`}>
                         <img
                             src={event.headerImage || event.image}
                             alt={event.title}
-                            className={`w-full h-full object-cover ${event.id === 'jedc' ? 'object-top' : ''}`}
+                            className={`w-full h-full ${
+                                event.id === 'entretiens-excellence'
+                                    ? 'object-contain p-6 md:p-10 max-h-[90%]'
+                                    : event.id === 'jedc'
+                                    ? 'object-cover object-top'
+                                    : 'object-cover'
+                            }`}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
                         <div className="absolute bottom-0 left-0 p-8 text-white">
                             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-sm font-semibold mb-4`}>
                                 <Calendar size={16} />
