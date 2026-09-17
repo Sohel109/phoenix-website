@@ -11,6 +11,7 @@ import {
     Sparkles, 
     Heart, 
     Clock,
+    UserCheck,
     Check
 } from 'lucide-react';
 import { useState } from 'react';
@@ -222,8 +223,12 @@ export function Projects() {
                                         {project.description}
                                     </p>
 
-                                    {/* Meta: schedule & location */}
+                                    {/* Meta: chefs, schedule & location */}
                                     <div className="space-y-1.5 mb-5 pt-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                                        <div className="flex items-center gap-1.5">
+                                            <UserCheck size={13} className="text-indigo-600 shrink-0" />
+                                            <span className="line-clamp-1">Chefs : <strong className="text-slate-800 font-semibold">{project.chefs.join(' & ')}</strong></span>
+                                        </div>
                                         <div className="flex items-center gap-1.5">
                                             <Clock size={13} className="text-orange-500 shrink-0" />
                                             <span className="line-clamp-1">{project.schedule}</span>
@@ -236,8 +241,8 @@ export function Projects() {
 
                                     {/* Footer de la carte */}
                                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
-                                        <span className="text-xs font-bold text-slate-500 truncate" title={project.chefs.join(' & ')}>
-                                            {project.chefs.join(' & ')}
+                                        <span className="text-xs font-bold text-slate-400 group-hover:text-orange-600 transition-colors">
+                                            Découvrir le projet
                                         </span>
                                         <span className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-orange-500 group-hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-xs group-hover:shadow-md group-hover:shadow-orange-500/20 active:scale-95 transition-all">
                                             <span>Fiche Projet</span>

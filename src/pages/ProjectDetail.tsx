@@ -135,9 +135,17 @@ export function ProjectDetail() {
                         </div>
 
                         {/* Title */}
-                        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+                        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
                             {project.title}
                         </h1>
+
+                        {/* Chefs de projet sous le titre */}
+                        <div className="flex flex-wrap items-center gap-2 mb-6">
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-50/80 border border-indigo-200/80 text-indigo-900 text-xs sm:text-sm font-semibold">
+                                <UserCheck size={16} className="text-indigo-600 shrink-0" />
+                                <span>{project.chefs.length > 1 ? 'Chefs de projet :' : 'Chef de projet :'} <strong className="font-black text-indigo-950">{project.chefs.join(' & ')}</strong></span>
+                            </div>
+                        </div>
 
                         {/* Highlight intro box */}
                         <div className="mb-8 p-5 sm:p-6 bg-gradient-to-r from-orange-50/80 via-amber-50/50 to-orange-50/30 rounded-2xl border-l-4 border-orange-500 shadow-xs">
@@ -174,11 +182,15 @@ export function ProjectDetail() {
                             <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between">
                                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                                     <UserCheck size={15} className="text-indigo-600" />
-                                    <span>Chefs de projet</span>
+                                    <span>{project.chefs.length > 1 ? 'Chefs de projet' : 'Chef de projet'}</span>
                                 </div>
-                                <p className="text-sm font-semibold text-slate-800 leading-snug">
-                                    {project.chefs.join(' & ')}
-                                </p>
+                                <div className="space-y-0.5">
+                                    {project.chefs.map((chef, idx) => (
+                                        <p key={idx} className="text-sm font-bold text-slate-800 leading-snug">
+                                            {chef}
+                                        </p>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Card 4: Voyage / Sorties */}
@@ -223,6 +235,33 @@ export function ProjectDetail() {
                                 </div>
                             </div>
                         )}
+
+                        {/* Section Chefs de Projet Responsables */}
+                        <div className="mb-10 p-5 sm:p-6 bg-gradient-to-r from-indigo-50/70 via-slate-50 to-white rounded-2xl border border-indigo-100/90 shadow-2xs">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20 shrink-0">
+                                        <UserCheck size={20} />
+                                    </div>
+                                    <div>
+                                        <span className="text-[11px] font-black uppercase tracking-wider text-indigo-700 block mb-0.5">
+                                            {project.chefs.length > 1 ? 'Chefs de projet responsables' : 'Chef de projet responsable'}
+                                        </span>
+                                        <h3 className="text-base sm:text-lg font-black text-slate-900">
+                                            {project.chefs.join(' & ')}
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {project.chefs.map((chef, idx) => (
+                                        <span key={idx} className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white border border-indigo-200 text-slate-800 font-bold text-xs shadow-2xs">
+                                            <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+                                            <span>{chef}</span>
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Call to Actions & Social Links */}
                         <div className="pt-8 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
