@@ -149,101 +149,103 @@ export function Projects() {
                             whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.35, delay: index * 0.05 }}
-                            className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-orange-400 transition-all duration-300 overflow-hidden flex flex-col group"
+                            className="h-full"
                         >
-                            {/* Image Header */}
-                            <div className={`relative aspect-video w-full overflow-hidden ${project.bannerFit === 'contain' ? 'bg-white' : 'bg-slate-900'} border-b border-slate-100 flex items-center justify-center`}>
-                                <img
-                                    src={project.banner || project.image}
-                                    alt={project.title}
-                                    className={`w-full h-full ${
-                                        project.bannerFit === 'contain'
-                                            ? 'object-contain p-4 max-h-[92%]'
-                                            : 'object-cover object-center'
-                                    } group-hover:scale-105 transition-transform duration-500 ease-out`}
-                                />
-                                {project.bannerFit !== 'contain' && (
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent pointer-events-none" />
-                                )}
+                            <Link
+                                to={`/projets/${project.id}`}
+                                className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-orange-400 transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer"
+                            >
+                                {/* Image Header */}
+                                <div className={`relative aspect-video w-full overflow-hidden ${project.bannerFit === 'contain' ? 'bg-white' : 'bg-slate-900'} border-b border-slate-100 flex items-center justify-center`}>
+                                    <img
+                                        src={project.banner || project.image}
+                                        alt={project.title}
+                                        className={`w-full h-full ${
+                                            project.bannerFit === 'contain'
+                                                ? 'object-contain p-4 max-h-[92%]'
+                                                : 'object-cover object-center'
+                                        } group-hover:scale-105 transition-transform duration-500 ease-out`}
+                                    />
+                                    {project.bannerFit !== 'contain' && (
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent pointer-events-none" />
+                                    )}
 
-                                {/* Badges top */}
-                                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-                                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/95 backdrop-blur-md text-slate-800 shadow-xs border border-slate-200/80">
-                                        {project.category}
-                                    </span>
-                                    {project.isCordee && (
-                                        <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-purple-700 text-white shadow-xs flex items-center gap-1">
-                                            <Award size={12} />
-                                            <span>Cordée</span>
+                                    {/* Badges top */}
+                                    <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/95 backdrop-blur-md text-slate-800 shadow-xs border border-slate-200/80">
+                                            {project.category}
                                         </span>
+                                        {project.isCordee && (
+                                            <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-purple-700 text-white shadow-xs flex items-center gap-1">
+                                                <Award size={12} />
+                                                <span>Cordée</span>
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Creation Year top right */}
+                                    <div className="absolute top-3 right-3 z-10">
+                                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-black/60 backdrop-blur-md text-white">
+                                            Depuis {project.creationYear}
+                                        </span>
+                                    </div>
+
+                                    {/* Logo pastille bottom right */}
+                                    {project.image && (
+                                        <div className="absolute bottom-3 right-3 w-10 h-10 rounded-xl bg-white p-1 shadow-md border border-slate-200/80 flex items-center justify-center overflow-hidden z-10">
+                                            <img
+                                                src={project.image}
+                                                alt={`${project.title} logo`}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
                                     )}
                                 </div>
 
-                                {/* Creation Year top right */}
-                                <div className="absolute top-3 right-3 z-10">
-                                    <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-black/60 backdrop-blur-md text-white">
-                                        Depuis {project.creationYear}
-                                    </span>
-                                </div>
-
-                                {/* Logo pastille bottom right */}
-                                {project.image && (
-                                    <div className="absolute bottom-3 right-3 w-10 h-10 rounded-xl bg-white p-1 shadow-md border border-slate-200/80 flex items-center justify-center overflow-hidden z-10">
-                                        <img
-                                            src={project.image}
-                                            alt={`${project.title} logo`}
-                                            className="w-full h-full object-contain"
-                                        />
+                                {/* Corps de la carte */}
+                                <div className="p-5 sm:p-6 flex flex-col flex-grow">
+                                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-md border border-orange-200/60">
+                                            {project.type}
+                                        </span>
+                                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/70 flex items-center gap-1">
+                                            <Users size={12} />
+                                            <span>{project.tutorCount} élèves</span>
+                                        </span>
                                     </div>
-                                )}
-                            </div>
 
-                            {/* Corps de la carte */}
-                            <div className="p-5 sm:p-6 flex flex-col flex-grow">
-                                <div className="flex items-center justify-between gap-2 mb-2.5">
-                                    <span className="text-[11px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-md border border-orange-200/60">
-                                        {project.type}
-                                    </span>
-                                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/70 flex items-center gap-1">
-                                        <Users size={12} />
-                                        <span>{project.tutorCount} élèves</span>
-                                    </span>
-                                </div>
+                                    <h3 className="text-xl font-black text-slate-900 mb-2 group-hover:text-orange-600 transition-colors leading-snug tracking-tight">
+                                        {project.title}
+                                    </h3>
 
-                                <h3 className="text-xl font-black text-slate-900 mb-2 group-hover:text-orange-600 transition-colors leading-snug tracking-tight">
-                                    {project.title}
-                                </h3>
+                                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 flex-grow font-normal line-clamp-3">
+                                        {project.description}
+                                    </p>
 
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 flex-grow font-normal line-clamp-3">
-                                    {project.description}
-                                </p>
-
-                                {/* Meta: schedule & location */}
-                                <div className="space-y-1.5 mb-5 pt-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
-                                    <div className="flex items-center gap-1.5">
-                                        <Clock size={13} className="text-orange-500 shrink-0" />
-                                        <span className="line-clamp-1">{project.schedule}</span>
+                                    {/* Meta: schedule & location */}
+                                    <div className="space-y-1.5 mb-5 pt-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                                        <div className="flex items-center gap-1.5">
+                                            <Clock size={13} className="text-orange-500 shrink-0" />
+                                            <span className="line-clamp-1">{project.schedule}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <MapPin size={13} className="text-purple-600 shrink-0" />
+                                            <span className="line-clamp-1">{project.locationName}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <MapPin size={13} className="text-purple-600 shrink-0" />
-                                        <span className="line-clamp-1">{project.locationName}</span>
+
+                                    {/* Footer de la carte */}
+                                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
+                                        <span className="text-xs font-bold text-slate-500">
+                                            {project.chefs[0]}
+                                        </span>
+                                        <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 group-hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-xs group-hover:shadow-md group-hover:shadow-orange-500/20 active:scale-95 transition-all">
+                                            <span>Fiche Projet</span>
+                                            <ArrowRight size={13} className="transform group-hover:translate-x-0.5 transition-transform" />
+                                        </span>
                                     </div>
                                 </div>
-
-                                {/* Footer de la carte */}
-                                <div className="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-                                    <span className="text-xs font-bold text-slate-500">
-                                        {project.chefs[0]}
-                                    </span>
-                                    <Link
-                                        to={`/projets/${project.id}`}
-                                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-xs hover:shadow-md hover:shadow-orange-500/20 active:scale-95 transition-all"
-                                    >
-                                        <span>Fiche Projet</span>
-                                        <ArrowRight size={13} />
-                                    </Link>
-                                </div>
-                            </div>
+                            </Link>
                         </motion.div>
                     ))}
                 </div>
