@@ -10,7 +10,8 @@ import {
     Compass, 
     Sparkles, 
     Heart, 
-    Clock
+    Clock,
+    Check
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -41,17 +42,15 @@ export function Projects() {
     ];
 
     return (
-        <div className="pt-28 sm:pt-32 pb-24 min-h-screen bg-transparent">
-            <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-                {/* Header */}
-                <div className="text-center mb-12 sm:mb-16">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs mb-4">
-                        <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                        <span className="text-xs font-black uppercase tracking-wider text-slate-800">
-                            9 Projets de Terrain · Marseille
-                        </span>
-                        <span className="text-xs text-slate-300">·</span>
-                        <span className="text-xs font-semibold text-purple-700">
+        <div className="pt-28 pb-20 bg-slate-50/50 min-h-screen">
+            <div className="container mx-auto px-4 max-w-7xl">
+                {/* Header Section */}
+                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold uppercase tracking-wider mb-4">
+                        <span>Nos Antennes de Terrain</span>
+                        <span>·</span>
+                        <span className="text-purple-700 font-extrabold flex items-center gap-1">
+                            <Award size={13} />
                             5 Labellisés Cordées de la Réussite
                         </span>
                     </div>
@@ -66,16 +65,16 @@ export function Projects() {
                     {/* Stats pills */}
                     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
                         <span className="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-2xs">
-                            🎯 <strong className="text-slate-900">300</strong> tutorés suivis
+                            <strong className="text-slate-900 font-extrabold">300</strong> tutorés suivis
                         </span>
                         <span className="px-3.5 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-xs font-bold text-purple-800 shadow-2xs">
-                            ⭐ <strong className="text-purple-900">5</strong> Cordées de la Réussite
+                            <strong className="text-purple-900 font-extrabold">5</strong> Cordées de la Réussite
                         </span>
                         <span className="px-3.5 py-1.5 rounded-xl bg-orange-50 border border-orange-200 text-xs font-bold text-orange-800 shadow-2xs">
-                            📍 <strong className="text-orange-900">9</strong> implantations à Marseille
+                            <strong className="text-orange-900 font-extrabold">9</strong> implantations à Marseille
                         </span>
                         <span className="px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 shadow-2xs">
-                            📅 <strong className="text-emerald-900">Du lundi au samedi</strong>
+                            <strong className="text-emerald-900 font-extrabold">Du lundi au samedi</strong>
                         </span>
                     </div>
 
@@ -353,7 +352,7 @@ export function Projects() {
                             </p>
                         </div>
                         <div className="text-xs text-slate-500 font-medium max-w-xs bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-                            💡 Pour les projets avec plusieurs séances par semaine, un système de roulement permet aux tuteurs d'effectuer 1 à 2 séances par semaine.
+                            Pour les projets avec plusieurs séances par semaine, un système de roulement permet aux tuteurs d'effectuer 1 à 2 séances par semaine.
                         </div>
                     </div>
 
@@ -383,22 +382,22 @@ export function Projects() {
                                             )}
                                         </td>
                                         <td className="py-3.5 px-3 text-center">
-                                            {item.monday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white font-bold text-xs">✓</span>}
+                                            {item.monday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white"><Check size={12} className="stroke-[3]" /></span>}
                                         </td>
                                         <td className="py-3.5 px-3 text-center">
-                                            {item.tuesday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white font-bold text-xs">✓</span>}
+                                            {item.tuesday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white"><Check size={12} className="stroke-[3]" /></span>}
                                         </td>
                                         <td className="py-3.5 px-3 text-center">
-                                            {item.wednesday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white font-bold text-xs">✓</span>}
+                                            {item.wednesday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white"><Check size={12} className="stroke-[3]" /></span>}
                                         </td>
                                         <td className="py-3.5 px-3 text-center">
-                                            {item.thursday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white font-bold text-xs">✓</span>}
+                                            {item.thursday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white"><Check size={12} className="stroke-[3]" /></span>}
                                         </td>
                                         <td className="py-3.5 px-3 text-center">
-                                            {item.friday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white font-bold text-xs">✓</span>}
+                                            {item.friday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white"><Check size={12} className="stroke-[3]" /></span>}
                                         </td>
                                         <td className="py-3.5 px-3 text-center">
-                                            {item.saturday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs">✓</span>}
+                                            {item.saturday && <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-600 text-white"><Check size={12} className="stroke-[3]" /></span>}
                                         </td>
                                     </tr>
                                 ))}
