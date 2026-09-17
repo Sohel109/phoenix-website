@@ -254,7 +254,10 @@ export function HeroScroll() {
             {/* ══════════════════════════════════════════════════════
                 SECTION MOBILE (< 768px) — EMPILÉ COMPACT & ÉPURÉ
             ══════════════════════════════════════════════════════ */}
-            <section className="md:hidden relative w-full pt-28 pb-10 px-5 bg-[#FAFAFA] overflow-hidden flex flex-col items-center text-center">
+            <section 
+                style={{ paddingTop: 'calc(max(7rem, env(safe-area-inset-top, 0px) + 5.5rem))' }}
+                className="md:hidden relative w-full pb-10 px-5 bg-[#FAFAFA] overflow-hidden flex flex-col items-center text-center"
+            >
 
                 {/* Badge sticker mobile */}
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-xs mb-3 -rotate-1">

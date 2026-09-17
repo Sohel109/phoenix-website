@@ -51,7 +51,7 @@ export function ProjectMap() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent pt-28 sm:pt-32 pb-24">
+        <div className="min-h-screen bg-transparent pt-page-safe pb-24">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
                 {/* Header */}
                 <motion.div

@@ -204,7 +204,7 @@ export function Association() {
     ];
 
     return (
-        <div className="pt-28 sm:pt-32 pb-24 min-h-screen bg-slate-50/40">
+        <div className="pt-page-safe pb-24 min-h-screen bg-slate-50/40">
             {/* Toast de confirmation de sauvegarde */}
             {showSuccessToast && (
                 <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 border border-slate-700 animate-in fade-in slide-in-from-bottom-4">

@@ -50,7 +50,7 @@ export function Documents() {
     ];
 
     return (
-        <div ref={containerRef} className="pt-28 sm:pt-32 pb-24 min-h-screen bg-transparent">
+        <div ref={containerRef} className="pt-page-safe pb-24 min-h-screen bg-transparent">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                 {/* Header */}
                 <div className="text-center mb-16">

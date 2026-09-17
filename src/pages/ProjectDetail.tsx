@@ -49,7 +49,7 @@ export function ProjectDetail() {
     const otherProjects = projects.filter(p => p.id !== project.id).slice(0, 3);
 
     return (
-        <div className="pt-28 sm:pt-32 pb-24 min-h-screen bg-transparent">
+        <div className="pt-page-safe pb-24 min-h-screen bg-transparent">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                 {/* Back Button */}
                 <div className="flex items-center justify-between gap-4 mb-6">

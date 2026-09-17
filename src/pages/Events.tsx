@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export function Events() {
     return (
-        <div className="pt-28 sm:pt-32 pb-24 min-h-screen bg-transparent">
+        <div className="pt-page-safe pb-24 min-h-screen bg-transparent">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-14 sm:mb-16">

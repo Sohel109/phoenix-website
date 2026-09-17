@@ -43,7 +43,7 @@ export function Projects() {
     ];
 
     return (
-        <div className="pt-28 pb-20 bg-slate-50/50 min-h-screen">
+        <div className="pt-page-safe pb-20 bg-slate-50/50 min-h-screen">
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header Section */}
                 <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">

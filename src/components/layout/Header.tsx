@@ -42,10 +42,13 @@ export function Header() {
 
     return (
         <header
+            style={{
+                paddingTop: `calc(env(safe-area-inset-top, 0px) + ${isScrolled || isMobileMenuOpen ? '0.75rem' : '1rem'})`,
+            }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
                 isScrolled || isMobileMenuOpen
-                    ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/80 py-3'
-                    : 'bg-white/80 backdrop-blur-sm border-b border-slate-200/40 py-4'
+                    ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/80 pb-3'
+                    : 'bg-white/80 backdrop-blur-sm border-b border-slate-200/40 pb-4'
             }`}
         >
             <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between">
@@ -167,7 +170,7 @@ export function Header() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        className="lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden"
+                        className="lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
                     >
                         <div className="flex flex-col gap-1 mb-4">
                             {navLinks.map((link) => {

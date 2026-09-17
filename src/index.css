@@ -48,3 +48,13 @@ body {
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0px);
 }
+
+.pt-page-safe {
+  padding-top: calc(7rem + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 640px) {
+  .pt-page-safe {
+    padding-top: calc(8rem + env(safe-area-inset-top, 0px));
+  }
+}
