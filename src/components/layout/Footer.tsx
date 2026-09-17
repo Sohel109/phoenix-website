@@ -6,7 +6,7 @@ export function Footer() {
     const { t } = useTranslation();
 
     return (
-        <footer className="relative bg-slate-900 text-slate-400 pt-16 pb-12 border-t border-slate-800">
+        <footer className="relative bg-[#0A1120] text-slate-400 pt-16 pb-12 border-t-2 border-[#0A1120]">
             <div className="container mx-auto px-6 max-w-7xl">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
 
@@ -18,9 +18,14 @@ export function Footer() {
                                 alt="Phoenix EDC Logo"
                                 className="w-12 h-12 object-contain"
                             />
-                            <span translate="no" className="notranslate font-black text-2xl tracking-tight text-white">
-                                Phoenix <span className="text-orange-500">EDC</span>
-                            </span>
+                            <div className="flex flex-col">
+                                <span translate="no" className="notranslate font-display font-black text-2xl tracking-tight text-white leading-none">
+                                    Phoenix <span className="text-orange-500">EDC</span>
+                                </span>
+                                <span className="text-[10px] font-display font-bold uppercase tracking-wider text-orange-400 mt-1">
+                                    Marseille · Depuis 2006
+                                </span>
+                            </div>
                         </div>
                         <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-xs font-normal">
                             {t('footer.description')}
@@ -29,7 +34,7 @@ export function Footer() {
 
                     {/* Quick Links Section */}
                     <div>
-                        <h3 className="font-bold text-xs uppercase tracking-wider text-slate-200 mb-4">
+                        <h3 className="font-display font-black text-xs uppercase tracking-wider text-slate-200 mb-4">
                             {t('footer.quickLinks')}
                         </h3>
                         <ul className="space-y-2 text-xs sm:text-sm">
@@ -73,7 +78,7 @@ export function Footer() {
 
                     {/* Contact Section */}
                     <div>
-                        <h3 className="font-bold text-xs uppercase tracking-wider text-slate-200 mb-4">
+                        <h3 className="font-display font-black text-xs uppercase tracking-wider text-slate-200 mb-4">
                             {t('footer.contact')}
                         </h3>
                         <ul className="space-y-3 text-xs sm:text-sm">
@@ -99,7 +104,7 @@ export function Footer() {
 
                     {/* Social Media Section */}
                     <div>
-                        <h3 className="font-bold text-xs uppercase tracking-wider text-slate-200 mb-4">
+                        <h3 className="font-display font-black text-xs uppercase tracking-wider text-slate-200 mb-4">
                             {t('footer.followUs')}
                         </h3>
                         <div className="flex gap-2.5 mb-5">
@@ -107,7 +112,7 @@ export function Footer() {
                                 href="https://www.instagram.com/phoenixedc/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-9 h-9 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:scale-105 transition-all duration-200"
+                                className="w-9 h-9 rounded-xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:shadow-[2px_2px_0px_0px_#FFFFFF] hover:-translate-y-0.5 transition-all duration-200"
                                 aria-label="Instagram"
                             >
                                 <Instagram size={17} />
@@ -116,7 +121,7 @@ export function Footer() {
                                 href="https://fr.linkedin.com/company/phoenix-egalit%C3%A9deschances"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-9 h-9 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:scale-105 transition-all duration-200"
+                                className="w-9 h-9 rounded-xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:shadow-[2px_2px_0px_0px_#FFFFFF] hover:-translate-y-0.5 transition-all duration-200"
                                 aria-label="LinkedIn"
                             >
                                 <Linkedin size={17} />
@@ -125,7 +130,7 @@ export function Footer() {
                                 href="https://www.tiktok.com/@phoenixedc"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-9 h-9 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:scale-105 transition-all duration-200"
+                                className="w-9 h-9 rounded-xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:shadow-[2px_2px_0px_0px_#FFFFFF] hover:-translate-y-0.5 transition-all duration-200"
                                 aria-label="TikTok"
                             >
                                 <Music2 size={17} />
@@ -134,7 +139,7 @@ export function Footer() {
                                 href="https://www.facebook.com/phoenix.egalitedeschances/?locale=fr_FR"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-9 h-9 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:scale-105 transition-all duration-200"
+                                className="w-9 h-9 rounded-xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-orange-500 hover:border-orange-500 hover:shadow-[2px_2px_0px_0px_#FFFFFF] hover:-translate-y-0.5 transition-all duration-200"
                                 aria-label="Facebook"
                             >
                                 <Facebook size={17} />
@@ -145,8 +150,8 @@ export function Footer() {
 
                 {/* Copyright Section */}
                 <div className="text-center pt-8 border-t border-slate-800/80">
-                    <p className="text-slate-500 text-xs">
-                        © {new Date().getFullYear()} <span className="text-orange-500 font-medium">Phoenix Égalité des Chances</span>. {t('footer.rights')}
+                    <p className="text-slate-500 text-xs font-medium">
+                        © {new Date().getFullYear()} <span className="text-orange-500 font-bold">Phoenix Égalité des Chances</span>. {t('footer.rights')}
                     </p>
                 </div>
             </div>

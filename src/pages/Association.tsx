@@ -204,10 +204,10 @@ export function Association() {
     ];
 
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-slate-50/40">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FBF9F5]">
             {/* Toast de confirmation de sauvegarde */}
             {showSuccessToast && (
-                <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 border border-slate-700 animate-in fade-in slide-in-from-bottom-4">
+                <div className="fixed bottom-6 right-6 z-50 bg-[#0A1120] text-white px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_#EA580C] flex items-center gap-3 border-2 border-[#0A1120] animate-in fade-in slide-in-from-bottom-4">
                     <Check size={18} className="text-emerald-400" />
                     <span className="text-sm font-bold">{toastMessage}</span>
                 </div>
@@ -220,39 +220,39 @@ export function Association() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                         {/* Colonne Texte */}
                         <div className="lg:col-span-7">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-orange-100/90 text-orange-900 text-xs font-bold uppercase tracking-wider mb-4">
-                                <Award size={14} className="text-orange-600" />
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF7ED] text-[#EA580C] text-xs font-black uppercase tracking-wider mb-5 border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120]">
+                                <Award size={14} className="text-[#EA580C]" />
                                 <span>KEDGE Business School · Association Reconnue d'Intérêt Général</span>
                             </div>
 
-                            <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6">
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-black text-[#0A1120] tracking-tight leading-[1.08] mb-6">
                                 Plus qu'une association, une grande famille marseillaise engagée.
                             </h1>
 
-                            <p className="text-slate-700 text-base sm:text-lg leading-relaxed mb-8">
-                                Depuis 2011, Phoenix mobilise <strong className="text-slate-900">+100 étudiants bénévoles</strong> pour accompagner chaque semaine <strong className="text-slate-900">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre mission : créer le déclic, ouvrir les horizons et abattre l'autocensure.
+                            <p className="text-slate-700 text-base sm:text-lg leading-relaxed mb-8 font-medium">
+                                Depuis 2011, Phoenix mobilise <strong className="text-[#0A1120] font-bold">+100 étudiants bénévoles</strong> pour accompagner chaque semaine <strong className="text-[#0A1120] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre mission : créer le déclic, ouvrir les horizons et abattre l'autocensure.
                             </p>
 
-                            {/* 3 micro-indicateurs clairs */}
-                            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-200/80">
-                                <div>
-                                    <span className="block text-2xl sm:text-3xl font-black text-orange-600">+100</span>
-                                    <span className="text-xs text-slate-600 font-medium">Tuteurs engagés</span>
+                            {/* 3 micro-indicateurs tactiles */}
+                            <div className="grid grid-cols-3 gap-3 pt-4 border-t-2 border-[#0A1120]/10">
+                                <div className="p-3.5 bg-white rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
+                                    <span className="block text-2xl sm:text-3xl font-display font-black text-[#EA580C]">+100</span>
+                                    <span className="text-[11px] sm:text-xs text-slate-700 font-bold uppercase tracking-wider">Tuteurs</span>
                                 </div>
-                                <div>
-                                    <span className="block text-2xl sm:text-3xl font-black text-purple-700">300</span>
-                                    <span className="text-xs text-slate-600 font-medium">Jeunes suivis / an</span>
+                                <div className="p-3.5 bg-[#FFF7ED] rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
+                                    <span className="block text-2xl sm:text-3xl font-display font-black text-[#0A1120]">300</span>
+                                    <span className="text-[11px] sm:text-xs text-slate-700 font-bold uppercase tracking-wider">Jeunes / an</span>
                                 </div>
-                                <div>
-                                    <span className="block text-2xl sm:text-3xl font-black text-slate-900">9</span>
-                                    <span className="text-xs text-slate-600 font-medium">Projets de terrain</span>
+                                <div className="p-3.5 bg-white rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
+                                    <span className="block text-2xl sm:text-3xl font-display font-black text-[#EA580C]">9</span>
+                                    <span className="text-[11px] sm:text-xs text-slate-700 font-bold uppercase tracking-wider">Projets</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Colonne Photo Chaleureuse */}
                         <div className="lg:col-span-5">
-                            <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 group bg-slate-900">
+                            <div className="relative rounded-3xl overflow-hidden shadow-[6px_6px_0px_0px_#0A1120] border-2 border-[#0A1120] group bg-[#0A1120]">
                                 <img
                                     src="/images/home/voyage-culturel-1.jpg"
                                     alt="Tuteurs et tutorés de l'association Phoenix en voyage culturel"
@@ -276,13 +276,13 @@ export function Association() {
                 {/* ──────────────── 2. VALEURS VIVANTES (GRILLE AÉRÉE) ──────────────── */}
                 <section className="mb-20 sm:mb-28">
                     <div className="text-center max-w-2xl mx-auto mb-12">
-                        <span className="text-xs font-black uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-200/60 inline-block mb-3">
+                        <span className="text-xs font-black uppercase tracking-wider text-[#EA580C] bg-[#FFF7ED] px-3.5 py-1.5 rounded-full border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] inline-block mb-3">
                             Notre ADN
                         </span>
-                        <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+                        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black text-[#0A1120] tracking-tight mb-3">
                             Les 5 Valeurs qui Guident Notre Action
                         </h2>
-                        <p className="text-slate-600 text-sm sm:text-base">
+                        <p className="text-slate-600 text-sm sm:text-base font-medium">
                             Présentes dans chaque séance de tutorat et formalisées dans la charte officielle <strong>« OHIEE »</strong>.
                         </p>
                     </div>
@@ -293,19 +293,19 @@ export function Association() {
                             return (
                                 <div
                                     key={idx}
-                                    className={`rounded-2xl p-6 border ${val.bg} bg-white flex flex-col justify-between shadow-2xs hover:shadow-md transition-shadow`}
+                                    className="rounded-2xl p-6 border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120] bg-white flex flex-col justify-between hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#EA580C] transition-all"
                                 >
                                     <div>
-                                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 bg-white border border-slate-200/80 shadow-2xs ${val.color}`}>
-                                            <IconComponent size={22} />
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-white border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] ${val.color}`}>
+                                            <IconComponent size={24} />
                                         </div>
-                                        <h3 className="text-base font-black text-slate-900 mb-1">
+                                        <h3 className="text-lg font-display font-black text-[#0A1120] mb-1">
                                             {val.title}
                                         </h3>
-                                        <p className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">
+                                        <p className="text-xs font-black text-[#EA580C] mb-3 uppercase tracking-wider">
                                             {val.principle}
                                         </p>
-                                        <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                                        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
                                             {val.description}
                                         </p>
                                     </div>
@@ -316,31 +316,31 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 3. CHRONOLOGIE CONDENSÉE (5 DATES CLÉS) ──────────────── */}
-                <section className="mb-20 sm:mb-28 bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-2xs">
+                <section className="mb-20 sm:mb-28 bg-[#F4EFEA] rounded-3xl p-8 sm:p-12 border-2 border-[#0A1120] shadow-[6px_6px_0px_0px_#0A1120]">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
                         <div>
-                            <span className="text-xs font-black uppercase tracking-wider text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200/60 inline-block mb-3">
+                            <span className="text-xs font-black uppercase tracking-wider text-[#0A1120] bg-white px-3 py-1 rounded-full border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] inline-block mb-3">
                                 Histoire & Transmission
                             </span>
-                            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                                5 Dates Repères de Phoenix
+                            <h2 className="text-2xl sm:text-4xl font-display font-black text-[#0A1120] tracking-tight">
+                                5 Dates Repères de Phœnix
                             </h2>
                         </div>
-                        <p className="text-slate-500 text-xs sm:text-sm max-w-sm">
+                        <p className="text-slate-600 text-xs sm:text-sm font-semibold max-w-sm">
                             Plus de 25 ans d'action continue auprès des élèves marseillais.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
                         {keyDates.map((item, idx) => (
-                            <div key={idx} className="flex flex-col relative">
-                                <div className="text-2xl sm:text-3xl font-black text-orange-600 font-mono mb-2">
+                            <div key={idx} className="flex flex-col relative bg-white p-5 rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
+                                <div className="text-2xl sm:text-3xl font-display font-black text-[#EA580C] mb-2">
                                     {item.year}
                                 </div>
-                                <h3 className="text-sm font-black text-slate-900 mb-2 leading-snug">
+                                <h3 className="text-sm font-display font-black text-[#0A1120] mb-2 leading-snug">
                                     {item.title}
                                 </h3>
-                                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                                <p className="text-xs text-slate-700 leading-relaxed font-medium">
                                     {item.desc}
                                 </p>
                             </div>
@@ -353,20 +353,20 @@ export function Association() {
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-black uppercase tracking-wider text-orange-600">
+                                <span className="text-xs font-black uppercase tracking-wider text-[#EA580C]">
                                     Gouvernance 2026-2027
                                 </span>
                                 {isBureau && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider border border-emerald-300">
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider border-2 border-emerald-400">
                                         <Check size={11} />
                                         Connecté : Bureau
                                     </span>
                                 )}
                             </div>
-                            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black text-[#0A1120] tracking-tight">
                                 L'Équipe du Bureau Exécutif
                             </h2>
-                            <p className="text-slate-600 text-sm mt-1">
+                            <p className="text-slate-600 text-sm mt-1 font-medium">
                                 Les étudiants de KEDGE Business School qui pilotent l'association cette année.
                             </p>
                         </div>
@@ -387,7 +387,7 @@ export function Association() {
                                             linkedin: ""
                                         });
                                     }}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-xs"
+                                    className="btn-tactile-primary !py-2 !px-4 !text-xs"
                                 >
                                     <Plus size={14} />
                                     <span>Ajouter un membre</span>
@@ -396,7 +396,7 @@ export function Association() {
                                     type="button"
                                     onClick={handleResetDefault}
                                     title="Rétablir les membres par défaut du guide"
-                                    className="p-2 rounded-xl bg-white border border-slate-300 text-slate-600 hover:text-slate-900 transition-colors"
+                                    className="p-2 rounded-xl bg-white border-2 border-[#0A1120] text-slate-700 hover:text-black transition-colors shadow-[2px_2px_0px_0px_#0A1120]"
                                 >
                                     <RotateCcw size={15} />
                                 </button>
@@ -409,7 +409,7 @@ export function Association() {
                         {bureauMembers.map((member) => (
                             <div
                                 key={member.id}
-                                className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-shadow p-5 flex flex-col justify-between text-center relative group"
+                                className="bg-white rounded-2xl border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[6px_6px_0px_0px_#EA580C] hover:-translate-y-1 transition-all p-5 flex flex-col justify-between text-center relative group"
                             >
                                 {/* Bouton Crayon (visible uniquement pour role === 'bureau') */}
                                 {isBureau && (
@@ -419,7 +419,7 @@ export function Association() {
                                             setIsAddingMember(false);
                                             setEditingMember(member);
                                         }}
-                                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-600 transition-colors shadow-2xs"
+                                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-[#FFF7ED] hover:bg-orange-100 text-[#EA580C] border border-[#0A1120]/20 transition-colors"
                                         title="Modifier ce membre"
                                     >
                                         <Pencil size={13} />
@@ -428,7 +428,7 @@ export function Association() {
 
                                 <div>
                                     {/* Avatar / Photo */}
-                                    <div className="w-20 h-20 rounded-2xl mx-auto mb-4 overflow-hidden bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-500 text-white font-black text-xl flex items-center justify-center shadow-md shadow-orange-500/15 border-2 border-white">
+                                    <div className="w-20 h-20 rounded-2xl mx-auto mb-4 overflow-hidden bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-500 text-white font-black text-xl flex items-center justify-center border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
                                         {member.photo ? (
                                             <img
                                                 src={member.photo}
@@ -444,12 +444,12 @@ export function Association() {
                                     </div>
 
                                     {/* Nom & Prénom */}
-                                    <h3 className="text-base font-black text-slate-900 leading-snug">
+                                    <h3 className="text-base font-display font-black text-[#0A1120] leading-snug">
                                         {member.firstName} {member.lastName}
                                     </h3>
 
                                     {/* Rôle */}
-                                    <p className="text-xs font-bold text-orange-600 mt-1 uppercase tracking-wider">
+                                    <p className="text-xs font-bold text-[#EA580C] mt-1 uppercase tracking-wider">
                                         {member.role}
                                     </p>
                                 </div>
@@ -461,13 +461,13 @@ export function Association() {
                                             href={member.linkedin}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-blue-600 transition-colors font-medium"
+                                            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 transition-colors font-bold"
                                         >
                                             <Linkedin size={14} className="text-blue-600" />
                                             <span>LinkedIn</span>
                                         </a>
                                     ) : (
-                                        <span className="text-[11px] text-slate-400 font-medium">
+                                        <span className="text-[11px] text-slate-500 font-semibold">
                                             KEDGE Business School
                                         </span>
                                     )}
@@ -477,12 +477,12 @@ export function Association() {
                     </div>
 
                     {/* Pôles Opérationnels sous forme d'accordéons / fiches légères */}
-                    <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs">
+                    <div className="bg-[#F4EFEA] rounded-3xl p-6 sm:p-8 border-2 border-[#0A1120] shadow-[5px_5px_0px_0px_#0A1120]">
                         <div className="mb-6">
-                            <h3 className="text-lg font-black text-slate-900">
+                            <h3 className="text-xl font-display font-black text-[#0A1120]">
                                 Pôles Opérationnels & Équipes
                             </h3>
-                            <p className="text-xs text-slate-500 mt-0.5">
+                            <p className="text-xs text-slate-600 font-medium mt-0.5">
                                 Cliquez sur un pôle pour voir sa composition et ses missions.
                             </p>
                         </div>
@@ -493,34 +493,34 @@ export function Association() {
                                 return (
                                     <div
                                         key={pole.id}
-                                        className="rounded-xl border border-slate-200/80 bg-slate-50/60 overflow-hidden transition-all"
+                                        className="rounded-2xl border-2 border-[#0A1120] bg-white shadow-[3px_3px_0px_0px_#0A1120] overflow-hidden transition-all"
                                     >
                                         <button
                                             type="button"
                                             onClick={() => setActivePoleId(isOpen ? null : pole.id)}
-                                            className="w-full p-4 text-left flex items-center justify-between gap-2 hover:bg-slate-100/80 transition-colors"
+                                            className="w-full p-4 text-left flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors"
                                         >
                                             <div>
-                                                <h4 className="text-sm font-black text-slate-900">
+                                                <h4 className="text-sm font-display font-black text-[#0A1120]">
                                                     {pole.title}
                                                 </h4>
-                                                <span className="text-xs text-purple-700 font-bold">
+                                                <span className="text-xs text-[#EA580C] font-bold">
                                                     {pole.lead}
                                                 </span>
                                             </div>
                                             <ChevronDown
                                                 size={16}
-                                                className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180 text-orange-600' : ''}`}
+                                                className={`text-[#0A1120] transition-transform ${isOpen ? 'rotate-180 text-orange-600' : ''}`}
                                             />
                                         </button>
 
                                         {isOpen && (
-                                            <div className="px-4 pb-4 pt-1 text-xs text-slate-600 border-t border-slate-200/60 bg-white space-y-2">
-                                                <p className="leading-relaxed font-normal">
+                                            <div className="px-4 pb-4 pt-2 text-xs text-slate-700 border-t-2 border-[#0A1120]/10 bg-[#FFF7ED] space-y-2">
+                                                <p className="leading-relaxed font-medium">
                                                     {pole.description}
                                                 </p>
-                                                <div className="pt-2 border-t border-slate-100 font-medium text-slate-500">
-                                                    <strong>Membres :</strong> {pole.members.join(', ')}
+                                                <div className="pt-2 border-t border-[#0A1120]/10 font-semibold text-slate-600">
+                                                    <strong className="text-[#0A1120]">Membres :</strong> {pole.members.join(', ')}
                                                 </div>
                                             </div>
                                         )}
@@ -532,15 +532,15 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 5. BANDEAU DE RESSOURCES ──────────────── */}
-                <section className="bg-slate-900 text-white rounded-2xl p-7 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <section className="bg-[#0A1120] text-white rounded-3xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 border-2 border-[#0A1120] shadow-[6px_6px_0px_0px_#EA580C]">
                     <div>
                         <span className="text-xs font-black uppercase tracking-wider text-orange-400 block mb-1">
                             Documentation Officielle
                         </span>
-                        <h2 className="text-xl sm:text-2xl font-black text-white">
+                        <h2 className="text-2xl sm:text-3xl font-display font-black text-white">
                             Consulter le Guide du Phœnicien 2026-2027
                         </h2>
-                        <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-xl">
+                        <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-xl font-medium">
                             Retrouvez les fiches détaillées des 9 projets, les plannings complets et la charte déontologique du tuteur.
                         </p>
                     </div>
@@ -548,14 +548,14 @@ export function Association() {
                     <div className="flex items-center gap-3 shrink-0">
                         <Link
                             to="/documents"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs"
+                            className="btn-tactile-primary !text-xs sm:!text-sm"
                         >
                             <Download size={15} />
                             <span>Télécharger le PDF</span>
                         </Link>
                         <Link
                             to="/projets"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm border border-slate-700 transition-colors"
+                            className="btn-tactile-secondary !bg-white/10 !text-white hover:!bg-white/20 !border-white/30 !text-xs sm:!text-sm"
                         >
                             <span>Nos 9 projets</span>
                             <ArrowRight size={14} />

@@ -17,8 +17,8 @@ function FloatingBadge({
     return (
         <div
             className={`absolute flex items-center gap-2 px-3.5 py-2 rounded-xl
-                bg-white border border-slate-200/90
-                shadow-xs text-xs font-bold text-slate-800
+                bg-white border-1.5 border-[#0A1120]
+                shadow-[3px_3px_0px_0px_#0A1120] text-xs font-display font-bold text-[#0A1120]
                 select-none pointer-events-none z-20 ${className}`}
         >
             {icon}
@@ -80,7 +80,7 @@ function MarineWave() {
             >
                 <path
                     d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z"
-                    className="fill-slate-50"
+                    className="fill-[#FBF9F5]"
                 />
             </svg>
         </div>
@@ -96,7 +96,10 @@ export function HeroScroll() {
             {/* ══════════════════════════════════════════════════════
                 SECTION DESKTOP (≥ 768px) — SPLIT 2 COLONNES
             ══════════════════════════════════════════════════════ */}
-            <section className="hidden md:block relative w-full min-h-[90vh] bg-[#FAFAFA] overflow-hidden">
+            {/* ══════════════════════════════════════════════════════
+                SECTION DESKTOP (≥ 768px) — SPLIT 2 COLONNES
+            ══════════════════════════════════════════════════════ */}
+            <section className="hidden md:block relative w-full min-h-[90vh] bg-[#FBF9F5] overflow-hidden">
 
                 {/* Filigrane Notre-Dame de la Garde */}
                 <NdlgWatermark />
@@ -110,41 +113,44 @@ export function HeroScroll() {
                             initial={{ opacity: 0, x: -40 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-                            className="flex flex-col gap-9 items-start"
+                            className="flex flex-col gap-8 items-start"
                         >
                             {/* Titre éditorial H1 */}
                             <div>
-                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs mb-5 -rotate-1 hover:rotate-0 transition-transform">
-                                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                                    <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border-1.5 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120] mb-6 -rotate-1 hover:rotate-0 transition-transform">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-orange-600 animate-pulse" />
+                                    <span className="text-xs font-display font-black uppercase tracking-wider text-[#0A1120]">
                                         Association étudiante · KEDGE BS
                                     </span>
-                                    <span className="text-xs text-slate-300">|</span>
-                                    <span className="text-xs font-bold text-orange-600">
+                                    <span className="text-xs text-slate-300 font-bold">|</span>
+                                    <span className="text-xs font-display font-black text-orange-600 uppercase tracking-wider">
                                         100% bénévole
                                     </span>
                                 </div>
-                                <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[1.0] tracking-tight text-slate-900 uppercase">
+                                <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-display font-black leading-[0.96] tracking-tight text-[#0A1120] uppercase">
                                     Faire briller <br />
                                     <span
                                         className="text-transparent bg-clip-text"
                                         style={{
                                             backgroundImage:
-                                                'linear-gradient(90deg, #F97316 0%, #FBBF24 60%, #F97316 100%)',
+                                                'linear-gradient(90deg, #EA580C 0%, #F59E0B 60%, #EA580C 100%)',
                                         }}
                                     >
                                         les talents
                                     </span>{' '}
                                     <br />
-                                    <span className="text-slate-900">de Marseille</span>
+                                    <span className="text-[#0A1120]">de Marseille</span>
                                 </h1>
+                                <p className="mt-5 text-slate-600 font-medium text-base sm:text-lg max-w-lg leading-relaxed">
+                                    Depuis 2006, nos tuteurs mobilisent leur énergie auprès de 300 collégiens et lycéens marseillais pour abattre l'autocensure et révéler leur potentiel.
+                                </p>
                             </div>
 
-                            {/* Double CTA structuré */}
+                            {/* Double CTA tactiles */}
                             <div className="flex flex-row gap-4 items-center">
                                 <Link
                                     to="/projets"
-                                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-base shadow-sm hover:shadow transition-colors duration-200"
+                                    className="btn-tactile-primary px-7 py-3.5 rounded-xl text-sm shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[2px_2px_0px_0px_#0A1120] hover:translate-x-[2px] hover:translate-y-[2px]"
                                 >
                                     <span>Découvrir nos projets</span>
                                     <ArrowRight size={18} />
@@ -152,9 +158,9 @@ export function HeroScroll() {
 
                                 <Link
                                     to="/contact"
-                                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-slate-300 hover:border-orange-500 bg-white hover:bg-orange-50/40 text-slate-800 hover:text-orange-600 font-bold text-base transition-colors duration-200 shadow-xs"
+                                    className="btn-tactile-secondary px-7 py-3.5 rounded-xl text-sm shadow-[3px_3px_0px_0px_#0A1120] hover:shadow-[1px_1px_0px_0px_#0A1120] hover:translate-x-[2px] hover:translate-y-[2px]"
                                 >
-                                    <Heart size={16} className="text-orange-500" />
+                                    <Heart size={16} className="text-orange-600 fill-orange-600" />
                                     <span>Nous rejoindre</span>
                                 </Link>
                             </div>
@@ -172,7 +178,7 @@ export function HeroScroll() {
                                 initial={{ opacity: 0, rotate: -6, scale: 0.9 }}
                                 animate={{ opacity: 1, rotate: -3, scale: 1 }}
                                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                                className="absolute top-8 right-8 xl:right-4 w-[52%] aspect-[4/5] rounded-xl overflow-hidden shadow-md border-2 border-white z-10"
+                                className="absolute top-8 right-8 xl:right-4 w-[52%] aspect-[4/5] rounded-2xl overflow-hidden shadow-[6px_6px_0px_0px_#0A1120] border-2 border-[#0A1120] z-10"
                                 style={{ transformOrigin: 'top right' }}
                             >
                                 <img
@@ -181,7 +187,7 @@ export function HeroScroll() {
                                     className="w-full h-full object-cover"
                                     draggable={false}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
                             </motion.div>
 
                             {/* ── Photo 2 : centrale principale, +2deg ── */}
@@ -189,7 +195,7 @@ export function HeroScroll() {
                                 initial={{ opacity: 0, rotate: 5, scale: 0.88 }}
                                 animate={{ opacity: 1, rotate: 2, scale: 1 }}
                                 transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                                className="absolute bottom-4 left-0 xl:-left-4 w-[62%] aspect-[3/4] rounded-xl overflow-hidden shadow-md border-2 border-white z-20"
+                                className="absolute bottom-4 left-0 xl:-left-4 w-[62%] aspect-[3/4] rounded-2xl overflow-hidden shadow-[7px_7px_0px_0px_#0A1120] border-2 border-[#0A1120] z-20"
                                 style={{ transformOrigin: 'bottom left' }}
                             >
                                 <img
@@ -198,7 +204,7 @@ export function HeroScroll() {
                                     className="w-full h-full object-cover object-top"
                                     draggable={false}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
                             </motion.div>
 
                             {/* ── Photo 3 : accent haut gauche, -2deg ── */}
@@ -206,7 +212,7 @@ export function HeroScroll() {
                                 initial={{ opacity: 0, rotate: 3, scale: 0.85 }}
                                 animate={{ opacity: 1, rotate: -1.5, scale: 1 }}
                                 transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-                                className="absolute top-2 left-6 xl:left-0 w-[38%] aspect-square rounded-xl overflow-hidden shadow-md border-2 border-white z-30"
+                                className="absolute top-2 left-6 xl:left-0 w-[38%] aspect-square rounded-2xl overflow-hidden shadow-[5px_5px_0px_0px_#0A1120] border-2 border-[#0A1120] z-30"
                                 style={{ transformOrigin: 'top left' }}
                             >
                                 <img
@@ -215,7 +221,7 @@ export function HeroScroll() {
                                     className="w-full h-full object-cover"
                                     draggable={false}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
                             </motion.div>
 
                             {/* ── Badge net 1 : Projets actifs ── */}
@@ -226,7 +232,7 @@ export function HeroScroll() {
                                 className="absolute top-[14%] right-[2%] z-40"
                             >
                                 <FloatingBadge
-                                    icon={<Zap size={14} className="text-orange-500 shrink-0" />}
+                                    icon={<Zap size={14} className="text-orange-600 shrink-0" />}
                                     label="9 Projets actifs à Marseille"
                                 />
                             </motion.div>
@@ -256,13 +262,13 @@ export function HeroScroll() {
             ══════════════════════════════════════════════════════ */}
             <section 
                 style={{ paddingTop: 'calc(max(7rem, env(safe-area-inset-top, 0px) + 5.5rem))' }}
-                className="md:hidden relative w-full pb-10 px-5 bg-[#FAFAFA] overflow-hidden flex flex-col items-center text-center"
+                className="md:hidden relative w-full pb-10 px-5 bg-[#FBF9F5] overflow-hidden flex flex-col items-center text-center"
             >
 
                 {/* Badge sticker mobile */}
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-xs mb-3 -rotate-1">
-                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-800">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] mb-4 -rotate-1">
+                    <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
+                    <span className="text-[11px] font-display font-black uppercase tracking-wider text-[#0A1120]">
                         Association étudiante · 100% bénévole
                     </span>
                 </div>
@@ -272,18 +278,22 @@ export function HeroScroll() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55 }}
-                    className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-slate-900 uppercase mb-5"
+                    className="text-4xl font-display font-black leading-[0.98] tracking-tight text-[#0A1120] uppercase mb-4"
                 >
                     Faire briller <br />
                     <span
                         className="text-transparent bg-clip-text"
-                        style={{ backgroundImage: 'linear-gradient(90deg, #F97316 0%, #FBBF24 80%)' }}
+                        style={{ backgroundImage: 'linear-gradient(90deg, #EA580C 0%, #F59E0B 80%)' }}
                     >
                         les talents
                     </span>{' '}
                     <br />
                     de Marseille
                 </motion.h1>
+
+                <p className="text-slate-600 font-medium text-sm leading-relaxed mb-6 max-w-xs">
+                    Tutorat, culture et avenir pour 300 jeunes marseillais chaque semaine.
+                </p>
 
                 {/* CTAs côte à côte structurés */}
                 <motion.div
@@ -294,16 +304,16 @@ export function HeroScroll() {
                 >
                     <Link
                         to="/projets"
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-sm shadow-xs active:scale-95 transition-all"
+                        className="flex-1 btn-tactile-primary py-3 px-4 rounded-xl text-xs shadow-[3px_3px_0px_0px_#0A1120]"
                     >
                         <span>Nos projets</span>
                         <ArrowRight size={15} />
                     </Link>
                     <Link
                         to="/contact"
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 px-4 bg-white border border-slate-300 hover:border-orange-500 text-slate-800 font-bold rounded-xl text-sm active:scale-95 transition-all shadow-xs"
+                        className="flex-1 btn-tactile-secondary py-3 px-4 rounded-xl text-xs shadow-[2px_2px_0px_0px_#0A1120]"
                     >
-                        <Heart size={13} className="text-orange-500" />
+                        <Heart size={13} className="text-orange-600 fill-orange-600" />
                         <span>Rejoindre</span>
                     </Link>
                 </motion.div>
@@ -316,18 +326,18 @@ export function HeroScroll() {
                     className="relative w-full max-w-sm mx-auto mb-6"
                 >
                     {/* Photo principale */}
-                    <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-md border-2 border-white">
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[5px_5px_0px_0px_#0A1120] border-2 border-[#0A1120]">
                         <img
                             src="/images/projects/hero-1.png"
                             alt="Phoenix EDC Marseille"
                             className="w-full h-full object-cover object-top"
                             draggable={false}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
                     </div>
 
                     {/* Photo secondaire en coin bas-gauche */}
-                    <div className="absolute -bottom-3 -left-2 w-24 h-24 rounded-lg overflow-hidden shadow-sm border-2 border-white z-10 rotate-2">
+                    <div className="absolute -bottom-3 -left-2 w-24 h-24 rounded-xl overflow-hidden shadow-[3px_3px_0px_0px_#0A1120] border-2 border-[#0A1120] z-10 rotate-2">
                         <img
                             src="/images/projects/hero-3.png"
                             alt="Activité Phoenix EDC"
@@ -337,14 +347,14 @@ export function HeroScroll() {
                     </div>
 
                     {/* Badge net 1 — haut droite */}
-                    <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200/90 shadow-xs text-[11px] font-bold text-slate-800">
-                        <Zap size={12} className="text-orange-500" />
-                        <span>9 Projets actifs</span>
+                    <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] text-[11px] font-display font-bold text-[#0A1120]">
+                        <Zap size={12} className="text-orange-600" />
+                        <span>9 Projets</span>
                     </div>
 
                     {/* Badge net 2 — bas droite */}
-                    <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200/90 shadow-xs text-[11px] font-bold text-slate-800">
-                        <Users size={12} className="text-blue-500" />
+                    <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] text-[11px] font-display font-bold text-[#0A1120]">
+                        <Users size={12} className="text-blue-600" />
                         <span>300+ jeunes</span>
                     </div>
                 </motion.div>

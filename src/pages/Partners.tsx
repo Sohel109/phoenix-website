@@ -45,25 +45,25 @@ export function Partners() {
     const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-transparent">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FBF9F5]">
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-200/60 px-4 py-1.5 rounded-full inline-block mb-3">
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#EA580C] bg-[#FFF7ED] border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] px-4 py-1.5 rounded-full inline-block mb-4">
                         Réseau & Écosystème
                     </span>
-                    <h1 className="text-3xl sm:text-5xl font-black text-slate-900 uppercase tracking-tight mb-4">
+                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-black text-[#0A1120] uppercase tracking-tight mb-4">
                         Nos Partenaires Engagés
                     </h1>
-                    <p className="text-slate-500 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-normal">
+                    <p className="text-slate-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
                         L'action de Phoenix EDC repose sur la confiance de grandes entreprises, d'institutions éducatives et d'associations locales mobilisées pour l'égalité des chances à Marseille.
                     </p>
                 </div>
 
                 {/* Section 1: Grands Partenaires (Logo Grid) */}
                 <div className="mb-20">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-2.5">
-                        <Building2 className="text-orange-500" size={24} />
+                    <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-8 flex items-center gap-3">
+                        <Building2 className="text-[#EA580C]" size={26} />
                         <span>Grands Partenaires & Entreprises</span>
                     </h2>
 
@@ -75,9 +75,9 @@ export function Partners() {
                                 whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={isMobile ? undefined : { delay: index * 0.06 }}
-                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border-2 border-slate-200 hover:border-orange-400 rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 group"
+                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border-2 border-[#0A1120] rounded-2xl p-6 flex flex-col justify-between shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[6px_6px_0px_0px_#EA580C] hover:-translate-y-1 transition-all duration-200 group"
                             >
-                                <div className="h-20 w-full flex items-center justify-center p-2 mb-4 bg-slate-50 rounded-xl border border-slate-100 group-hover:bg-white transition-colors">
+                                <div className="h-20 w-full flex items-center justify-center p-3 mb-4 bg-[#F4EFEA] rounded-xl border-2 border-[#0A1120]/15 group-hover:bg-white transition-colors">
                                     <img
                                         src={partner.logo}
                                         alt={partner.name}
@@ -85,10 +85,10 @@ export function Partners() {
                                     />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-900 text-base mb-1 group-hover:text-orange-600 transition-colors">
+                                    <h3 className="font-display font-black text-[#0A1120] text-base mb-1 group-hover:text-[#EA580C] transition-colors">
                                         {partner.name}
                                     </h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
                                         {partner.desc}
                                     </p>
                                 </div>
@@ -99,25 +99,25 @@ export function Partners() {
 
                 {/* Section 2: Établissements Scolaires (Collèges & Lycées) */}
                 <div className="mb-20">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-2.5">
-                        <School className="text-orange-500" size={24} />
+                    <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-8 flex items-center gap-3">
+                        <School className="text-[#EA580C]" size={26} />
                         <span>Établissements Scolaires & Structures Partenaires</span>
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Collèges */}
-                        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
-                                <School size={18} className="text-orange-500" />
-                                <h3 className="font-bold text-slate-900 text-base">Collèges</h3>
+                        <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-6 shadow-[4px_4px_0px_0px_#0A1120]">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b-2 border-[#0A1120]/10">
+                                <School size={20} className="text-[#EA580C]" />
+                                <h3 className="font-display font-black text-[#0A1120] text-base">Collèges</h3>
                             </div>
                             <div className="space-y-3">
                                 {schoolPartners.colleges.map((college) => (
-                                    <div key={college.name} className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-100 transition-colors">
-                                        <p className="font-bold text-sm text-slate-900">{college.name}</p>
-                                        <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                                    <div key={college.name} className="p-3 rounded-xl bg-[#F4EFEA] hover:bg-[#FFF7ED] border border-[#0A1120]/20 transition-colors">
+                                        <p className="font-bold text-sm text-[#0A1120]">{college.name}</p>
+                                        <div className="flex items-center justify-between text-xs text-slate-600 mt-1">
                                             <span>{college.city}</span>
-                                            <span className="font-semibold text-orange-600 bg-orange-100/70 px-2 py-0.5 rounded-md text-[10px]">
+                                            <span className="font-bold text-[#EA580C] bg-[#FFF7ED] border border-[#EA580C]/40 px-2 py-0.5 rounded-md text-[10px]">
                                                 {college.project}
                                             </span>
                                         </div>
@@ -127,18 +127,18 @@ export function Partners() {
                         </div>
 
                         {/* Lycées */}
-                        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
-                                <GraduationCap size={18} className="text-orange-500" />
-                                <h3 className="font-bold text-slate-900 text-base">Lycées</h3>
+                        <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-6 shadow-[4px_4px_0px_0px_#0A1120]">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b-2 border-[#0A1120]/10">
+                                <GraduationCap size={20} className="text-[#EA580C]" />
+                                <h3 className="font-display font-black text-[#0A1120] text-base">Lycées</h3>
                             </div>
                             <div className="space-y-3">
                                 {schoolPartners.lycees.map((lycee) => (
-                                    <div key={lycee.name} className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-100 transition-colors">
-                                        <p className="font-bold text-sm text-slate-900">{lycee.name}</p>
-                                        <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                                    <div key={lycee.name} className="p-3 rounded-xl bg-[#F4EFEA] hover:bg-[#FFF7ED] border border-[#0A1120]/20 transition-colors">
+                                        <p className="font-bold text-sm text-[#0A1120]">{lycee.name}</p>
+                                        <div className="flex items-center justify-between text-xs text-slate-600 mt-1">
                                             <span>{lycee.city}</span>
-                                            <span className="font-semibold text-orange-600 bg-orange-100/70 px-2 py-0.5 rounded-md text-[10px]">
+                                            <span className="font-bold text-[#EA580C] bg-[#FFF7ED] border border-[#EA580C]/40 px-2 py-0.5 rounded-md text-[10px]">
                                                 {lycee.project}
                                             </span>
                                         </div>
@@ -148,16 +148,16 @@ export function Partners() {
                         </div>
 
                         {/* Centres sociaux & structures */}
-                        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
-                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
-                                <Building2 size={18} className="text-orange-500" />
-                                <h3 className="font-bold text-slate-900 text-base">Centres & Fondations</h3>
+                        <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-6 shadow-[4px_4px_0px_0px_#0A1120]">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b-2 border-[#0A1120]/10">
+                                <Building2 size={20} className="text-[#EA580C]" />
+                                <h3 className="font-display font-black text-[#0A1120] text-base">Centres & Fondations</h3>
                             </div>
                             <div className="space-y-3">
                                 {schoolPartners.centres.map((centre) => (
-                                    <div key={centre.name} className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-100 transition-colors">
-                                        <p className="font-bold text-sm text-slate-900">{centre.name}</p>
-                                        <p className="text-xs text-slate-500 mt-0.5">{centre.type}</p>
+                                    <div key={centre.name} className="p-3 rounded-xl bg-[#F4EFEA] hover:bg-[#FFF7ED] border border-[#0A1120]/20 transition-colors">
+                                        <p className="font-bold text-sm text-[#0A1120]">{centre.name}</p>
+                                        <p className="text-xs text-slate-600 font-medium mt-0.5">{centre.type}</p>
                                     </div>
                                 ))}
                             </div>
@@ -167,8 +167,8 @@ export function Partners() {
 
                 {/* Section 3: Culture & Associatifs */}
                 <div className="mb-20">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-6 flex items-center gap-2.5">
-                        <Sparkles className="text-orange-500" size={24} />
+                    <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-6 flex items-center gap-3">
+                        <Sparkles className="text-[#EA580C]" size={26} />
                         <span>Partenaires Culturels & Associatifs</span>
                     </h2>
 
@@ -176,13 +176,13 @@ export function Partners() {
                         {otherPartners.map((item) => (
                             <div
                                 key={item.name}
-                                className="bg-white border-2 border-slate-200 hover:border-orange-400 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-all duration-300"
+                                className="bg-white border-2 border-[#0A1120] rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-[3px_3px_0px_0px_#0A1120] hover:shadow-[5px_5px_0px_0px_#EA580C] hover:-translate-y-0.5 transition-all"
                             >
-                                <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center mb-2.5">
+                                <div className="w-11 h-11 rounded-xl bg-[#FFF7ED] border-2 border-[#0A1120] text-[#EA580C] flex items-center justify-center mb-2.5 shadow-[2px_2px_0px_0px_#0A1120]">
                                     <item.icon size={20} />
                                 </div>
-                                <p className="font-bold text-sm text-slate-900 leading-snug">{item.name}</p>
-                                <span className="text-[10px] font-semibold text-slate-500 mt-1 uppercase tracking-wider">
+                                <p className="font-display font-black text-sm text-[#0A1120] leading-snug">{item.name}</p>
+                                <span className="text-[10px] font-bold text-slate-600 mt-1 uppercase tracking-wider">
                                     {item.category}
                                 </span>
                             </div>
@@ -191,23 +191,23 @@ export function Partners() {
                 </div>
 
                 {/* CTA Devenir Partenaire */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-700">
+                <div className="bg-[#0A1120] text-white rounded-3xl p-8 sm:p-12 shadow-[6px_6px_0px_0px_#EA580C] flex flex-col md:flex-row items-center justify-between gap-8 border-2 border-[#0A1120]">
                     <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold mb-4">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-[#F97316] border border-white/20 text-xs font-bold mb-4">
                             <Handshake size={14} />
                             <span>Rejoindre notre réseau</span>
                         </div>
-                        <h3 className="text-2xl sm:text-3xl font-black tracking-tight mb-3">
+                        <h3 className="text-2xl sm:text-4xl font-display font-black tracking-tight mb-3 text-white">
                             Vous souhaitez devenir partenaire ?
                         </h3>
-                        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
+                        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-medium">
                             Participez au développement de l'égalité des chances à Marseille en soutenant nos projets de tutorat, nos sorties culturelles et nos événements annuels.
                         </p>
                     </div>
 
                     <Link
                         to="/contact?category=partenariat"
-                        className="shrink-0 inline-flex items-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-bold text-sm sm:text-base shadow-lg shadow-orange-500/30 hover:scale-105 active:scale-95 transition-all"
+                        className="btn-tactile-primary !py-3.5 !px-8 shrink-0"
                     >
                         <span>Nous contacter</span>
                         <ArrowRight size={18} />
