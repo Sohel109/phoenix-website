@@ -235,11 +235,11 @@ export function Projects() {
                                     </div>
 
                                     {/* Footer de la carte */}
-                                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-                                        <span className="text-xs font-bold text-slate-500">
-                                            {project.chefs[0]}
+                                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
+                                        <span className="text-xs font-bold text-slate-500 truncate" title={project.chefs.join(' & ')}>
+                                            {project.chefs.join(' & ')}
                                         </span>
-                                        <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 group-hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-xs group-hover:shadow-md group-hover:shadow-orange-500/20 active:scale-95 transition-all">
+                                        <span className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-orange-500 group-hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-xs group-hover:shadow-md group-hover:shadow-orange-500/20 active:scale-95 transition-all">
                                             <span>Fiche Projet</span>
                                             <ArrowRight size={13} className="transform group-hover:translate-x-0.5 transition-transform" />
                                         </span>

@@ -149,7 +149,7 @@ export function ProjectMap() {
                                             <div className="text-xs text-slate-600">
                                                 <span className="font-bold text-slate-800">Chefs de projet :</span>
                                                 <br />
-                                                {project.chefs.join(', ')}
+                                                {project.chefs.join(' & ')}
                                             </div>
                                         </div>
 

@@ -19,7 +19,7 @@ export const projectsData: Project[] = [
         type: 'culture',
         address: "Domaine de Luminy, Rue Antoine Bourdelle, 13009 Marseille",
         coordinates: [43.2307, 5.4380],
-        chefs: ["Ryadh ABDELMALEK", "Elyas BOURHIS"],
+        chefs: ["Elyas BOURHIS", "Ryadh ABDELMALEK"],
         description: "PROJET CULTURE & ORIENTATION. Tutorat culturel et aide à l'orientation pour lycéens. Samedi après-midi à Kedge."
     },
     {
@@ -41,7 +41,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "19 Trav. Santi, 13015 Marseille",
         coordinates: [43.3447, 5.3535],
-        chefs: ["Haitam BEBBI"],
+        chefs: ["Haïtam BEBBI"],
         description: "PROJET HYBRIDE. Mélange d'ouverture culturelle et d'aide aux devoirs les jeudis."
     },
     {
