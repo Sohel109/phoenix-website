@@ -47,23 +47,25 @@ export function Header() {
             }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
                 isScrolled || isMobileMenuOpen
-                    ? 'bg-[#FBF9F5]/95 backdrop-blur-md shadow-xs border-b border-slate-900/10 pb-3'
-                    : 'bg-[#FBF9F5]/85 backdrop-blur-sm border-b border-slate-900/5 pb-4'
+                    ? 'bg-[#FFFBF4]/95 backdrop-blur-md shadow-sm border-b border-[#6F2B75]/10 pb-3'
+                    : 'bg-[#FFFBF4]/90 backdrop-blur-sm border-b border-[#6F2B75]/5 pb-4'
             }`}
         >
             <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between">
-                {/* Brand / Logo */}
+                {/* Brand / Logo Circulaire Officiel */}
                 <Link to="/" className="flex items-center gap-3 group shrink-0">
-                    <img
-                        src="/app-icon.png"
-                        alt="Phoenix EDC Logo"
-                        className="w-9 h-9 sm:w-10 sm:h-10 object-contain rounded-xl border border-slate-900/15 shadow-xs group-hover:scale-105 group-hover:rotate-2 transition-transform"
-                    />
+                    <div className="relative">
+                        <img
+                            src="/logo-badge.jpg"
+                            alt="Phœnix Égalité des Chances Logo"
+                            className="w-10 h-10 sm:w-11 sm:h-11 object-contain rounded-full shadow-md border-2 border-white group-hover:scale-105 group-hover:rotate-3 transition-transform"
+                        />
+                    </div>
                     <div className="flex flex-col">
-                        <span translate="no" className="notranslate font-display font-black text-lg sm:text-xl tracking-tight text-[#0A1120] leading-tight">
-                            PHOENIX <span className="text-orange-600">EDC</span>
+                        <span translate="no" className="notranslate font-display text-xl sm:text-2xl text-[#2A082D] leading-none">
+                            PHŒNIX <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent">EDC</span>
                         </span>
-                        <span className="hidden sm:block text-[10px] uppercase font-display font-bold tracking-wider text-slate-500">
+                        <span className="hidden sm:block text-[10px] uppercase font-school font-bold tracking-wider text-[#904990] mt-0.5">
                             Égalité des Chances · KEDGE BS
                         </span>
                     </div>
@@ -80,17 +82,17 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all relative ${
+                                className={`px-4 py-2 rounded-full text-xs xl:text-sm font-semibold transition-all relative ${
                                     isActive
-                                        ? 'text-orange-600 bg-orange-500/10 font-bold'
-                                        : 'text-slate-700 hover:text-[#0A1120] hover:bg-[#F4EFEA]'
+                                        ? 'text-[#6F2B75] bg-[#ECDDFD] font-bold shadow-xs'
+                                        : 'text-[#2A082D] hover:text-[#EC602B] hover:bg-[#ECDDFD]/40'
                                 }`}
                             >
                                 {link.label}
                                 {isActive && (
                                     <motion.span
                                         layoutId="activeNavIndicator"
-                                        className="absolute bottom-0.5 left-3 right-3 h-0.5 bg-orange-600 rounded-full"
+                                        className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-[#6F2B75] to-[#EC602B] rounded-full"
                                         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                                     />
                                 )}
@@ -105,10 +107,10 @@ export function Header() {
                     {currentUser ? (
                         <Link
                             to="/planning"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0A1120] text-xs font-bold border border-slate-900/15 hover:border-slate-900/40 transition-all shadow-xs group"
+                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#2A082D] text-xs font-bold border border-[#6F2B75]/20 hover:border-[#6F2B75]/50 transition-all shadow-xs group"
                             title={`Connecté : ${currentUser.name} (Espace Membre)`}
                         >
-                            <span className="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                            <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-[10px] font-black shrink-0">
                                 {currentUser.name.charAt(0).toUpperCase()}
                             </span>
                             <span className="max-w-[110px] truncate">{currentUser.name.split(' ')[0]}</span>
@@ -117,20 +119,20 @@ export function Header() {
                     ) : (
                         <Link
                             to="/planning/login"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-slate-700 hover:text-[#0A1120] hover:bg-[#F4EFEA] text-xs font-bold border border-slate-900/15 hover:border-slate-900/40 transition-all shadow-xs"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] hover:text-[#2A082D] hover:bg-[#ECDDFD]/50 text-xs font-bold border border-[#6F2B75]/20 transition-all shadow-xs"
                             title="Accéder à l'Espace Membre"
                         >
-                            <User size={13} className="text-slate-500" />
+                            <User size={13} className="text-[#904990]" />
                             <span>Espace Membre</span>
                         </Link>
                     )}
 
-                    {/* Faire un don (Tactile Orange CTA) */}
+                    {/* Faire un don (Gradient Pilule CTA) */}
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-tactile-primary px-4 py-1.5 rounded-full text-xs shadow-[2px_2px_0px_0px_#0A1120] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                        className="btn-phoenix-gradient px-4 py-2 rounded-full text-xs"
                     >
                         <Heart size={13} fill="currentColor" />
                         <span>Faire un don</span>
@@ -143,7 +145,7 @@ export function Header() {
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="sm:hidden btn-tactile-primary px-3 py-1.5 rounded-lg text-xs shadow-[2px_2px_0px_0px_#0A1120]"
+                        className="sm:hidden btn-phoenix-gradient px-3 py-1.5 rounded-full text-xs"
                     >
                         <Heart size={12} fill="currentColor" />
                         <span>Don</span>
@@ -151,7 +153,7 @@ export function Header() {
 
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="p-2 rounded-xl bg-white border border-slate-900/15 hover:bg-[#F4EFEA] text-[#0A1120] transition-colors cursor-pointer shadow-xs"
+                        className="p-2 rounded-full bg-white border border-[#6F2B75]/20 hover:bg-[#ECDDFD] text-[#2A082D] transition-colors cursor-pointer shadow-xs"
                         aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
                         aria-expanded={isMobileMenuOpen}
                         aria-controls="mobile-menu"
@@ -170,7 +172,7 @@ export function Header() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        className="lg:hidden border-t border-slate-900/10 bg-[#FBF9F5]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
+                        className="lg:hidden border-t border-[#6F2B75]/10 bg-[#FFFBF4]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
                     >
                         <div className="flex flex-col gap-1 mb-4">
                             {navLinks.map((link) => {
@@ -182,26 +184,26 @@ export function Header() {
                                     <Link
                                         key={link.path}
                                         to={link.path}
-                                        className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-between ${
+                                        className={`px-4 py-2.5 rounded-full text-sm font-semibold transition-colors flex items-center justify-between ${
                                             isActive
-                                                ? 'text-orange-600 bg-orange-500/10 font-bold'
-                                                : 'text-slate-700 hover:text-[#0A1120] hover:bg-[#F4EFEA]'
+                                                ? 'text-[#6F2B75] bg-[#ECDDFD] font-bold'
+                                                : 'text-[#2A082D] hover:text-[#EC602B] hover:bg-[#ECDDFD]/50'
                                         }`}
                                     >
                                         <span>{link.label}</span>
-                                        {isActive && <span className="w-1.5 h-1.5 rounded-full bg-orange-600" />}
+                                        {isActive && <span className="w-2 h-2 rounded-full bg-[#EC602B]" />}
                                     </Link>
                                 );
                             })}
                         </div>
 
-                        <div className="pt-3 border-t border-slate-900/10 flex flex-col gap-2.5">
+                        <div className="pt-3 border-t border-[#6F2B75]/10 flex flex-col gap-2.5">
                             {currentUser ? (
                                 <Link
                                     to="/planning"
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-900/15 bg-white text-[#0A1120] text-xs font-bold hover:bg-[#F4EFEA] transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full border border-[#6F2B75]/20 bg-white text-[#2A082D] text-xs font-bold hover:bg-[#ECDDFD]/50 transition-colors"
                                 >
-                                    <span className="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                                    <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-[10px] font-black shrink-0">
                                         {currentUser.name.charAt(0).toUpperCase()}
                                     </span>
                                     <span>Espace Membre ({currentUser.name.split(' ')[0]})</span>
@@ -210,9 +212,9 @@ export function Header() {
                             ) : (
                                 <Link
                                     to="/planning/login"
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-900/15 text-slate-700 bg-white hover:bg-[#F4EFEA] text-xs font-bold transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full border border-[#6F2B75]/20 text-[#6F2B75] bg-white hover:bg-[#ECDDFD]/50 text-xs font-bold transition-colors"
                                 >
-                                    <User size={14} className="text-slate-500" />
+                                    <User size={14} className="text-[#904990]" />
                                     <span>Accéder à l'Espace Membre</span>
                                 </Link>
                             )}
@@ -221,7 +223,7 @@ export function Header() {
                                 href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full btn-tactile-primary py-2.5 rounded-xl text-sm shadow-[2px_2px_0px_0px_#0A1120]"
+                                className="w-full btn-phoenix-gradient py-3 rounded-full text-sm"
                             >
                                 <Heart size={15} fill="currentColor" />
                                 <span>Faire un don pour nos actions</span>

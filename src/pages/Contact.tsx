@@ -14,8 +14,8 @@ export function Contact() {
     const selectedCategory = overrideCategory !== undefined ? overrideCategory : queryCategory;
 
     return (
-        <div className="min-h-screen bg-transparent pt-40 pb-20 transition-colors duration-300">
-            <div className="container mx-auto px-6">
+        <div className="min-h-screen bg-transparent pt-page-safe pb-24 transition-colors duration-300">
+            <div className="container mx-auto px-6 max-w-5xl">
 
                 {/* Header */}
                 <motion.div
@@ -24,17 +24,17 @@ export function Contact() {
                     transition={{ duration: 0.6, ease: "easeOut" }}
                     className="text-center mb-12"
                 >
-                    <div className="flex items-center justify-center gap-2.5 mb-3">
-                        <span className="w-5 h-0.5 bg-orange-500 rounded-full" />
-                        <span className="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-orange-600">
-                            Écrivez-nous
-                        </span>
-                        <span className="w-5 h-0.5 bg-orange-500 rounded-full" />
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-phoenix-lilac/40 border border-phoenix-lilac/70 text-phoenix-purple text-xs font-school uppercase tracking-widest mb-4">
+                        <span className="w-2 h-2 rounded-full bg-phoenix-orange animate-pulse" />
+                        <span>Écrivez-nous</span>
                     </div>
-                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight mb-4 text-slate-900">
+                    <h1 className="text-4xl sm:text-6xl font-display text-phoenix-dark mb-3">
                         {selectedCategory ? 'Votre Demande' : 'Contactez-nous'}
                     </h1>
-                    <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                    <p className="font-script text-2xl text-phoenix-purple mb-4">
+                        ~ À votre écoute pour faire grandir l'égalité des chances ~
+                    </p>
+                    <p className="text-slate-600 font-sans text-base max-w-xl mx-auto leading-relaxed">
                         {selectedCategory 
                             ? 'Dites-nous en plus sur votre projet ou votre question.'
                             : 'Une question sur nos programmes, envie de devenir partenaire ou bénévole ? Choisissez votre motif ci-dessous.'}

@@ -204,12 +204,12 @@ export function Association() {
     ];
 
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-[#FBF9F5]">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
             {/* Toast de confirmation de sauvegarde */}
             {showSuccessToast && (
-                <div className="fixed bottom-6 right-6 z-50 bg-[#0A1120] text-white px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_#EA580C] flex items-center gap-3 border-2 border-[#0A1120] animate-in fade-in slide-in-from-bottom-4">
+                <div className="fixed bottom-6 right-6 z-50 bg-[#2A082D] text-white px-5 py-3 rounded-full shadow-soft-lg flex items-center gap-3 border border-[#ECDDFD]/40 animate-in fade-in slide-in-from-bottom-4">
                     <Check size={18} className="text-emerald-400" />
-                    <span className="text-sm font-bold">{toastMessage}</span>
+                    <span className="text-sm font-school font-bold">{toastMessage}</span>
                 </div>
             )}
 
@@ -220,51 +220,55 @@ export function Association() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                         {/* Colonne Texte */}
                         <div className="lg:col-span-7">
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF7ED] text-[#EA580C] text-xs font-black uppercase tracking-wider mb-5 border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120]">
-                                <Award size={14} className="text-[#EA580C]" />
-                                <span>KEDGE Business School · Association Reconnue d'Intérêt Général</span>
+                            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#ECDDFD] text-[#6F2B75] shadow-soft text-xs font-school font-bold uppercase tracking-wider mb-5">
+                                <Award size={14} className="text-[#EC602B]" />
+                                <span>KEDGE Business School · Association d'Intérêt Général</span>
                             </div>
 
-                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-black text-[#0A1120] tracking-tight leading-[1.08] mb-6">
+                            <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                                ~ Depuis 2011 à Marseille ~
+                            </p>
+
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.08] mb-6">
                                 Plus qu'une association, une grande famille marseillaise engagée.
                             </h1>
 
-                            <p className="text-slate-700 text-base sm:text-lg leading-relaxed mb-8 font-medium">
-                                Depuis 2011, Phoenix mobilise <strong className="text-[#0A1120] font-bold">+100 étudiants bénévoles</strong> pour accompagner chaque semaine <strong className="text-[#0A1120] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre mission : créer le déclic, ouvrir les horizons et abattre l'autocensure.
+                            <p className="text-[#2A082D]/80 text-base sm:text-lg leading-relaxed mb-8 font-medium">
+                                Depuis 2011, Phoenix mobilise <strong className="text-[#2A082D] font-bold">+100 étudiants bénévoles</strong> pour accompagner chaque semaine <strong className="text-[#2A082D] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre mission : créer le déclic, ouvrir les horizons et abattre l'autocensure.
                             </p>
 
                             {/* 3 micro-indicateurs tactiles */}
-                            <div className="grid grid-cols-3 gap-3 pt-4 border-t-2 border-[#0A1120]/10">
-                                <div className="p-3.5 bg-white rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
-                                    <span className="block text-2xl sm:text-3xl font-display font-black text-[#EA580C]">+100</span>
-                                    <span className="text-[11px] sm:text-xs text-slate-700 font-bold uppercase tracking-wider">Tuteurs</span>
+                            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#ECDDFD]/60">
+                                <div className="p-4 bg-white rounded-2xl border border-[#ECDDFD] shadow-soft">
+                                    <span className="block text-2xl sm:text-3xl font-display text-[#EC602B]">+100</span>
+                                    <span className="text-[11px] sm:text-xs text-[#2A082D]/80 font-school font-bold uppercase tracking-wider">Tuteurs</span>
                                 </div>
-                                <div className="p-3.5 bg-[#FFF7ED] rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
-                                    <span className="block text-2xl sm:text-3xl font-display font-black text-[#0A1120]">300</span>
-                                    <span className="text-[11px] sm:text-xs text-slate-700 font-bold uppercase tracking-wider">Jeunes / an</span>
+                                <div className="p-4 bg-[#ECDDFD]/60 rounded-2xl border border-[#ECDDFD] shadow-soft">
+                                    <span className="block text-2xl sm:text-3xl font-display text-[#6F2B75]">300</span>
+                                    <span className="text-[11px] sm:text-xs text-[#2A082D]/80 font-school font-bold uppercase tracking-wider">Jeunes / an</span>
                                 </div>
-                                <div className="p-3.5 bg-white rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
-                                    <span className="block text-2xl sm:text-3xl font-display font-black text-[#EA580C]">9</span>
-                                    <span className="text-[11px] sm:text-xs text-slate-700 font-bold uppercase tracking-wider">Projets</span>
+                                <div className="p-4 bg-white rounded-2xl border border-[#ECDDFD] shadow-soft">
+                                    <span className="block text-2xl sm:text-3xl font-display text-[#EC602B]">9</span>
+                                    <span className="text-[11px] sm:text-xs text-[#2A082D]/80 font-school font-bold uppercase tracking-wider">Projets</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Colonne Photo Chaleureuse */}
                         <div className="lg:col-span-5">
-                            <div className="relative rounded-3xl overflow-hidden shadow-[6px_6px_0px_0px_#0A1120] border-2 border-[#0A1120] group bg-[#0A1120]">
+                            <div className="relative rounded-[2.5rem] overflow-hidden shadow-soft-lg border border-[#ECDDFD] group bg-[#2A082D]">
                                 <img
                                     src="/images/home/voyage-culturel-1.jpg"
                                     alt="Tuteurs et tutorés de l'association Phoenix en voyage culturel"
                                     className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/85 via-[#2A082D]/20 to-transparent pointer-events-none" />
                                 <div className="absolute bottom-4 left-4 right-4 text-white">
-                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/20 backdrop-blur-sm text-[11px] font-bold mb-1">
-                                        <MapPin size={11} className="text-orange-400" />
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-school font-bold mb-1 shadow-soft">
+                                        <MapPin size={12} className="text-[#FF7E2E]" />
                                         <span>Voyage culturel & cohésion</span>
                                     </div>
-                                    <p className="text-xs text-slate-200 font-medium line-clamp-1">
+                                    <p className="text-xs text-[#ECDDFD] font-medium line-clamp-1">
                                         Rencontres, découvertes et souvenirs inoubliables sur le terrain.
                                     </p>
                                 </div>
@@ -276,13 +280,13 @@ export function Association() {
                 {/* ──────────────── 2. VALEURS VIVANTES (GRILLE AÉRÉE) ──────────────── */}
                 <section className="mb-20 sm:mb-28">
                     <div className="text-center max-w-2xl mx-auto mb-12">
-                        <span className="text-xs font-black uppercase tracking-wider text-[#EA580C] bg-[#FFF7ED] px-3.5 py-1.5 rounded-full border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] inline-block mb-3">
+                        <span className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] bg-[#ECDDFD] px-4 py-1.5 rounded-full shadow-soft inline-block mb-3">
                             Notre ADN
                         </span>
-                        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black text-[#0A1120] tracking-tight mb-3">
+                        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display text-[#2A082D] tracking-tight mb-3">
                             Les 5 Valeurs qui Guident Notre Action
                         </h2>
-                        <p className="text-slate-600 text-sm sm:text-base font-medium">
+                        <p className="text-[#2A082D]/80 text-sm sm:text-base font-medium">
                             Présentes dans chaque séance de tutorat et formalisées dans la charte officielle <strong>« OHIEE »</strong>.
                         </p>
                     </div>
@@ -293,19 +297,19 @@ export function Association() {
                             return (
                                 <div
                                     key={idx}
-                                    className="rounded-2xl p-6 border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120] bg-white flex flex-col justify-between hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#EA580C] transition-all"
+                                    className="rounded-[2rem] p-6 border border-[#ECDDFD] shadow-soft bg-white flex flex-col justify-between hover:-translate-y-1 hover:shadow-soft-lg transition-all"
                                 >
                                     <div>
-                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-white border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] ${val.color}`}>
+                                        <div className={`w-13 h-13 rounded-full flex items-center justify-center mb-4 bg-white border border-[#ECDDFD] shadow-soft ${val.color}`}>
                                             <IconComponent size={24} />
                                         </div>
-                                        <h3 className="text-lg font-display font-black text-[#0A1120] mb-1">
+                                        <h3 className="text-lg font-display text-[#2A082D] mb-1">
                                             {val.title}
                                         </h3>
-                                        <p className="text-xs font-black text-[#EA580C] mb-3 uppercase tracking-wider">
+                                        <p className="text-xs font-school font-bold text-[#EC602B] mb-3 uppercase tracking-wider">
                                             {val.principle}
                                         </p>
-                                        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                                             {val.description}
                                         </p>
                                     </div>
@@ -316,31 +320,31 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 3. CHRONOLOGIE CONDENSÉE (5 DATES CLÉS) ──────────────── */}
-                <section className="mb-20 sm:mb-28 bg-[#F4EFEA] rounded-3xl p-8 sm:p-12 border-2 border-[#0A1120] shadow-[6px_6px_0px_0px_#0A1120]">
+                <section className="mb-20 sm:mb-28 bg-[#ECDDFD]/40 rounded-[2.5rem] p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
                         <div>
-                            <span className="text-xs font-black uppercase tracking-wider text-[#0A1120] bg-white px-3 py-1 rounded-full border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] inline-block mb-3">
+                            <span className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] bg-white px-4 py-1 rounded-full shadow-soft inline-block mb-3 border border-[#ECDDFD]">
                                 Histoire & Transmission
                             </span>
-                            <h2 className="text-2xl sm:text-4xl font-display font-black text-[#0A1120] tracking-tight">
+                            <h2 className="text-2xl sm:text-4xl font-display text-[#2A082D] tracking-tight">
                                 5 Dates Repères de Phœnix
                             </h2>
                         </div>
-                        <p className="text-slate-600 text-xs sm:text-sm font-semibold max-w-sm">
+                        <p className="text-[#2A082D]/80 text-xs sm:text-sm font-semibold max-w-sm">
                             Plus de 25 ans d'action continue auprès des élèves marseillais.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
                         {keyDates.map((item, idx) => (
-                            <div key={idx} className="flex flex-col relative bg-white p-5 rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
-                                <div className="text-2xl sm:text-3xl font-display font-black text-[#EA580C] mb-2">
+                            <div key={idx} className="flex flex-col relative bg-white p-6 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                                <div className="text-2xl sm:text-3xl font-display text-[#EC602B] mb-2">
                                     {item.year}
                                 </div>
-                                <h3 className="text-sm font-display font-black text-[#0A1120] mb-2 leading-snug">
+                                <h3 className="text-sm font-school font-bold text-[#2A082D] mb-2 leading-snug">
                                     {item.title}
                                 </h3>
-                                <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                                <p className="text-xs text-slate-600 leading-relaxed font-normal">
                                     {item.desc}
                                 </p>
                             </div>
@@ -353,17 +357,17 @@ export function Association() {
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-black uppercase tracking-wider text-[#EA580C]">
+                                <span className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B]">
                                     Gouvernance 2026-2027
                                 </span>
                                 {isBureau && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider border-2 border-emerald-400">
+                                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-school font-bold uppercase tracking-wider border border-emerald-300">
                                         <Check size={11} />
                                         Connecté : Bureau
                                     </span>
                                 )}
                             </div>
-                            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black text-[#0A1120] tracking-tight">
+                            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display text-[#2A082D] tracking-tight">
                                 L'Équipe du Bureau Exécutif
                             </h2>
                             <p className="text-slate-600 text-sm mt-1 font-medium">
@@ -387,7 +391,7 @@ export function Association() {
                                             linkedin: ""
                                         });
                                     }}
-                                    className="btn-tactile-primary !py-2 !px-4 !text-xs"
+                                    className="btn-phoenix-gradient !py-2.5 !px-5 !text-xs rounded-full text-white shadow-soft flex items-center gap-1.5"
                                 >
                                     <Plus size={14} />
                                     <span>Ajouter un membre</span>
@@ -396,7 +400,7 @@ export function Association() {
                                     type="button"
                                     onClick={handleResetDefault}
                                     title="Rétablir les membres par défaut du guide"
-                                    className="p-2 rounded-xl bg-white border-2 border-[#0A1120] text-slate-700 hover:text-black transition-colors shadow-[2px_2px_0px_0px_#0A1120]"
+                                    className="p-2.5 rounded-full bg-white border border-[#ECDDFD] text-slate-700 hover:text-black transition-colors shadow-soft"
                                 >
                                     <RotateCcw size={15} />
                                 </button>
@@ -404,12 +408,12 @@ export function Association() {
                         )}
                     </div>
 
-                    {/* Grille des Cartes Membres */}
+                    {/* Grille des Cartes Membres avec Avatars STRICTEMENT CIRCULAIRES */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-14">
                         {bureauMembers.map((member) => (
                             <div
                                 key={member.id}
-                                className="bg-white rounded-2xl border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[6px_6px_0px_0px_#EA580C] hover:-translate-y-1 transition-all p-5 flex flex-col justify-between text-center relative group"
+                                className="bg-white rounded-[2rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all p-6 flex flex-col justify-between text-center relative group"
                             >
                                 {/* Bouton Crayon (visible uniquement pour role === 'bureau') */}
                                 {isBureau && (
@@ -419,7 +423,7 @@ export function Association() {
                                             setIsAddingMember(false);
                                             setEditingMember(member);
                                         }}
-                                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-[#FFF7ED] hover:bg-orange-100 text-[#EA580C] border border-[#0A1120]/20 transition-colors"
+                                        className="absolute top-3 right-3 p-2 rounded-full bg-[#ECDDFD] hover:bg-[#D9BEF8] text-[#6F2B75] transition-colors"
                                         title="Modifier ce membre"
                                     >
                                         <Pencil size={13} />
@@ -427,47 +431,49 @@ export function Association() {
                                 )}
 
                                 <div>
-                                    {/* Avatar / Photo */}
-                                    <div className="w-20 h-20 rounded-2xl mx-auto mb-4 overflow-hidden bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-500 text-white font-black text-xl flex items-center justify-center border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120]">
-                                        {member.photo ? (
-                                            <img
-                                                src={member.photo}
-                                                alt={`${member.firstName} ${member.lastName}`}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <span>
-                                                {member.firstName.charAt(0)}
-                                                {member.lastName ? member.lastName.charAt(0) : ''}
-                                            </span>
-                                        )}
+                                    {/* Avatar STRICTEMENT CIRCULAIRE entouré du gradient officiel (CERCLE AVANT LE RECTANGLE) */}
+                                    <div className="w-24 h-24 rounded-full mx-auto mb-4 p-1 bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] shadow-soft">
+                                        <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center text-[#6F2B75] font-school font-bold text-xl">
+                                            {member.photo ? (
+                                                <img
+                                                    src={member.photo}
+                                                    alt={`${member.firstName} ${member.lastName}`}
+                                                    className="w-full h-full object-cover rounded-full"
+                                                />
+                                            ) : (
+                                                <span>
+                                                    {member.firstName.charAt(0)}
+                                                    {member.lastName ? member.lastName.charAt(0) : ''}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Nom & Prénom */}
-                                    <h3 className="text-base font-display font-black text-[#0A1120] leading-snug">
+                                    <h3 className="text-base font-display text-[#2A082D] leading-snug">
                                         {member.firstName} {member.lastName}
                                     </h3>
 
                                     {/* Rôle */}
-                                    <p className="text-xs font-bold text-[#EA580C] mt-1 uppercase tracking-wider">
+                                    <p className="text-xs font-school font-bold text-[#EC602B] mt-1 uppercase tracking-wider">
                                         {member.role}
                                     </p>
                                 </div>
 
                                 {/* Pied de carte avec LinkedIn */}
-                                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-center">
+                                <div className="mt-4 pt-3 border-t border-[#ECDDFD]/60 flex items-center justify-center">
                                     {member.linkedin ? (
                                         <a
                                             href={member.linkedin}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 transition-colors font-bold"
+                                            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-[#6F2B75] transition-colors font-school font-bold"
                                         >
-                                            <Linkedin size={14} className="text-blue-600" />
+                                            <Linkedin size={14} className="text-[#6F2B75]" />
                                             <span>LinkedIn</span>
                                         </a>
                                     ) : (
-                                        <span className="text-[11px] text-slate-500 font-semibold">
+                                        <span className="text-[11px] text-slate-400 font-medium">
                                             KEDGE Business School
                                         </span>
                                     )}
@@ -477,9 +483,9 @@ export function Association() {
                     </div>
 
                     {/* Pôles Opérationnels sous forme d'accordéons / fiches légères */}
-                    <div className="bg-[#F4EFEA] rounded-3xl p-6 sm:p-8 border-2 border-[#0A1120] shadow-[5px_5px_0px_0px_#0A1120]">
+                    <div className="bg-[#ECDDFD]/30 rounded-[2.5rem] p-6 sm:p-8 border border-[#ECDDFD] shadow-soft">
                         <div className="mb-6">
-                            <h3 className="text-xl font-display font-black text-[#0A1120]">
+                            <h3 className="text-xl font-display text-[#2A082D]">
                                 Pôles Opérationnels & Équipes
                             </h3>
                             <p className="text-xs text-slate-600 font-medium mt-0.5">
@@ -493,34 +499,34 @@ export function Association() {
                                 return (
                                     <div
                                         key={pole.id}
-                                        className="rounded-2xl border-2 border-[#0A1120] bg-white shadow-[3px_3px_0px_0px_#0A1120] overflow-hidden transition-all"
+                                        className="rounded-2xl border border-[#ECDDFD] bg-white shadow-soft overflow-hidden transition-all"
                                     >
                                         <button
                                             type="button"
                                             onClick={() => setActivePoleId(isOpen ? null : pole.id)}
-                                            className="w-full p-4 text-left flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors"
+                                            className="w-full p-4 text-left flex items-center justify-between gap-2 hover:bg-[#ECDDFD]/20 transition-colors"
                                         >
                                             <div>
-                                                <h4 className="text-sm font-display font-black text-[#0A1120]">
+                                                <h4 className="text-sm font-display text-[#2A082D]">
                                                     {pole.title}
                                                 </h4>
-                                                <span className="text-xs text-[#EA580C] font-bold">
+                                                <span className="text-xs text-[#EC602B] font-school font-bold">
                                                     {pole.lead}
                                                 </span>
                                             </div>
                                             <ChevronDown
                                                 size={16}
-                                                className={`text-[#0A1120] transition-transform ${isOpen ? 'rotate-180 text-orange-600' : ''}`}
+                                                className={`text-[#2A082D] transition-transform ${isOpen ? 'rotate-180 text-[#EC602B]' : ''}`}
                                             />
                                         </button>
 
                                         {isOpen && (
-                                            <div className="px-4 pb-4 pt-2 text-xs text-slate-700 border-t-2 border-[#0A1120]/10 bg-[#FFF7ED] space-y-2">
-                                                <p className="leading-relaxed font-medium">
+                                            <div className="px-4 pb-4 pt-2 text-xs text-[#2A082D] border-t border-[#ECDDFD] bg-[#FFFBF4] space-y-2">
+                                                <p className="leading-relaxed font-normal">
                                                     {pole.description}
                                                 </p>
-                                                <div className="pt-2 border-t border-[#0A1120]/10 font-semibold text-slate-600">
-                                                    <strong className="text-[#0A1120]">Membres :</strong> {pole.members.join(', ')}
+                                                <div className="pt-2 border-t border-[#ECDDFD] font-medium text-slate-600">
+                                                    <strong className="text-[#6F2B75]">Membres :</strong> {pole.members.join(', ')}
                                                 </div>
                                             </div>
                                         )}
@@ -532,15 +538,15 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 5. BANDEAU DE RESSOURCES ──────────────── */}
-                <section className="bg-[#0A1120] text-white rounded-3xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 border-2 border-[#0A1120] shadow-[6px_6px_0px_0px_#EA580C]">
+                <section className="bg-gradient-to-r from-[#6F2B75] via-[#4A154B] to-[#2A082D] text-white rounded-[2.5rem] p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-lg bg-bird-pattern-dark">
                     <div>
-                        <span className="text-xs font-black uppercase tracking-wider text-orange-400 block mb-1">
+                        <span className="text-xs font-school font-bold uppercase tracking-wider text-[#FF7E2E] block mb-1">
                             Documentation Officielle
                         </span>
-                        <h2 className="text-2xl sm:text-3xl font-display font-black text-white">
+                        <h2 className="text-2xl sm:text-3xl font-display text-white">
                             Consulter le Guide du Phœnicien 2026-2027
                         </h2>
-                        <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-xl font-medium">
+                        <p className="text-[#ECDDFD] text-xs sm:text-sm mt-1 max-w-xl font-medium">
                             Retrouvez les fiches détaillées des 9 projets, les plannings complets et la charte déontologique du tuteur.
                         </p>
                     </div>
@@ -548,14 +554,14 @@ export function Association() {
                     <div className="flex items-center gap-3 shrink-0">
                         <Link
                             to="/documents"
-                            className="btn-tactile-primary !text-xs sm:!text-sm"
+                            className="btn-phoenix-orange !text-xs sm:!text-sm rounded-full px-6 py-3 shadow-glow-orange flex items-center gap-2"
                         >
                             <Download size={15} />
                             <span>Télécharger le PDF</span>
                         </Link>
                         <Link
                             to="/projets"
-                            className="btn-tactile-secondary !bg-white/10 !text-white hover:!bg-white/20 !border-white/30 !text-xs sm:!text-sm"
+                            className="btn-phoenix-outline !bg-white/10 !text-white hover:!bg-white/20 !border-white/30 !text-xs sm:!text-sm rounded-full px-6 py-3 flex items-center gap-2"
                         >
                             <span>Nos 9 projets</span>
                             <ArrowRight size={14} />

@@ -50,17 +50,20 @@ export function Documents() {
     ];
 
     return (
-        <div ref={containerRef} className="pt-page-safe pb-24 min-h-screen bg-[#FBF9F5]">
+        <div ref={containerRef} className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#EA580C] bg-[#FFF7ED] border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] px-4 py-1.5 rounded-full inline-block mb-4">
+                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] shadow-soft px-5 py-2 rounded-full inline-block mb-4">
                         Ressources & Guides
                     </span>
-                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-black text-[#0A1120] uppercase tracking-tight mb-4">
+                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                        ~ Documentation & transparence ~
+                    </p>
+                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Documents Utiles
                     </h1>
-                    <p className="text-slate-600 max-w-xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
+                    <p className="text-[#2A082D]/80 max-w-xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
                         Téléchargez les guides officiels, présentations et ressources de l'association Phoenix Égalité des Chances.
                     </p>
                 </div>
@@ -73,44 +76,44 @@ export function Documents() {
                             initial={{ opacity: 0, y: 25 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.15 }}
-                            className="bg-white rounded-3xl border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[6px_6px_0px_0px_#EA580C] hover:-translate-y-1 transition-all duration-200 p-7 sm:p-8 flex flex-col justify-between group"
+                            className="bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 p-8 flex flex-col justify-between group"
                         >
                             <div>
                                 <div className="flex items-start gap-5 mb-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-[#FFF7ED] text-[#EA580C] flex items-center justify-center shrink-0 border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120]">
-                                        <FileText size={28} />
+                                    <div className="w-14 h-14 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-soft">
+                                        <FileText size={26} />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                                            <h3 className="text-lg sm:text-xl font-display font-black text-[#0A1120] leading-snug">
+                                            <h3 className="text-lg sm:text-xl font-display text-[#2A082D] leading-snug">
                                                 {doc.title}
                                             </h3>
                                             {doc.isNew && (
-                                                <span className="inline-flex items-center gap-1 text-[11px] font-black px-2.5 py-0.5 rounded-full bg-[#FFF7ED] text-[#EA580C] border border-[#EA580C]/40 shrink-0">
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-school font-bold px-3 py-0.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] shrink-0">
                                                     <Sparkles size={11} />
                                                     <span>Édition 2026-2027</span>
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-slate-600 leading-relaxed text-sm font-medium">
+                                        <p className="text-slate-600 leading-relaxed text-sm font-normal">
                                             {doc.description}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-5 border-t-2 border-[#0A1120]/10 flex items-center justify-between mt-auto">
-                                <div className="flex items-center gap-3 text-xs font-bold text-slate-600">
-                                    <span className="bg-[#F4EFEA] px-2.5 py-1 rounded-md border border-[#0A1120]/20 text-[#0A1120]">{doc.type}</span>
+                            <div className="pt-5 border-t border-[#ECDDFD]/60 flex items-center justify-between mt-auto">
+                                <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-500">
+                                    <span className="bg-[#ECDDFD]/50 px-3 py-1 rounded-full text-[#6F2B75]">{doc.type}</span>
                                     <span>{doc.size}</span>
                                 </div>
                                 <a
                                     href={`/documents/${doc.filename}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-tactile-primary !py-2 !px-4 !text-xs"
+                                    className="btn-phoenix-gradient !py-2 !px-5 !text-xs rounded-full text-white shadow-soft flex items-center gap-1.5"
                                 >
-                                    <Download size={15} />
+                                    <Download size={14} />
                                     <span>Télécharger</span>
                                 </a>
                             </div>
@@ -119,26 +122,26 @@ export function Documents() {
                 </div>
 
                 {/* Section Archives (Dépliable) */}
-                <div className="pt-8 border-t-2 border-[#0A1120]/10">
+                <div className="pt-8 border-t border-[#ECDDFD]/60">
                     <button
                         onClick={() => setIsArchiveOpen(!isArchiveOpen)}
-                        className="w-full flex items-center justify-between p-5 sm:p-6 rounded-2xl bg-white border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[5px_5px_0px_0px_#EA580C] transition-all group cursor-pointer text-left"
+                        className="w-full flex items-center justify-between p-6 sm:p-7 rounded-[2rem] bg-white border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all group cursor-pointer text-left"
                         aria-expanded={isArchiveOpen}
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-[#F4EFEA] border-2 border-[#0A1120] text-[#0A1120] flex items-center justify-center shrink-0 group-hover:bg-[#FFF7ED] group-hover:text-[#EA580C] transition-colors shadow-[2px_2px_0px_0px_#0A1120]">
-                                <Archive size={22} />
+                            <div className="w-12 h-12 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 group-hover:bg-gradient-to-r group-hover:from-[#6F2B75] group-hover:to-[#EC602B] group-hover:text-white transition-all shadow-soft">
+                                <Archive size={20} />
                             </div>
                             <div>
                                 <div className="flex items-center gap-2.5">
-                                    <h2 className="text-base sm:text-xl font-display font-black text-[#0A1120]">
+                                    <h2 className="text-base sm:text-xl font-display text-[#2A082D]">
                                         Archives des documents
                                     </h2>
-                                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#F4EFEA] text-[#0A1120] border border-[#0A1120]/20">
+                                    <span className="text-xs font-school font-bold px-3 py-0.5 rounded-full bg-[#ECDDFD] text-[#6F2B75]">
                                         {archiveDocuments.length} document{archiveDocuments.length > 1 ? 's' : ''}
                                     </span>
                                 </div>
-                                <p className="text-xs text-slate-600 mt-0.5 font-medium">
+                                <p className="text-xs text-slate-500 mt-0.5 font-medium">
                                     {isArchiveOpen ? "Cliquez pour masquer les anciennes éditions" : "Cliquez pour afficher les anciennes éditions"}
                                 </p>
                             </div>
@@ -147,7 +150,7 @@ export function Documents() {
                         <motion.div
                             animate={{ rotate: isArchiveOpen ? 180 : 0 }}
                             transition={{ duration: 0.2 }}
-                            className="w-9 h-9 rounded-xl bg-[#F4EFEA] border-2 border-[#0A1120] flex items-center justify-center text-[#0A1120] group-hover:text-[#EA580C] shrink-0 ml-2"
+                            className="w-10 h-10 rounded-full bg-[#ECDDFD] flex items-center justify-center text-[#6F2B75] group-hover:text-[#EC602B] shrink-0 ml-2 shadow-soft"
                         >
                             <ChevronDown size={18} />
                         </motion.div>
@@ -166,37 +169,37 @@ export function Documents() {
                                     {archiveDocuments.map((doc, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white rounded-2xl border-2 border-[#0A1120] p-6 flex flex-col justify-between shadow-[3px_3px_0px_0px_#0A1120]"
+                                            className="bg-white rounded-[2rem] border border-[#ECDDFD] p-6 flex flex-col justify-between shadow-soft"
                                         >
                                             <div className="flex items-start gap-4 mb-4">
-                                                <div className="w-12 h-12 rounded-xl bg-[#F4EFEA] border-2 border-[#0A1120] text-slate-700 flex items-center justify-center shrink-0">
-                                                    <FileText size={22} />
+                                                <div className="w-12 h-12 rounded-full bg-[#ECDDFD]/60 text-[#6F2B75] flex items-center justify-center shrink-0">
+                                                    <FileText size={20} />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                                                        <h3 className="text-base font-display font-black text-[#0A1120]">
+                                                        <h3 className="text-base font-display text-[#2A082D]">
                                                             {doc.title}
                                                         </h3>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FFF7ED] text-[#EA580C] border border-[#EA580C]/30">
+                                                        <span className="text-[10px] font-school font-bold px-2.5 py-0.5 rounded-full bg-[#ECDDFD] text-[#6F2B75]">
                                                             Archive {doc.year}
                                                         </span>
                                                     </div>
-                                                    <p className="text-slate-600 leading-relaxed text-xs font-medium">
+                                                    <p className="text-slate-600 leading-relaxed text-xs font-normal">
                                                         {doc.description}
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            <div className="mt-4 flex items-center justify-between pt-4 border-t-2 border-[#0A1120]/10">
-                                                <div className="flex items-center gap-3 text-xs font-bold text-slate-600">
-                                                    <span className="bg-[#F4EFEA] px-2 py-0.5 rounded text-[11px] text-[#0A1120]">{doc.type}</span>
+                                            <div className="mt-4 flex items-center justify-between pt-4 border-t border-[#ECDDFD]/60">
+                                                <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-500">
+                                                    <span className="bg-[#ECDDFD]/50 px-2.5 py-0.5 rounded-full text-[11px] text-[#6F2B75]">{doc.type}</span>
                                                     <span>{doc.size}</span>
                                                 </div>
                                                 <a
                                                     href={`/documents/${doc.filename}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-xs text-[#EA580C] hover:underline font-black transition-colors"
+                                                    className="inline-flex items-center gap-1.5 text-xs text-[#EC602B] hover:text-[#6F2B75] font-school font-bold transition-colors"
                                                 >
                                                     <Download size={14} />
                                                     <span>Télécharger</span>
@@ -213,3 +216,4 @@ export function Documents() {
         </div>
     );
 }
+

@@ -45,25 +45,28 @@ export function Partners() {
     const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-[#FBF9F5]">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#EA580C] bg-[#FFF7ED] border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] px-4 py-1.5 rounded-full inline-block mb-4">
+                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] shadow-soft px-5 py-2 rounded-full inline-block mb-4">
                         Réseau & Écosystème
                     </span>
-                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-black text-[#0A1120] uppercase tracking-tight mb-4">
+                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                        ~ Mobilisés ensemble pour la jeunesse ~
+                    </p>
+                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Nos Partenaires Engagés
                     </h1>
-                    <p className="text-slate-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
+                    <p className="text-[#2A082D]/80 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
                         L'action de Phoenix EDC repose sur la confiance de grandes entreprises, d'institutions éducatives et d'associations locales mobilisées pour l'égalité des chances à Marseille.
                     </p>
                 </div>
 
                 {/* Section 1: Grands Partenaires (Logo Grid) */}
                 <div className="mb-20">
-                    <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-8 flex items-center gap-3">
-                        <Building2 className="text-[#EA580C]" size={26} />
+                    <h2 className="text-xl sm:text-3xl font-display text-[#2A082D] tracking-tight mb-8 flex items-center gap-3">
+                        <Building2 className="text-[#EC602B]" size={26} />
                         <span>Grands Partenaires & Entreprises</span>
                     </h2>
 
@@ -75,9 +78,9 @@ export function Partners() {
                                 whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={isMobile ? undefined : { delay: index * 0.06 }}
-                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border-2 border-[#0A1120] rounded-2xl p-6 flex flex-col justify-between shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[6px_6px_0px_0px_#EA580C] hover:-translate-y-1 transition-all duration-200 group"
+                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border border-[#ECDDFD] rounded-[2rem] p-6 flex flex-col justify-between shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
                             >
-                                <div className="h-20 w-full flex items-center justify-center p-3 mb-4 bg-[#F4EFEA] rounded-xl border-2 border-[#0A1120]/15 group-hover:bg-white transition-colors">
+                                <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-2xl border border-[#ECDDFD] group-hover:bg-[#ECDDFD]/30 transition-colors">
                                     <img
                                         src={partner.logo}
                                         alt={partner.name}
@@ -85,10 +88,10 @@ export function Partners() {
                                     />
                                 </div>
                                 <div>
-                                    <h3 className="font-display font-black text-[#0A1120] text-base mb-1 group-hover:text-[#EA580C] transition-colors">
+                                    <h3 className="font-display text-[#2A082D] text-base mb-1 group-hover:text-[#EC602B] transition-colors">
                                         {partner.name}
                                     </h3>
-                                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                                    <p className="text-xs text-slate-600 leading-relaxed font-normal">
                                         {partner.desc}
                                     </p>
                                 </div>
@@ -99,25 +102,25 @@ export function Partners() {
 
                 {/* Section 2: Établissements Scolaires (Collèges & Lycées) */}
                 <div className="mb-20">
-                    <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-8 flex items-center gap-3">
-                        <School className="text-[#EA580C]" size={26} />
+                    <h2 className="text-xl sm:text-3xl font-display text-[#2A082D] tracking-tight mb-8 flex items-center gap-3">
+                        <School className="text-[#EC602B]" size={26} />
                         <span>Établissements Scolaires & Structures Partenaires</span>
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Collèges */}
-                        <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-6 shadow-[4px_4px_0px_0px_#0A1120]">
-                            <div className="flex items-center gap-2 pb-4 mb-4 border-b-2 border-[#0A1120]/10">
-                                <School size={20} className="text-[#EA580C]" />
-                                <h3 className="font-display font-black text-[#0A1120] text-base">Collèges</h3>
+                        <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 shadow-soft">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#ECDDFD]/60">
+                                <School size={20} className="text-[#EC602B]" />
+                                <h3 className="font-display text-[#2A082D] text-base">Collèges</h3>
                             </div>
                             <div className="space-y-3">
                                 {schoolPartners.colleges.map((college) => (
-                                    <div key={college.name} className="p-3 rounded-xl bg-[#F4EFEA] hover:bg-[#FFF7ED] border border-[#0A1120]/20 transition-colors">
-                                        <p className="font-bold text-sm text-[#0A1120]">{college.name}</p>
+                                    <div key={college.name} className="p-3.5 rounded-2xl bg-[#ECDDFD]/30 hover:bg-[#ECDDFD]/60 border border-[#ECDDFD] transition-colors">
+                                        <p className="font-bold text-sm text-[#2A082D]">{college.name}</p>
                                         <div className="flex items-center justify-between text-xs text-slate-600 mt-1">
                                             <span>{college.city}</span>
-                                            <span className="font-bold text-[#EA580C] bg-[#FFF7ED] border border-[#EA580C]/40 px-2 py-0.5 rounded-md text-[10px]">
+                                            <span className="font-school font-bold text-[#6F2B75] bg-[#ECDDFD] px-2.5 py-0.5 rounded-full text-[10px]">
                                                 {college.project}
                                             </span>
                                         </div>
@@ -127,18 +130,18 @@ export function Partners() {
                         </div>
 
                         {/* Lycées */}
-                        <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-6 shadow-[4px_4px_0px_0px_#0A1120]">
-                            <div className="flex items-center gap-2 pb-4 mb-4 border-b-2 border-[#0A1120]/10">
-                                <GraduationCap size={20} className="text-[#EA580C]" />
-                                <h3 className="font-display font-black text-[#0A1120] text-base">Lycées</h3>
+                        <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 shadow-soft">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#ECDDFD]/60">
+                                <GraduationCap size={20} className="text-[#EC602B]" />
+                                <h3 className="font-display text-[#2A082D] text-base">Lycées</h3>
                             </div>
                             <div className="space-y-3">
                                 {schoolPartners.lycees.map((lycee) => (
-                                    <div key={lycee.name} className="p-3 rounded-xl bg-[#F4EFEA] hover:bg-[#FFF7ED] border border-[#0A1120]/20 transition-colors">
-                                        <p className="font-bold text-sm text-[#0A1120]">{lycee.name}</p>
+                                    <div key={lycee.name} className="p-3.5 rounded-2xl bg-[#ECDDFD]/30 hover:bg-[#ECDDFD]/60 border border-[#ECDDFD] transition-colors">
+                                        <p className="font-bold text-sm text-[#2A082D]">{lycee.name}</p>
                                         <div className="flex items-center justify-between text-xs text-slate-600 mt-1">
                                             <span>{lycee.city}</span>
-                                            <span className="font-bold text-[#EA580C] bg-[#FFF7ED] border border-[#EA580C]/40 px-2 py-0.5 rounded-md text-[10px]">
+                                            <span className="font-school font-bold text-[#6F2B75] bg-[#ECDDFD] px-2.5 py-0.5 rounded-full text-[10px]">
                                                 {lycee.project}
                                             </span>
                                         </div>
@@ -148,15 +151,15 @@ export function Partners() {
                         </div>
 
                         {/* Centres sociaux & structures */}
-                        <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-6 shadow-[4px_4px_0px_0px_#0A1120]">
-                            <div className="flex items-center gap-2 pb-4 mb-4 border-b-2 border-[#0A1120]/10">
-                                <Building2 size={20} className="text-[#EA580C]" />
-                                <h3 className="font-display font-black text-[#0A1120] text-base">Centres & Fondations</h3>
+                        <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 shadow-soft">
+                            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#ECDDFD]/60">
+                                <Building2 size={20} className="text-[#EC602B]" />
+                                <h3 className="font-display text-[#2A082D] text-base">Centres & Fondations</h3>
                             </div>
                             <div className="space-y-3">
                                 {schoolPartners.centres.map((centre) => (
-                                    <div key={centre.name} className="p-3 rounded-xl bg-[#F4EFEA] hover:bg-[#FFF7ED] border border-[#0A1120]/20 transition-colors">
-                                        <p className="font-bold text-sm text-[#0A1120]">{centre.name}</p>
+                                    <div key={centre.name} className="p-3.5 rounded-2xl bg-[#ECDDFD]/30 hover:bg-[#ECDDFD]/60 border border-[#ECDDFD] transition-colors">
+                                        <p className="font-bold text-sm text-[#2A082D]">{centre.name}</p>
                                         <p className="text-xs text-slate-600 font-medium mt-0.5">{centre.type}</p>
                                     </div>
                                 ))}
@@ -167,8 +170,8 @@ export function Partners() {
 
                 {/* Section 3: Culture & Associatifs */}
                 <div className="mb-20">
-                    <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-6 flex items-center gap-3">
-                        <Sparkles className="text-[#EA580C]" size={26} />
+                    <h2 className="text-xl sm:text-3xl font-display text-[#2A082D] tracking-tight mb-6 flex items-center gap-3">
+                        <Sparkles className="text-[#EC602B]" size={26} />
                         <span>Partenaires Culturels & Associatifs</span>
                     </h2>
 
@@ -176,13 +179,13 @@ export function Partners() {
                         {otherPartners.map((item) => (
                             <div
                                 key={item.name}
-                                className="bg-white border-2 border-[#0A1120] rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-[3px_3px_0px_0px_#0A1120] hover:shadow-[5px_5px_0px_0px_#EA580C] hover:-translate-y-0.5 transition-all"
+                                className="bg-white border border-[#ECDDFD] rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-soft hover:shadow-soft-lg hover:-translate-y-0.5 transition-all"
                             >
-                                <div className="w-11 h-11 rounded-xl bg-[#FFF7ED] border-2 border-[#0A1120] text-[#EA580C] flex items-center justify-center mb-2.5 shadow-[2px_2px_0px_0px_#0A1120]">
+                                <div className="w-11 h-11 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center mb-2.5 shadow-soft">
                                     <item.icon size={20} />
                                 </div>
-                                <p className="font-display font-black text-sm text-[#0A1120] leading-snug">{item.name}</p>
-                                <span className="text-[10px] font-bold text-slate-600 mt-1 uppercase tracking-wider">
+                                <p className="font-display text-sm text-[#2A082D] leading-snug">{item.name}</p>
+                                <span className="text-[10px] font-school font-bold text-slate-500 mt-1 uppercase tracking-wider">
                                     {item.category}
                                 </span>
                             </div>
@@ -191,23 +194,23 @@ export function Partners() {
                 </div>
 
                 {/* CTA Devenir Partenaire */}
-                <div className="bg-[#0A1120] text-white rounded-3xl p-8 sm:p-12 shadow-[6px_6px_0px_0px_#EA580C] flex flex-col md:flex-row items-center justify-between gap-8 border-2 border-[#0A1120]">
+                <div className="bg-gradient-to-r from-[#6F2B75] via-[#4A154B] to-[#2A082D] text-white rounded-[2.5rem] p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8 bg-bird-pattern-dark">
                     <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-[#F97316] border border-white/20 text-xs font-bold mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-[#FF7E2E] border border-white/20 text-xs font-school font-bold mb-4 shadow-soft">
                             <Handshake size={14} />
                             <span>Rejoindre notre réseau</span>
                         </div>
-                        <h3 className="text-2xl sm:text-4xl font-display font-black tracking-tight mb-3 text-white">
+                        <h3 className="text-2xl sm:text-4xl font-display tracking-tight mb-3 text-white">
                             Vous souhaitez devenir partenaire ?
                         </h3>
-                        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-medium">
+                        <p className="text-[#ECDDFD] text-sm sm:text-base leading-relaxed font-medium">
                             Participez au développement de l'égalité des chances à Marseille en soutenant nos projets de tutorat, nos sorties culturelles et nos événements annuels.
                         </p>
                     </div>
 
                     <Link
                         to="/contact?category=partenariat"
-                        className="btn-tactile-primary !py-3.5 !px-8 shrink-0"
+                        className="btn-phoenix-orange !py-3.5 !px-8 rounded-full shadow-glow-orange shrink-0 flex items-center gap-2"
                     >
                         <span>Nous contacter</span>
                         <ArrowRight size={18} />
@@ -217,3 +220,4 @@ export function Partners() {
         </div>
     );
 }
+

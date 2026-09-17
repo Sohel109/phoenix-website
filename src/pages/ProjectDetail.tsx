@@ -35,9 +35,9 @@ export function ProjectDetail() {
     if (!project) {
         return (
             <div className="pt-32 pb-20 text-center container mx-auto px-4">
-                <h1 className="text-3xl font-black mb-4 text-slate-900">Projet Introuvable</h1>
+                <h1 className="text-3xl font-display text-[#2A082D] mb-4">Projet Introuvable</h1>
                 <p className="text-slate-500 mb-6">Le projet demandé n'existe pas ou a été déplacé.</p>
-                <Link to="/projets" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 text-white font-bold text-sm shadow-md hover:bg-orange-600 transition-colors">
+                <Link to="/projets" className="btn-phoenix-gradient inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-school font-bold text-sm shadow-soft">
                     <ArrowLeft size={16} />
                     <span>Retour à tous les projets</span>
                 </Link>
@@ -49,13 +49,13 @@ export function ProjectDetail() {
     const otherProjects = projects.filter(p => p.id !== project.id).slice(0, 3);
 
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-[#FBF9F5]">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-                {/* Back Button */}
+                {/* Back Button & Map Link */}
                 <div className="flex items-center justify-between gap-4 mb-6">
                     <Link 
                         to="/projets" 
-                        className="inline-flex items-center gap-2 text-slate-700 hover:text-black font-black text-xs sm:text-sm group"
+                        className="inline-flex items-center gap-2 text-[#6F2B75] hover:text-[#EC602B] font-school font-bold text-xs sm:text-sm group transition-colors"
                     >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                         <span>Tous les 9 projets</span>
@@ -63,7 +63,7 @@ export function ProjectDetail() {
 
                     <Link 
                         to="/carte-des-projets" 
-                        className="inline-flex items-center gap-1.5 text-xs font-black text-[#EA580C] bg-[#FFF7ED] hover:bg-orange-100 px-3.5 py-1.5 rounded-xl border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] transition-transform active:translate-x-[1px] active:translate-y-[1px]"
+                        className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#EC602B] bg-[#ECDDFD] hover:bg-[#D9BEF8] px-4 py-2 rounded-full shadow-soft transition-all"
                     >
                         <MapPin size={13} />
                         <span>Situer à Marseille</span>
@@ -71,9 +71,9 @@ export function ProjectDetail() {
                 </div>
 
                 {/* Main Card */}
-                <div className="bg-white rounded-3xl sm:rounded-4xl shadow-[6px_6px_0px_0px_#0A1120] border-2 border-[#0A1120] overflow-hidden">
+                <div className="bg-white rounded-[2.5rem] shadow-soft-lg border border-[#ECDDFD] overflow-hidden">
                     {/* Header with Banner Image */}
-                    <div className={`h-60 sm:h-80 relative ${project.bannerFit === 'contain' ? 'bg-white' : 'bg-slate-900'} border-b-2 border-[#0A1120] flex items-center justify-center overflow-hidden`}>
+                    <div className={`h-64 sm:h-84 relative ${project.bannerFit === 'contain' ? 'bg-[#FFFBF4]' : 'bg-slate-900'} flex items-center justify-center overflow-hidden`}>
                         {project.banner ? (
                             <img
                                 src={project.banner}
@@ -85,71 +85,71 @@ export function ProjectDetail() {
                                 }`}
                             />
                         ) : (
-                            <div className="bg-slate-100 w-full h-full" />
+                            <div className="bg-[#ECDDFD] w-full h-full" />
                         )}
 
                         {/* Soft subtle overlay */}
                         {project.bannerFit !== 'contain' && (
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#0A1120]/80 via-[#0A1120]/20 to-transparent pointer-events-none" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/85 via-[#2A082D]/25 to-transparent pointer-events-none" />
                         )}
 
                         {/* Badges en haut à droite de l'image */}
                         <div className="absolute top-4 right-4 z-10 flex flex-wrap gap-2 justify-end">
                             {project.isCordee && (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 text-white font-black text-xs border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120]">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white font-school font-bold text-xs shadow-soft">
                                     <Award size={14} />
                                     <span>Cordée de la Réussite</span>
                                 </span>
                             )}
-                            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white text-[#0A1120] font-black text-xs border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120]">
+                            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-white/95 text-[#2A082D] font-school font-bold text-xs shadow-soft">
                                 <span>Créé en {project.creationYear}</span>
                             </span>
                         </div>
 
-                        {/* Logo Overlay */}
+                        {/* Round Macaron Logo Overlay (CERCLE AVANT LE RECTANGLE) */}
                         {project.image && (
-                            <div className="absolute -bottom-10 left-6 sm:left-10 w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-2xl shadow-[4px_4px_0px_0px_#0A1120] flex items-center justify-center border-2 border-[#0A1120] overflow-hidden p-2 z-10">
-                                <img src={project.image} alt={project.title} className="w-full h-full object-contain" />
+                            <div className="absolute -bottom-10 left-6 sm:left-10 w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-full shadow-soft-lg flex items-center justify-center border-4 border-white overflow-hidden p-2 z-10">
+                                <img src={project.image} alt={project.title} className="w-full h-full object-contain rounded-full" />
                             </div>
                         )}
                     </div>
 
                     {/* Content Section */}
-                    <div className="pt-14 sm:pt-16 px-6 sm:px-10 pb-12">
+                    <div className="pt-16 sm:pt-18 px-6 sm:px-10 pb-12">
                         {/* Tags Header */}
                         <div className="flex flex-wrap items-center gap-2.5 mb-4">
-                            <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-[#FFF7ED] text-[#EA580C] border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120]">
+                            <span className="px-4 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#ECDDFD] text-[#6F2B75] shadow-soft">
                                 {project.category}
                             </span>
-                            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#F4EFEA] text-[#0A1120] border-2 border-[#0A1120]/15">
+                            <span className="px-4 py-1.5 rounded-full text-xs font-school font-bold bg-[#FFFBF4] text-[#2A082D] border border-[#ECDDFD]">
                                 {project.type}
                             </span>
-                            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border-2 border-emerald-300 flex items-center gap-1">
+                            <span className="px-4 py-1.5 rounded-full text-xs font-school font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1">
                                 <Users size={13} />
                                 <span>{project.tutorCount} élèves accompagnés</span>
                             </span>
-                            <span className="text-xs font-bold text-slate-600 flex items-center gap-1 ml-auto">
-                                <MapPin size={13} className="text-[#EA580C]" />
+                            <span className="text-xs font-school font-bold text-slate-600 flex items-center gap-1 ml-auto">
+                                <MapPin size={13} className="text-[#EC602B]" />
                                 <span>Marseille</span>
                             </span>
                         </div>
 
                         {/* Title */}
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-[#0A1120] mb-4 tracking-tight">
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] mb-4 tracking-tight">
                             {project.title}
                         </h1>
 
                         {/* Chefs de projet sous le titre */}
                         <div className="flex flex-wrap items-center gap-2 mb-6">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F4EFEA] border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] text-[#0A1120] text-xs sm:text-sm font-semibold">
-                                <UserCheck size={16} className="text-[#EA580C] shrink-0" />
-                                <span>{project.chefs.length > 1 ? 'Chefs de projet :' : 'Chef de projet :'} <strong className="font-display font-black text-[#0A1120]">{project.chefs.join(' & ')}</strong></span>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ECDDFD]/60 border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft">
+                                <UserCheck size={16} className="text-[#EC602B] shrink-0" />
+                                <span>{project.chefs.length > 1 ? 'Chefs de projet :' : 'Chef de projet :'} <strong className="text-[#6F2B75]">{project.chefs.join(' & ')}</strong></span>
                             </div>
                         </div>
 
                         {/* Highlight intro box */}
-                        <div className="mb-8 p-5 sm:p-6 bg-[#FFF7ED] rounded-2xl border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120]">
-                            <p className="text-[#0A1120] text-base sm:text-lg font-medium leading-relaxed">
+                        <div className="mb-8 p-6 sm:p-7 bg-[#ECDDFD]/30 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                            <p className="text-[#2A082D] text-base sm:text-lg font-medium leading-relaxed">
                                 {project.description}
                             </p>
                         </div>
@@ -157,36 +157,36 @@ export function ProjectDetail() {
                         {/* 4 Key Details Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                             {/* Card 1: Horaires */}
-                            <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-4 flex flex-col justify-between shadow-[3px_3px_0px_0px_#0A1120]">
-                                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-500 mb-2">
-                                    <Clock size={15} className="text-[#EA580C]" />
+                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-2">
+                                    <Clock size={15} />
                                     <span>Horaires</span>
                                 </div>
-                                <p className="text-sm font-bold text-[#0A1120] leading-snug">
+                                <p className="text-sm font-bold text-[#2A082D] leading-snug">
                                     {project.schedule}
                                 </p>
                             </div>
 
                             {/* Card 2: Lieu */}
-                            <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-4 flex flex-col justify-between shadow-[3px_3px_0px_0px_#0A1120]">
-                                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-500 mb-2">
-                                    <MapPin size={15} className="text-purple-600" />
+                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
+                                    <MapPin size={15} />
                                     <span>Lieu</span>
                                 </div>
-                                <p className="text-sm font-bold text-[#0A1120] leading-snug">
+                                <p className="text-sm font-bold text-[#2A082D] leading-snug">
                                     {project.locationName}
                                 </p>
                             </div>
 
                             {/* Card 3: Chefs de projet */}
-                            <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-4 flex flex-col justify-between shadow-[3px_3px_0px_0px_#0A1120]">
-                                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-500 mb-2">
-                                    <UserCheck size={15} className="text-[#EA580C]" />
+                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-2">
+                                    <UserCheck size={15} />
                                     <span>{project.chefs.length > 1 ? 'Chefs de projet' : 'Chef de projet'}</span>
                                 </div>
                                 <div className="space-y-0.5">
                                     {project.chefs.map((chef, idx) => (
-                                        <p key={idx} className="text-sm font-bold text-[#0A1120] leading-snug">
+                                        <p key={idx} className="text-sm font-bold text-[#2A082D] leading-snug">
                                             {chef}
                                         </p>
                                     ))}
@@ -194,12 +194,12 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 4: Voyage / Sorties */}
-                            <div className="bg-white border-2 border-[#0A1120] rounded-2xl p-4 flex flex-col justify-between shadow-[3px_3px_0px_0px_#0A1120]">
-                                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-500 mb-2">
-                                    <Compass size={15} className="text-emerald-600" />
+                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-emerald-700 mb-2">
+                                    <Compass size={15} />
                                     <span>Voyage & Sorties</span>
                                 </div>
-                                <p className="text-sm font-bold text-[#0A1120] leading-snug">
+                                <p className="text-sm font-bold text-[#2A082D] leading-snug">
                                     {project.trip || "Sorties culturelles annuelles"}
                                 </p>
                             </div>
@@ -207,28 +207,28 @@ export function ProjectDetail() {
 
                         {/* Detailed Description Section */}
                         <div className="mb-10">
-                            <h2 className="text-xl sm:text-3xl font-display font-black text-[#0A1120] tracking-tight mb-4 flex items-center gap-2.5">
-                                <Sparkles size={22} className="text-[#EA580C]" />
+                            <h2 className="text-xl sm:text-3xl font-display text-[#2A082D] tracking-tight mb-4 flex items-center gap-2.5">
+                                <Sparkles size={22} className="text-[#EC602B]" />
                                 <span>Présentation & Déroulement du Projet</span>
                             </h2>
-                            <div className="text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-medium">
+                            <div className="text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-normal">
                                 <p>{project.fullDescription}</p>
                             </div>
                         </div>
 
                         {/* Axes de Travail */}
                         {project.axes && project.axes.length > 0 && (
-                            <div className="mb-10 p-6 bg-[#F4EFEA] rounded-2xl border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120]">
-                                <h3 className="text-xs font-black uppercase tracking-wider text-slate-600 mb-3">
+                            <div className="mb-10 p-6 bg-[#ECDDFD]/30 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                                <h3 className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-3">
                                     Axes d'intervention prioritaires
                                 </h3>
                                 <div className="flex flex-wrap gap-2.5">
                                     {project.axes.map((axe, i) => (
                                         <span 
                                             key={i} 
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white border-2 border-[#0A1120] text-[#0A1120] text-xs sm:text-sm font-bold shadow-[2px_2px_0px_0px_#0A1120]"
+                                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft"
                                         >
-                                            <CheckCircle2 size={14} className="text-[#EA580C]" />
+                                            <CheckCircle2 size={14} className="text-[#EC602B]" />
                                             <span>{axe}</span>
                                         </span>
                                     ))}
@@ -237,25 +237,25 @@ export function ProjectDetail() {
                         )}
 
                         {/* Section Chefs de Projet Responsables */}
-                        <div className="mb-10 p-5 sm:p-6 bg-white rounded-2xl border-2 border-[#0A1120] shadow-[4px_4px_0px_0px_#0A1120]">
+                        <div className="mb-10 p-6 sm:p-7 bg-white rounded-[2rem] border border-[#ECDDFD] shadow-soft">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div className="flex items-center gap-3.5">
-                                    <div className="w-12 h-12 rounded-2xl bg-[#0A1120] text-white flex items-center justify-center border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#EA580C] shrink-0">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-13 h-13 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shadow-soft shrink-0">
                                         <UserCheck size={22} />
                                     </div>
                                     <div>
-                                        <span className="text-[11px] font-black uppercase tracking-wider text-[#EA580C] block mb-0.5">
+                                        <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#EC602B] block mb-0.5">
                                             {project.chefs.length > 1 ? 'Chefs de projet responsables' : 'Chef de projet responsable'}
                                         </span>
-                                        <h3 className="text-base sm:text-lg font-display font-black text-[#0A1120]">
+                                        <h3 className="text-base sm:text-lg font-display text-[#2A082D]">
                                             {project.chefs.join(' & ')}
                                         </h3>
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
                                     {project.chefs.map((chef, idx) => (
-                                        <span key={idx} className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#FFF7ED] border-2 border-[#0A1120] text-[#0A1120] font-bold text-xs shadow-[2px_2px_0px_0px_#0A1120]">
-                                            <span className="w-2 h-2 rounded-full bg-[#EA580C] shrink-0"></span>
+                                        <span key={idx} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] font-school font-bold text-xs shadow-soft">
+                                            <span className="w-2 h-2 rounded-full bg-[#EC602B] shrink-0"></span>
                                             <span>{chef}</span>
                                         </span>
                                     ))}
@@ -264,14 +264,14 @@ export function ProjectDetail() {
                         </div>
 
                         {/* Call to Actions & Social Links */}
-                        <div className="pt-8 border-t-2 border-[#0A1120]/10 flex flex-wrap items-center justify-between gap-4">
+                        <div className="pt-8 border-t border-[#ECDDFD]/60 flex flex-wrap items-center justify-between gap-4">
                             <div className="flex flex-wrap items-center gap-3">
                                 {project.instagram && (
                                     <a
                                         href={`https://instagram.com/${project.instagram}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] hover:-translate-y-0.5 transition-transform"
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft hover:-translate-y-0.5 transition-transform"
                                     >
                                         <Instagram size={15} />
                                         <span>@{project.instagram}</span>
@@ -283,7 +283,7 @@ export function ProjectDetail() {
                                         href={project.facebook.startsWith('http') ? project.facebook : `https://facebook.com/${project.facebook}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-black text-xs uppercase tracking-wider border-2 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] hover:-translate-y-0.5 transition-transform"
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft hover:-translate-y-0.5 transition-transform"
                                     >
                                         <Facebook size={15} />
                                         <span>{project.facebook.startsWith('http') ? 'Facebook' : `@${project.facebook}`}</span>
@@ -292,16 +292,16 @@ export function ProjectDetail() {
 
                                 <Link
                                     to="/carte-des-projets"
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-[#0A1120] text-[#0A1120] hover:text-[#EA580C] font-black text-xs uppercase tracking-wider transition-colors shadow-[2px_2px_0px_0px_#0A1120] hover:-translate-y-0.5"
+                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#ECDDFD] text-[#2A082D] hover:text-[#EC602B] font-school font-bold text-xs uppercase tracking-wider transition-colors shadow-soft hover:-translate-y-0.5"
                                 >
-                                    <MapPin size={14} className="text-[#EA580C]" />
+                                    <MapPin size={14} className="text-[#EC602B]" />
                                     <span>Localiser sur la carte</span>
                                 </Link>
                             </div>
 
                             <Link
                                 to="/contact"
-                                className="btn-tactile-primary !py-3 !px-6 !text-xs uppercase tracking-wider"
+                                className="btn-phoenix-orange !py-3 !px-7 !text-xs uppercase tracking-wider rounded-full shadow-glow-orange flex items-center gap-2"
                             >
                                 <span>Rejoindre ou soutenir ce projet</span>
                                 <ArrowRight size={14} />
@@ -312,7 +312,7 @@ export function ProjectDetail() {
 
                 {/* Other Projects Quick Discovery */}
                 <div className="mt-16">
-                    <h3 className="text-xl sm:text-2xl font-display font-black text-[#0A1120] mb-6">
+                    <h3 className="text-xl sm:text-2xl font-display text-[#2A082D] mb-6">
                         Découvrir d'autres projets de Phœnix
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -320,25 +320,25 @@ export function ProjectDetail() {
                             <Link
                                 key={op.id}
                                 to={`/projets/${op.id}`}
-                                className="group bg-white rounded-2xl border-2 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120] hover:shadow-[5px_5px_0px_0px_#EA580C] hover:-translate-y-1 p-5 transition-all flex flex-col justify-between"
+                                className="group bg-white rounded-[2rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 p-6 transition-all flex flex-col justify-between"
                             >
                                 <div>
                                     <div className="flex items-center justify-between gap-2 mb-3">
-                                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FFF7ED] text-[#EA580C] border border-[#EA580C]/40">
+                                        <span className="text-[10px] font-school font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#ECDDFD] text-[#6F2B75]">
                                             {op.category}
                                         </span>
-                                        <span className="text-xs text-slate-500 font-bold">
+                                        <span className="text-xs text-slate-500 font-school font-bold">
                                             {op.tutorCount} élèves
                                         </span>
                                     </div>
-                                    <h4 className="text-base font-display font-black text-[#0A1120] group-hover:text-[#EA580C] transition-colors mb-1.5">
+                                    <h4 className="text-base font-display text-[#2A082D] group-hover:text-[#EC602B] transition-colors mb-1.5">
                                         {op.title}
                                     </h4>
-                                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-medium">
+                                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
                                         {op.description}
                                     </p>
                                 </div>
-                                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-[#EA580C] group-hover:translate-x-0.5 transition-transform">
+                                <div className="mt-4 pt-3 border-t border-[#ECDDFD]/60 flex items-center justify-between text-xs font-school font-bold text-[#EC602B] group-hover:translate-x-0.5 transition-transform">
                                     <span>Voir le projet</span>
                                     <ArrowRight size={13} />
                                 </div>
@@ -350,3 +350,4 @@ export function ProjectDetail() {
         </div>
     );
 }
+

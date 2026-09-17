@@ -49,43 +49,43 @@ export function EventDetail() {
                 <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/10 rounded-full blur-[100px]" />
             </div>
 
-            <div className="container mx-auto px-4 relative z-10">
-                <Link to="/evenements" className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary transition-colors group">
-                    <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                    Retour aux événements
+            <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+                <Link to="/evenements" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-phoenix-lilac/60 text-phoenix-dark font-school text-xs tracking-wider uppercase hover:text-phoenix-purple hover:border-phoenix-purple transition-all shadow-xs group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <span>Retour aux événements</span>
                 </Link>
 
-                <div className="bg-white dark:bg-current-card rounded-[2rem] shadow-xl dark:shadow-none overflow-hidden border border-gray-100 dark:border-white/5 mt-8">
+                <div className="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-phoenix-lilac/40 mt-6">
                     {/* Header Image */}
-                    <div className={`relative h-64 md:h-96 w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : ''}`}>
+                    <div className={`relative h-64 md:h-[420px] w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : 'bg-phoenix-dark'}`}>
                         <img
                             src={event.headerImage || event.image}
                             alt={event.title}
                             className={`w-full h-full ${
                                 event.id === 'entretiens-excellence'
-                                    ? 'object-contain p-6 md:p-10 max-h-[90%]'
+                                    ? 'object-contain p-6 md:p-12 max-h-[90%]'
                                     : event.id === 'jedc'
                                     ? 'object-cover object-top'
                                     : 'object-cover'
                             }`}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 p-8 text-white">
-                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-sm font-semibold mb-4`}>
-                                <Calendar size={16} />
-                                {event.date}
+                        <div className="absolute inset-0 bg-gradient-to-t from-phoenix-dark/90 via-phoenix-dark/40 to-transparent pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 p-8 md:p-12 text-white">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-phoenix-purple/90 backdrop-blur-md border border-white/20 text-xs font-school uppercase tracking-wider mb-4">
+                                <Calendar size={14} className="text-phoenix-orange-light" />
+                                <span>{event.date}</span>
                             </div>
-                            <h1 className="text-3xl md:text-5xl font-bold">{event.title}</h1>
+                            <h1 className="text-3xl md:text-5xl font-display leading-tight">{event.title}</h1>
                         </div>
                     </div>
 
                     <div className="p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-8">
-                            <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300">
+                            <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed font-sans">
                                 {event.fullDescription ? (
                                     event.fullDescription.split('\n').map((paragraph, idx) => (
-                                        <p key={idx} className="mb-4 leading-relaxed">
+                                        <p key={idx} className="mb-4">
                                             {paragraph}
                                         </p>
                                     ))
@@ -96,8 +96,8 @@ export function EventDetail() {
 
                             {/* External Links / Editions */}
                             {event.externalLinks && (
-                                <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-8">
-                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Éditions précédentes</h3>
+                                <div className="mt-8 border-t border-phoenix-lilac/30 pt-8">
+                                    <h3 className="text-xl font-school uppercase tracking-wide text-phoenix-dark mb-6">Éditions précédentes</h3>
                                     <div className="flex flex-wrap gap-4">
                                         {event.externalLinks.map((link, idx) => (
                                             <a
@@ -105,7 +105,7 @@ export function EventDetail() {
                                                 href={link.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-3 px-6 py-3 bg-gray-50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 hover:border-primary/50 rounded-xl text-gray-700 dark:text-gray-200 hover:text-primary transition-all shadow-sm hover:shadow-md group h-auto"
+                                                className="inline-flex items-center gap-3 px-6 py-3 bg-phoenix-cream/80 hover:bg-white border border-phoenix-lilac/60 hover:border-phoenix-purple rounded-full text-phoenix-dark hover:text-phoenix-purple font-school text-xs uppercase tracking-wider transition-all shadow-xs hover:shadow-md group h-auto"
                                             >
                                                 {/* @ts-ignore */}
                                                 {(link as any).logo && (
@@ -113,11 +113,11 @@ export function EventDetail() {
                                                         /* @ts-ignore */
                                                         src={(link as any).logo}
                                                         alt="Logo"
-                                                        className="h-6 w-auto object-contain"
+                                                        className="h-5 w-auto object-contain"
                                                     />
                                                 )}
-                                                <span className="font-medium">{link.label}</span>
-                                                <ExternalLink size={16} className="text-gray-400 group-hover:text-primary transition-colors shrink-0" />
+                                                <span>{link.label}</span>
+                                                <ExternalLink size={14} className="text-phoenix-purple/70 group-hover:text-phoenix-purple transition-colors shrink-0" />
                                             </a>
                                         ))}
                                     </div>
@@ -128,9 +128,9 @@ export function EventDetail() {
                         {/* Sidebar / Gallery */}
                         <div className="lg:col-span-1 space-y-8">
                             {event.gallery && event.gallery.length > 0 && (
-                                <div className="bg-gray-50 dark:bg-current-bg/50 rounded-2xl p-6 border border-gray-100 dark:border-white/5">
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Galerie Photos</h3>
-                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden group">
+                                <div className="bg-phoenix-cream/60 rounded-3xl p-6 border border-phoenix-lilac/40">
+                                    <h3 className="text-lg font-school uppercase tracking-wide text-phoenix-dark mb-4">Galerie Photos</h3>
+                                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden group shadow-inner">
                                         <AnimatePresence mode="wait">
                                             <motion.img
                                                 key={currentImageIndex}
@@ -140,7 +140,7 @@ export function EventDetail() {
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
                                                 transition={{ duration: 0.5 }}
-                                                className="absolute inset-0 w-full h-full object-contain bg-white dark:bg-black"
+                                                className="absolute inset-0 w-full h-full object-contain bg-white"
                                             />
                                         </AnimatePresence>
 
@@ -148,24 +148,24 @@ export function EventDetail() {
                                             <>
                                                 <button
                                                     onClick={prevImage}
-                                                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-gray-800"
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 bg-white/90 hover:bg-white rounded-full shadow-md text-phoenix-dark transition-all cursor-pointer"
                                                 >
-                                                    <ChevronLeft size={20} />
+                                                    <ChevronLeft size={18} />
                                                 </button>
                                                 <button
                                                     onClick={nextImage}
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-gray-800"
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-white/90 hover:bg-white rounded-full shadow-md text-phoenix-dark transition-all cursor-pointer"
                                                 >
-                                                    <ChevronRight size={20} />
+                                                    <ChevronRight size={18} />
                                                 </button>
 
-                                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 px-3 py-1 bg-black/40 backdrop-blur-sm rounded-full">
                                                     {event.gallery.map((_, idx) => (
                                                         <button
-                                                            key={idx}
-                                                            onClick={() => setCurrentImageIndex(idx)}
-                                                            className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-primary w-4' : 'bg-gray-300'
-                                                                }`}
+                                                             key={idx}
+                                                             onClick={() => setCurrentImageIndex(idx)}
+                                                             className={`h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-phoenix-orange w-5' : 'bg-white/70 w-2'
+                                                                 }`}
                                                         />
                                                     ))}
                                                 </div>

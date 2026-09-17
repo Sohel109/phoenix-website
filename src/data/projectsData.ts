@@ -113,9 +113,9 @@ export const projectsData: Project[] = [
 ];
 
 export const projectTypeColors = {
-    soutien: '#FF6B00',    // Orange Phoenix
-    culture: '#7C3AED',    // Violet Phoenix
-    hybride: '#EC4899'     // Rose (mélange)
+    soutien: '#EC602B',    // Orange Braise Charte
+    culture: '#6F2B75',    // Violet Phœnix Charte
+    hybride: '#904990'     // Violet Phœnix Clair Charte
 };
 
 export const projectTypeLabels = {

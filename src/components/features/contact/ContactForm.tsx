@@ -54,23 +54,23 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="w-full max-w-xl mx-auto bg-white rounded-3xl p-10 sm:p-14 text-center border border-slate-200 shadow-md"
+                className="w-full max-w-xl mx-auto bg-white rounded-[2.5rem] p-10 sm:p-14 text-center border border-phoenix-lilac/50 shadow-xl"
             >
-                <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-100">
-                    <CheckCircle size={32} />
+                <div className="w-20 h-20 bg-phoenix-lilac/40 text-phoenix-purple rounded-full flex items-center justify-center mx-auto mb-6 border border-phoenix-lilac/70">
+                    <CheckCircle size={36} className="text-phoenix-purple" />
                 </div>
 
-                <h2 className="text-2xl font-black text-slate-900 mb-3">Message bien reçu !</h2>
-                <div className="w-12 h-1 bg-orange-500 mx-auto mb-6 rounded-full" />
+                <h2 className="text-2xl sm:text-3xl font-school uppercase tracking-wide text-phoenix-dark mb-3">Message bien reçu !</h2>
+                <div className="w-12 h-1 bg-gradient-to-r from-phoenix-purple to-phoenix-orange mx-auto mb-6 rounded-full" />
 
-                <p className="text-slate-600 font-normal mb-8 leading-relaxed text-sm sm:text-base">
-                    Merci pour votre message concernant <span className="font-bold text-slate-900">{category}</span>.<br />
+                <p className="text-slate-600 font-sans mb-8 leading-relaxed text-sm sm:text-base">
+                    Merci pour votre message concernant <span className="font-bold text-phoenix-purple">{category}</span>.<br />
                     Notre équipe vous répondra dans les plus brefs délais.
                 </p>
 
                 <button
                     onClick={onBack}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-sm font-semibold transition-all"
+                    className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-phoenix-lilac/80 bg-phoenix-cream/60 hover:bg-phoenix-purple hover:text-white text-phoenix-dark text-xs font-school uppercase tracking-wider transition-all cursor-pointer shadow-xs"
                 >
                     <ArrowLeft size={16} />
                     <span>Retour au choix</span>
@@ -89,26 +89,26 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
         >
             <button
                 onClick={onBack}
-                className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border-2 border-slate-300 hover:border-orange-500 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-orange-600 shadow-xs transition-all group cursor-pointer"
+                className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-phoenix-lilac/80 hover:border-phoenix-purple text-xs font-school uppercase tracking-wider text-phoenix-dark hover:text-phoenix-purple shadow-xs transition-all group cursor-pointer"
             >
                 <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                 <span>Changer de motif</span>
             </button>
 
             {/* Form Container */}
-            <div className="bg-white border-2 border-slate-300/80 rounded-3xl p-8 sm:p-12 shadow-lg relative overflow-hidden">
+            <div className="bg-white border border-phoenix-lilac/50 rounded-[2.5rem] p-8 sm:p-12 shadow-xl relative overflow-hidden">
                 <div className="text-center mb-8">
-                    <span className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full mb-3 inline-block">
+                    <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full mb-3 inline-block">
                         Demande de contact
                     </span>
-                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tight">
+                    <h2 className="text-2xl sm:text-3xl font-school uppercase tracking-wide text-phoenix-dark">
                         {category}
                     </h2>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 font-sans">
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">
+                        <label className="block text-xs font-school uppercase tracking-wider text-phoenix-dark mb-2">
                             Nom Complet
                         </label>
                         <input
@@ -116,13 +116,13 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                             required
                             value={formData.name}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full bg-white rounded-xl border-2 border-slate-300 px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-orange-500 transition-all placeholder-slate-400 text-sm shadow-xs"
+                            className="w-full bg-phoenix-cream/40 rounded-2xl border border-phoenix-lilac/80 px-4 py-3 text-phoenix-dark font-sans focus:outline-none focus:border-phoenix-purple focus:ring-2 focus:ring-phoenix-purple/20 transition-all placeholder-slate-400 text-sm"
                             placeholder="Ex: Camille Dupont"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">
+                        <label className="block text-xs font-school uppercase tracking-wider text-phoenix-dark mb-2">
                             Adresse Email
                         </label>
                         <input
@@ -130,21 +130,21 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                             required
                             value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full bg-white rounded-xl border-2 border-slate-300 px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-orange-500 transition-all placeholder-slate-400 text-sm shadow-xs"
+                            className="w-full bg-phoenix-cream/40 rounded-2xl border border-phoenix-lilac/80 px-4 py-3 text-phoenix-dark font-sans focus:outline-none focus:border-phoenix-purple focus:ring-2 focus:ring-phoenix-purple/20 transition-all placeholder-slate-400 text-sm"
                             placeholder="Ex: contact@exemple.fr"
                         />
                     </div>
 
                     {status === 'error' && (
-                        <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3.5 text-center">
-                            <p className="text-red-700 text-xs font-bold">
+                        <div className="bg-red-50 border border-red-200 rounded-2xl p-3.5 text-center">
+                            <p className="text-red-700 text-xs font-school uppercase tracking-wider">
                                 Une erreur est survenue lors de l'envoi. Veuillez réessayer.
                             </p>
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">
+                        <label className="block text-xs font-school uppercase tracking-wider text-phoenix-dark mb-2">
                             Votre Message
                         </label>
                         <textarea
@@ -152,7 +152,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                             rows={4}
                             value={formData.message}
                             onChange={e => setFormData({ ...formData, message: e.target.value })}
-                            className="w-full bg-white rounded-xl border-2 border-slate-300 px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-orange-500 transition-all resize-none placeholder-slate-400 text-sm shadow-xs"
+                            className="w-full bg-phoenix-cream/40 rounded-2xl border border-phoenix-lilac/80 px-4 py-3 text-phoenix-dark font-sans focus:outline-none focus:border-phoenix-purple focus:ring-2 focus:ring-phoenix-purple/20 transition-all resize-none placeholder-slate-400 text-sm"
                             placeholder="Expliquez-nous votre projet ou votre demande..."
                         />
                     </div>
@@ -160,7 +160,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="w-full py-4 px-6 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl border-2 border-orange-500 shadow-md shadow-orange-500/25 hover:shadow-orange-500/40 active:scale-98 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
+                        className="w-full py-4 px-6 btn-phoenix-gradient text-white rounded-full font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                     >
                         {status === 'loading' ? (
                             <>

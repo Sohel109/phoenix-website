@@ -6,83 +6,86 @@ export function TestimonialsSection() {
     return (
         <section className="relative py-16 md:py-26 bg-transparent overflow-hidden">
             {/* Subtle background glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-r from-orange-200/20 via-amber-100/25 to-purple-200/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-[#ECDDFD]/60 via-[#E1BBCB]/40 to-[#ECDDFD]/60 rounded-full blur-3xl pointer-events-none" />
 
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Header */}
-                <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] mb-4 -rotate-1 hover:rotate-0 transition-transform">
-                        <Heart size={14} className="text-orange-600 fill-orange-600" />
-                        <span className="text-xs font-display font-black uppercase tracking-wider text-[#0A1120]">
+                <div className="text-center max-w-2xl mx-auto mb-12 md:mb-14">
+                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#ECDDFD] text-[#6F2B75] shadow-soft mb-4 -rotate-1 hover:rotate-0 transition-transform">
+                        <Heart size={14} className="text-[#EC602B] fill-[#EC602B]" />
+                        <span className="text-xs font-school font-bold uppercase tracking-wider">
                             Parole d'un élève accompagné
                         </span>
-                        <span className="text-xs text-slate-300 font-bold">·</span>
-                        <span className="text-xs font-display font-bold text-orange-600">
+                        <span className="text-xs text-[#904990] font-bold">·</span>
+                        <span className="text-xs font-school font-bold text-[#EC602B]">
                             Témoignage authentique
                         </span>
                     </div>
 
-                    <h2 className="text-3xl sm:text-5xl font-display font-black uppercase tracking-tight text-[#0A1120] leading-[1.05] mb-4">
+                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                        ~ La voix du terrain ~
+                    </p>
+
+                    <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-4">
                         La preuve par{' '}
-                        <span className="relative inline-block text-orange-600">
+                        <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-transparent bg-clip-text">
                             l'humain.
-                            <span className="absolute -bottom-1 left-0 w-full h-3 bg-orange-400/20 rotate-1 rounded-sm -z-10" />
                         </span>
                     </h2>
 
-                    <p className="text-slate-600 font-medium text-sm sm:text-base leading-relaxed">
+                    <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base leading-relaxed">
                         L'impact de Phoenix ne se mesure pas seulement en statistiques : il s'entend dans les mots de ceux qui ont vu leur horizon s'ouvrir.
                     </p>
                 </div>
 
-                {/* ──────────────── UNIQUE CARTE ÉDITORIALE DE NABIL (STYLE MAGAZINE BRUT) ──────────────── */}
+                {/* ──────────────── UNIQUE CARTE ÉDITORIALE DE NABIL (BULLE DOUCE LILAS CHARTE) ──────────────── */}
                 <motion.div
                     initial={{ opacity: 0, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-40px" }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="max-w-2xl mx-auto bg-[#F4EFEA] rounded-3xl p-7 sm:p-10 border-2 border-[#0A1120] shadow-[6px_6px_0px_0px_#0A1120] relative overflow-hidden"
+                    className="max-w-2xl mx-auto bg-[#ECDDFD] rounded-[2.5rem] p-8 sm:p-12 border border-[#D9BEF8] shadow-soft-lg relative overflow-hidden bg-bird-pattern"
                 >
                     {/* Corner Stamp Sticker */}
-                    <div className="absolute top-4 right-4 z-10 hidden sm:block">
-                        <span className="inline-block px-3 py-1 rounded-full text-[10px] font-display font-black uppercase tracking-wider bg-orange-600 text-white border border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] rotate-2">
+                    <div className="absolute top-5 right-5 z-10 hidden sm:block">
+                        <span className="inline-block px-3.5 py-1.5 rounded-full text-[11px] font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white shadow-soft rotate-2">
                             Voix du Réel 🎙️
                         </span>
                     </div>
 
                     {/* Top Tag & Quote Icon */}
-                    <div className="flex items-center justify-between gap-3 mb-6 pb-5 border-b-2 border-slate-900/10">
-                        <div className="flex items-center gap-3.5">
-                            {/* Initials Avatar */}
-                            <div className="w-12 h-12 rounded-2xl bg-[#0A1120] text-white font-display font-black text-base flex items-center justify-center border-2 border-white shadow-sm shrink-0">
+                    <div className="flex items-center justify-between gap-3 mb-6 pb-5 border-b border-[#6F2B75]/15">
+                        <div className="flex items-center gap-4">
+                            {/* Circular Initials Avatar */}
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white font-school font-bold text-base flex items-center justify-center border-2 border-white shadow-soft shrink-0">
                                 NA
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-xl font-display font-black text-[#0A1120] tracking-tight">
+                                    <h3 className="text-xl font-display text-[#2A082D] tracking-tight">
                                         Nabil
                                     </h3>
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-display font-bold">
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/80 text-emerald-800 border border-emerald-300 text-[10px] font-school font-bold">
                                         <CheckCircle2 size={11} className="text-emerald-700" />
                                         Vérifié
                                     </span>
                                 </div>
-                                <p className="text-xs font-display font-black uppercase tracking-wider text-orange-600 mt-0.5">
+                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mt-0.5">
                                     Ancien tutoré du projet ACSE
                                 </p>
-                                <p className="text-xs text-slate-600 font-medium">
+                                <p className="text-xs text-[#2A082D]/70 font-medium">
                                     Lycée Saint-Exupéry · Marseille (Promo 2023)
                                 </p>
                             </div>
                         </div>
 
                         <div className="shrink-0">
-                            <Quote size={38} className="text-orange-500/30" />
+                            <Quote size={40} className="text-[#6F2B75]/25" />
                         </div>
                     </div>
 
                     {/* Testimonial Quote Text */}
-                    <div className="text-slate-800 font-medium text-sm sm:text-[15px] leading-relaxed italic space-y-4 mb-7 text-left">
+                    <div className="text-[#2A082D] font-medium text-sm sm:text-[15px] leading-relaxed italic space-y-4 mb-8 text-left">
                         <p>
                             « En arrivant en 2023 en seconde à Saint-Exupéry, franchement, je ne croyais pas du tout en moi. Dans ma tête, le plan était basique : finir les études le plus vite possible avec un diplôme court et partir loin du quartier. Je ne voyais pas plus loin que le bout de mon nez. Et puis Phoenix est arrivé.
                         </p>
@@ -92,15 +95,15 @@ export function TestimonialsSection() {
                     </div>
 
                     {/* Card Bottom: ACSE Link */}
-                    <div className="pt-5 border-t-2 border-slate-900/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-2 text-xs font-display font-bold text-slate-700">
-                            <span className="w-2 h-2 rounded-full bg-orange-600" />
+                    <div className="pt-5 border-t border-[#6F2B75]/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-2 text-xs font-school font-bold text-[#6F2B75]">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#EC602B]" />
                             <span>Projet ACSE · 100% Ouverture Culturelle à Marseille</span>
                         </div>
 
                         <Link
                             to="/projets/acse"
-                            className="btn-tactile-primary px-4 py-2 rounded-xl text-xs shadow-[2px_2px_0px_0px_#0A1120] shrink-0"
+                            className="btn-phoenix-gradient px-5 py-2.5 rounded-full text-xs text-white shadow-soft flex items-center gap-1.5 shrink-0"
                         >
                             <span>Découvrir le projet ACSE</span>
                             <ArrowRight size={13} />
@@ -108,19 +111,19 @@ export function TestimonialsSection() {
                     </div>
                 </motion.div>
 
-                {/* Interactive Trust Bar */}
-                <div className="mt-8 sm:mt-11 text-center">
-                    <div className="inline-flex flex-wrap items-center justify-center gap-4 sm:gap-7 px-6 py-3.5 rounded-2xl bg-white border-1.5 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120] text-xs font-display font-bold text-[#0A1120]">
-                        <span className="flex items-center gap-1.5 text-orange-600 font-black">
-                            <Sparkles size={14} /> 100% de réussite au bac pour nos élèves suivis
+                {/* Trust Bar in Rounded Full Pill */}
+                <div className="mt-8 sm:mt-12 text-center">
+                    <div className="inline-flex flex-wrap items-center justify-center gap-4 sm:gap-7 px-8 py-4 rounded-full bg-white border border-[#ECDDFD] shadow-soft text-xs font-school font-bold text-[#2A082D]">
+                        <span className="flex items-center gap-1.5 text-[#EC602B]">
+                            <Sparkles size={15} /> 100% de réussite au bac pour nos élèves suivis
                         </span>
-                        <span className="hidden sm:inline text-slate-300 font-bold">•</span>
-                        <span className="flex items-center gap-1.5 text-purple-700 font-black">
-                            <GraduationCap size={14} /> +3000 jeunes accompagnés depuis 2011
+                        <span className="hidden sm:inline text-[#ECDDFD] font-bold">•</span>
+                        <span className="flex items-center gap-1.5 text-[#6F2B75]">
+                            <GraduationCap size={15} /> +3000 jeunes accompagnés depuis 2011
                         </span>
-                        <span className="hidden sm:inline text-slate-300 font-bold">•</span>
-                        <span className="flex items-center gap-1.5 text-emerald-700 font-black">
-                            <CheckCircle2 size={14} /> Labellisé « Cordées de la Réussite »
+                        <span className="hidden sm:inline text-[#ECDDFD] font-bold">•</span>
+                        <span className="flex items-center gap-1.5 text-emerald-700">
+                            <CheckCircle2 size={15} /> Labellisé « Cordées de la Réussite »
                         </span>
                     </div>
                 </div>
@@ -128,3 +131,4 @@ export function TestimonialsSection() {
         </section>
     );
 }
+

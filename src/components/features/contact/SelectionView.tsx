@@ -45,32 +45,35 @@ function Card({ category, index, onSelect }: { category: any, index: number, onS
             className="flex-1 group cursor-pointer relative"
         >
             {/* Card Container */}
-            <div className="relative h-64 md:h-80 bg-white rounded-3xl border-2 border-slate-300/80 hover:border-orange-500 overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
+            <div className="relative h-64 md:h-80 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 hover:border-phoenix-purple overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1">
+
+                {/* Background blob on hover */}
+                <div className="absolute inset-0 bg-gradient-to-b from-phoenix-cream/50 to-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col items-center space-y-4">
-                    {/* Icon Container */}
-                    <div className="p-4 rounded-2xl bg-orange-50 text-orange-600 border-2 border-orange-200/80 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white group-hover:border-orange-500 transition-all duration-300 shadow-xs">
-                        <category.icon strokeWidth={2} size={32} />
+                    {/* Circular Icon Container */}
+                    <div className="w-20 h-20 rounded-full bg-phoenix-cream border border-phoenix-lilac/60 text-phoenix-purple flex items-center justify-center group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-phoenix-purple group-hover:to-phoenix-orange group-hover:text-white group-hover:border-transparent transition-all duration-300 shadow-sm">
+                        <category.icon strokeWidth={1.8} size={32} />
                     </div>
 
                     <div className="text-center">
-                        <h3 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-slate-900 mb-1 group-hover:text-orange-600 transition-colors">
+                        <h3 className="text-xl sm:text-2xl font-school uppercase tracking-wider text-phoenix-dark mb-1.5 group-hover:text-phoenix-purple transition-colors">
                             {category.label}
                         </h3>
 
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                        <p className="text-xs font-sans font-medium text-slate-500 max-w-[220px]">
                             {category.description}
                         </p>
                     </div>
 
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border-2 border-slate-200 group-hover:border-orange-500 group-hover:bg-orange-50 text-xs font-bold text-slate-700 group-hover:text-orange-600 transition-all">
+                    <span className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full border border-phoenix-lilac/80 bg-phoenix-cream/50 group-hover:bg-phoenix-purple group-hover:text-white group-hover:border-phoenix-purple text-xs font-school uppercase tracking-wider text-phoenix-dark transition-all">
                         Sélectionner →
                     </span>
                 </div>
 
                 {/* Bottom decorative bar */}
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gradient-to-r from-phoenix-purple to-phoenix-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
         </motion.div>
     );

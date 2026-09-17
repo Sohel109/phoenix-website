@@ -12,43 +12,49 @@ export default {
             },
             colors: {
                 primary: {
-                    DEFAULT: '#FF6B00', // Phoenix Orange
-                    dark: '#CC5500',
-                    light: '#FF8533',
+                    DEFAULT: '#EC602B', // Orange braise officiel
+                    dark: '#C44B1D',
+                    light: '#FF7E2E',
                 },
                 secondary: {
-                    DEFAULT: '#6D28D9', // Phoenix Violet
-                    light: '#8B5CF6',
+                    DEFAULT: '#6F2B75', // Violet Phœnix officiel
+                    light: '#904990',
                 },
-                canvas: '#FBF9F5', // Warm paper/ecru canvas
-                paper: '#F7F4EE',  // Card tone
-                sand: '#EFECE6',   // Deep card / neutral sand
+                phoenix: {
+                    purple: '#6F2B75',
+                    'purple-light': '#904990',
+                    dark: '#2A082D',
+                    orange: '#EC602B',
+                    'orange-light': '#FF7E2E',
+                    cream: '#FFFBF4',
+                    lilac: '#ECDDFD',
+                    'lilac-soft': '#D9BEF8',
+                    rose: '#E1BBCB',
+                },
+                canvas: '#FFFBF4', // Crème chaud officiel
+                paper: '#FFFFFF',
+                sand: '#ECDDFD',   // Lilas doux
                 ink: {
-                    DEFAULT: '#0A1120', // Deep editorial ink
-                    light: '#1E293B',
-                    muted: '#475569',
-                },
-                terracotta: {
-                    DEFAULT: '#EA580C',
-                    soft: '#FED7AA',
-                    light: '#FFF7ED',
+                    DEFAULT: '#2A082D', // Violet sombre profond au lieu du noir pur
+                    light: '#542359',
+                    muted: '#7C677E',
                 },
                 current: {
-                    bg: '#0f0518',
-                    card: '#1a1025',
+                    bg: '#2A082D',
+                    card: '#3D1041',
                 }
             },
             fontFamily: {
-                sans: ['"DM Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-                display: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+                sans: ['"Montserrat"', 'system-ui', '-apple-system', 'sans-serif'],
+                display: ['"Shrikhand"', 'cursive'],
+                script: ['"Allura"', 'cursive'],
+                school: ['"Outfit"', 'sans-serif'],
             },
             boxShadow: {
-                'brut-sm': '2px 2px 0px 0px #0A1120',
-                'brut': '3px 3px 0px 0px #0A1120',
-                'brut-lg': '5px 5px 0px 0px #0A1120',
-                'brut-orange': '3px 3px 0px 0px #EA580C',
-                'brut-orange-lg': '5px 5px 0px 0px #EA580C',
-                'brut-white': '3px 3px 0px 0px #FFFFFF',
+                'soft': '0 10px 30px -10px rgba(111, 43, 117, 0.12)',
+                'soft-lg': '0 20px 40px -15px rgba(111, 43, 117, 0.18)',
+                'glow-orange': '0 10px 30px -5px rgba(236, 96, 43, 0.35)',
+                'glow-purple': '0 10px 30px -5px rgba(111, 43, 117, 0.35)',
             },
         },
     },

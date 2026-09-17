@@ -18,15 +18,18 @@ export function Recruitment() {
                         viewport={{ once: true }}
                         className="text-center mb-16"
                     >
-                        <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-200/60 px-4 py-1.5 rounded-full inline-block mb-4">
+                        <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full inline-block mb-4">
                             On recrute !
                         </span>
-                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-6 text-slate-900">
-                            Rejoignez <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">l'Aventure</span>
+                        <h2 className="text-4xl md:text-5xl font-display text-phoenix-dark mb-2">
+                            Rejoignez l'Aventure
                         </h2>
-                        <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
-                            Vous êtes étudiant à KEDGE et vous souhaitez vous engager pour l'égalité des chances ?
-                            Phoenix EDC recrute ses nouveaux membres !
+                        <p className="font-script text-2xl text-phoenix-purple mb-4">
+                            ~ Deviens acteur du changement à Marseille ~
+                        </p>
+                        <p className="text-slate-600 font-sans text-base max-w-2xl mx-auto leading-relaxed">
+                            Vous êtes étudiant à KEDGE Business School et vous souhaitez vous engager concrètement pour l'égalité des chances ?
+                            Phœnix recrute ses nouveaux tuteurs et membres actifs !
                         </p>
                     </motion.div>
 
@@ -42,14 +45,14 @@ export function Recruitment() {
                         <Card
                             icon={Briefcase}
                             title="Compétences"
-                            description="Développez des soft skills et une expérience valorisante."
+                            description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante."
                             delay={0.2}
                             isMobile={isMobile}
                         />
                         <Card
                             icon={GraduationCap}
                             title="Engagement"
-                            description="Participez concrètement à la réussite scolaire de jeunes marseillais."
+                            description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais."
                             delay={0.3}
                             isMobile={isMobile}
                         />
@@ -67,12 +70,12 @@ export function Recruitment() {
                             href="https://m.facebook.com/groups/1045459488302373/?ref=share"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group inline-flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold uppercase tracking-wider shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
+                            className="group inline-flex items-center gap-3 px-8 py-4 btn-phoenix-gradient text-white rounded-full font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
                         >
                             <span>Postuler Maintenant</span>
-                            <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <p className="mt-4 text-xs text-slate-500 uppercase tracking-widest font-semibold">
+                        <p className="mt-4 text-xs font-school text-slate-500 uppercase tracking-widest">
                             Prochaine session de recrutement : Octobre 2026
                         </p>
                     </motion.div>
@@ -90,13 +93,13 @@ function Card({ icon: Icon, title, description, delay, isMobile }: { icon: any, 
             whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={isMobile ? undefined : { delay }}
-            className="bg-white border border-slate-200 p-8 rounded-2xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center group shadow-xs"
+            className="bg-white border border-phoenix-lilac/50 p-8 rounded-[2.5rem] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center group shadow-sm flex flex-col items-center"
         >
-            <div className="w-12 h-12 mx-auto bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300 border border-orange-100">
-                <Icon size={24} />
+            <div className="w-16 h-16 mx-auto bg-phoenix-cream text-phoenix-purple rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-phoenix-purple group-hover:to-phoenix-orange group-hover:text-white transition-all duration-300 border border-phoenix-lilac/60">
+                <Icon size={26} strokeWidth={1.8} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3 uppercase tracking-wide">{title}</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
+            <h3 className="text-lg font-school font-bold text-phoenix-dark mb-2 uppercase tracking-wide">{title}</h3>
+            <p className="text-sm font-sans text-slate-600 leading-relaxed">{description}</p>
         </motion.div>
     );
 }

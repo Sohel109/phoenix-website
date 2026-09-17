@@ -1,366 +1,276 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart, Users, Zap, GraduationCap } from 'lucide-react';
+import { ArrowRight, Heart, Zap, GraduationCap, Sparkles } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────
-   FLOATING BADGE — Sobre, net & institutionnel
+   MACARON BADGE ROND (Charte p. 12 & 14 — "Le cercle avant le rectangle")
 ───────────────────────────────────────────────────────────── */
-function FloatingBadge({
+function MacaronBadge({
     icon,
     label,
+    value,
     className,
 }: {
     icon: React.ReactNode;
     label: string;
+    value?: string;
     className?: string;
 }) {
     return (
         <div
-            className={`absolute flex items-center gap-2 px-3.5 py-2 rounded-xl
-                bg-white border-1.5 border-[#0A1120]
-                shadow-[3px_3px_0px_0px_#0A1120] text-xs font-display font-bold text-[#0A1120]
-                select-none pointer-events-none z-20 ${className}`}
+            className={`absolute flex items-center gap-3 px-4 py-2.5 rounded-full
+                bg-white/95 backdrop-blur-md border border-[#6F2B75]/20
+                shadow-soft hover:shadow-soft-lg text-xs font-sans text-[#2A082D]
+                select-none pointer-events-none z-20 transition-all ${className}`}
         >
-            {icon}
-            <span>{label}</span>
+            <div className="w-8 h-8 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-xs">
+                {icon}
+            </div>
+            <div className="flex flex-col text-left">
+                {value && <span className="font-display text-sm font-bold text-[#EC602B] leading-none">{value}</span>}
+                <span className="font-semibold text-[11px] text-[#2A082D] leading-tight">{label}</span>
+            </div>
         </div>
     );
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SVG DÉCORATIF — silhouette Notre-Dame de la Garde (filigrane)
-───────────────────────────────────────────────────────────── */
-function NdlgWatermark() {
-    return (
-        <svg
-            viewBox="0 0 400 200"
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[520px] opacity-[0.035] pointer-events-none select-none"
-            fill="none"
-            stroke="#0A192F"
-            strokeWidth="1"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            {/* Colline */}
-            <path d="M0 180 Q80 120 140 130 Q180 135 200 100 Q220 65 240 55 Q260 45 280 55 Q310 70 340 130 Q380 135 400 180 Z" />
-            {/* Tour principale */}
-            <rect x="185" y="40" width="30" height="70" rx="2" />
-            {/* Clocher */}
-            <rect x="190" y="20" width="20" height="25" rx="1.5" />
-            {/* Lanterne */}
-            <rect x="194" y="10" width="12" height="12" rx="1" />
-            {/* Flèche & statue */}
-            <line x1="200" y1="4" x2="200" y2="10" />
-            {/* Porche gauche */}
-            <path d="M160 110 L160 140 Q175 140 185 130 L185 110 Z" />
-            {/* Porche droite */}
-            <path d="M215 110 L215 130 Q225 140 240 140 L240 110 Z" />
-            {/* Fenêtres */}
-            <rect x="193" y="50" width="14" height="18" rx="7" />
-            <rect x="170" y="90" width="8" height="12" rx="4" />
-            <rect x="222" y="90" width="8" height="12" rx="4" />
-            {/* Horizon mer */}
-            <path d="M0 185 Q100 178 200 182 Q300 186 400 179" />
-        </svg>
-    );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   SVG VAGUE marine — transition douce vers KeyFigures
-───────────────────────────────────────────────────────────── */
-function MarineWave() {
-    return (
-        <div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-[0] pointer-events-none z-10">
-            <svg
-                viewBox="0 0 1440 60"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="w-full h-[48px] md:h-[60px]"
-            >
-                <path
-                    d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z"
-                    className="fill-[#FBF9F5]"
-                />
-            </svg>
-        </div>
-    );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   HERO PRINCIPAL
+   HERO PRINCIPAL (Charte Graphique DA Lise Dehedin 2025-2026)
 ───────────────────────────────────────────────────────────── */
 export function HeroScroll() {
     return (
         <>
             {/* ══════════════════════════════════════════════════════
-                SECTION DESKTOP (≥ 768px) — SPLIT 2 COLONNES
+                SECTION DESKTOP (≥ 768px)
             ══════════════════════════════════════════════════════ */}
-            {/* ══════════════════════════════════════════════════════
-                SECTION DESKTOP (≥ 768px) — SPLIT 2 COLONNES
-            ══════════════════════════════════════════════════════ */}
-            <section className="hidden md:block relative w-full min-h-[90vh] bg-[#FBF9F5] overflow-hidden">
+            <section className="hidden md:block relative w-full min-h-[92vh] bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
 
-                {/* Filigrane Notre-Dame de la Garde */}
-                <NdlgWatermark />
+                {/* Halos doux d'ambiance Lilas et Pêche */}
+                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-[#ECDDFD]/60 blur-3xl pointer-events-none" />
+                <div className="absolute bottom-[5%] left-[-8%] w-[450px] h-[450px] rounded-full bg-[#E1BBCB]/40 blur-3xl pointer-events-none" />
 
                 {/* ── GRILLE PRINCIPALE ── */}
-                <div className="relative z-10 container mx-auto px-6 lg:px-10 xl:px-16 max-w-7xl h-full min-h-[90vh] flex items-center">
-                    <div className="grid lg:grid-cols-2 gap-12 xl:gap-20 items-center w-full py-24 lg:py-0">
+                <div className="relative z-10 container mx-auto px-6 lg:px-10 xl:px-16 max-w-7xl h-full min-h-[92vh] flex items-center">
+                    <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-28 lg:py-0">
 
-                        {/* ── COLONNE GAUCHE : Message & Action épuré ── */}
+                        {/* ── COLONNE GAUCHE : Message & Action chaleureux ── */}
                         <motion.div
-                            initial={{ opacity: 0, x: -40 }}
+                            initial={{ opacity: 0, x: -30 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-                            className="flex flex-col gap-8 items-start"
+                            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                            className="lg:col-span-7 flex flex-col gap-6 items-start text-left"
                         >
-                            {/* Titre éditorial H1 */}
-                            <div>
-                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border-1.5 border-[#0A1120] shadow-[3px_3px_0px_0px_#0A1120] mb-6 -rotate-1 hover:rotate-0 transition-transform">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-orange-600 animate-pulse" />
-                                    <span className="text-xs font-display font-black uppercase tracking-wider text-[#0A1120]">
-                                        Association étudiante · KEDGE BS
-                                    </span>
-                                    <span className="text-xs text-slate-300 font-bold">|</span>
-                                    <span className="text-xs font-display font-black text-orange-600 uppercase tracking-wider">
-                                        100% bénévole
-                                    </span>
-                                </div>
-                                <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-display font-black leading-[0.96] tracking-tight text-[#0A1120] uppercase">
-                                    Faire briller <br />
-                                    <span
-                                        className="text-transparent bg-clip-text"
-                                        style={{
-                                            backgroundImage:
-                                                'linear-gradient(90deg, #EA580C 0%, #F59E0B 60%, #EA580C 100%)',
-                                        }}
-                                    >
-                                        les talents
-                                    </span>{' '}
-                                    <br />
-                                    <span className="text-[#0A1120]">de Marseille</span>
-                                </h1>
-                                <p className="mt-5 text-slate-600 font-medium text-base sm:text-lg max-w-lg leading-relaxed">
-                                    Depuis 2006, nos tuteurs mobilisent leur énergie auprès de 300 collégiens et lycéens marseillais pour abattre l'autocensure et révéler leur potentiel.
-                                </p>
+                            {/* Pastille officielle KEDGE BS */}
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider shadow-xs">
+                                <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
+                                <span>KEDGE Business School · Association étudiante</span>
+                                <span className="text-[#904990]">✦</span>
+                                <span className="text-[#EC602B]">100% Bénévole</span>
                             </div>
 
-                            {/* Double CTA tactiles */}
-                            <div className="flex flex-row gap-4 items-center">
+                            {/* Titre Shrikhand signature */}
+                            <h1 className="text-4xl xl:text-6xl font-display leading-[1.12] text-[#2A082D]">
+                                Faire briller <br />
+                                <span className="bg-gradient-to-r from-[#6F2B75] via-[#904990] to-[#EC602B] bg-clip-text text-transparent">
+                                    tous les talents
+                                </span>{' '}
+                                <br />
+                                de Marseille.
+                            </h1>
+
+                            {/* Note manuscrite Allura */}
+                            <div className="font-script text-2xl xl:text-3xl text-[#EC602B] -mt-2 rotate-[-2deg] select-none">
+                                ~ Depuis 2011, l'égalité des chances sur le terrain ~
+                            </div>
+
+                            {/* Paragraphe chaleureux */}
+                            <p className="text-slate-700 text-base sm:text-lg max-w-xl leading-relaxed font-medium">
+                                Chaque semaine, plus de <strong className="text-[#6F2B75] font-bold">100 étudiants de KEDGE BS</strong> accompagnent <strong className="text-[#EC602B] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre engagement : créer le déclic, vaincre l'autocensure et ouvrir grand le champ des possibles.
+                            </p>
+
+                            {/* Double CTA en pilules douces */}
+                            <div className="flex flex-wrap items-center gap-4 pt-2">
                                 <Link
                                     to="/projets"
-                                    className="btn-tactile-primary px-7 py-3.5 rounded-xl text-sm shadow-[4px_4px_0px_0px_#0A1120] hover:shadow-[2px_2px_0px_0px_#0A1120] hover:translate-x-[2px] hover:translate-y-[2px]"
+                                    className="btn-phoenix-gradient px-8 py-4 text-sm"
                                 >
-                                    <span>Découvrir nos projets</span>
+                                    <span>Découvrir nos 9 projets</span>
                                     <ArrowRight size={18} />
                                 </Link>
 
                                 <Link
                                     to="/contact"
-                                    className="btn-tactile-secondary px-7 py-3.5 rounded-xl text-sm shadow-[3px_3px_0px_0px_#0A1120] hover:shadow-[1px_1px_0px_0px_#0A1120] hover:translate-x-[2px] hover:translate-y-[2px]"
+                                    className="btn-phoenix-outline px-7 py-3.5 text-sm"
                                 >
-                                    <Heart size={16} className="text-orange-600 fill-orange-600" />
-                                    <span>Nous rejoindre</span>
+                                    <Heart size={16} className="text-[#EC602B] fill-[#EC602B]" />
+                                    <span>Rejoindre l'aventure</span>
                                 </Link>
+                            </div>
+
+                            {/* Micro-mention de réassurance */}
+                            <div className="flex items-center gap-3 pt-2 text-xs font-semibold text-slate-500">
+                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#ECDDFD] text-[#6F2B75]">
+                                    <Sparkles size={12} className="text-[#EC602B]" />
+                                    5 Cordées de la Réussite
+                                </span>
+                                <span className="text-slate-400">·</span>
+                                <span>Reconnue d'Intérêt Général</span>
                             </div>
                         </motion.div>
 
-                        {/* ── COLONNE DROITE : Composition photographique ── */}
+                        {/* ── COLONNE DROITE : Composition circulaire & douce ── */}
                         <motion.div
-                            initial={{ opacity: 0, x: 40 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, scale: 0.92 }}
+                            animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                            className="relative h-[520px] xl:h-[580px] flex items-center justify-center"
+                            className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center"
                         >
-                            {/* ── Photo 1 : arrière-plan, penchée à -3deg ── */}
-                            <motion.div
-                                initial={{ opacity: 0, rotate: -6, scale: 0.9 }}
-                                animate={{ opacity: 1, rotate: -3, scale: 1 }}
-                                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                                className="absolute top-8 right-8 xl:right-4 w-[52%] aspect-[4/5] rounded-2xl overflow-hidden shadow-[6px_6px_0px_0px_#0A1120] border-2 border-[#0A1120] z-10"
-                                style={{ transformOrigin: 'top right' }}
-                            >
-                                <img
-                                    src="/images/projects/hero-2.png"
-                                    alt="Tutorat Phoenix EDC"
-                                    className="w-full h-full object-cover"
-                                    draggable={false}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
-                            </motion.div>
-
-                            {/* ── Photo 2 : centrale principale, +2deg ── */}
-                            <motion.div
-                                initial={{ opacity: 0, rotate: 5, scale: 0.88 }}
-                                animate={{ opacity: 1, rotate: 2, scale: 1 }}
-                                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                                className="absolute bottom-4 left-0 xl:-left-4 w-[62%] aspect-[3/4] rounded-2xl overflow-hidden shadow-[7px_7px_0px_0px_#0A1120] border-2 border-[#0A1120] z-20"
-                                style={{ transformOrigin: 'bottom left' }}
-                            >
+                            {/* Grand médaillon central arrondi / pilule */}
+                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-[3rem] overflow-hidden shadow-soft-lg border-4 border-white z-10">
                                 <img
                                     src="/images/projects/hero-1.png"
-                                    alt="Jeunes Phoenix EDC Marseille"
-                                    className="w-full h-full object-cover object-top"
+                                    alt="Tuteurs et tutorés de Phoenix EDC à Marseille"
+                                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out"
                                     draggable={false}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
-                            </motion.div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent pointer-events-none" />
+                            </div>
 
-                            {/* ── Photo 3 : accent haut gauche, -2deg ── */}
+                            {/* Médaillon circulaire d'ambiance 2 */}
                             <motion.div
-                                initial={{ opacity: 0, rotate: 3, scale: 0.85 }}
-                                animate={{ opacity: 1, rotate: -1.5, scale: 1 }}
-                                transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-                                className="absolute top-2 left-6 xl:left-0 w-[38%] aspect-square rounded-2xl overflow-hidden shadow-[5px_5px_0px_0px_#0A1120] border-2 border-[#0A1120] z-30"
-                                style={{ transformOrigin: 'top left' }}
+                                initial={{ opacity: 0, scale: 0.85 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                                className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-soft border-4 border-white z-20"
                             >
                                 <img
                                     src="/images/projects/hero-3.png"
-                                    alt="Sortie culturelle Phoenix EDC"
+                                    alt="Sorties et ateliers"
                                     className="w-full h-full object-cover"
                                     draggable={false}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
                             </motion.div>
 
-                            {/* ── Badge net 1 : Projets actifs ── */}
+                            {/* Badge Macaron 1 : Projets actifs */}
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.7, duration: 0.5 }}
-                                className="absolute top-[14%] right-[2%] z-40"
+                                transition={{ delay: 0.4, duration: 0.5 }}
+                                className="absolute top-10 -right-4 xl:-right-6 z-30"
                             >
-                                <FloatingBadge
-                                    icon={<Zap size={14} className="text-orange-600 shrink-0" />}
-                                    label="9 Projets actifs à Marseille"
+                                <MacaronBadge
+                                    icon={<Zap size={16} />}
+                                    value="9 Projets"
+                                    label="Sur le terrain marseillais"
                                 />
                             </motion.div>
 
-                            {/* ── Badge net 2 : Jeunes accompagnés ── */}
+                            {/* Badge Macaron 2 : Jeunes accompagnés */}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.85, duration: 0.5 }}
-                                className="absolute bottom-[12%] right-[3%] z-40"
+                                transition={{ delay: 0.5, duration: 0.5 }}
+                                className="absolute -bottom-2 -left-4 xl:-left-6 z-30"
                             >
-                                <FloatingBadge
-                                    icon={<GraduationCap size={14} className="text-blue-600 shrink-0" />}
-                                    label="300+ jeunes accompagnés"
+                                <MacaronBadge
+                                    icon={<GraduationCap size={16} />}
+                                    value="300+ Jeunes"
+                                    label="Collégiens & lycéens suivis"
                                 />
                             </motion.div>
+
+                            {/* Pastille officielle Phœnix avec logo rond */}
+                            <div className="absolute -bottom-4 right-6 z-30 p-1.5 rounded-full bg-white shadow-soft border border-[#ECDDFD]">
+                                <img
+                                    src="/logo-badge.jpg"
+                                    alt="Logo officiel Phoenix"
+                                    className="w-14 h-14 rounded-full object-contain"
+                                />
+                            </div>
                         </motion.div>
                     </div>
                 </div>
-
-                {/* Vague marine de transition */}
-                <MarineWave />
             </section>
 
             {/* ══════════════════════════════════════════════════════
-                SECTION MOBILE (< 768px) — EMPILÉ COMPACT & ÉPURÉ
+                SECTION MOBILE (< 768px)
             ══════════════════════════════════════════════════════ */}
             <section 
-                style={{ paddingTop: 'calc(max(7rem, env(safe-area-inset-top, 0px) + 5.5rem))' }}
-                className="md:hidden relative w-full pb-10 px-5 bg-[#FBF9F5] overflow-hidden flex flex-col items-center text-center"
+                style={{ paddingTop: 'calc(max(6.5rem, env(safe-area-inset-top, 0px) + 5rem))' }}
+                className="md:hidden relative w-full pb-14 px-5 bg-[#FFFBF4] bg-bird-pattern overflow-hidden flex flex-col items-center text-center"
             >
-
-                {/* Badge sticker mobile */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] mb-4 -rotate-1">
-                    <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
-                    <span className="text-[11px] font-display font-black uppercase tracking-wider text-[#0A1120]">
-                        Association étudiante · 100% bénévole
-                    </span>
+                {/* Pastille mobile */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-[11px] font-school font-bold tracking-wider mb-4 shadow-xs">
+                    <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
+                    <span>KEDGE BS · 100% Bénévole</span>
                 </div>
 
-                {/* H1 mobile */}
+                {/* H1 mobile Shrikhand */}
                 <motion.h1
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55 }}
-                    className="text-4xl font-display font-black leading-[0.98] tracking-tight text-[#0A1120] uppercase mb-4"
+                    className="text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight"
                 >
                     Faire briller <br />
-                    <span
-                        className="text-transparent bg-clip-text"
-                        style={{ backgroundImage: 'linear-gradient(90deg, #EA580C 0%, #F59E0B 80%)' }}
-                    >
-                        les talents
+                    <span className="bg-gradient-to-r from-[#6F2B75] via-[#904990] to-[#EC602B] bg-clip-text text-transparent">
+                        tous les talents
                     </span>{' '}
                     <br />
-                    de Marseille
+                    de Marseille.
                 </motion.h1>
 
-                <p className="text-slate-600 font-medium text-sm leading-relaxed mb-6 max-w-xs">
-                    Tutorat, culture et avenir pour 300 jeunes marseillais chaque semaine.
+                {/* Note manuscrite mobile */}
+                <div className="font-script text-2xl text-[#EC602B] mb-3 -rotate-2">
+                    ~ Depuis 2011 sur le terrain ~
+                </div>
+
+                <p className="text-slate-700 text-sm leading-relaxed mb-6 max-w-xs font-medium">
+                    Tutorat, sorties culturelles et mentorat pour 300 jeunes marseillais chaque semaine.
                 </p>
 
-                {/* CTAs côte à côte structurés */}
-                <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.15 }}
-                    className="flex flex-row gap-3 w-full max-w-xs justify-center items-center mb-8"
-                >
+                {/* CTAs mobile en pilules */}
+                <div className="flex flex-row gap-2.5 w-full max-w-xs justify-center items-center mb-8">
                     <Link
                         to="/projets"
-                        className="flex-1 btn-tactile-primary py-3 px-4 rounded-xl text-xs shadow-[3px_3px_0px_0px_#0A1120]"
+                        className="flex-1 btn-phoenix-gradient py-3 px-4 text-xs"
                     >
-                        <span>Nos projets</span>
-                        <ArrowRight size={15} />
+                        <span>Nos 9 projets</span>
+                        <ArrowRight size={14} />
                     </Link>
                     <Link
                         to="/contact"
-                        className="flex-1 btn-tactile-secondary py-3 px-4 rounded-xl text-xs shadow-[2px_2px_0px_0px_#0A1120]"
+                        className="flex-1 btn-phoenix-outline py-3 px-4 text-xs"
                     >
-                        <Heart size={13} className="text-orange-600 fill-orange-600" />
+                        <Heart size={13} className="text-[#EC602B] fill-[#EC602B]" />
                         <span>Rejoindre</span>
                     </Link>
-                </motion.div>
+                </div>
 
-                {/* Composition photo mobile — nette & géométrique */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.65, delay: 0.25 }}
-                    className="relative w-full max-w-sm mx-auto mb-6"
-                >
-                    {/* Photo principale */}
-                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[5px_5px_0px_0px_#0A1120] border-2 border-[#0A1120]">
+                {/* Composition photo mobile arrondie */}
+                <div className="relative w-full max-w-sm mx-auto mb-4">
+                    <div className="relative w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-soft border-3 border-white">
                         <img
                             src="/images/projects/hero-1.png"
                             alt="Phoenix EDC Marseille"
                             className="w-full h-full object-cover object-top"
                             draggable={false}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent" />
                     </div>
 
-                    {/* Photo secondaire en coin bas-gauche */}
-                    <div className="absolute -bottom-3 -left-2 w-24 h-24 rounded-xl overflow-hidden shadow-[3px_3px_0px_0px_#0A1120] border-2 border-[#0A1120] z-10 rotate-2">
-                        <img
-                            src="/images/projects/hero-3.png"
-                            alt="Activité Phoenix EDC"
-                            className="w-full h-full object-cover"
-                            draggable={false}
-                        />
+                    {/* Badge rond mobile 1 */}
+                    <div className="absolute -bottom-3 -left-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#ECDDFD] shadow-soft text-[11px] font-bold text-[#6F2B75]">
+                        <Zap size={13} className="text-[#EC602B]" />
+                        <span>9 Projets de terrain</span>
                     </div>
 
-                    {/* Badge net 1 — haut droite */}
-                    <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] text-[11px] font-display font-bold text-[#0A1120]">
-                        <Zap size={12} className="text-orange-600" />
-                        <span>9 Projets</span>
+                    {/* Badge rond mobile 2 */}
+                    <div className="absolute -top-3 -right-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#ECDDFD] shadow-soft text-[11px] font-bold text-[#2A082D]">
+                        <GraduationCap size={13} className="text-[#6F2B75]" />
+                        <span>300+ Jeunes</span>
                     </div>
-
-                    {/* Badge net 2 — bas droite */}
-                    <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border-1.5 border-[#0A1120] shadow-[2px_2px_0px_0px_#0A1120] text-[11px] font-display font-bold text-[#0A1120]">
-                        <Users size={12} className="text-blue-600" />
-                        <span>300+ jeunes</span>
-                    </div>
-                </motion.div>
-
-                {/* Vague marine mobile */}
-                <MarineWave />
+                </div>
             </section>
         </>
     );
