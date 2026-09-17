@@ -11,21 +11,20 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
     // Détection mobile : pas de useState pour éviter un flash, lecture directe au mount
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-    // Un seul useEffect toujours appelé (respect des Rules of Hooks)
     useEffect(() => {
-        // Sur mobile on saute l'animation pour éviter la surcharge GPU
+        // Sur mobile on saute l'animation
         if (isMobile) {
             onComplete();
             return;
         }
 
-        // Sequence (Turbo Mode - Max 2s):
-        // 0s: Background
-        // 0.1s: PHOENIX Explodes in
-        // 0.4s: Subtitle Wipe
-        // 1.8s: Fade out
-        const timer1 = setTimeout(() => setIsVisible(false), 1800);
-        const timer2 = setTimeout(() => onComplete(), 2300);
+        // Sequence (2s total):
+        // 0.1s: PHOENIX entre en stagger
+        // 0.4s: Subtitle wipe
+        // 1.7s: Fade out commence
+        // 2.2s: onComplete → site dévoilé
+        const timer1 = setTimeout(() => setIsVisible(false), 1700);
+        const timer2 = setTimeout(() => onComplete(), 2200);
 
         return () => {
             clearTimeout(timer1);
@@ -33,17 +32,14 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
         };
     }, [onComplete, isMobile]);
 
-    // Sur mobile : rendu nul (onComplete déjà appelé dans l'effect)
     if (isMobile) return null;
 
-    // --- ANIMATIONS ---
-
-    // 1. PHOENIX TITLE
+    // 1. Stagger par lettre pour PHOENIX
     const titleContainer = {
         hidden: {},
         visible: {
             transition: {
-                staggerChildren: 0.04, // Very fast stagger
+                staggerChildren: 0.05,
                 delayChildren: 0.1
             }
         }
@@ -51,10 +47,10 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
 
     const titleLetter = {
         hidden: {
-            y: 80,
+            y: 70,
             opacity: 0,
-            filter: "blur(20px)",
-            scale: 0.8
+            filter: "blur(16px)",
+            scale: 0.85
         },
         visible: {
             y: 0,
@@ -62,29 +58,27 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
             filter: "blur(0px)",
             scale: 1,
             transition: {
-                duration: 0.6,
+                duration: 0.55,
                 ease: [0.16, 1, 0.3, 1] as any
             }
         }
     };
 
-    // 2. SUBTITLE
+    // 2. Subtitle wipe
     const subtitleVar = {
         hidden: {
             opacity: 0,
-            y: 20,
-            letterSpacing: "-0.05em",
-            filter: "blur(8px)"
+            y: 14,
+            letterSpacing: "-0.02em",
         },
         visible: {
             opacity: 1,
             y: 0,
-            letterSpacing: "0.5em",
-            filter: "blur(0px)",
+            letterSpacing: "0.45em",
             transition: {
-                duration: 0.8,
+                duration: 0.75,
                 ease: "easeOut" as any,
-                delay: 0.4
+                delay: 0.45
             }
         }
     };
@@ -94,70 +88,67 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
             {isVisible && (
                 <motion.div
                     className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
-                    exit={{ opacity: 0, filter: "blur(15px)", transition: { duration: 0.8 } }}
+                    exit={{ opacity: 0, scale: 1.04, filter: "blur(12px)", transition: { duration: 0.65, ease: "easeInOut" } }}
                 >
-                    {/* --- WARM LIGHT BACKGROUND --- */}
-                    <div className="absolute inset-0 z-0 bg-slate-50">
-                        {/* Soft warm gradient base */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-orange-50/60 via-white to-slate-50" />
-                        <motion.div
-                            className="absolute inset-0 opacity-60"
-                            animate={{
-                                backgroundPosition: ["0% 0%", "100% 100%"],
-                                scale: [1, 1.15, 1]
-                            }}
-                            transition={{ duration: 18, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
-                            style={{
-                                background: "radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.12) 0%, transparent 60%), radial-gradient(circle at 85% 15%, rgba(251, 146, 60, 0.15) 0%, transparent 45%)",
-                                filter: "blur(90px)"
-                            }}
-                        />
+                    {/* ── FOND CHARTE : Crème chaud #FFFBF4 avec halos Phoenix ── */}
+                    <div className="absolute inset-0 z-0 bg-[#FFFBF4]">
+                        {/* Halo lilas doux en haut à droite */}
+                        <div className="absolute top-[-8%] right-[-6%] w-[500px] h-[500px] rounded-full bg-[#ECDDFD]/50 blur-[120px]" />
+                        {/* Halo vieux rose en bas à gauche */}
+                        <div className="absolute bottom-[-8%] left-[-6%] w-[450px] h-[450px] rounded-full bg-[#E1BBCB]/40 blur-[100px]" />
+                        {/* Accent orange subtil centré */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] rounded-full bg-[#EC602B]/08 blur-[80px]" />
                     </div>
 
-                    <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+                    <div className="relative z-10 flex flex-col items-center justify-center text-center px-4">
 
-                        {/* --- THE MAIN EVENT: TEXT ONLY --- */}
-                        <div className="flex flex-col items-center justify-center text-center px-4">
-
-                            {/* "PHOENIX" - GIANT GRADIENT STAGGER */}
-                            <div translate="no" className="notranslate overflow-hidden py-4 -my-4">
-                                <motion.h1
-                                    translate="no"
-                                    className="notranslate text-6xl md:text-9xl lg:text-[10rem] font-black uppercase tracking-tighter flex items-center justify-center leading-none"
-                                    variants={titleContainer}
-                                    initial="hidden"
-                                    animate="visible"
-                                >
-                                    {Array.from("PHOENIX").map((char, i) => (
-                                        <motion.span
-                                            key={i}
-                                            variants={titleLetter}
-                                            className="inline-block relative"
-                                            style={{
-                                                backgroundImage: "linear-gradient(180deg, #EA580C 0%, #F97316 50%, #FB923C 100%)",
-                                                WebkitBackgroundClip: "text",
-                                                WebkitTextFillColor: "transparent",
-                                                filter: "drop-shadow(0 6px 16px rgba(234, 88, 12, 0.2))"
-                                            }}
-                                        >
-                                            {char}
-                                        </motion.span>
-                                    ))}
-                                </motion.h1>
-                            </div>
-
-                            {/* "ÉGALITÉ DES CHANCES" */}
-                            <motion.div
-                                variants={subtitleVar}
+                        {/* ── PHOENIX — Shrikhand Gradient officiel Violet → Orange ── */}
+                        <div translate="no" className="notranslate overflow-hidden py-4 -my-4">
+                            <motion.h1
+                                translate="no"
+                                className="notranslate font-display text-8xl md:text-[9rem] lg:text-[11rem] leading-none flex items-center justify-center"
+                                variants={titleContainer}
                                 initial="hidden"
                                 animate="visible"
-                                className="mt-6 md:mt-8"
                             >
-                                <h2 className="text-xs md:text-xl font-bold text-slate-700 uppercase tracking-widest leading-relaxed">
-                                    ÉGALITÉ DES CHANCES
-                                </h2>
-                            </motion.div>
+                                {Array.from("PHOENIX").map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        variants={titleLetter}
+                                        className="inline-block relative"
+                                        style={{
+                                            backgroundImage: "linear-gradient(135deg, #6F2B75 0%, #904990 40%, #EC602B 100%)",
+                                            WebkitBackgroundClip: "text",
+                                            WebkitTextFillColor: "transparent",
+                                            backgroundClip: "text",
+                                            filter: "drop-shadow(0 4px 20px rgba(111,43,117,0.18))"
+                                        }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))}
+                            </motion.h1>
                         </div>
+
+                        {/* ── ÉGALITÉ DES CHANCES ── */}
+                        <motion.div
+                            variants={subtitleVar}
+                            initial="hidden"
+                            animate="visible"
+                            className="mt-5 md:mt-7"
+                        >
+                            <p className="text-xs md:text-sm font-school font-bold text-[#6F2B75] uppercase leading-relaxed">
+                                ÉGALITÉ DES CHANCES
+                            </p>
+                        </motion.div>
+
+                        {/* ── Trait décoratif orange ── */}
+                        <motion.div
+                            initial={{ scaleX: 0, opacity: 0 }}
+                            animate={{ scaleX: 1, opacity: 1 }}
+                            transition={{ delay: 0.9, duration: 0.6, ease: "easeOut" }}
+                            className="mt-4 w-16 h-0.5 bg-gradient-to-r from-[#6F2B75] to-[#EC602B] rounded-full origin-left"
+                        />
                     </div>
                 </motion.div>
             )}
