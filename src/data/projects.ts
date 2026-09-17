@@ -31,7 +31,7 @@ export const projects: ProjectItem[] = [
         category: 'Lycée',
         type: 'Culture & Orientation',
         description: "Projet Cordée de la Réussite phare, ACSE accompagne 60 lycéens marseillais chaque samedi à Kedge BS : ouverture culturelle, développement personnel et préparation aux études supérieures.",
-        fullDescription: "À Chacun Son Excellence est un projet de tutorat culturel qui s'adresse à des lycéens volontaires de la seconde à la terminale issus notamment des lycées Saint-Exupéry et Saint-Charles. Les jeunes intègrent le projet en seconde et sont suivis jusqu'à l'obtention de leur baccalauréat. Chaque tuteur accompagne deux tutorés et les encourage à poursuivre leurs études supérieures. Chaque samedi après-midi de 14h à 17h30 sur le campus de Kedge BS, les séances s'articulent autour de 3 axes : l'ouverture culturelle, le développement personnel et l'aide à l'orientation. Des sorties culturelles, un voyage culturel et un voyage de révisions sont organisés chaque année afin de préparer le baccalauréat et d'enrichir la culture générale des élèves.",
+        fullDescription: "À Chacun Son Excellence est un projet de tutorat culturel qui s'adresse à des lycéens volontaires de la seconde à la terminale issus notamment des lycées Saint-Exupéry et Saint-Charles. Les jeunes intègrent le projet en seconde et sont suivis jusqu'à l'obtention de leur baccalauréat. Chaque tuteur accompagne deux tutorés et les encourage à poursuivre leurs études supérieures. Chaque samedi après-midi de 14h à 17h30 sur le campus de Kedge BS, les séances s'articulent autour de 3 axes : l'ouverture culturelle, le développement personnel et l'aide à l'orientation. Des sorties culturelles et un voyage culturel sont organisés chaque année afin de préparer le baccalauréat et d'enrichir la culture générale des élèves.",
         icon: School,
         image: '/images/projects/acse-logo.png',
         banner: '/images/banners/acse-banner-v2.jpg',
@@ -44,7 +44,7 @@ export const projects: ProjectItem[] = [
         axes: ["Ouverture culturelle", "Aide à l'orientation", "Développement personnel"],
         chefs: ["Elyas BOURHIS", "Ryadh ABDELMALEK"],
         instagram: "a_chacun_son_excellence",
-        trip: "Voyage culturel & voyage de révisions pour le bac"
+        trip: "Voyage culturel & sorties annuelles"
     },
     {
         id: 'apprentis-d-auteuil',
