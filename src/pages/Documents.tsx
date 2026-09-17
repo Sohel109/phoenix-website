@@ -50,7 +50,7 @@ export function Documents() {
     ];
 
     return (
-        <div ref={containerRef} className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
+        <div ref={containerRef} className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                 {/* Header */}
                 <div className="text-center mb-16">

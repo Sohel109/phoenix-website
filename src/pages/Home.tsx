@@ -10,7 +10,7 @@ export function Home() {
     const { t } = useTranslation();
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             {/* Scroll Reveal Hero */}
             <HeroScroll />
 

@@ -204,7 +204,7 @@ export function Association() {
     ];
 
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             {/* Toast de confirmation de sauvegarde */}
             {showSuccessToast && (
                 <div className="fixed bottom-6 right-6 z-50 bg-[#2A082D] text-white px-5 py-3 rounded-full shadow-soft-lg flex items-center gap-3 border border-[#ECDDFD]/40 animate-in fade-in slide-in-from-bottom-4">

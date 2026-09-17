@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export function LegalMentions() {
     return (
-        <div className="min-h-screen bg-transparent pt-page-safe pb-20 transition-colors duration-300">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20 transition-colors duration-300">
             <div className="container mx-auto px-4 max-w-4xl">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

@@ -87,11 +87,12 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
+                    onClick={() => onComplete()}
+                    className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden cursor-pointer select-none"
                     exit={{ opacity: 0, scale: 1.04, filter: "blur(12px)", transition: { duration: 0.65, ease: "easeInOut" } }}
                 >
-                    {/* ── FOND CHARTE : Crème chaud #FFFBF4 avec halos Phoenix ── */}
-                    <div className="absolute inset-0 z-0 bg-[#FFFBF4]">
+                    {/* ── FOND CHARTE : Crème chaud #FFFBF4 avec trame oiseau & halos Phoenix ── */}
+                    <div className="absolute inset-0 z-0 bg-[#FFFBF4] bg-bird-pattern">
                         {/* Halo lilas doux en haut à droite */}
                         <div className="absolute top-[-8%] right-[-6%] w-[500px] h-[500px] rounded-full bg-[#ECDDFD]/50 blur-[120px]" />
                         {/* Halo vieux rose en bas à gauche */}
@@ -99,6 +100,18 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
                         {/* Accent orange subtil centré */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] rounded-full bg-[#EC602B]/08 blur-[80px]" />
                     </div>
+
+                    {/* Bouton discret Passer */}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onComplete();
+                        }}
+                        className="absolute top-6 right-6 z-20 text-xs font-school font-bold text-[#6F2B75]/70 hover:text-[#EC602B] transition-colors px-3 py-1.5 rounded-full bg-white/60 backdrop-blur-sm border border-[#ECDDFD]"
+                    >
+                        Passer l'intro ✕
+                    </button>
 
                     <div className="relative z-10 flex flex-col items-center justify-center text-center px-4">
 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export function Events() {
     return (
-        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4]">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-14 sm:mb-18">

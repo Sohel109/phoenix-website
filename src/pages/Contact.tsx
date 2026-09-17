@@ -14,7 +14,7 @@ export function Contact() {
     const selectedCategory = overrideCategory !== undefined ? overrideCategory : queryCategory;
 
     return (
-        <div className="min-h-screen bg-transparent pt-page-safe pb-24 transition-colors duration-300">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24 transition-colors duration-300">
             <div className="container mx-auto px-6 max-w-5xl">
 
                 {/* Header */}

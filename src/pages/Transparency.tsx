@@ -49,7 +49,7 @@ export function Transparency() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-page-safe pb-16">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-16">
             <div className="container mx-auto px-4 max-w-5xl">
                 {/* Back Button */}
                 <motion.button

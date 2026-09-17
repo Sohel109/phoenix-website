@@ -42,7 +42,7 @@ export function EventDetail() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent pt-page-safe pb-20 transition-colors duration-300">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20 transition-colors duration-300">
             {/* Background Elements */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-50 dark:opacity-30">
                 <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-secondary/10 rounded-full blur-[100px]" />

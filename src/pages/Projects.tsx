@@ -43,7 +43,7 @@ export function Projects() {
     ];
 
     return (
-        <div className="pt-page-safe pb-24 bg-[#FFFBF4] min-h-screen">
+        <div className="pt-page-safe pb-24 bg-[#FFFBF4] bg-bird-pattern min-h-screen">
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header Section */}
                 <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-18">

@@ -149,7 +149,7 @@ export function NotFound() {
     }, [path]);
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center px-4 pt-page-safe pb-16">
+        <div className="min-h-[80vh] flex items-center justify-center px-4 pt-page-safe pb-16 bg-[#FFFBF4] bg-bird-pattern">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

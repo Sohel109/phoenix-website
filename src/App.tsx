@@ -76,7 +76,7 @@ function App() {
         </AnimatePresence>
 
         {!showIntro && (
-          <div className="flex flex-col min-h-screen font-sans animate-in fade-in duration-700">
+          <div className="flex flex-col min-h-screen font-sans animate-in fade-in duration-700 bg-[#FFFBF4] bg-bird-pattern">
             <AuroraBackground />
             <Header />
             {/* Popups désactivés à la demande de l'utilisateur */}
