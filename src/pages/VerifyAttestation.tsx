@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { ShieldCheck, CheckCircle2, Clock, Building2, User, Award, ArrowLeft, Search, FileText } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { getAcademicYear } from '../utils/academicYear';
 
 export function VerifyAttestation() {
     const [searchParams, setSearchParams] = useSearchParams();
 
+    const { academicYear: currentAcademicYear } = getAcademicYear();
     const ref = searchParams.get('ref');
     const name = searchParams.get('name') || 'Bénévole Phœnix';
     const rawRole = searchParams.get('role') || 'tuteur';
     const hours = searchParams.get('hours') || searchParams.get('h') || '50';
     const validParam = searchParams.get('valid');
     const statusParam = searchParams.get('status');
-    const year = searchParams.get('y') || '2025–2026';
+    const year = searchParams.get('y') || currentAcademicYear;
 
     const [inputRef, setInputRef] = useState('');
 

@@ -6,6 +6,7 @@ import { timeSlots, getSlotDuration } from '../../data/planningData';
 import { projectsData } from '../../data/projectsData';
 import { getBureauPresident } from '../../data/teamData';
 import { usePlanning } from '../../context/PlanningContext';
+import { getAcademicYear } from '../../utils/academicYear';
 
 interface AttestationModalProps {
     user: PlanningUser;
@@ -16,7 +17,7 @@ interface AttestationModalProps {
 /**
  * Cachet Officiel Associatif vectoriel réaliste
  */
-function OfficialStamp() {
+function OfficialStamp({ academicYear }: { academicYear: string }) {
     return (
         <div className="relative w-28 h-28 shrink-0 select-none pointer-events-none -rotate-3 transition-transform">
             <svg viewBox="0 0 200 200" className="w-full h-full text-[#6F2B75]/90 drop-shadow-xs">
@@ -57,7 +58,7 @@ function OfficialStamp() {
                     <text y="8" className="text-[9px] font-black uppercase tracking-wider">EXÉCUTIF</text>
                     <line x1="-28" y1="12" x2="28" y2="12" stroke="currentColor" strokeWidth="1" />
                     <text y="21" className="text-[7.5px] font-bold uppercase tracking-wider">CERTIFIÉ CONFORME</text>
-                    <text y="30" className="text-[7.5px] font-mono font-bold">2025–2026</text>
+                    <text y="30" className="text-[7.5px] font-mono font-bold">{academicYear}</text>
                 </g>
             </svg>
         </div>
@@ -125,6 +126,8 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
         return { project, hours, count: projBookings.length };
     }).filter(p => p.project);
 
+    const { academicYear, academicYearSlug, previousAcademicYear } = getAcademicYear();
+
     const todayStr = new Date().toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
@@ -134,7 +137,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
     const refNumber = `PHX-ATT-${new Date().getFullYear()}-${user.id.toUpperCase().replace(/[^A-Z0-9]/g, '')}`;
 
     // URL officielle de vérification pour le QR code
-    const verificationUrl = `https://www.phoenix-egalite-des-chances.com/verifier?ref=${encodeURIComponent(refNumber)}&name=${encodeURIComponent(user.name)}&role=${encodeURIComponent(user.role)}&hours=${totalHours}&valid=${isValidated ? '1' : '0'}&status=${encodeURIComponent(isExempt ? 'Renouvelant' : isValidated ? 'Valide' : 'En cours')}&y=2025-2026`;
+    const verificationUrl = `https://www.phoenix-egalite-des-chances.com/verifier?ref=${encodeURIComponent(refNumber)}&name=${encodeURIComponent(user.name)}&role=${encodeURIComponent(user.role)}&hours=${totalHours}&valid=${isValidated ? '1' : '0'}&status=${encodeURIComponent(isExempt ? 'Renouvelant' : isValidated ? 'Valide' : 'En cours')}&y=${encodeURIComponent(academicYear)}`;
 
     // Pré-génération du QR code en base64 pour un rendu immédiat et sans latence dans html2pdf
     useEffect(() => {
@@ -165,7 +168,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
 
             const opt = {
                 margin: 0,
-                filename: `Attestation_Phoenix_${user.name.replace(/\s+/g, '_')}_2025_2026.pdf`,
+                filename: `Attestation_Phoenix_${user.name.replace(/\s+/g, '_')}_${academicYearSlug}.pdf`,
                 image: { type: 'jpeg' as const, quality: 0.98 },
                 html2canvas: {
                     scale: 2,
@@ -413,7 +416,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                 </h2>
                                 <div className="flex items-center justify-center gap-2 mt-1">
                                     <span className="text-xs font-bold text-[#EC602B] uppercase tracking-wider">
-                                        Année Universitaire 2025–2026
+                                        Année Universitaire {academicYear}
                                     </span>
                                     <span className="text-zinc-300">·</span>
                                     <span className={`inline-block px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
@@ -424,7 +427,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                             : "bg-amber-100 text-amber-800 border-amber-300"
                                     }`}>
                                         {isExempt
-                                            ? `Validée · Quota N-1 acquis (+${totalHours}h en 2025-2026)`
+                                            ? `Validée · Quota N-1 acquis (+${totalHours}h en ${academicYear})`
                                             : isValidated
                                             ? `Validée · ${totalHours}h effectuées (Seuil 50h atteint)`
                                             : `En cours · ${totalHours}h / ${ATTESTATION_THRESHOLD}h requises`}
@@ -450,19 +453,19 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                             <div className="text-xs leading-relaxed text-zinc-700 mb-4 text-justify">
                                 {isExempt ? (
                                     <p>
-                                        a d'ores et déjà satisfait avec assiduité à l'obligation statutaire d'engagement de 50 heures au titre de son mandat précédent (2024–2025, membre renouvelant). Au cours de la présente année académique 2025–2026, l'intéressé(e) poursuit activement son investissement citoyen au sein de l'association. Les heures ci-dessous récapitulent fidèlement les séances et missions enregistrées au registre officiel.
+                                        a d'ores et déjà satisfait avec assiduité à l'obligation statutaire d'engagement de 50 heures au titre de son mandat précédent ({previousAcademicYear}, membre renouvelant). Au cours de la présente année académique {academicYear}, l'intéressé(e) poursuit activement son investissement citoyen au sein de l'association. Les heures ci-dessous récapitulent fidèlement les séances et missions enregistrées au registre officiel.
                                     </p>
                                 ) : isValidated ? (
                                     <p>
-                                        a accompli avec succès, régularité et assiduité son engagement bénévole auprès des élèves accompagnés par l'association dans les Quartiers Prioritaires de la Ville (QPV) de Marseille pour l'année académique 2025–2026. Le volume total validé de <strong>{totalHours} heures</strong> satisfait et valide pleinement le seuil officiel de 50 heures requis pour la reconnaissance associative étudiante.
+                                        a accompli avec succès, régularité et assiduité son engagement bénévole auprès des élèves accompagnés par l'association dans les Quartiers Prioritaires de la Ville (QPV) de Marseille pour l'année académique {academicYear}. Le volume total validé de <strong>{totalHours} heures</strong> satisfait et valide pleinement le seuil officiel de 50 heures requis pour la reconnaissance associative étudiante.
                                     </p>
                                 ) : totalHours > 0 ? (
                                     <p>
-                                        est activement engagé(e) au sein des programmes de tutorat pédagogique et d'ouverture citoyenne de l'association pour l'année universitaire 2025–2026. À ce jour, <strong>{totalHours} heure(s)</strong> ont été officiellement validées au registre sur le volume de <strong>{ATTESTATION_THRESHOLD} heures</strong> requis pour la validation définitive complète du parcours associatif.
+                                        est activement engagé(e) au sein des programmes de tutorat pédagogique et d'ouverture citoyenne de l'association pour l'année universitaire {academicYear}. À ce jour, <strong>{totalHours} heure(s)</strong> ont été officiellement validées au registre sur le volume de <strong>{ATTESTATION_THRESHOLD} heures</strong> requis pour la validation définitive complète du parcours associatif.
                                     </p>
                                 ) : (
                                     <p>
-                                        est dûment inscrit(e) et engagé(e) au sein de l'association en qualité de bénévole pour l'année universitaire 2025–2026. À ce jour, les séances de tutorat sont en cours de planification ou en attente de validation administrative dans le registre Phoenix (0h / {ATTESTATION_THRESHOLD}h requises). Le présent document atteste de sa participation officielle en cours.
+                                        est dûment inscrit(e) et engagé(e) au sein de l'association en qualité de bénévole pour l'année universitaire {academicYear}. À ce jour, les séances de tutorat sont en cours de planification ou en attente de validation administrative dans le registre Phoenix (0h / {ATTESTATION_THRESHOLD}h requises). Le présent document atteste de sa participation officielle en cours.
                                     </p>
                                 )}
                             </div>
@@ -485,7 +488,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                         {isExempt && (
                                             <tr className="bg-purple-50/50">
                                                 <td className="py-2 px-3 font-semibold text-purple-950">
-                                                    Validation Statutaire Antérieure (Mandat 2024–2025)
+                                                    Validation Statutaire Antérieure (Mandat {previousAcademicYear})
                                                     <span className="block text-[9.5px] text-purple-700 font-normal">Quota de 50h requis certifié au titre de l'année N-1</span>
                                                 </td>
                                                 <td className="py-2 px-3 text-center text-purple-800 font-medium text-[10px]">
@@ -541,7 +544,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                     <tfoot className="bg-zinc-50 font-bold border-t-2 border-zinc-300 text-xs">
                                         <tr>
                                             <td className="py-2.5 px-3 text-zinc-900 font-school uppercase tracking-wider">
-                                                {isExempt ? "Total Heures 2025–2026 (Année en cours)" : "Total d'Heures Consolidé"}
+                                                {isExempt ? `Total Heures ${academicYear} (Année en cours)` : "Total d'Heures Consolidé"}
                                             </td>
                                             <td className="py-2.5 px-3 text-center text-[10.5px] font-mono text-zinc-500 tabular-nums">
                                                 {isExempt ? "Quota 50h acquis N-1" : isValidated ? "Seuil officiel 50h atteint" : `Reste à accomplir : ${remainingHours}h`}
@@ -616,7 +619,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                 {/* Colonne Droite : Cachet Officiel Associatif & Signature du Président */}
                                 <div className="text-right flex items-end gap-3">
                                     {/* Véritable Tampon Associatif Phœnix */}
-                                    <OfficialStamp />
+                                    <OfficialStamp academicYear={academicYear} />
 
                                     {/* Bloc Signature du Président */}
                                     <div className="text-center min-w-[140px] pb-1">

@@ -6,6 +6,7 @@ import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate } from '../../data/planningData';
 import { AttestationModal } from '../../components/planning/AttestationModal';
+import { getAcademicYear } from '../../utils/academicYear';
 
 interface StatCardProps {
     icon: React.ReactNode;
@@ -107,6 +108,7 @@ export function PlanningCompte() {
             return { b, slot, project };
         });
 
+    const { academicYear } = getAcademicYear();
     const myProjects = projectsData.filter(p => currentUser.projectIds.includes(p.id));
     const isChef = currentUser.role === 'chef_projet';
 
@@ -319,7 +321,7 @@ export function PlanningCompte() {
                                 </span>
                             </div>
                             <p className="text-xs text-[#ECDDFD]/80 mt-1 leading-relaxed">
-                                Vos 50 heures statutaires d'engagement associatif ont déjà été validées lors de l'année universitaire précédente. Votre attestation officielle est immédiatement disponible et certifiée, et vos heures effectuées sur la saison 2025-2026 continuent d'être comptabilisées ci-dessous.
+                                Vos 50 heures statutaires d'engagement associatif ont déjà été validées lors de l'année universitaire précédente. Votre attestation officielle est immédiatement disponible et certifiée, et vos heures effectuées sur la saison {academicYear} continuent d'être comptabilisées ci-dessous.
                             </p>
                         </div>
                     </div>
@@ -459,7 +461,7 @@ export function PlanningCompte() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                 <StatCard
                     icon={isExempt ? <GraduationCap size={22} /> : <Clock size={22} />}
-                    label={isExempt ? "Heures saison 2025-2026" : "Heures validées"}
+                    label={isExempt ? `Heures saison ${academicYear}` : "Heures validées"}
                     value={totalConsolide % 1 === 0 ? totalConsolide : totalConsolide.toFixed(1)}
                     unit="h"
                     sublabel={
@@ -472,7 +474,7 @@ export function PlanningCompte() {
                         current: isExempt ? ATTESTATION_THRESHOLD : totalConsolide,
                         max: ATTESTATION_THRESHOLD,
                         isEligible: isAttestationEligible,
-                        customLabel: isExempt ? `50h validées (N-1) + ${totalConsolide}h en 2025-2026` : undefined,
+                        customLabel: isExempt ? `50h validées (N-1) + ${totalConsolide}h en ${academicYear}` : undefined,
                     }}
                 />
                 <StatCard
