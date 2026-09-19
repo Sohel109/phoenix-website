@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { events } from '../data/events';
 import { Link } from 'react-router-dom';
@@ -34,12 +33,9 @@ export function Events() {
     );
 }
 
-function EventCard({ event, index }: { event: any, index: number }) {
+function EventCard({ event, index }: { event: any; index: number }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+        <div
             className="bg-white border border-[#ECDDFD] rounded-[2.5rem] p-7 flex flex-col h-full shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 group"
         >
             {/* Image Container with strict 16:9 fixed aspect ratio */}
@@ -101,7 +97,7 @@ function EventCard({ event, index }: { event: any, index: number }) {
                     <ArrowRight size={15} />
                 </Link>
             </div>
-        </motion.div>
+        </div>
     );
 }
 

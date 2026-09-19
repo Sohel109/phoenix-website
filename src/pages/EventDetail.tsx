@@ -42,7 +42,7 @@ export function EventDetail() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20 transition-colors duration-300">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
             {/* Background Elements */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-50 dark:opacity-30">
                 <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-secondary/10 rounded-full blur-[100px]" />
@@ -131,7 +131,7 @@ export function EventDetail() {
                                 <div className="bg-phoenix-cream/60 rounded-3xl p-6 border border-phoenix-lilac/40">
                                     <h3 className="text-lg font-school uppercase tracking-wide text-phoenix-dark mb-4">Galerie Photos</h3>
                                     <div className="relative aspect-[4/3] rounded-2xl overflow-hidden group shadow-inner">
-                                        <AnimatePresence mode="wait">
+                                        <AnimatePresence mode="wait" initial={false}>
                                             <motion.img
                                                 key={currentImageIndex}
                                                 src={event.gallery[currentImageIndex]}

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { projects } from '../data/projects';
 import { 
@@ -145,12 +144,9 @@ export function Projects() {
 
                 {/* Projects Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
-                    {filteredProjects.map((project, index) => (
-                        <motion.div
+                    {filteredProjects.map((project) => (
+                        <div
                             key={project.id}
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
                             className="h-full"
                         >
                             <Link
@@ -250,7 +246,7 @@ export function Projects() {
                                     </div>
                                 </div>
                             </Link>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 

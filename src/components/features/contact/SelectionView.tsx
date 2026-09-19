@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Info, Handshake } from 'lucide-react';
 
 interface SelectionViewProps {
@@ -25,19 +24,16 @@ const categories = [
 export function SelectionView({ onSelect }: SelectionViewProps) {
     return (
         <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 w-full max-w-3xl mx-auto px-4">
-            {categories.map((cat, index) => (
-                <Card key={cat.id} category={cat} index={index} onSelect={onSelect} />
+            {categories.map((cat) => (
+                <Card key={cat.id} category={cat} onSelect={onSelect} />
             ))}
         </div>
     );
 }
 
-function Card({ category, index, onSelect }: { category: any, index: number, onSelect: (id: string) => void }) {
+function Card({ category, onSelect }: { category: any, onSelect: (id: string) => void }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+        <div
             onClick={() => onSelect(category.id)}
             className="flex-1 group cursor-pointer relative"
         >
@@ -72,6 +68,6 @@ function Card({ category, index, onSelect }: { category: any, index: number, onS
                 {/* Bottom decorative bar */}
                 <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gradient-to-r from-phoenix-purple to-phoenix-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
-        </motion.div>
+        </div>
     );
 }

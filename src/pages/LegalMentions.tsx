@@ -1,18 +1,12 @@
-import { motion } from 'framer-motion';
 
 export function LegalMentions() {
     return (
-        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20 transition-colors duration-300">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
             <div className="container mx-auto px-4 max-w-4xl">
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    className="mb-16"
-                >
+                <div className="mb-16">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">Mentions Légales</h1>
                     <div className="h-1.5 w-24 bg-primary rounded-full" />
-                </motion.div>
+                </div>
 
                 <div className="bg-white dark:bg-current-card rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100 dark:border-white/5 space-y-8 text-gray-600 dark:text-gray-300 leading-relaxed">
                     <section>

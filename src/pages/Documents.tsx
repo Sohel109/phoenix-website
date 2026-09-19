@@ -65,11 +65,8 @@ export function Documents() {
                 {/* Main Documents Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                     {currentDocuments.map((doc, index) => (
-                        <motion.div
+                        <div
                             key={index}
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
                             className="bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 p-8 flex flex-col justify-between group"
                         >
                             <div>
@@ -111,7 +108,7 @@ export function Documents() {
                                     <span>Télécharger</span>
                                 </a>
                             </div>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 

@@ -105,11 +105,8 @@ export function TestimonialsSection() {
                 </div>
 
                 {/* ──────────────── CARTE ÉDITORIALE INCARNÉE ──────────────── */}
-                <motion.div
+                <div
                     key={activeTab}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     className="max-w-2xl mx-auto bg-[#ECDDFD] rounded-[2.5rem] p-8 sm:p-12 border border-[#D9BEF8] shadow-soft-lg relative overflow-hidden bg-bird-pattern"
                 >
                     {/* Corner Stamp Sticker - Zéro émoji */}
@@ -199,7 +196,7 @@ export function TestimonialsSection() {
                             <ArrowRight size={13} />
                         </Link>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* Trust Bar in Rounded Full Pill */}
                 <div className="mt-8 sm:mt-12 text-center">

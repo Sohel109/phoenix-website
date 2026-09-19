@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Home, FolderOpen, Calendar, Mail, Compass, ArrowLeft, ArrowRight, ShieldCheck, Map } from 'lucide-react';
 
 export function NotFound() {
@@ -150,12 +149,7 @@ export function NotFound() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 pt-page-safe pb-16 bg-[#FFFBF4] bg-bird-pattern">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="max-w-xl w-full text-center"
-            >
+            <div className="max-w-xl w-full text-center">
                 {/* 404 Badge */}
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 border border-orange-200 text-orange-600 text-xs font-black uppercase tracking-wider mb-6">
                     <Compass size={14} className="text-orange-500" />
@@ -173,11 +167,7 @@ export function NotFound() {
 
                 {/* Suggestion intelligente si ancien lien détecté */}
                 {suggestedRedirect && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="p-4 rounded-2xl bg-white border border-orange-200/80 shadow-sm mb-8 text-left flex items-center justify-between gap-4"
-                    >
+                    <div className="p-4 rounded-2xl bg-white border border-orange-200/80 shadow-sm mb-8 text-left flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
                                 {suggestedRedirect.icon}
@@ -194,7 +184,7 @@ export function NotFound() {
                             Y aller
                             <ArrowRight size={14} />
                         </Link>
-                    </motion.div>
+                    </div>
                 )}
 
                 {/* Navigation Links */}
@@ -246,7 +236,7 @@ export function NotFound() {
                         Retour à l'accueil
                     </Link>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

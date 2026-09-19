@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart, Zap, GraduationCap, Sparkles } from 'lucide-react';
 
@@ -50,10 +49,7 @@ export function HeroScroll() {
                     <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-24 lg:py-12">
 
                         {/* ── COLONNE GAUCHE : Message & Action chaleureux ── */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                        <div
                             className="lg:col-span-7 flex flex-col gap-6 items-start text-left"
                         >
                             {/* Pastille officielle KEDGE BS */}
@@ -112,15 +108,10 @@ export function HeroScroll() {
                                 <span className="text-slate-400">·</span>
                                 <span>Reconnue d'Intérêt Général</span>
                             </div>
-                        </motion.div>
+                        </div>
 
                         {/* ── COLONNE DROITE : Composition circulaire & douce ── */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.92 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                            className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center"
-                        >
+                        <div className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center">
                             {/* Grand médaillon central arrondi / pilule */}
                             <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-[3rem] overflow-hidden shadow-soft-lg border-4 border-white z-10">
                                 <img
@@ -133,47 +124,32 @@ export function HeroScroll() {
                             </div>
 
                             {/* Médaillon circulaire d'ambiance 2 */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.85 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.8, delay: 0.2 }}
-                                className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-soft border-4 border-white z-20"
-                            >
+                            <div className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-soft border-4 border-white z-20">
                                 <img
                                     src="/images/projects/hero-3.png"
                                     alt="Sorties et ateliers"
                                     className="w-full h-full object-cover"
                                     draggable={false}
                                 />
-                            </motion.div>
+                            </div>
 
                             {/* Badge Macaron 1 : Projets actifs */}
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4, duration: 0.5 }}
-                                className="absolute top-10 -right-4 xl:-right-6 z-30"
-                            >
+                            <div className="absolute top-10 -right-4 xl:-right-6 z-30">
                                 <MacaronBadge
                                     icon={<Zap size={16} />}
                                     value="9 Projets"
                                     label="Sur le terrain marseillais"
                                 />
-                            </motion.div>
+                            </div>
 
                             {/* Badge Macaron 2 : Jeunes accompagnés */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5, duration: 0.5 }}
-                                className="absolute bottom-6 -left-4 xl:-left-6 z-30"
-                            >
+                            <div className="absolute bottom-6 -left-4 xl:-left-6 z-30">
                                 <MacaronBadge
                                     icon={<GraduationCap size={16} />}
                                     value="300+ Jeunes"
                                     label="Collégiens & lycéens suivis"
                                 />
-                            </motion.div>
+                            </div>
 
                             {/* Pastille officielle Phœnix avec logo rond */}
                             <div className="absolute bottom-4 right-6 z-30 p-1.5 rounded-full bg-white shadow-soft border border-[#ECDDFD]">
@@ -183,7 +159,7 @@ export function HeroScroll() {
                                     className="w-14 h-14 rounded-full object-contain"
                                 />
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -202,19 +178,14 @@ export function HeroScroll() {
                 </div>
 
                 {/* H1 mobile Shrikhand */}
-                <motion.h1
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.55 }}
-                    className="text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight"
-                >
+                <h1 className="text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight">
                     Faire briller <br />
                     <span className="bg-gradient-to-r from-[#6F2B75] via-[#904990] to-[#EC602B] bg-clip-text text-transparent">
                         tous les talents
                     </span>{' '}
                     <br />
                     de Marseille.
-                </motion.h1>
+                </h1>
 
                 {/* Note manuscrite mobile */}
                 <div className="font-script text-2xl text-[#EC602B] mb-3 -rotate-2">

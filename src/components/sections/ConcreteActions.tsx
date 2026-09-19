@@ -86,12 +86,7 @@ export function ConcreteActions() {
                 <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-14">
 
                     {/* ──────────────── PILIER 1 : LE TUTORAT HEBDOMADAIRE ──────────────── */}
-                    <motion.article
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-                        className="group flex flex-col bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative"
-                    >
+                    <article className="group flex flex-col bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative">
                         {/* Photo terrain en salle de tutorat */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900">
                             <img
@@ -151,15 +146,10 @@ export function ConcreteActions() {
                                 </Link>
                             </div>
                         </div>
-                    </motion.article>
+                    </article>
 
                     {/* ──────────────── PILIER 2 : L'ÉVEIL CULTUREL (3 PHOTOS + ACSE) ──────────────── */}
-                    <motion.article
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                        className="group flex flex-col bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative"
-                    >
+                    <article className="group flex flex-col bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative">
                         {/* Mini-Carrousel des 3 photos de voyage */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 select-none">
                             <AnimatePresence mode="wait">
@@ -259,15 +249,10 @@ export function ConcreteActions() {
                                 </Link>
                             </div>
                         </div>
-                    </motion.article>
+                    </article>
 
                     {/* ──────────────── PILIER 3 : ORIENTATION, AVENIR & ÉVÉNEMENTS ──────────────── */}
-                    <motion.article
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                        className="group flex flex-col bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative"
-                    >
+                    <article className="group flex flex-col bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative">
                         {/* En-tête interactif avec miniatures des événements phares */}
                         <Link to="/evenements" className="block relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 group/ev cursor-pointer">
                             <img
@@ -345,7 +330,7 @@ export function ConcreteActions() {
                                 </Link>
                             </div>
                         </div>
-                    </motion.article>
+                    </article>
 
                 </div>
 

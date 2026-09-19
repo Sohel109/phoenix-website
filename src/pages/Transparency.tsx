@@ -52,22 +52,16 @@ export function Transparency() {
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-16">
             <div className="container mx-auto px-4 max-w-5xl">
                 {/* Back Button */}
-                <motion.button
+                <button
                     onClick={() => navigate(-1)}
-                    className="mb-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    className="mb-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm cursor-pointer"
                 >
                     <ArrowLeft size={18} />
                     Retour
-                </motion.button>
+                </button>
 
                 {/* Hero Section */}
-                <motion.div
-                    className="text-center mb-12"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
+                <div className="text-center mb-12">
                     <div className="inline-flex items-center justify-center p-4 bg-orange-100 rounded-2xl mb-5">
                         <PieChart className="w-10 h-10 text-orange-600" />
                     </div>
@@ -81,15 +75,10 @@ export function Transparency() {
                     <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
                         Découvrez comment vos dons transforment la vie de 300 jeunes chaque année à Marseille.
                     </p>
-                </motion.div>
+                </div>
 
                 {/* Trust Message */}
-                <motion.div
-                    className="bg-white border border-orange-200/70 rounded-2xl p-6 md:p-8 mb-12 shadow-sm"
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                >
+                <div className="bg-white border border-orange-200/70 rounded-2xl p-6 md:p-8 mb-12 shadow-sm">
                     <div className="flex items-start gap-4">
                         <div className="p-3 bg-orange-100 rounded-xl flex-shrink-0">
                             <Heart className="w-6 h-6 text-orange-600" />
@@ -103,26 +92,16 @@ export function Transparency() {
                             </p>
                         </div>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* Donation Breakdown - Visual Representation */}
-                <motion.div
-                    className="mb-12"
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                >
+                <div className="mb-12">
                     <h2 className="text-2xl font-black text-slate-900 mb-6 text-center tracking-tight">Répartition des Dons</h2>
 
                     <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
                         <div className="space-y-6">
                             {donationBreakdown.map((item, index) => (
-                                <motion.div
-                                    key={item.category}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                                >
+                                <div key={item.category}>
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center gap-3">
                                             <div
@@ -144,31 +123,22 @@ export function Transparency() {
                                             transition={{ delay: 0.6 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
                                         />
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* Category Details */}
-                <motion.div
-                    className="mb-12"
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                >
+                <div className="mb-12">
                     <h2 className="text-2xl font-black text-slate-900 mb-6 text-center tracking-tight">Détails par Catégorie</h2>
                     <div className="grid md:grid-cols-2 gap-5">
-                        {donationBreakdown.map((item, index) => {
+                        {donationBreakdown.map((item) => {
                             const Icon = item.icon;
                             return (
-                                <motion.div
+                                <div
                                     key={item.category}
                                     className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-0.5 shadow-sm"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                                    whileHover={{ scale: 1.01 }}
                                 >
                                     <div className="flex items-start gap-4">
                                         <div
@@ -185,28 +155,20 @@ export function Transparency() {
                                             </span>
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             );
                         })}
                     </div>
-                </motion.div>
+                </div>
 
                 {/* Impact Section */}
-                <motion.div
-                    className="mb-12"
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                >
+                <div className="mb-12">
                     <h2 className="text-2xl font-black text-slate-900 mb-6 text-center tracking-tight">Impact Concret de Vos Dons</h2>
                     <div className="grid md:grid-cols-2 gap-4">
-                        {impactExamples.map((example, index) => (
-                            <motion.div
+                        {impactExamples.map((example) => (
+                            <div
                                 key={example.amount}
                                 className="bg-white border border-slate-200 rounded-xl p-6 hover:border-orange-300 hover:shadow-md transition-all shadow-sm"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
                             >
                                 <div className="flex items-start gap-4">
                                     <div className="p-2 bg-orange-100 rounded-lg flex-shrink-0 mt-0.5">
@@ -217,18 +179,13 @@ export function Transparency() {
                                         <p className="text-slate-600 text-sm leading-relaxed">{example.impact}</p>
                                     </div>
                                 </div>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
-                </motion.div>
+                </div>
 
                 {/* CTA Section */}
-                <motion.div
-                    className="text-center bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 md:p-12 shadow-lg"
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                >
+                <div className="text-center bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 md:p-12 shadow-lg">
                     <div className="p-4 bg-white/20 rounded-full w-fit mx-auto mb-5">
                         <Heart className="w-12 h-12 text-white" fill="currentColor" />
                     </div>
@@ -248,7 +205,7 @@ export function Transparency() {
                     <p className="text-white/75 text-sm mt-4">
                         66% de réduction d'impôts · Reçu fiscal automatique
                     </p>
-                </motion.div>
+                </div>
             </div>
         </div>
     );

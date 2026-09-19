@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon, type LatLngExpression } from 'leaflet';
-import { motion } from 'framer-motion';
 import { MapPin, Users, ArrowLeft, Navigation, ArrowUpRight } from 'lucide-react';
 import { projectsData, projectTypeColors, projectTypeLabels } from '../data/projectsData';
 import { useNavigate, Link } from 'react-router-dom';
@@ -54,11 +53,7 @@ export function ProjectMap() {
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-8"
-                >
+                <div className="mb-8">
                     <button
                         onClick={() => navigate(-1)}
                         className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-phoenix-lilac/70 text-xs font-school uppercase tracking-wider text-phoenix-dark hover:text-phoenix-purple transition-all shadow-xs group cursor-pointer"
@@ -94,13 +89,10 @@ export function ProjectMap() {
                             </div>
                         </div>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* Map */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                <div
                     className="rounded-[2.5rem] overflow-hidden border border-phoenix-lilac/50 shadow-xl"
                     style={{ height: '600px' }}
                 >
@@ -180,15 +172,10 @@ export function ProjectMap() {
                             </Marker>
                         ))}
                     </MapContainer>
-                </motion.div>
+                </div>
 
                 {/* Stats */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5"
-                >
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div className="p-6 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 shadow-sm text-center">
                         <div className="text-4xl font-display text-phoenix-purple mb-1">9</div>
                         <div className="text-xs font-school uppercase tracking-wider text-slate-600">Projets actifs à Marseille</div>
@@ -201,7 +188,7 @@ export function ProjectMap() {
                         <div className="text-4xl font-display text-phoenix-purple-light mb-1">+100</div>
                         <div className="text-xs font-school uppercase tracking-wider text-slate-600">Bénévoles Kedge mobilisés</div>
                     </div>
-                </motion.div>
+                </div>
             </div>
         </div>
     );

@@ -24,7 +24,7 @@ export function Home() {
             <TestimonialsSection />
 
             {/* Partners Section */}
-            <section className="py-16 md:py-24 bg-transparent transition-colors duration-300">
+            <section className="py-16 md:py-24 bg-transparent">
                 <div className="container mx-auto px-4 text-center max-w-7xl">
                     <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#ECDDFD] text-[#6F2B75] shadow-soft mb-4 rotate-1 hover:rotate-0 transition-transform">
                         <Sparkles size={14} className="text-[#EC602B]" />

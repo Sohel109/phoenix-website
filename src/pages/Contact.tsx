@@ -14,16 +14,11 @@ export function Contact() {
     const selectedCategory = overrideCategory !== undefined ? overrideCategory : queryCategory;
 
     return (
-        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24 transition-colors duration-300">
+        <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
             <div className="container mx-auto px-6 max-w-5xl">
 
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-center mb-12"
-                >
+                <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-phoenix-lilac/40 border border-phoenix-lilac/70 text-phoenix-purple text-xs font-school uppercase tracking-widest mb-4">
                         <span className="w-2 h-2 rounded-full bg-phoenix-orange animate-pulse" />
                         <span>Écrivez-nous</span>
@@ -39,11 +34,11 @@ export function Contact() {
                             ? 'Dites-nous en plus sur votre projet ou votre question.'
                             : 'Une question sur nos programmes, envie de devenir partenaire ou bénévole ? Choisissez votre motif ci-dessous.'}
                     </p>
-                </motion.div>
+                </div>
 
                 {/* Main Content Area */}
                 <div className="min-h-[600px] flex items-center justify-center relative">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence mode="wait" initial={false}>
                         {!selectedCategory ? (
                             <motion.div
                                 key="selection"

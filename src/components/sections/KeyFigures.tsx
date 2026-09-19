@@ -50,12 +50,7 @@ export function KeyFigures() {
         <section className="relative py-16 md:py-24 bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* Header with human associative touch */}
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-center mb-12 md:mb-16"
-                >
+                <div className="text-center mb-12 md:mb-16">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider mb-4 shadow-xs">
                         <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
                         <span>Mesure de notre action sur le terrain</span>
@@ -74,18 +69,13 @@ export function KeyFigures() {
                     <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl mx-auto">
                         Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
                     </p>
-                </motion.div>
+                </div>
 
                 {/* ── BENTO ASYMÉTRIQUE CHALEUREUX (Charte Lise Dehedin : Le cercle avant le rectangle) ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                     {/* CARTE 1 (Héroïque - 7 cols) : Les Jeunes Accompagnés */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                        className="lg:col-span-7 bg-[#ECDDFD] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#6F2B75]/15 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
-                    >
+                    <div className="lg:col-span-7 bg-[#ECDDFD] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#6F2B75]/15 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
                         <div className="flex items-center justify-between gap-4 mb-6">
                             <div className="w-11 h-11 rounded-full bg-[#6F2B75] text-white flex items-center justify-center shadow-xs">
                                 <Users size={20} />
@@ -119,15 +109,10 @@ export function KeyFigures() {
                                 ~ Rendez-vous chaque mercredi ~
                             </span>
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* CARTE 2 (5 cols) : Les Tuteurs KEDGE */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                        className="lg:col-span-5 bg-[#E1BBCB] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#EC602B]/20 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
-                    >
+                    <div className="lg:col-span-5 bg-[#E1BBCB] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#EC602B]/20 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
                         <div className="flex items-center justify-between gap-4 mb-6">
                             <div className="w-11 h-11 rounded-full bg-[#EC602B] text-white flex items-center justify-center shadow-xs">
                                 <Heart size={20} />
@@ -157,15 +142,10 @@ export function KeyFigures() {
                                 ~ Grandir ensemble ~
                             </span>
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* CARTE 3 (5 cols) : Les 9 Projets de terrain */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-                        className="lg:col-span-5 bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-7 sm:p-9 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
-                    >
+                    <div className="lg:col-span-5 bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-7 sm:p-9 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
                         <div className="flex items-center justify-between gap-4 mb-6">
                             <div className="w-11 h-11 rounded-full bg-white text-[#EC602B] flex items-center justify-center shadow-xs">
                                 <Zap size={20} />
@@ -194,15 +174,10 @@ export function KeyFigures() {
                                 </span>
                             ))}
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* CARTE 4 (7 cols) : Réussite et Cordées */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                        className="lg:col-span-7 bg-white text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
-                    >
+                    <div className="lg:col-span-7 bg-white text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
                         <div className="flex items-center justify-between gap-4 mb-6">
                             <div className="w-11 h-11 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shadow-xs">
                                 <Award size={20} />
@@ -239,7 +214,7 @@ export function KeyFigures() {
                                 Reconnue d'Intérêt Général
                             </span>
                         </div>
-                    </motion.div>
+                    </div>
 
                 </div>
             </div>
