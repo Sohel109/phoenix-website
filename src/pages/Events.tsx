@@ -13,12 +13,11 @@ export function Events() {
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-14 sm:mb-18">
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
-                        Moments Forts & Vie Associative
-                    </span>
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ L'émulation et l'éloquence en action ~
-                    </p>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Moments Forts &amp; Vie Associative
+                        </span>
+                    </div>
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Nos Événements Phares
                     </h1>

@@ -63,7 +63,7 @@ export function Header() {
                     </div>
                     <div className="flex flex-col">
                         <span translate="no" className="notranslate font-display text-xl sm:text-2xl text-[#2A082D] leading-none">
-                            PHŒNIX <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent">EDC</span>
+                            PHŒNIX <span className="text-[#EC602B]">EDC</span>
                         </span>
                         <span className="hidden sm:block text-[10px] uppercase font-school font-bold tracking-wider text-[#904990] mt-0.5">
                             Égalité des Chances · KEDGE BS

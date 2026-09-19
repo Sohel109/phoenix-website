@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
-    Award, 
     ArrowRight, 
     Download, 
     MapPin, 
@@ -281,14 +280,11 @@ export function Association() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                         {/* Colonne Texte */}
                         <div className="lg:col-span-7">
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
-                                <Award size={14} className="text-[#EC602B]" />
-                                <span>KEDGE Business School Marseille · Intérêt Général</span>
+                            <div className="mb-4">
+                                <span className="badge-blockletter">
+                                    KEDGE Business School Marseille · Intérêt Général
+                                </span>
                             </div>
-
-                            <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                                ~ Depuis 2011 à Marseille ~
-                            </p>
 
                             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.08] mb-6">
                                 Plus qu'une association, une grande famille marseillaise engagée.

@@ -52,22 +52,16 @@ export function KeyFigures() {
             <div className="pattern-watermark" aria-hidden="true" />
 
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
-                {/* Header with human associative touch */}
+                {/* Header with authentic brand identity */}
                 <div className="text-center mb-14 md:mb-20">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
-                        <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
-                        <span>Résultats &amp; Impact Mesuré sur le Terrain</span>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Résultats &amp; Impact Terrain
+                        </span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ L'humain et la proximité avant tout ~
-                    </p>
-
                     <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3 text-balance">
-                        Des résultats{' '}
-                        <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent">
-                            qui ont du sens.
-                        </span>
+                        Des résultats qui ont du sens.
                     </h2>
                     <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl mx-auto text-pretty">
                         Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
@@ -108,8 +102,8 @@ export function KeyFigures() {
                                     </span>
                                 ))}
                             </div>
-                            <span className="font-script text-lg text-[#2A082D]">
-                                ~ Des séances tout au long de la semaine ~
+                            <span className="font-script text-xl text-[#2A082D]/80">
+                                Séances tout au long de la semaine
                             </span>
                         </div>
                     </div>
@@ -141,8 +135,8 @@ export function KeyFigures() {
                             <span className="text-xs font-school font-bold text-[#2A082D]">
                                 Campus Marseille Luminy
                             </span>
-                            <span className="font-script text-lg text-[#2A082D]">
-                                ~ Grandir ensemble ~
+                            <span className="font-script text-xl text-[#2A082D]/80">
+                                Grandir ensemble
                             </span>
                         </div>
                     </div>
@@ -193,7 +187,7 @@ export function KeyFigures() {
 
                         <div className="grid sm:grid-cols-12 gap-6 items-center">
                             <div className="sm:col-span-5">
-                                <div className="text-5xl sm:text-6xl font-display bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent leading-none mb-1">
+                                <div className="text-5xl sm:text-6xl font-display text-[#6F2B75] leading-none mb-1">
                                     <AnimatedCounter value={100} suffix="%" />
                                 </div>
                                 <p className="text-xs font-school font-bold uppercase tracking-wider text-[#2A082D]">

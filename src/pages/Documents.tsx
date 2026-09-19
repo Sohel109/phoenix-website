@@ -53,12 +53,11 @@ export function Documents() {
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
-                        Ressources & Guides
-                    </span>
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ Documentation & transparence ~
-                    </p>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Ressources &amp; Documentation
+                        </span>
+                    </div>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Documents Utiles
                     </h1>

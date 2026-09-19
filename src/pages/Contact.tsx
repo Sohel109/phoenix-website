@@ -23,15 +23,14 @@ export function Contact() {
 
                 {/* Header */}
                 <div className="text-center mb-8 sm:mb-10">
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
-                        Écrivez-nous
-                    </span>
-                    <h1 className="text-4xl sm:text-6xl font-display text-phoenix-dark mb-2">
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Écrivez-nous · À votre écoute
+                        </span>
+                    </div>
+                    <h1 className="text-4xl sm:text-6xl font-display text-phoenix-dark mb-3">
                         {selectedCategory ? 'Votre Demande' : 'Contactez-nous'}
                     </h1>
-                    <p className="font-script text-2xl text-[#2A082D] mb-3">
-                        ~ À votre écoute pour faire grandir l'égalité des chances ~
-                    </p>
                     <p className="text-slate-600 font-sans text-base max-w-xl mx-auto leading-relaxed font-normal">
                         {selectedCategory 
                             ? 'Dites-nous en plus sur votre projet ou votre question.'

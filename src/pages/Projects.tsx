@@ -8,9 +8,7 @@ import {
     BookOpen, 
     Compass, 
     Sparkles, 
-    Heart, 
-    Clock,
-    UserCheck
+    Heart
 } from 'lucide-react';
 import { useState } from 'react';
 import { SEO } from '../components/common/SEO';
@@ -51,14 +49,11 @@ export function Projects() {
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header Section */}
                 <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
-                    <div className="flex items-center justify-center gap-2 text-xs font-school font-bold tracking-wider text-[#6F2B75] mb-2">
-                        <Award size={14} className="text-[#EC602B]" />
-                        <span>Nos Antennes de Terrain · 5 Labellisées Cordées de la Réussite</span>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Nos Antennes de Terrain · 5 Cordées de la Réussite
+                        </span>
                     </div>
-
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ Au cœur des collèges et lycées marseillais ~
-                    </p>
 
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1] text-balance">
                         Des Projets Concrets pour l'Égalité
@@ -102,7 +97,7 @@ export function Projects() {
                             onClick={() => setActiveFilter('all')}
                             className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'all'
-                                    ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
+                                    ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
                             }`}
                         >
@@ -113,7 +108,7 @@ export function Projects() {
                             onClick={() => setActiveFilter('cordees')}
                             className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all flex items-center gap-1.5 shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'cordees'
-                                    ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
+                                    ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#6F2B75] hover:bg-[#ECDDFD] border border-[#ECDDFD]'
                             }`}
                         >
@@ -125,7 +120,7 @@ export function Projects() {
                             onClick={() => setActiveFilter('college')}
                             className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'college'
-                                    ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
+                                    ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
                             }`}
                         >
@@ -136,7 +131,7 @@ export function Projects() {
                             onClick={() => setActiveFilter('lycee')}
                             className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'lycee'
-                                    ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
+                                    ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
                             }`}
                         >
@@ -145,7 +140,7 @@ export function Projects() {
                     </div>
                 </div>
 
-                {/* Grid des Projets */}
+                {/* Grid des Projets Épurée (Les détails complets sont sur la fiche dédiée) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
                     {filteredProjects.map((project) => (
                         <div
@@ -166,7 +161,7 @@ export function Projects() {
                                         className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                                     />
                                     {project.id !== 'sup-d-om' && (
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/75 via-[#2A082D]/20 to-transparent pointer-events-none" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/75 via-[#2A082D]/15 to-transparent pointer-events-none" />
                                     )}
 
                                     {/* Badges top */}
@@ -189,63 +184,39 @@ export function Projects() {
                                         </span>
                                     </div>
 
-                                    {/* Round Macaron Logo Pastille bottom right (CERCLE AVANT LE RECTANGLE) */}
+                                    {/* Round Macaron Logo Pastille bottom right */}
                                     {project.id !== 'sup-d-om' && project.image && (
                                         <div className="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-white p-1 shadow-md border border-slate-200 flex items-center justify-center overflow-hidden z-10">
                                             <img
                                                 src={project.image}
                                                 alt={`${project.title} logo`}
-                                                className="w-full h-full object-contain"
+                                                className="w-full h-full object-contain rounded-full"
                                             />
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Corps de la carte */}
-                                <div className="p-6 sm:p-7 flex flex-col flex-grow bg-white">
-                                    <div className="flex items-center justify-between gap-2 mb-3">
-                                        <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#6F2B75] bg-[#ECDDFD]/70 px-3 py-1 rounded-full border border-[#6F2B75]/20">
-                                            {project.type}
-                                        </span>
+                                {/* Corps de la carte épuré */}
+                                <div className="p-6 sm:p-7 flex flex-col flex-grow justify-between bg-white">
+                                    <div>
+                                        <h3 className="text-2xl font-display text-[#2A082D] mb-2.5 group-hover:text-[#EC602B] transition-colors leading-snug tracking-tight">
+                                            {project.title}
+                                        </h3>
 
-                                        <span className="text-xs font-school font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
-                                            <Users size={12} />
+                                        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 font-normal mb-6">
+                                            {project.description}
+                                        </p>
+                                    </div>
+
+                                    {/* Footer épuré de la carte */}
+                                    <div className="pt-4 border-t border-[#ECDDFD]/60 flex items-center justify-between gap-3">
+                                        <span className="text-xs font-school font-bold text-[#6F2B75] flex items-center gap-1.5">
+                                            <Users size={14} className="text-[#EC602B]" />
                                             <span>{project.tutorCount} élèves</span>
                                         </span>
-                                    </div>
-
-                                    <h3 className="text-xl font-display text-[#2A082D] mb-2 group-hover:text-[#EC602B] transition-colors leading-snug tracking-tight">
-                                        {project.title}
-                                    </h3>
-
-                                    <p className="text-xs sm:text-sm text-[#2A082D]/75 leading-relaxed mb-4 flex-grow font-normal line-clamp-3">
-                                        {project.description}
-                                    </p>
-
-                                    {/* Meta: chefs, schedule & location */}
-                                    <div className="space-y-1.5 mb-5 pt-3 border-t border-[#ECDDFD]/60 text-xs text-slate-500 font-medium">
-                                        <div className="flex items-center gap-1.5">
-                                            <UserCheck size={14} className="text-[#6F2B75] shrink-0" />
-                                            <span className="line-clamp-1">Chefs : <strong className="text-[#2A082D] font-bold">{project.chefs.join(' & ')}</strong></span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <Clock size={14} className="text-[#EC602B] shrink-0" />
-                                            <span className="line-clamp-1">{project.schedule}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <MapPin size={14} className="text-[#6F2B75] shrink-0" />
-                                            <span className="line-clamp-1">{project.locationName}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Footer de la carte */}
-                                    <div className="pt-3 border-t border-[#ECDDFD]/60 flex items-center justify-between gap-3 mt-auto">
-                                        <span className="text-xs font-school font-bold text-slate-400 group-hover:text-[#EC602B] transition-colors">
-                                            Découvrir le projet
-                                        </span>
-                                        <span className="shrink-0 btn-phoenix-gradient px-4 py-2 rounded-full text-xs text-white shadow-soft flex items-center gap-1">
-                                            <span>Fiche Projet</span>
-                                            <ArrowRight size={13} className="transform group-hover:translate-x-0.5 transition-transform" />
+                                        <span className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#EC602B] group-hover:translate-x-1 transition-transform">
+                                            <span>Voir la fiche</span>
+                                            <ArrowRight size={14} />
                                         </span>
                                     </div>
                                 </div>

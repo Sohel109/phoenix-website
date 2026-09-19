@@ -1,12 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { lazy, Suspense, useState } from 'react';
-
-import { AnimatePresence } from 'framer-motion';
+import { lazy, Suspense } from 'react';
 
 import { ScrollToTop } from './components/layout/ScrollToTop';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
-import { IntroAnimation } from './components/layout/IntroAnimation';
 import { AuroraBackground } from './components/layout/AuroraBackground';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -62,30 +59,14 @@ function PlanningGuard({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  // L'intro ne se rejoue qu'à la 1ère visite de la session (nouvel onglet ou F5 complet)
-  const [showIntro, setShowIntro] = useState(() => {
-    return !sessionStorage.getItem('phoenix_intro_seen');
-  });
-
-  const handleIntroComplete = () => {
-    sessionStorage.setItem('phoenix_intro_seen', '1');
-    setShowIntro(false);
-  };
-
-
   return (
     <ThemeProvider>
     <PlanningProvider>
       <Router>
         <ScrollToTop />
-        <AnimatePresence>
-          {showIntro && <IntroAnimation onComplete={handleIntroComplete} />}
-        </AnimatePresence>
-
-        {!showIntro && (
-          <div className="flex flex-col min-h-screen font-sans bg-[#FFFBF4] bg-bird-pattern">
-            <AuroraBackground />
-            <Header />
+        <div className="flex flex-col min-h-screen font-sans bg-[#FFFBF4] bg-bird-pattern">
+          <AuroraBackground />
+          <Header />
             {/* Popups désactivés à la demande de l'utilisateur */}
             {/* <IOSInstallPrompt /> */}
             {/* <CrowdfundingBanner /> */}
@@ -162,7 +143,6 @@ function App() {
             </main>
             <Footer />
           </div>
-        )}
       </Router>
     </PlanningProvider>
     </ThemeProvider>

@@ -1,4 +1,4 @@
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { KeyFigures } from '../components/sections/KeyFigures';
 import { HeroScroll } from '../components/sections/HeroScroll';
@@ -37,20 +37,14 @@ export function Home() {
             {/* Section 4: Partenaires & Réseau */}
             <section className="py-20 md:py-28 bg-transparent">
                 <div className="container mx-auto px-4 text-center max-w-7xl">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
-                        <Sparkles size={14} className="text-[#EC602B]" />
-                        <span>Réseau Associatif, Éducatif &amp; Entreprises</span>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Réseau Associatif &amp; Partenaires
+                        </span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ Ils nous font confiance ~
-                    </p>
-
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1]">
-                        {t('partners.title')}{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6F2B75] to-[#EC602B]">
-                            {t('partners.titleHighlight')}
-                        </span>
+                        {t('partners.title')} {t('partners.titleHighlight')}
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base max-w-xl mx-auto mb-12">
@@ -84,7 +78,7 @@ export function Home() {
 
                     <Link
                         to="/partenaires"
-                        className="btn-phoenix-gradient px-8 py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-wider text-white shadow-soft inline-flex items-center gap-2"
+                        className="btn-phoenix-orange px-8 py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-wider text-white shadow-glow-orange inline-flex items-center gap-2"
                     >
                         <span>{t('partners.viewAll')}</span>
                         <ArrowRight size={16} />

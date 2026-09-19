@@ -24,22 +24,16 @@ export function TestimonialsSection() {
     return (
         <section className="relative py-20 md:py-32 bg-transparent overflow-hidden">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
-                {/* Header direct & chaleureux (Exit le look SaaS froid) */}
+                {/* Header direct & chaleureux */}
                 <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
-                        <Sparkles size={13} className="text-[#EC602B]" />
-                        <span>Impact concret &amp; histoires vraies</span>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Impact concret &amp; histoires vraies
+                        </span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ Le déclic dans la tête d'un élève ~
-                    </p>
-
                     <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-4">
-                        La preuve par{' '}
-                        <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-transparent bg-clip-text">
-                            le terrain.
-                        </span>
+                        La preuve par le terrain.
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base leading-relaxed">
@@ -49,9 +43,9 @@ export function TestimonialsSection() {
 
                 {/* ──────────────── CARTE ÉDITORIALE UNIQUE & PERCUTANTE ──────────────── */}
                 <div className="max-w-3xl mx-auto bg-[#ECDDFD] rounded-[2.5rem] p-8 sm:p-12 border border-[#D9BEF8] shadow-soft-lg relative overflow-hidden bg-bird-pattern">
-                    {/* Corner Sticker Tilted */}
+                    {/* Corner Sticker */}
                     <div className="absolute top-6 right-6 z-10 hidden sm:block">
-                        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white shadow-soft rotate-2">
+                        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white shadow-soft">
                             <Quote size={12} className="text-white" />
                             <span>Parole d'Élève</span>
                         </span>
@@ -61,7 +55,7 @@ export function TestimonialsSection() {
                     <div className="flex items-center justify-between gap-4 mb-6 pb-6 border-b border-[#6F2B75]/15">
                         <div className="flex items-center gap-4">
                             {/* Avatar Initials */}
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white font-school font-bold text-lg flex items-center justify-center border-2 border-white shadow-soft shrink-0">
+                            <div className="w-16 h-16 rounded-full bg-[#6F2B75] text-white font-school font-bold text-lg flex items-center justify-center border-2 border-white shadow-soft shrink-0">
                                 {student.initials}
                             </div>
                             <div>
@@ -135,7 +129,7 @@ export function TestimonialsSection() {
 
                         <Link
                             to={student.projectLink}
-                            className="btn-phoenix-gradient px-5 py-2.5 rounded-full text-xs text-white shadow-soft flex items-center gap-1.5 shrink-0"
+                            className="btn-phoenix-orange px-5 py-2.5 rounded-full text-xs text-white shadow-soft flex items-center gap-1.5 shrink-0"
                         >
                             <span>Découvrir le projet ACSE</span>
                             <ArrowRight size={13} />

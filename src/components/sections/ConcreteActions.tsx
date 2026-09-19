@@ -55,21 +55,14 @@ export function ConcreteActions() {
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header direct et aéré */}
                 <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
-                        <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
-                        <span>Sur le terrain chaque semaine à Marseille &amp; Métropole</span>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Sur le terrain chaque semaine à Marseille &amp; Métropole
+                        </span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
-                        ~ L'engagement au quotidien ~
-                    </p>
-
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-5">
-
-                        Des actions{' '}
-                        <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-transparent bg-clip-text">
-                            concrètes.
-                        </span>
+                        Des actions concrètes.
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -94,14 +87,14 @@ export function ConcreteActions() {
 
                             {/* Circular Step Number Badge */}
                             <div className="absolute top-4 left-4 z-10">
-                                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] font-school font-bold text-white text-sm shadow-soft border-2 border-white">
+                                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-[#6F2B75] font-school font-bold text-white text-sm shadow-soft border-2 border-white">
                                     01
                                 </span>
                             </div>
 
                             {/* Pill Sticker */}
                             <div className="absolute top-4 right-4 z-10">
-                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#EC602B] text-white rotate-2">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#EC602B] text-white">
                                     <MapPin size={12} className="text-white" />
                                     <span>9 Projets à Marseille</span>
                                 </span>
@@ -164,14 +157,14 @@ export function ConcreteActions() {
 
                             {/* Step Number Badge */}
                             <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] font-school font-bold text-white text-sm shadow-soft border-2 border-white">
+                                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-[#6F2B75] font-school font-bold text-white text-sm shadow-soft border-2 border-white">
                                     02
                                 </span>
                             </div>
 
                             {/* Pill Sticker */}
                             <div className="absolute top-4 right-4 z-10 pointer-events-none">
-                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#6F2B75] text-white -rotate-2">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#6F2B75] text-white">
                                     <Compass size={12} className="text-white" />
                                     <span>Sorties & Voyages</span>
                                 </span>
@@ -261,14 +254,14 @@ export function ConcreteActions() {
 
                             {/* Step Number Badge */}
                             <div className="absolute top-4 left-4 z-10">
-                                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] font-school font-bold text-white text-sm shadow-soft border-2 border-white">
+                                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-[#EC602B] font-school font-bold text-white text-sm shadow-soft border-2 border-white">
                                     03
                                 </span>
                             </div>
 
                             {/* Pill Sticker */}
                             <div className="absolute top-4 right-4 z-10">
-                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#FF7E2E] text-white rotate-1">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#FF7E2E] text-white">
                                     <Sparkles size={12} className="text-white" />
                                     <span>Grands Événements</span>
                                 </span>
@@ -339,7 +332,7 @@ export function ConcreteActions() {
                             <HeartHandshake size={28} className="text-[#EC602B]" />
                         </div>
                         <div>
-                            <span className="font-script text-2xl text-[#ECDDFD] block">~ Présents partout ~</span>
+                            <span className="font-script text-2xl text-[#ECDDFD] block">Présents partout</span>
                             <h4 className="text-xl sm:text-2xl font-display tracking-tight text-white">
                                 9 projets de terrain répartis dans tout Marseille
                             </h4>

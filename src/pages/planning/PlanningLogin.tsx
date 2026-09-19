@@ -149,14 +149,14 @@ export function PlanningLogin() {
             >
                 {/* Logo & Header */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white shadow-soft mb-4 border-2 border-white/20">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#EC602B] text-white shadow-soft mb-4 border-2 border-white/20">
                         <CalendarCheck size={36} />
                     </div>
                     <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">
-                        Phoenix <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ECDDFD] via-white to-[#EC602B]">Planning</span>
+                        Phoenix <span className="text-[#EC602B]">Planning</span>
                     </h1>
-                    <p className="font-script text-2xl text-[#EC602B] mt-1">
-                        ~ Espace Membre & Bénévoles ~
+                    <p className="font-script text-2xl text-[#ECDDFD] mt-1">
+                        Espace Membre &amp; Bénévoles
                     </p>
                     <p className="text-[#ECDDFD]/70 mt-1 text-xs font-sans">
                         Connectez-vous à votre espace associatif

@@ -54,27 +54,24 @@ export function HeroScroll() {
                         <div
                             className="lg:col-span-7 flex flex-col gap-6 items-start text-left"
                         >
-                            {/* Kicker éditorial direct & élégant */}
-                            <div className="flex items-center gap-2.5 text-xs font-school font-bold tracking-wider text-[#6F2B75]">
-                                <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
-                                <span>KEDGE Business School Marseille</span>
-                                <span className="text-[#6F2B75]/40">•</span>
-                                <span>Engagement 100% Bénévole</span>
+                            {/* Kicker officiel Blockletter */}
+                            <div className="badge-blockletter">
+                                <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
+                                <span>KEDGE Business School Marseille · 100% Bénévole</span>
                             </div>
 
-                            {/* Titre Shrikhand signature */}
+                            {/* Titre Shrikhand signature de la Charte */}
                             <h1 className="text-4xl xl:text-6xl font-display leading-[1.12] text-[#2A082D]">
                                 Faire briller <br />
-                                <span className="bg-gradient-to-r from-[#6F2B75] via-[#904990] to-[#EC602B] bg-clip-text text-transparent">
+                                <span className="text-[#EC602B]">
                                     tous les talents
-                                </span>{' '}
-                                <br />
+                                </span> <br />
                                 de Marseille.
                             </h1>
 
-                            {/* Note manuscrite Allura en violet profond pour contraste WCAG AAA */}
-                            <div className="font-script text-2xl xl:text-3xl text-[#2A082D] -mt-2 rotate-[-2deg] select-none">
-                                ~ Depuis 2011, l'égalité des chances sur le terrain ~
+                            {/* Note d'ancrage authentique */}
+                            <div className="font-script text-2xl xl:text-3xl text-[#6F2B75] -mt-2 select-none">
+                                L'égalité des chances sur le terrain depuis 2011
                             </div>
 
                             {/* Paragraphe chaleureux avec contraste optimal */}
@@ -177,24 +174,23 @@ export function HeroScroll() {
                 <div className="pattern-watermark" aria-hidden="true" />
 
                 {/* Kicker mobile direct */}
-                <div className="relative z-10 flex items-center gap-2 text-[11px] font-school font-bold tracking-wider text-[#6F2B75] mb-3">
-                    <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
+                <div className="relative z-10 badge-blockletter mb-3">
+                    <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
                     <span>KEDGE BS · 100% Bénévole à Marseille</span>
                 </div>
 
                 {/* H1 mobile Shrikhand */}
                 <h1 className="relative z-10 text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight">
                     Faire briller <br />
-                    <span className="bg-gradient-to-r from-[#6F2B75] via-[#904990] to-[#EC602B] bg-clip-text text-transparent">
+                    <span className="text-[#EC602B]">
                         tous les talents
-                    </span>{' '}
-                    <br />
+                    </span> <br />
                     de Marseille.
                 </h1>
 
-                {/* Note manuscrite mobile en violet profond */}
-                <div className="relative z-10 font-script text-2xl text-[#2A082D] mb-3 -rotate-2">
-                    ~ Depuis 2011 sur le terrain ~
+                {/* Note manuscrite mobile */}
+                <div className="relative z-10 font-script text-2xl text-[#6F2B75] mb-3">
+                    L'égalité des chances sur le terrain depuis 2011
                 </div>
 
                 <p className="relative z-10 text-slate-700 text-sm leading-relaxed mb-6 max-w-xs font-medium">

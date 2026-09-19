@@ -69,12 +69,12 @@ export function ProjectMap() {
 
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-phoenix-purple to-phoenix-orange text-white flex items-center justify-center shadow-md shrink-0">
+                            <div className="w-14 h-14 rounded-full bg-[#6F2B75] text-white flex items-center justify-center shadow-md shrink-0">
                                 <MapPin className="w-7 h-7" />
                             </div>
                             <div>
                                 <h1 className="text-3xl sm:text-5xl font-display text-phoenix-dark tracking-tight">Carte des Projets</h1>
-                                <p className="font-script text-xl text-[#2A082D]">~ 9 projets ancrés dans Marseille ~</p>
+                                <p className="font-script text-2xl text-[#2A082D]">9 projets ancrés dans Marseille</p>
                             </div>
                         </div>
 

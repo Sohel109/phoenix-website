@@ -102,7 +102,7 @@ export function ProjectDetail() {
                         {/* Badges en haut à droite de l'image */}
                         <div className="absolute top-4 right-4 z-10 flex flex-wrap gap-2 justify-end">
                             {project.isCordee && (
-                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white font-school font-bold text-xs shadow-soft">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#6F2B75] text-white font-school font-bold text-xs shadow-soft">
                                     <Award size={14} />
                                     <span>Cordée de la Réussite</span>
                                 </span>
@@ -111,17 +111,23 @@ export function ProjectDetail() {
                                 <span>Créé en {project.creationYear}</span>
                             </span>
                         </div>
-
-                        {/* Round Macaron Logo Overlay (CERCLE AVANT LE RECTANGLE) */}
-                        {project.image && (
-                            <div className="absolute -bottom-8 left-6 sm:left-10 w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center border-2 border-white overflow-hidden p-1.5 z-10">
-                                <img src={project.image} alt={`Logo officiel du projet ${project.title}`} className="w-full h-full object-contain" />
-                            </div>
-                        )}
                     </div>
 
                     {/* Content Section */}
-                    <div className="pt-12 sm:pt-14 px-6 sm:px-10 pb-12">
+                    <div className="px-6 sm:px-10 pb-12 relative">
+                        {/* Round Macaron Logo Overlay (Unclipped, perfectly proportioned circular avatar) */}
+                        {project.image && (
+                            <div className="-mt-12 sm:-mt-14 mb-4 relative z-20 inline-block">
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full shadow-soft-lg flex items-center justify-center border-4 border-white overflow-hidden p-2">
+                                    <img 
+                                        src={project.image} 
+                                        alt={`Logo officiel du projet ${project.title}`} 
+                                        className="w-full h-full object-contain rounded-full" 
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {/* Tags Header */}
                         <div className="flex flex-wrap items-center gap-2.5 mb-4">
                             <span className="px-4 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#ECDDFD] text-[#6F2B75] shadow-soft">

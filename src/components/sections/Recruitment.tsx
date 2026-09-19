@@ -8,15 +8,14 @@ export function Recruitment() {
 
                     {/* Header */}
                     <div className="text-center mb-8 sm:mb-10">
-                        <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full inline-block mb-3">
-                            On recrute !
-                        </span>
-                        <h2 className="text-4xl md:text-5xl font-display text-phoenix-dark mb-2">
+                        <div className="flex justify-center mb-3">
+                            <span className="badge-blockletter">
+                                Étudiants KEDGE · On recrute !
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-display text-phoenix-dark mb-3">
                             Rejoignez l'Aventure
                         </h2>
-                        <p className="font-script text-2xl text-phoenix-purple mb-3">
-                            ~ Deviens acteur du changement à Marseille ~
-                        </p>
                         <p className="text-slate-600 font-sans text-base max-w-2xl mx-auto leading-relaxed">
                             Vous êtes étudiant à KEDGE Business School et vous souhaitez vous engager concrètement pour l'égalité des chances ?
                             Phœnix recrute ses nouveaux tuteurs et membres actifs !
@@ -36,7 +35,7 @@ export function Recruitment() {
                             href="https://m.facebook.com/groups/1045459488302373/?ref=share"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group inline-flex items-center gap-3 px-8 py-4 btn-phoenix-gradient text-white rounded-full font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+                            className="group inline-flex items-center gap-3 px-8 py-4 btn-phoenix-orange text-white rounded-full font-school uppercase tracking-wider text-xs shadow-glow-orange hover:scale-105 active:scale-95 transition-all duration-200"
                         >
                             <span>Postuler Maintenant</span>
                             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

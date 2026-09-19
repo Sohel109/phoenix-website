@@ -40,15 +40,14 @@ export function DonationSection() {
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* En-tête de section */}
                 <div className="text-center max-w-3xl mx-auto mb-14 md:mb-18">
-                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-2">
-                        ~ Chaque geste ouvre un avenir ~
-                    </p>
+                    <div className="flex justify-center mb-3">
+                        <span className="badge-blockletter">
+                            Faire un don · Soutenir la jeunesse
+                        </span>
+                    </div>
 
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.12] mb-5">
-                        Donner pour{' '}
-                        <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-transparent bg-clip-text">
-                            créer le déclic.
-                        </span>
+                        Donner pour créer le déclic.
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
@@ -80,7 +79,7 @@ export function DonationSection() {
                             >
                                 {tier.popular && (
                                     <div className="absolute top-4 right-4">
-                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white text-[10px] font-school font-bold uppercase tracking-wider shadow-xs">
+                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#EC602B] text-white text-[10px] font-school font-bold uppercase tracking-wider shadow-xs">
                                             <Sparkles size={11} />
                                             Impact Majeur
                                         </span>
@@ -141,7 +140,7 @@ export function DonationSection() {
                             href={HELLOASSO_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full sm:w-auto btn-phoenix-gradient px-9 py-4 text-sm uppercase tracking-wider text-white shadow-soft inline-flex items-center justify-center gap-2.5 active:scale-95 transition-all"
+                            className="w-full sm:w-auto btn-phoenix-orange px-9 py-4 text-sm uppercase tracking-wider text-white shadow-glow-orange inline-flex items-center justify-center gap-2.5 active:scale-95 transition-all"
                         >
                             <Heart size={18} fill="currentColor" />
                             <span>Finaliser mon don ({selectedAmount} €)</span>
