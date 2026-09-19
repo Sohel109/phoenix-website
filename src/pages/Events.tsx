@@ -53,6 +53,8 @@ function EventCard({ event, index }: { event: any, index: number }) {
                 <img
                     src={event.image}
                     alt={event.title}
+                    loading={index < 3 ? "eager" : "lazy"}
+                    decoding="async"
                     className={`w-full h-full transform group-hover:scale-105 transition-transform duration-500 ease-out ${
                         event.id === 'entretiens-excellence'
                             ? 'object-contain'

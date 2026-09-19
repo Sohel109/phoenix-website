@@ -11,15 +11,15 @@ import { AuroraBackground } from './components/layout/AuroraBackground';
 import { ThemeProvider } from './context/ThemeContext';
 import { PlanningProvider, usePlanning } from './context/PlanningContext';
 
-// Home chargée immédiatement (page principale)
+// Pages principales chargées immédiatement pour navigation instantanée (sans spinner)
 import { Home } from './pages/Home';
+import { Events } from './pages/Events';
 
 // Pages secondaires en lazy loading (chargées uniquement à la navigation)
 const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.Projects })));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
 const ProjectMap = lazy(() => import('./pages/ProjectMap').then(m => ({ default: m.ProjectMap })));
 const Association = lazy(() => import('./pages/Association').then(m => ({ default: m.Association })));
-const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
 const EventDetail = lazy(() => import('./pages/EventDetail').then(m => ({ default: m.EventDetail })));
 const Partners = lazy(() => import('./pages/Partners').then(m => ({ default: m.Partners })));
 const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));

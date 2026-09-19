@@ -73,14 +73,14 @@ export function ProjectDetail() {
                 {/* Main Card */}
                 <div className="bg-white rounded-[2.5rem] shadow-soft-lg border border-[#ECDDFD] overflow-hidden">
                     {/* Header with Banner Image */}
-                    <div className={`h-64 sm:h-84 relative ${project.bannerFit === 'contain' ? 'bg-[#FFFBF4]' : 'bg-slate-900'} flex items-center justify-center overflow-hidden`}>
+                    <div className={`h-64 sm:h-84 relative ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]' : 'bg-slate-900'} flex items-center justify-center overflow-hidden`}>
                         {project.banner ? (
                             <img
                                 src={project.banner}
                                 alt={`${project.title} Banner`}
                                 className={`w-full h-full ${
-                                    project.bannerFit === 'contain'
-                                        ? 'object-contain p-6 sm:p-8 max-h-[92%] object-center'
+                                    project.id === 'sup-d-om'
+                                        ? 'object-contain p-6 sm:p-10 object-center'
                                         : 'object-cover ' + (project.id === 'acse' ? 'object-[center_25%]' : 'object-center')
                                 }`}
                             />
@@ -89,7 +89,7 @@ export function ProjectDetail() {
                         )}
 
                         {/* Soft subtle overlay */}
-                        {project.bannerFit !== 'contain' && (
+                        {project.id !== 'sup-d-om' && (
                             <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/85 via-[#2A082D]/25 to-transparent pointer-events-none" />
                         )}
 

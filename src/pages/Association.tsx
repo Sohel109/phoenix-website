@@ -338,7 +338,11 @@ export function Association() {
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
                         {keyDates.map((item, idx) => (
                             <div key={idx} className="flex flex-col relative bg-white p-6 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
-                                <div className="text-2xl sm:text-3xl font-display text-[#EC602B] mb-2">
+                                <div className={`font-display text-[#EC602B] mb-2 leading-tight whitespace-nowrap ${
+                                    item.year.length > 5 
+                                        ? "text-lg sm:text-base lg:text-lg xl:text-xl tracking-tight" 
+                                        : "text-2xl sm:text-3xl"
+                                }`}>
                                     {item.year}
                                 </div>
                                 <h3 className="text-sm font-school font-bold text-[#2A082D] mb-2 leading-snug">
@@ -538,7 +542,7 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 5. BANDEAU DE RESSOURCES ──────────────── */}
-                <section className="bg-gradient-to-r from-[#6F2B75] via-[#4A154B] to-[#2A082D] text-white rounded-[2.5rem] p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-lg bg-bird-pattern-dark">
+                <section className="bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-lg">
                     <div>
                         <span className="text-xs font-school font-bold uppercase tracking-wider text-[#FF7E2E] block mb-1">
                             Documentation Officielle

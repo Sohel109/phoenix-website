@@ -9,7 +9,7 @@ function MacaronBadge({
     icon,
     label,
     value,
-    className,
+    className = '',
 }: {
     icon: React.ReactNode;
     label: string;
@@ -18,10 +18,10 @@ function MacaronBadge({
 }) {
     return (
         <div
-            className={`absolute flex items-center gap-3 px-4 py-2.5 rounded-full
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-full
                 bg-white/95 backdrop-blur-md border border-[#6F2B75]/20
                 shadow-soft hover:shadow-soft-lg text-xs font-sans text-[#2A082D]
-                select-none pointer-events-none z-20 transition-all ${className}`}
+                select-none pointer-events-none transition-all whitespace-nowrap ${className}`}
         >
             <div className="w-8 h-8 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-xs">
                 {icon}
@@ -45,13 +45,9 @@ export function HeroScroll() {
             ══════════════════════════════════════════════════════ */}
             <section className="hidden md:block relative w-full min-h-[92vh] bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
 
-                {/* Halos doux d'ambiance Lilas et Pêche */}
-                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-[#ECDDFD]/60 blur-3xl pointer-events-none" />
-                <div className="absolute bottom-[5%] left-[-8%] w-[450px] h-[450px] rounded-full bg-[#E1BBCB]/40 blur-3xl pointer-events-none" />
-
                 {/* ── GRILLE PRINCIPALE ── */}
                 <div className="relative z-10 container mx-auto px-6 lg:px-10 xl:px-16 max-w-7xl h-full min-h-[92vh] flex items-center">
-                    <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-28 lg:py-0">
+                    <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-24 lg:py-12">
 
                         {/* ── COLONNE GAUCHE : Message & Action chaleureux ── */}
                         <motion.div
@@ -64,7 +60,7 @@ export function HeroScroll() {
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider shadow-xs">
                                 <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
                                 <span>KEDGE Business School · Association étudiante</span>
-                                <span className="text-[#904990]">✦</span>
+                                <span className="text-[#904990]">·</span>
                                 <span className="text-[#EC602B]">100% Bénévole</span>
                             </div>
 
@@ -170,7 +166,7 @@ export function HeroScroll() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5, duration: 0.5 }}
-                                className="absolute -bottom-2 -left-4 xl:-left-6 z-30"
+                                className="absolute bottom-6 -left-4 xl:-left-6 z-30"
                             >
                                 <MacaronBadge
                                     icon={<GraduationCap size={16} />}
@@ -180,7 +176,7 @@ export function HeroScroll() {
                             </motion.div>
 
                             {/* Pastille officielle Phœnix avec logo rond */}
-                            <div className="absolute -bottom-4 right-6 z-30 p-1.5 rounded-full bg-white shadow-soft border border-[#ECDDFD]">
+                            <div className="absolute bottom-4 right-6 z-30 p-1.5 rounded-full bg-white shadow-soft border border-[#ECDDFD]">
                                 <img
                                     src="/logo-badge.jpg"
                                     alt="Logo officiel Phoenix"

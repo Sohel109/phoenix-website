@@ -56,8 +56,8 @@ export const events: EventItem[] = [
         title: "SimONU Égalité Des Chances",
         description: "Simulation d'Assemblée Générale de l'ONU en partenariat avec SimONU Marseille. Les lycéens deviennent diplomates et négocient des résolutions sur les Objectifs de Développement Durable (ODD).",
         fullDescription: `SimONU Égalité des Chances est un événement d'envergure co-organisé par Phœnix EDC et l'association SimONU de KEDGE BS depuis 2008.\n\nPendant une journée entière, nos lycéens se glissent dans la peau de délégués diplomatiques représentant différentes nations. Ils défendent les intérêts de leur pays tout en respectant scrupuleusement le protocole des Nations Unies.\n\nL'événement les met au défi de s'exprimer devant une assemblée plénière, de négocier en commission et de bâtir des coalitions pour résoudre des problématiques mondiales cruciales (sécurité alimentaire, transition écologique, égalité des droits). Ils y développent leur éloquence, leur sens du compromis et une vision éclairée de la géopolitique contemporaine.`,
-        image: "/images/events/simonu-new.png",
-        headerImage: "/images/events/simonu-new.png",
+        image: "/images/events/simonu-new.jpg",
+        headerImage: "/images/events/simonu-new.jpg",
         gallery: [
             "/images/events/simonu/simonu-group-argentine.jpg",
             "/images/events/simonu/simonu-speaker.jpg",

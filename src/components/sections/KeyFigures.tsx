@@ -1,7 +1,6 @@
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
-import { Sparkles, Users, Heart, Zap, Award } from 'lucide-react';
+import { Users, Heart, Zap, Award } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 // --- COUNTER COMPONENT ---
 function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
@@ -46,80 +45,12 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 
 // --- MAIN SECTION ---
 export function KeyFigures() {
-    const { t } = useTranslation();
     const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
-
-    const stats = [
-        { 
-            value: 300, 
-            prefix: "",
-            suffix: "+", 
-            label: t('home.impact.youth', 'Jeunes accompagnés'), 
-            subtitle: "Collégiens et lycéens suivis chaque semaine à Marseille",
-            badge: "Impact Majeur ✦",
-            icon: Users,
-            cardClass: "bg-[#ECDDFD] text-[#2A082D] border border-[#6F2B75]/15 shadow-soft hover:shadow-soft-lg",
-            numberColor: "text-[#6F2B75]",
-            labelColor: "text-[#2A082D]",
-            subtitleColor: "text-[#2A082D]/75",
-            badgeClass: "bg-white text-[#6F2B75] border border-[#6F2B75]/20",
-            iconBg: "bg-[#6F2B75] text-white",
-            animated: true 
-        },
-        { 
-            value: 100, 
-            prefix: "+",
-            suffix: "", 
-            label: t('home.impact.volunteers', 'Tuteurs engagés'), 
-            subtitle: "Étudiants bénévoles de KEDGE BS mobilisés sur le terrain",
-            badge: "Force Bénévole 💜",
-            icon: Heart,
-            cardClass: "bg-[#E1BBCB] text-[#2A082D] border border-[#EC602B]/20 shadow-soft hover:shadow-soft-lg",
-            numberColor: "text-[#EC602B]",
-            labelColor: "text-[#2A082D]",
-            subtitleColor: "text-[#2A082D]/80",
-            badgeClass: "bg-white text-[#EC602B] border border-[#EC602B]/20",
-            iconBg: "bg-[#EC602B] text-white",
-            animated: true 
-        },
-        { 
-            value: 9, 
-            prefix: "",
-            suffix: "", 
-            label: t('home.impact.projects', 'Projets de terrain'), 
-            subtitle: "Antennes scolaires et centres partenaires à Marseille",
-            badge: "Ancrage Local 📍",
-            icon: Zap,
-            cardClass: "bg-gradient-to-br from-[#6F2B75] to-[#EC602B] text-white shadow-soft hover:shadow-soft-lg",
-            numberColor: "text-white",
-            labelColor: "text-white",
-            subtitleColor: "text-white/85",
-            badgeClass: "bg-white/20 text-white border border-white/30 backdrop-blur-xs",
-            iconBg: "bg-white text-[#EC602B]",
-            animated: true 
-        },
-        { 
-            value: 100, 
-            prefix: "",
-            suffix: "%", 
-            label: t('home.impact.success', 'Réussite aux examens'), 
-            subtitle: "Au brevet des collèges et au baccalauréat chaque année",
-            badge: "Excellence 🏆",
-            icon: Award,
-            cardClass: "bg-white text-[#2A082D] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg",
-            numberColor: "bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent",
-            labelColor: "text-[#2A082D]",
-            subtitleColor: "text-slate-600",
-            badgeClass: "bg-[#ECDDFD] text-[#6F2B75] border border-[#6F2B75]/15",
-            iconBg: "bg-[#ECDDFD] text-[#6F2B75]",
-            animated: true 
-        }
-    ];
 
     return (
         <section className="relative py-16 md:py-24 bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
-            <div className="container mx-auto px-4 max-w-6xl relative z-10">
-                {/* Header with badge */}
+            <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
+                {/* Header with human associative touch */}
                 <motion.div
                     initial={isMobile ? false : { opacity: 0, y: 15 }}
                     whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
@@ -128,73 +59,194 @@ export function KeyFigures() {
                     className="text-center mb-12 md:mb-16"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider mb-4 shadow-xs">
-                        <Sparkles size={14} className="text-[#EC602B]" />
-                        <span>{t('home.impact.badge', 'Impact & Résultats')}</span>
+                        <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
+                        <span>Mesure de notre action sur le terrain</span>
                     </div>
 
+                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                        ~ L'humain et la proximité avant tout ~
+                    </p>
+
                     <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3">
-                        {t('home.impact.title', 'Notre impact')}{' '}
+                        Des résultats{' '}
                         <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent">
-                            {t('home.impact.titleHighlight', 'en chiffres')}
+                            qui ont du sens.
                         </span>
                     </h2>
                     <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl mx-auto">
-                        Depuis plus de 13 ans, des résultats concrets bâtis chaque semaine auprès de la jeunesse marseillaise.
+                        Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
                     </p>
                 </motion.div>
 
-                {/* 4 Cards Grid - Bulles rondes et organiques */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7">
-                    {stats.map((stat, i) => {
-                        const IconComponent = stat.icon;
-                        return (
-                            <motion.div
-                                key={i}
-                                initial={isMobile ? false : { opacity: 0, y: 15 }}
-                                whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-20px" }}
-                                transition={{
-                                    duration: 0.45,
-                                    delay: i * 0.08,
-                                    ease: [0.22, 1, 0.36, 1]
-                                }}
-                                className={`group relative p-7 rounded-[2.5rem] ${stat.cardClass} transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center justify-between min-h-[270px]`}
-                            >
-                                {/* Inner Badge & Macaron Icon */}
-                                <div className="w-full flex items-center justify-between mb-4">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-xs ${stat.iconBg}`}>
-                                        <IconComponent size={18} />
-                                    </div>
-                                    <span className={`px-3 py-1 rounded-full text-[11px] font-school font-bold tracking-wider ${stat.badgeClass}`}>
-                                        {stat.badge}
+                {/* ── BENTO ASYMÉTRIQUE CHALEUREUX (Charte Lise Dehedin : Le cercle avant le rectangle) ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                    {/* CARTE 1 (Héroïque - 7 cols) : Les Jeunes Accompagnés */}
+                    <motion.div
+                        initial={isMobile ? false : { opacity: 0, y: 15 }}
+                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-20px" }}
+                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                        className="lg:col-span-7 bg-[#ECDDFD] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#6F2B75]/15 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
+                    >
+                        <div className="flex items-center justify-between gap-4 mb-6">
+                            <div className="w-11 h-11 rounded-full bg-[#6F2B75] text-white flex items-center justify-center shadow-xs">
+                                <Users size={20} />
+                            </div>
+                            <span className="px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] border border-[#6F2B75]/20 text-xs font-school font-bold tracking-wider shadow-xs">
+                                Collèges & Lycées de Marseille
+                            </span>
+                        </div>
+
+                        <div>
+                            <div className="text-5xl sm:text-6xl font-display text-[#6F2B75] leading-none mb-2">
+                                <AnimatedCounter value={300} suffix="+" />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold text-[#2A082D] tracking-tight mb-2">
+                                Jeunes marseillais accompagnés
+                            </h3>
+                            <p className="text-[#2A082D]/80 text-sm leading-relaxed max-w-lg mb-4 font-medium">
+                                De la 6ème jusqu'au baccalauréat, suivis individuellement ou en petits groupes chaque semaine par nos étudiants tuteurs.
+                            </p>
+                        </div>
+
+                        <div className="pt-4 border-t border-[#6F2B75]/15 flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex flex-wrap gap-1.5">
+                                {['L\'Estaque', 'Quartiers Nord', 'Saint-Gabriel', 'Roy d\'Espagne'].map((quartier) => (
+                                    <span key={quartier} className="px-2.5 py-0.5 rounded-full bg-white/70 text-[#6F2B75] text-[11px] font-school font-bold">
+                                        {quartier}
                                     </span>
+                                ))}
+                            </div>
+                            <span className="font-script text-lg text-[#EC602B]">
+                                ~ Rendez-vous chaque mercredi ~
+                            </span>
+                        </div>
+                    </motion.div>
+
+                    {/* CARTE 2 (5 cols) : Les Tuteurs KEDGE */}
+                    <motion.div
+                        initial={isMobile ? false : { opacity: 0, y: 15 }}
+                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-20px" }}
+                        transition={{ duration: 0.45, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                        className="lg:col-span-5 bg-[#E1BBCB] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#EC602B]/20 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
+                    >
+                        <div className="flex items-center justify-between gap-4 mb-6">
+                            <div className="w-11 h-11 rounded-full bg-[#EC602B] text-white flex items-center justify-center shadow-xs">
+                                <Heart size={20} />
+                            </div>
+                            <span className="px-3.5 py-1.5 rounded-full bg-white text-[#EC602B] border border-[#EC602B]/20 text-xs font-school font-bold tracking-wider shadow-xs">
+                                100% Bénévolat
+                            </span>
+                        </div>
+
+                        <div>
+                            <div className="text-5xl sm:text-6xl font-display text-[#EC602B] leading-none mb-2">
+                                <AnimatedCounter value={100} prefix="+" />
+                            </div>
+                            <h3 className="text-xl font-bold text-[#2A082D] tracking-tight mb-2">
+                                Étudiants tuteurs de KEDGE BS
+                            </h3>
+                            <p className="text-[#2A082D]/80 text-sm leading-relaxed font-medium">
+                                Mobilisés chaque semaine pour transmettre le goût d'apprendre, la méthodologie et ouvrir les perspectives d'avenir.
+                            </p>
+                        </div>
+
+                        <div className="pt-4 border-t border-[#EC602B]/20 flex items-center justify-between">
+                            <span className="text-xs font-school font-bold text-[#6F2B75]">
+                                Campus Marseille Luminy
+                            </span>
+                            <span className="font-script text-lg text-[#EC602B]">
+                                ~ Grandir ensemble ~
+                            </span>
+                        </div>
+                    </motion.div>
+
+                    {/* CARTE 3 (5 cols) : Les 9 Projets de terrain */}
+                    <motion.div
+                        initial={isMobile ? false : { opacity: 0, y: 15 }}
+                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-20px" }}
+                        transition={{ duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                        className="lg:col-span-5 bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-7 sm:p-9 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
+                    >
+                        <div className="flex items-center justify-between gap-4 mb-6">
+                            <div className="w-11 h-11 rounded-full bg-white text-[#EC602B] flex items-center justify-center shadow-xs">
+                                <Zap size={20} />
+                            </div>
+                            <span className="px-3.5 py-1.5 rounded-full bg-white/15 text-[#FF7E2E] border border-white/20 text-xs font-school font-bold tracking-wider">
+                                Ancrage Local
+                            </span>
+                        </div>
+
+                        <div>
+                            <div className="text-5xl sm:text-6xl font-display text-white leading-none mb-2">
+                                <AnimatedCounter value={9} />
+                            </div>
+                            <h3 className="text-xl font-bold text-white tracking-tight mb-2">
+                                Projets de terrain actifs
+                            </h3>
+                            <p className="text-white/80 text-sm leading-relaxed mb-4 font-medium">
+                                Des antennes scolaires au cœur des quartiers pour intervenir au plus près des besoins des élèves.
+                            </p>
+                        </div>
+
+                        <div className="pt-4 border-t border-white/15 flex flex-wrap gap-1.5">
+                            {['Sup d\'OM', 'Massa 13', 'Izzo', 'Jules Ferry', 'ACSE'].map((p) => (
+                                <span key={p} className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[11px] font-school font-bold">
+                                    {p}
+                                </span>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* CARTE 4 (7 cols) : Réussite et Cordées */}
+                    <motion.div
+                        initial={isMobile ? false : { opacity: 0, y: 15 }}
+                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-20px" }}
+                        transition={{ duration: 0.45, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                        className="lg:col-span-7 bg-white text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
+                    >
+                        <div className="flex items-center justify-between gap-4 mb-6">
+                            <div className="w-11 h-11 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shadow-xs">
+                                <Award size={20} />
+                            </div>
+                            <span className="px-3.5 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] border border-[#6F2B75]/15 text-xs font-school font-bold tracking-wider shadow-xs">
+                                Brevet & Baccalauréat
+                            </span>
+                        </div>
+
+                        <div className="grid sm:grid-cols-12 gap-6 items-center">
+                            <div className="sm:col-span-5">
+                                <div className="text-5xl sm:text-6xl font-display bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent leading-none mb-1">
+                                    <AnimatedCounter value={100} suffix="%" />
                                 </div>
-
-                                {/* Number Shrikhand */}
-                                <div className="w-full flex flex-col items-center justify-center flex-grow py-2">
-                                    <div
-                                        className={`text-5xl sm:text-6xl font-display mb-1 ${stat.numberColor} leading-none flex items-center justify-center text-center`}
-                                    >
-                                        {stat.animated ? (
-                                            <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
-                                        ) : (
-                                            <span className="inline-flex items-center justify-center">{stat.prefix || ''}{stat.value}{stat.suffix}</span>
-                                        )}
-                                    </div>
-
-                                    {/* Label */}
-                                    <h3 className={`text-base font-bold tracking-normal mt-2 ${stat.labelColor}`}>
-                                        {stat.label}
-                                    </h3>
-                                </div>
-
-                                {/* Subtitle */}
-                                <p className={`text-xs font-medium leading-relaxed mt-2 ${stat.subtitleColor}`}>
-                                    {stat.subtitle}
+                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B]">
+                                    De Réussite
                                 </p>
-                            </motion.div>
-                        );
-                    })}
+                            </div>
+                            <div className="sm:col-span-7 sm:border-l sm:border-[#ECDDFD] sm:pl-6">
+                                <h3 className="text-lg font-bold text-[#2A082D] tracking-tight mb-1.5">
+                                    Excellence & Confiance retrouvée
+                                </h3>
+                                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-medium">
+                                    100% de réussite aux examens officiels pour les collégiens et lycéens assidus à nos séances hebdomadaires.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="pt-4 mt-4 border-t border-[#ECDDFD] flex flex-wrap items-center justify-between gap-3">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECDDFD]/60 text-[#6F2B75] text-xs font-school font-bold">
+                                5 Cordées de la Réussite
+                            </span>
+                            <span className="text-xs font-medium text-slate-500">
+                                Reconnue d'Intérêt Général
+                            </span>
+                        </div>
+                    </motion.div>
+
                 </div>
             </div>
         </section>

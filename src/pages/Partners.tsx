@@ -194,7 +194,7 @@ export function Partners() {
                 </div>
 
                 {/* CTA Devenir Partenaire */}
-                <div className="bg-gradient-to-r from-[#6F2B75] via-[#4A154B] to-[#2A082D] text-white rounded-[2.5rem] p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8 bg-bird-pattern-dark">
+                <div className="bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="max-w-xl">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-[#FF7E2E] border border-white/20 text-xs font-school font-bold mb-4 shadow-soft">
                             <Handshake size={14} />

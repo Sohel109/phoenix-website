@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, ChevronLeft, ChevronRight, Compass, School, HeartHandshake } from 'lucide-react';
+import { ArrowRight, MapPin, ChevronLeft, ChevronRight, Compass, School, HeartHandshake, Sparkles } from 'lucide-react';
 
 const culturalTripPhotos = [
     {
@@ -52,10 +52,6 @@ export function ConcreteActions() {
 
     return (
         <section className="relative py-16 md:py-28 overflow-hidden bg-transparent">
-            {/* Subtle warm decorative ambient shapes */}
-            <div className="absolute top-1/4 -left-32 w-80 h-80 bg-[#ECDDFD]/60 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-[#E1BBCB]/50 rounded-full blur-3xl pointer-events-none" />
-
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header with Youth Association Styling */}
                 <div className="text-center max-w-3xl mx-auto mb-14 md:mb-20">
@@ -116,8 +112,9 @@ export function ConcreteActions() {
 
                             {/* Pill Sticker */}
                             <div className="absolute top-4 right-4 z-10">
-                                <span className="inline-block px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#EC602B] text-white rotate-2">
-                                    9 Projets à Marseille 📍
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#EC602B] text-white rotate-2">
+                                    <MapPin size={12} className="text-white" />
+                                    <span>9 Projets à Marseille</span>
                                 </span>
                             </div>
 
@@ -191,8 +188,9 @@ export function ConcreteActions() {
 
                             {/* Pill Sticker */}
                             <div className="absolute top-4 right-4 z-10 pointer-events-none">
-                                <span className="inline-block px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#6F2B75] text-white -rotate-2">
-                                    Sorties & Voyages 🎭
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#6F2B75] text-white -rotate-2">
+                                    <Compass size={12} className="text-white" />
+                                    <span>Sorties & Voyages</span>
                                 </span>
                             </div>
 
@@ -293,8 +291,9 @@ export function ConcreteActions() {
 
                             {/* Pill Sticker */}
                             <div className="absolute top-4 right-4 z-10">
-                                <span className="inline-block px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#FF7E2E] text-white rotate-1">
-                                    Grands Événements 🚀
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold shadow-soft bg-[#FF7E2E] text-white rotate-1">
+                                    <Sparkles size={12} className="text-white" />
+                                    <span>Grands Événements</span>
                                 </span>
                             </div>
 
@@ -354,7 +353,7 @@ export function ConcreteActions() {
                 </div>
 
                 {/* Bottom Callout Banner - Deep Violet Charte Strip with Bird Pattern */}
-                <div className="rounded-[2.5rem] bg-gradient-to-r from-[#6F2B75] via-[#4A154B] to-[#2A082D] p-8 sm:p-11 text-white flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-soft-lg bg-bird-pattern-dark">
+                <div className="rounded-[2.5rem] bg-[#2A082D] bg-bird-pattern-dark p-8 sm:p-11 text-white flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-soft-lg">
                     <div className="relative z-10 flex items-center gap-5">
                         <div className="w-14 h-14 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0 shadow-soft">
                             <HeartHandshake size={28} className="text-[#FF7E2E]" />
