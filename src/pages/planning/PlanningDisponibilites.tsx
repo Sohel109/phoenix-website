@@ -15,12 +15,12 @@ function Toggle({ checked, onChange, disabled, loading }: { checked: boolean; on
         <button
             onClick={onChange}
             disabled={disabled || loading}
-            className={`relative inline-flex h-[20px] w-[36px] items-center rounded-full transition-all focus:outline-none ${
+            className={`relative inline-flex h-[24px] w-[42px] items-center rounded-full transition-all focus:outline-none ${
                 disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-            } ${checked ? 'bg-orange-500' : 'bg-slate-700 border border-slate-600'}`}
+            } ${checked ? 'bg-[#EC602B] shadow-sm' : 'bg-[#1F0422] border border-[#6F2B75]/60'}`}
         >
-            <span className={`inline-flex items-center justify-center h-[16px] w-[16px] transform rounded-full bg-white shadow-md transition-transform ${checked ? 'translate-x-[18px]' : 'translate-x-[2px]'}`}>
-                {loading && <LoaderCircle size={10} className="animate-spin text-orange-500" />}
+            <span className={`inline-flex items-center justify-center h-[18px] w-[18px] transform rounded-full bg-white shadow-soft transition-transform ${checked ? 'translate-x-[20px]' : 'translate-x-[3px]'}`}>
+                {loading && <LoaderCircle size={10} className="animate-spin text-[#EC602B]" />}
             </span>
         </button>
     );
@@ -55,34 +55,36 @@ export function PlanningDisponibilites() {
     return (
         <PlanningLayout title="Disponibilités">
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-4 p-3 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-center justify-between mb-5 p-4 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
-                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-colors"
+                    className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                 >
-                    <ChevronLeft size={16} />
+                    <ChevronLeft size={18} />
                 </motion.button>
                 <div className="text-center">
-                    <p className="text-white font-bold text-xs md:text-sm">{weekLabel}</p>
-                    <p className="text-slate-400 text-[10px] md:text-xs mt-0.5">{bookedCount} créneau{bookedCount > 1 ? 'x' : ''} sélectionné{bookedCount > 1 ? 's' : ''}</p>
+                    <p className="text-white font-school font-bold text-sm md:text-base uppercase tracking-wider">{weekLabel}</p>
+                    <p className="text-[#ECDDFD]/70 font-school text-xs mt-0.5">{bookedCount} créneau{bookedCount > 1 ? 'x' : ''} sélectionné{bookedCount > 1 ? 's' : ''}</p>
                 </div>
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'next'))}
-                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-colors"
+                    className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                 >
-                    <ChevronRight size={16} />
+                    <ChevronRight size={18} />
                 </motion.button>
             </div>
 
             {/* Global unavailability switch */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 mb-4 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <AlertTriangle size={18} className={unavailable ? 'text-orange-400' : 'text-slate-500'} />
+            <div className="flex items-center justify-between p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 shadow-soft-lg backdrop-blur-md">
+                <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
+                        <AlertTriangle size={18} className={unavailable ? 'text-amber-200' : 'text-white'} />
+                    </div>
                     <div>
-                        <p className="text-xs md:text-sm font-semibold text-white">Pas disponible toute la semaine</p>
-                        <p className="text-[10px] md:text-xs text-slate-400">Supprime toutes vos disponibilités de la semaine</p>
+                        <p className="text-sm font-bold text-white tracking-wide">Indisponible toute la semaine</p>
+                        <p className="text-xs text-[#ECDDFD]/70 mt-0.5">Désactive automatiquement tous vos créneaux de cette semaine</p>
                     </div>
                 </div>
                 <Toggle checked={unavailable} onChange={() => toggleWeekUnavailable(currentUser.id, currentWeekKey)} />
@@ -90,25 +92,25 @@ export function PlanningDisponibilites() {
 
             {/* Project filter chips */}
             {allProjects.length > 1 && (
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <div className="flex flex-wrap gap-2 mb-6">
                     <button
                         onClick={() => setActiveProjectId(null)}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors border ${
+                        className={`px-4 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all border ${
                             activeProjectId === null
-                                ? 'bg-orange-500 text-white border-orange-400 shadow-sm'
-                                : 'bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
+                                ? 'btn-phoenix-gradient text-white border-transparent shadow-soft'
+                                : 'bg-[#2D0A32]/90 text-[#ECDDFD]/80 border-[#6F2B75]/40 hover:text-white hover:border-[#EC602B]/60'
                         }`}
                     >
-                        Tous
+                        Tous les projets
                     </button>
                     {allProjects.map(p => (
                         <button
                             key={p.id}
                             onClick={() => setActiveProjectId(p.id)}
-                            className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors border ${
+                            className={`px-4 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all border ${
                                 activeProjectId === p.id
-                                    ? 'bg-orange-500 text-white border-orange-400 shadow-sm'
-                                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
+                                    ? 'btn-phoenix-gradient text-white border-transparent shadow-soft'
+                                    : 'bg-[#2D0A32]/90 text-[#ECDDFD]/80 border-[#6F2B75]/40 hover:text-white hover:border-[#EC602B]/60'
                             }`}
                         >
                             {p.name}
@@ -122,28 +124,30 @@ export function PlanningDisponibilites() {
                 {unavailable ? (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-12 text-center bg-slate-900 rounded-xl border border-slate-800"
+                        className="flex flex-col items-center justify-center py-12 text-center bg-[#2D0A32]/90 rounded-[2rem] border border-[#6F2B75]/40 shadow-soft-lg"
                     >
-                        <AlertTriangle size={36} className="text-orange-400 mb-2" />
-                        <p className="text-white font-bold text-sm">Indisponible toute la semaine</p>
-                        <p className="text-slate-400 text-xs mt-0.5">Désactivez le switch pour re-saisir des disponibilités.</p>
+                        <div className="w-14 h-14 rounded-full bg-[#EC602B]/20 border border-[#EC602B]/40 text-[#EC602B] flex items-center justify-center mb-3">
+                            <AlertTriangle size={28} />
+                        </div>
+                        <p className="text-white font-bold text-base tracking-wide">Indisponible toute la semaine</p>
+                        <p className="text-[#ECDDFD]/70 text-xs mt-1">Désactivez le switch ci-dessus pour réactiver la sélection de créneaux.</p>
                     </motion.div>
                 ) : (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shadow-sm"
+                        className="rounded-[2rem] overflow-hidden border border-[#6F2B75]/40 bg-[#2D0A32]/90 backdrop-blur-md shadow-soft-lg"
                     >
                         {/* Table header */}
-                        <div className="grid grid-cols-[1fr_80px_80px_1fr_80px] gap-px bg-slate-800/80 px-3 py-2.5 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                        <div className="grid grid-cols-[1fr_80px_80px_1fr_80px] gap-px bg-[#1F0422]/80 px-4 py-3 text-xs font-school font-bold text-[#ECDDFD]/70 uppercase tracking-widest border-b border-[#6F2B75]/40">
                             <span>Jour</span>
                             <span>Début</span>
                             <span>Fin</span>
-                            <span>Établissement</span>
-                            <span className="text-right">Disponible</span>
+                            <span>Projet</span>
+                            <span className="text-right">Action</span>
                         </div>
 
                         {/* Rows */}
-                        <div className="divide-y divide-slate-800/60">
+                        <div className="divide-y divide-[#6F2B75]/20">
                             {filteredSlots.map((slot, i) => {
                                 const project = projectsData.find(p => p.id === slot.projectId);
                                 const booked = isBooked(slot.id);
@@ -153,14 +157,14 @@ export function PlanningDisponibilites() {
                                         initial={{ opacity: 0, y: -4 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.02 }}
-                                        className={`grid grid-cols-[1fr_80px_80px_1fr_80px] gap-px items-center px-3 py-2 transition-colors ${
-                                            booked ? 'bg-orange-500/10' : 'bg-transparent hover:bg-slate-800/40'
+                                        className={`grid grid-cols-[1fr_80px_80px_1fr_80px] gap-px items-center px-4 py-3 transition-colors ${
+                                            booked ? 'bg-[#EC602B]/15 hover:bg-[#EC602B]/20' : 'bg-transparent hover:bg-[#6F2B75]/20'
                                         }`}
                                     >
-                                        <span className="text-xs md:text-sm font-semibold text-white">{slot.day}</span>
-                                        <span className="text-xs md:text-sm text-slate-400 font-mono">{slot.startTime}</span>
-                                        <span className="text-xs md:text-sm text-slate-400 font-mono">{slot.endTime}</span>
-                                        <span className="text-xs md:text-sm text-slate-300 truncate">{project?.name ?? '—'}</span>
+                                        <span className="text-xs sm:text-sm font-bold text-white tracking-wide">{slot.day}</span>
+                                        <span className="text-xs sm:text-sm text-[#ECDDFD]/80 font-mono">{slot.startTime}</span>
+                                        <span className="text-xs sm:text-sm text-[#ECDDFD]/80 font-mono">{slot.endTime}</span>
+                                        <span className="text-xs sm:text-sm text-[#ECDDFD] font-medium truncate">{project?.name ?? '—'}</span>
                                         <div className="flex justify-end">
                                             <Toggle 
                                                 checked={booked} 

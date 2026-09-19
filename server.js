@@ -106,6 +106,104 @@ app.post('/api/team/members', (req, res) => {
     }
 });
 
+// GET /api/team/poles
+app.get('/api/team/poles', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'poles.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, poles: JSON.parse(data) });
+        }
+        return res.json({ success: true, poles: [] });
+    } catch (err) {
+        console.error('Erreur lecture pôles:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les pôles' });
+    }
+});
+
+// POST /api/team/poles
+app.post('/api/team/poles', (req, res) => {
+    try {
+        const { poles } = req.body;
+        if (!Array.isArray(poles)) {
+            return res.status(400).json({ success: false, error: 'Format invalide: poles doit être un tableau' });
+        }
+        const dataFilePath = path.join(__dirname, 'src', 'data', 'poles.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(poles, null, 2), 'utf-8');
+        console.log(`💾 ${poles.length} pôles enregistrés dans src/data/poles.json`);
+        return res.json({ success: true, message: 'Pôles mis à jour avec succès', poles });
+    } catch (err) {
+        console.error('Erreur sauvegarde pôles:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des pôles' });
+    }
+});
+
+// GET /api/planning/manual-hours
+app.get('/api/planning/manual-hours', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'manualHours.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, manualHours: JSON.parse(data) });
+        }
+        return res.json({ success: true, manualHours: [] });
+    } catch (err) {
+        console.error('Erreur lecture heures manuelles:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les heures manuelles' });
+    }
+});
+
+// POST /api/planning/manual-hours
+app.post('/api/planning/manual-hours', (req, res) => {
+    try {
+        const { manualHours } = req.body;
+        if (!Array.isArray(manualHours)) {
+            return res.status(400).json({ success: false, error: 'Format invalide: manualHours doit être un tableau' });
+        }
+        const dataFilePath = path.join(__dirname, 'src', 'data', 'manualHours.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(manualHours, null, 2), 'utf-8');
+        console.log(`⏱️ ${manualHours.length} entrées d\'heures manuelles enregistrées`);
+        return res.json({ success: true, message: 'Heures manuelles mises à jour', manualHours });
+    } catch (err) {
+        console.error('Erreur sauvegarde heures manuelles:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des heures manuelles' });
+    }
+});
+
+// ─── Exemptions de quota / Membres renouvelants (Persistance locale) ─────────
+
+// GET /api/planning/exemptions
+app.get('/api/planning/exemptions', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'exemptions.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, exemptions: JSON.parse(data) });
+        }
+        return res.json({ success: true, exemptions: [] });
+    } catch (err) {
+        console.error('Erreur lecture exemptions:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les exemptions' });
+    }
+});
+
+// POST /api/planning/exemptions
+app.post('/api/planning/exemptions', (req, res) => {
+    try {
+        const { exemptions } = req.body;
+        if (!Array.isArray(exemptions)) {
+            return res.status(400).json({ success: false, error: 'Format invalide: exemptions doit être un tableau' });
+        }
+        const dataFilePath = path.join(__dirname, 'src', 'data', 'exemptions.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(exemptions, null, 2), 'utf-8');
+        console.log(`🎓 ${exemptions.length} exemptions de quota enregistrées`);
+        return res.json({ success: true, message: 'Exemptions mises à jour', exemptions });
+    } catch (err) {
+        console.error('Erreur sauvegarde exemptions:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des exemptions' });
+    }
+});
+
 
 // 🛡️ Rate Limiter en mémoire (sécurisation anti-spam et anti-bruteforce)
 function createRateLimiter({ windowMs, maxRequests, message }) {

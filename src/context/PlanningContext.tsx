@@ -12,6 +12,50 @@ import {
 } from '../data/planningData';
 import type { EventAttendance } from '../data/planningData';
 
+// ─── Types d'heures manuelles (Bureau) ───────────────────────────────────────
+
+export interface ManualHourEntry {
+    id: string;
+    userId: string;
+    userName: string;
+    hours: number;
+    reason: string;
+    grantedBy: string;
+    createdAt: string;
+    projectId?: number;
+}
+
+// ─── Membres renouvelants / Exemption quota (50h N-1 validées) ──────────────
+
+export interface QuotaExemption {
+    userId: string;
+    userName: string;
+    grantedBy: string;
+    grantedAt: string;
+    year: string; // e.g. "2024-2025"
+    note?: string;
+}
+
+export const DEFAULT_ASSOCIATION_MEMBERS: { id: string; name: string }[] = [
+    { id: 'bureau-1', name: 'Samy RABHI' },
+    { id: 'bureau-2', name: 'Samir BAKAA' },
+    { id: 'bureau-3', name: 'Ryan BENYELLES' },
+    { id: 'bureau-4', name: 'Elyas BOURHIS' },
+    { id: 'bureau-5', name: 'Lina EL KEDDAH' },
+    { id: 'chef-1', name: 'Kahili JUVENTIN' },
+    { id: 'chef-2', name: 'Abdollah JOUNOUDI' },
+    { id: 'chef-3', name: 'Ryadh ABDELMALEK' },
+    { id: 'chef-5', name: 'Haitam BEBBI' },
+    { id: 'chef-6', name: 'Damya AKILI' },
+    { id: 'chef-7', name: 'Amani ZAMIT' },
+    { id: 'chef-9', name: 'Donia TNANI' },
+    { id: 'chef-10', name: 'Camille JOURDIN' },
+    { id: 'chef-12', name: 'Eve SAMA' },
+    { id: 'chef-13', name: 'Nelly RANDRIAMIHAJA' },
+    { id: 'tuteur-1', name: 'Jean DUPONT' },
+    { id: 'tuteur-2', name: 'Sohel HAGGUI' },
+];
+
 // ─── Context type ─────────────────────────────────────────────────────────────
 
 interface PlanningContextType {
@@ -19,6 +63,7 @@ interface PlanningContextType {
     login: (loginId: string, password: string) => Promise<boolean>;
     logout: () => void;
     bookings: Booking[];
+    allUsers: { id: string; name: string }[];
     getWeekBookings: (weekKey: string, userId?: string) => Booking[];
     toggleAvailability: (slotId: string, weekKey: string) => void;
     validatePresence: (bookingId: string) => Promise<boolean>;
@@ -35,6 +80,12 @@ interface PlanningContextType {
     refreshPlanningData: () => Promise<void>;
     changePassword: (oldPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
     isPending: (key: string) => boolean;
+    manualHours: ManualHourEntry[];
+    addManualHours: (userId: string, userName: string, hours: number, reason: string, projectId?: number) => Promise<boolean>;
+    deleteManualHours: (id: string) => Promise<boolean>;
+    exemptions: QuotaExemption[];
+    toggleQuotaExemption: (userId: string, userName: string, isExempt: boolean, note?: string) => Promise<boolean>;
+    isQuotaExempt: (userId: string) => boolean;
 }
 
 const PlanningContext = createContext<PlanningContextType | null>(null);
@@ -61,6 +112,83 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
     const [pendingKeys, setPendingKeys] = useState<Set<string>>(new Set());
+
+    // ── Liste complète des membres de l'association ───────────────────────────
+    const [allUsers, setAllUsers] = useState<{ id: string; name: string }[]>(() => {
+        try {
+            const saved = localStorage.getItem('phoenix_all_users_v1');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch { /* fallback */ }
+        return DEFAULT_ASSOCIATION_MEMBERS;
+    });
+
+    useEffect(() => {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        fetch(`${API_URL}/api/login?action=listUsers`)
+            .then(res => res.json())
+            .then(data => {
+                if (data?.success && Array.isArray(data.users) && data.users.length > 0) {
+                    const cleaned = data.users.map((u: { id: string; name: string }) => ({
+                        id: u.id,
+                        name: u.name.replace(/\t/g, '').trim()
+                    }));
+                    setAllUsers(cleaned);
+                    localStorage.setItem('phoenix_all_users_v1', JSON.stringify(cleaned));
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    // ── Heures manuelles / exceptionnelles (attribuées par le Bureau) ───────────
+    const [manualHours, setManualHours] = useState<ManualHourEntry[]>(() => {
+        try {
+            const saved = localStorage.getItem('phoenix_manual_hours_v1');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch { /* fallback */ }
+        return [];
+    });
+
+    useEffect(() => {
+        fetch('http://localhost:3002/api/planning/manual-hours')
+            .then(res => res.json())
+            .then(data => {
+                if (data?.success && Array.isArray(data.manualHours)) {
+                    setManualHours(data.manualHours);
+                    localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(data.manualHours));
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    // ── Exemptions de quota / Membres renouvelants (N-1 validé) ────────────────
+    const [exemptions, setExemptions] = useState<QuotaExemption[]>(() => {
+        try {
+            const saved = localStorage.getItem('phoenix_quota_exemptions_v1');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch { /* fallback */ }
+        return [];
+    });
+
+    useEffect(() => {
+        fetch('http://localhost:3002/api/planning/exemptions')
+            .then(res => res.json())
+            .then(data => {
+                if (data?.success && Array.isArray(data.exemptions)) {
+                    setExemptions(data.exemptions);
+                    localStorage.setItem('phoenix_quota_exemptions_v1', JSON.stringify(data.exemptions));
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const isPending = useCallback((key: string) => pendingKeys.has(key), [pendingKeys]);
 
@@ -331,15 +459,103 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         return res;
     }, [currentUser]);
 
+    // ── Actions Heures Manuelles (Bureau uniquement) ──────────────────────────
+    const addManualHours = useCallback(async (userId: string, userName: string, hours: number, reason: string, projectId?: number): Promise<boolean> => {
+        if (!currentUser || currentUser.role !== 'bureau') return false;
+        if (!reason || reason.trim().length < 5) return false;
+        if (hours <= 0) return false;
+
+        const newEntry: ManualHourEntry = {
+            id: `mh-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            userId,
+            userName,
+            hours: Number(hours),
+            reason: reason.trim(),
+            grantedBy: currentUser.name,
+            createdAt: new Date().toISOString(),
+            projectId
+        };
+
+        const updated = [newEntry, ...manualHours];
+        setManualHours(updated);
+        try {
+            localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(updated));
+            await fetch('http://localhost:3002/api/planning/manual-hours', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ manualHours: updated })
+            });
+        } catch (e) {
+            console.error('Erreur sauvegarde manual hours:', e);
+        }
+        return true;
+    }, [currentUser, manualHours]);
+
+    const deleteManualHours = useCallback(async (id: string): Promise<boolean> => {
+        if (!currentUser || currentUser.role !== 'bureau') return false;
+        const updated = manualHours.filter(m => m.id !== id);
+        setManualHours(updated);
+        try {
+            localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(updated));
+            await fetch('http://localhost:3002/api/planning/manual-hours', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ manualHours: updated })
+            });
+        } catch (e) {
+            console.error('Erreur suppression manual hours:', e);
+        }
+        return true;
+    }, [currentUser, manualHours]);
+
+    const isQuotaExempt = useCallback((userId: string) => {
+        return exemptions.some(e => e.userId === userId);
+    }, [exemptions]);
+
+    const toggleQuotaExemption = useCallback(async (userId: string, userName: string, isExempt: boolean, note?: string): Promise<boolean> => {
+        if (!currentUser || currentUser.role !== 'bureau') return false;
+
+        let updated: QuotaExemption[];
+        if (isExempt) {
+            if (exemptions.some(e => e.userId === userId)) return true;
+            const newEntry: QuotaExemption = {
+                userId,
+                userName,
+                grantedBy: currentUser.name,
+                grantedAt: new Date().toISOString(),
+                year: '2024-2025',
+                note: note || 'Quota 50h validé lors de l\'année précédente (Membre renouvelant)'
+            };
+            updated = [...exemptions, newEntry];
+        } else {
+            updated = exemptions.filter(e => e.userId !== userId);
+        }
+
+        setExemptions(updated);
+        try {
+            localStorage.setItem('phoenix_quota_exemptions_v1', JSON.stringify(updated));
+            await fetch('http://localhost:3002/api/planning/exemptions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ exemptions: updated })
+            });
+        } catch (e) {
+            console.error('Erreur sauvegarde exemptions:', e);
+        }
+        return true;
+    }, [currentUser, exemptions]);
+
     return (
         <PlanningContext.Provider value={{
             currentUser, login, logout,
-            bookings, getWeekBookings,
+            bookings, allUsers, getWeekBookings,
             toggleAvailability, validatePresence, markAbsent, resetValidation,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,
-            refreshPlanningData, changePassword, isPending
+            refreshPlanningData, changePassword, isPending,
+            manualHours, addManualHours, deleteManualHours,
+            exemptions, toggleQuotaExemption, isQuotaExempt
         }}>
             {children}
         </PlanningContext.Provider>

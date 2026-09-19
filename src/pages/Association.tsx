@@ -25,7 +25,8 @@ import { usePlanning } from '../context/PlanningContext';
 import { 
     defaultBureauMembers, 
     defaultPoles, 
-    type BureauMember 
+    type BureauMember,
+    type PoleTeam
 } from '../data/teamData';
 
 const LOCAL_STORAGE_KEY = 'phoenix_bureau_members_v1';
@@ -128,6 +129,57 @@ export function Association() {
         if (window.confirm("Rétablir la liste officielle par défaut du Bureau ?")) {
             saveMembers(defaultBureauMembers);
         }
+    };
+
+    // ─── État des Pôles Opérationnels avec persistance ───────────────────────
+    const POLES_STORAGE_KEY = 'phoenix_poles_v1';
+    const [poles, setPoles] = useState<PoleTeam[]>(() => {
+        try {
+            const saved = localStorage.getItem(POLES_STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch { /* fallback */ }
+        return defaultPoles;
+    });
+
+    const [editingPole, setEditingPole] = useState<PoleTeam | null>(null);
+    const [poleLead, setPoleLead] = useState('');
+    const [poleMembers, setPoleMembers] = useState('');
+    const [poleDesc, setPoleDesc] = useState('');
+
+    useEffect(() => {
+        fetch('http://localhost:3002/api/team/poles')
+            .then(res => res.json())
+            .then(data => {
+                if (data?.success && Array.isArray(data.poles) && data.poles.length > 0) {
+                    setPoles(data.poles);
+                    localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(data.poles));
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    const savePoles = async (updated: PoleTeam[]) => {
+        setPoles(updated);
+        try {
+            localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(updated));
+            const res = await fetch('http://localhost:3002/api/team/poles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ poles: updated })
+            });
+            if (res.ok) {
+                setToastMessage('✅ Pôle enregistré avec succès !');
+            } else {
+                setToastMessage('Pôle enregistré dans le navigateur');
+            }
+        } catch {
+            setToastMessage('Pôle enregistré dans le navigateur');
+        }
+        setShowSuccessToast(true);
+        setTimeout(() => setShowSuccessToast(false), 3500);
     };
 
     // ─── 5 Valeurs vivantes et concrètes ───────────────────────────────────────
@@ -498,30 +550,47 @@ export function Association() {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {defaultPoles.map((pole) => {
+                            {poles.map((pole) => {
                                 const isOpen = activePoleId === pole.id;
                                 return (
                                     <div
                                         key={pole.id}
-                                        className="rounded-2xl border border-[#ECDDFD] bg-white shadow-soft overflow-hidden transition-all"
+                                        className="rounded-2xl border border-[#ECDDFD] bg-white shadow-soft overflow-hidden transition-all flex flex-col justify-between"
                                     >
                                         <button
                                             type="button"
                                             onClick={() => setActivePoleId(isOpen ? null : pole.id)}
-                                            className="w-full p-4 text-left flex items-center justify-between gap-2 hover:bg-[#ECDDFD]/20 transition-colors"
+                                            className="w-full p-4 text-left flex items-center justify-between gap-2 hover:bg-[#ECDDFD]/20 transition-colors cursor-pointer"
                                         >
-                                            <div>
-                                                <h4 className="text-sm font-display text-[#2A082D]">
+                                            <div className="flex-1 min-w-0 pr-1">
+                                                <h4 className="text-sm font-display text-[#2A082D] truncate">
                                                     {pole.title}
                                                 </h4>
-                                                <span className="text-xs text-[#EC602B] font-school font-bold">
+                                                <span className="text-xs text-[#EC602B] font-school font-bold block truncate">
                                                     {pole.lead}
                                                 </span>
                                             </div>
-                                            <ChevronDown
-                                                size={16}
-                                                className={`text-[#2A082D] transition-transform ${isOpen ? 'rotate-180 text-[#EC602B]' : ''}`}
-                                            />
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                {isBureau && (
+                                                    <span
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setEditingPole(pole);
+                                                            setPoleLead(pole.lead);
+                                                            setPoleMembers(pole.members.join(', '));
+                                                            setPoleDesc(pole.description);
+                                                        }}
+                                                        className="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#EC602B] transition-colors border border-orange-200 cursor-pointer"
+                                                        title="Modifier le responsable et les chargés de mission"
+                                                    >
+                                                        <Pencil size={13} />
+                                                    </span>
+                                                )}
+                                                <ChevronDown
+                                                    size={16}
+                                                    className={`text-[#2A082D] transition-transform ${isOpen ? 'rotate-180 text-[#EC602B]' : ''}`}
+                                                />
+                                            </div>
                                         </button>
 
                                         {isOpen && (
@@ -530,8 +599,25 @@ export function Association() {
                                                     {pole.description}
                                                 </p>
                                                 <div className="pt-2 border-t border-[#ECDDFD] font-medium text-slate-600">
-                                                    <strong className="text-[#6F2B75]">Membres :</strong> {pole.members.join(', ')}
+                                                    <strong className="text-[#6F2B75]">Membres & Chargés :</strong> {pole.members.join(', ')}
                                                 </div>
+                                                {isBureau && (
+                                                    <div className="pt-2 flex justify-end">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setEditingPole(pole);
+                                                                setPoleLead(pole.lead);
+                                                                setPoleMembers(pole.members.join(', '));
+                                                                setPoleDesc(pole.description);
+                                                            }}
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EC602B]/10 hover:bg-[#EC602B]/20 text-[#EC602B] font-school text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                                        >
+                                                            <Pencil size={11} />
+                                                            <span>Modifier le pôle</span>
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -752,6 +838,117 @@ export function Association() {
                                         Enregistrer
                                     </button>
                                 </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de modification de Pôle (Responsable & Chargés de mission) */}
+            {editingPole && (
+                <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
+                            <div>
+                                <span className="text-[10px] font-school uppercase tracking-widest text-[#EC602B] font-bold">Pôle Opérationnel</span>
+                                <h3 className="text-lg font-display text-slate-900">
+                                    {editingPole.title}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setEditingPole(null)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (!poleLead.trim()) {
+                                    alert("Le nom du responsable est obligatoire.");
+                                    return;
+                                }
+
+                                const parsedMembers = poleMembers
+                                    .split(',')
+                                    .map(m => m.trim())
+                                    .filter(Boolean);
+
+                                const updatedPoles = poles.map(p =>
+                                    p.id === editingPole.id
+                                        ? {
+                                              ...p,
+                                              lead: poleLead.trim(),
+                                              members: parsedMembers,
+                                              description: poleDesc.trim() || p.description
+                                          }
+                                        : p
+                                );
+
+                                savePoles(updatedPoles);
+                                setEditingPole(null);
+                            }}
+                            className="space-y-4"
+                        >
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    Responsable de Pôle (Lead) *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={poleLead}
+                                    onChange={(e) => setPoleLead(e.target.value)}
+                                    placeholder="Ex: Sohel (Responsable)"
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-orange-500 focus:outline-hidden"
+                                />
+                                <p className="text-[11px] text-slate-500 mt-1">Nom et titre affichés sur l'en-tête du pôle.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    Chargés de Mission & Membres
+                                </label>
+                                <input
+                                    type="text"
+                                    value={poleMembers}
+                                    onChange={(e) => setPoleMembers(e.target.value)}
+                                    placeholder="Ex: Maxime, Samy, Sarah"
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-orange-500 focus:outline-hidden"
+                                />
+                                <p className="text-[11px] text-slate-500 mt-1">Séparez les différents prénoms/noms par des virgules.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    Description des Missions
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    value={poleDesc}
+                                    onChange={(e) => setPoleDesc(e.target.value)}
+                                    placeholder="Missions et responsabilités..."
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-orange-500 focus:outline-hidden resize-none"
+                                />
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingPole(null)}
+                                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                                >
+                                    Enregistrer le pôle
+                                </button>
                             </div>
                         </form>
                     </div>

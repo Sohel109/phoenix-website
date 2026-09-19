@@ -1,18 +1,31 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Download, FileText, Filter, ShieldCheck } from 'lucide-react';
+import { Download, FileText, Filter, ShieldCheck, Plus, Clock, X, Trash2, History, AlertCircle, CheckCircle, GraduationCap } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
 
 export function PlanningRecap() {
-    const { currentUser, bookings, currentWeekKey } = usePlanning();
+    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption } = usePlanning();
     const [filterType, setFilterType] = useState<'week' | 'month' | 'year' | 'all'>('all');
     const [selectedWeek, setSelectedWeek] = useState(currentWeekKey);
     const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
     const [selectedProjectId, setSelectedProjectId] = useState<number | 'all'>('all');
+    const [showAllMembers, setShowAllMembers] = useState(true);
+
+    // États du module d'heures manuelles (Bureau)
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState('');
+    const [isCustomMember, setIsCustomMember] = useState(false);
+    const [customMemberName, setCustomMemberName] = useState('');
+    const [manualHoursInput, setManualHoursInput] = useState('5');
+    const [manualReasonInput, setManualReasonInput] = useState('');
+    const [selectedManualProject, setSelectedManualProject] = useState<string>('general');
+    const [isSubmittingManual, setIsSubmittingManual] = useState(false);
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [manualSuccessToast, setManualSuccessToast] = useState('');
 
     const isBureau = currentUser?.role === 'bureau';
     const isAuthorized = Boolean(currentUser && (currentUser.role === 'chef_projet' || isBureau));
@@ -30,9 +43,8 @@ export function PlanningRecap() {
         return Array.from(years).sort((a, b) => b - a);
     }, [bookings]);
 
-    // Calculer les heures
+    // Calculer les heures consolidées (créneaux de planning + heures manuelles bureau)
     const recapData = useMemo(() => {
-        // Filtrer les bookings
         const filteredBookings = bookings.filter(b => {
             if (b.status !== 'confirme') return false;
             
@@ -51,7 +63,7 @@ export function PlanningRecap() {
         });
 
         // Agréger par utilisateur et projet
-        const userStats: Record<string, { name: string, totalHours: number, byProject: Record<number, number> }> = {};
+        const userStats: Record<string, { id: string, name: string, totalHours: number, slotHours: number, manualHoursCount: number, byProject: Record<number, number> }> = {};
         
         filteredBookings.forEach(b => {
             const slot = timeSlots.find(s => s.id === b.slotId)!;
@@ -59,21 +71,76 @@ export function PlanningRecap() {
             const userName = b.userName || b.userId;
             
             if (!userStats[b.userId]) {
-                userStats[b.userId] = { name: userName, totalHours: 0, byProject: {} };
+                userStats[b.userId] = { id: b.userId, name: userName, totalHours: 0, slotHours: 0, manualHoursCount: 0, byProject: {} };
             }
             
             userStats[b.userId].totalHours += duration;
+            userStats[b.userId].slotHours += duration;
             userStats[b.userId].byProject[slot.projectId] = (userStats[b.userId].byProject[slot.projectId] || 0) + duration;
         });
 
-        return Object.values(userStats).sort((a, b) => b.totalHours - a.totalHours);
-    }, [bookings, filterType, selectedWeek, selectedMonth, selectedYear, selectedProjectId]);
+        // Intégrer les heures manuelles accordées par le Bureau
+        manualHours.forEach(mh => {
+            if (!userStats[mh.userId]) {
+                userStats[mh.userId] = { id: mh.userId, name: mh.userName || mh.userId, totalHours: 0, slotHours: 0, manualHoursCount: 0, byProject: {} };
+            }
+            userStats[mh.userId].totalHours += mh.hours;
+            userStats[mh.userId].manualHoursCount += mh.hours;
+            if (mh.projectId) {
+                userStats[mh.userId].byProject[mh.projectId] = (userStats[mh.userId].byProject[mh.projectId] || 0) + mh.hours;
+            }
+        });
+
+        // Si showAllMembers est activé, ajouter tous les membres de l'association à 0h
+        if (showAllMembers) {
+            (allUsers || []).forEach(u => {
+                const cleanedName = u.name.replace(/\t/g, '').trim();
+                if (!userStats[u.id]) {
+                    userStats[u.id] = { id: u.id, name: cleanedName, totalHours: 0, slotHours: 0, manualHoursCount: 0, byProject: {} };
+                }
+            });
+        }
+
+        return Object.values(userStats).sort((a, b) => {
+            if (b.totalHours !== a.totalHours) return b.totalHours - a.totalHours;
+            return a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' });
+        });
+    }, [bookings, manualHours, filterType, selectedWeek, selectedMonth, selectedYear, selectedProjectId, showAllMembers, allUsers]);
+
+    // Membres disponibles pour la sélection dans le modal d'ajout d'heures (Tous les membres de l'association)
+    const memberOptions = useMemo(() => {
+        const map = new Map<string, string>();
+
+        // 1. Tous les membres officiels de l'association
+        (allUsers || []).forEach(u => {
+            if (u.id && u.name) map.set(u.id, u.name.replace(/\t/g, '').trim());
+        });
+
+        // 2. Membres ayant des créneaux
+        bookings.forEach(b => {
+            if (b.userId && b.userName) map.set(b.userId, b.userName.trim());
+        });
+
+        // 3. Utilisateur courant
+        if (currentUser) {
+            map.set(currentUser.id, currentUser.name.trim());
+        }
+
+        // 4. Membres ayant déjà des heures manuelles
+        manualHours.forEach(m => {
+            if (m.userId && m.userName) map.set(m.userId, m.userName.trim());
+        });
+
+        return Array.from(map.entries())
+            .map(([id, name]) => ({ id, name }))
+            .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+    }, [allUsers, bookings, currentUser, manualHours]);
 
     const totalPeriodHours = recapData.reduce((acc, u) => acc + u.totalHours, 0);
 
     const handleDownload = () => {
-        let content = "Récapitulatif des heures\n";
-        content += "===========================\n\n";
+        let content = "Récapitulatif des heures Phoenix EDC\n";
+        content += "====================================\n\n";
         
         if (filterType === 'week') content += `Période : Semaine ${selectedWeek}\n`;
         else if (filterType === 'month') content += `Période : ${months[selectedMonth]} ${selectedYear}\n`;
@@ -101,16 +168,20 @@ export function PlanningRecap() {
             });
         }
         
-        content += "\n--- DÉTAIL PAR MEMBRE ---\n";
+        content += "\n--- DÉTAIL PAR MEMBRE (SEUIL OFFICIEL : 50H) ---\n";
         if (recapData.length === 0) {
             content += "Aucun membre n'a d'heures validées sur cette période.\n";
         } else {
             recapData.forEach(u => {
-                content += `${u.name} : ${u.totalHours} heure(s)\n`;
+                const statutAttestation = u.totalHours >= 50 ? "[ATTESTATION VALIDÉE (50h+)]" : `[EN COURS : ${u.totalHours}/50h]`;
+                content += `${u.name} : ${u.totalHours} heure(s) ${statutAttestation}\n`;
+                if (u.manualHoursCount > 0) {
+                    content += `  - Dont valorisations Bureau : +${u.manualHoursCount}h\n`;
+                }
                 if (selectedProjectId === 'all') {
                     Object.entries(u.byProject).forEach(([pId, hrs]) => {
                         const pName = projectsData.find(p => p.id === Number(pId))?.name || 'Inconnu';
-                        content += `  - ${pName} : ${hrs} heure(s)\n`;
+                        content += `    • ${pName} : ${hrs} h\n`;
                     });
                 }
                 content += "\n";
@@ -128,13 +199,70 @@ export function PlanningRecap() {
         URL.revokeObjectURL(url);
     };
 
+    // Soumission du formulaire d'heures manuelles
+    const handleAddManualSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        let targetId = selectedUserId;
+        let targetName = '';
+
+        if (isCustomMember) {
+            if (!customMemberName.trim()) {
+                alert('Veuillez saisir le prénom et le nom du membre.');
+                return;
+            }
+            targetName = customMemberName.trim();
+            targetId = `custom-${targetName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        } else {
+            if (!selectedUserId) {
+                alert('Veuillez sélectionner un membre bénéficiaire.');
+                return;
+            }
+            const targetMember = memberOptions.find(m => m.id === selectedUserId);
+            targetName = targetMember ? targetMember.name : selectedUserId;
+        }
+
+        const hoursNum = parseFloat(manualHoursInput);
+        if (isNaN(hoursNum) || hoursNum <= 0) {
+            alert('Veuillez saisir un nombre d\'heures valide.');
+            return;
+        }
+        if (!manualReasonInput.trim() || manualReasonInput.trim().length < 8) {
+            alert('La justification écrite est obligatoire (minimum 8 caractères) pour consigner l\'attribution au registre.');
+            return;
+        }
+
+        setIsSubmittingManual(true);
+
+        const success = await addManualHours(
+            targetId,
+            targetName,
+            hoursNum,
+            manualReasonInput.trim(),
+            selectedManualProject === 'general' ? undefined : Number(selectedManualProject)
+        );
+
+        setIsSubmittingManual(false);
+        if (success) {
+            setShowAddModal(false);
+            setManualReasonInput('');
+            setManualHoursInput('5');
+            setIsCustomMember(false);
+            setCustomMemberName('');
+            setManualSuccessToast(`✅ +${hoursNum}h créditées à ${targetName} avec justification enregistrée !`);
+            setTimeout(() => setManualSuccessToast(''), 4500);
+        } else {
+            alert("Erreur lors de l'enregistrement des heures.");
+        }
+    };
+
     if (!isAuthorized) {
         return (
             <PlanningLayout title="Récapitulatif">
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <ShieldCheck size={48} className="text-white/20 mb-4" />
-                    <p className="text-white font-bold text-lg">Accès restreint</p>
-                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux responsables.</p>
+                    <p className="text-white font-bold text-lg font-school">Accès restreint</p>
+                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux responsables de projet et au Bureau.</p>
                 </div>
             </PlanningLayout>
         );
@@ -142,26 +270,92 @@ export function PlanningRecap() {
 
     return (
         <PlanningLayout title="Récapitulatif">
-            <div className="mb-6 pt-4 flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-black text-white">Récapitulatif des heures</h1>
-                    <p className="text-white/50 text-sm mt-1">Exportez et analysez les heures validées.</p>
+            {/* Toast de succès */}
+            {manualSuccessToast && (
+                <div className="fixed bottom-6 right-6 z-50 bg-[#2D0A32] border border-[#EC602B] text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+                    <CheckCircle size={18} className="text-emerald-400 shrink-0" />
+                    <span className="text-xs font-medium">{manualSuccessToast}</span>
                 </div>
-                <motion.button
-                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    onClick={handleDownload}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/20"
-                >
-                    <Download size={18} />
-                    <span className="hidden sm:inline">Télécharger</span>
-                </motion.button>
+            )}
+
+            {/* En-tête de la page */}
+            <div className="mb-6 pt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-display text-white tracking-wide">Récapitulatif des heures</h1>
+                    <p className="text-[#ECDDFD]/70 text-sm mt-1">
+                        Suivi des heures validées et avancement vers le seuil officiel de <strong>50 heures</strong>.
+                    </p>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-2.5">
+                    {/* Boutons Bureau : Ajout manuel & Historique des justifications */}
+                    {isBureau && (
+                        <>
+                            <motion.button
+                                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                                onClick={() => {
+                                    setIsCustomMember(false);
+                                    setCustomMemberName('');
+                                    if (memberOptions.length > 0 && !selectedUserId) {
+                                        setSelectedUserId(memberOptions[0].id);
+                                    }
+                                    setShowAddModal(true);
+                                }}
+                                className="btn-phoenix-gradient flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-white font-school text-xs uppercase tracking-wider shadow-soft transition-all cursor-pointer"
+                                title="Créditer des heures manuelles avec justification écrite obligatoire"
+                            >
+                                <Plus size={15} />
+                                <span>Ajouter des heures (Bureau)</span>
+                            </motion.button>
+
+                            {manualHours.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowHistoryModal(true)}
+                                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] font-school text-xs uppercase tracking-wider transition-colors cursor-pointer border border-white/10"
+                                    title="Consulter l'historique des justifications écrites"
+                                >
+                                    <History size={14} />
+                                    <span>Justifications ({manualHours.length})</span>
+                                </button>
+                            )}
+                        </>
+                    )}
+
+                    <motion.button
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={handleDownload}
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#6F2B75]/40 hover:bg-[#6F2B75]/70 border border-[#ECDDFD]/30 text-white font-school text-xs uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                        <Download size={15} />
+                        <span>Télécharger</span>
+                    </motion.button>
+                </div>
             </div>
 
-            {/* Filters */}
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <Filter size={16} className="text-white/40" />
-                    <span className="text-sm font-semibold text-white/70 uppercase tracking-wide">Filtres</span>
+            {/* Filtres */}
+            <div className="p-6 rounded-[2.5rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 backdrop-blur-md shadow-soft-lg space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-2">
+                        <Filter size={16} className="text-[#EC602B]" />
+                        <span className="text-xs font-school font-bold text-[#ECDDFD]/80 uppercase tracking-widest">Filtres de période</span>
+                    </div>
+
+                    {/* Toggle Tous les membres de l'association */}
+                    {isBureau && (
+                        <button
+                            type="button"
+                            onClick={() => setShowAllMembers(!showAllMembers)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all cursor-pointer border self-start sm:self-auto ${
+                                showAllMembers
+                                    ? 'bg-[#EC602B]/20 text-[#EC602B] border-[#EC602B]/50 font-bold'
+                                    : 'bg-white/5 text-[#ECDDFD]/60 border-white/10 hover:text-white'
+                            }`}
+                            title="Afficher tous les membres de l'association ou uniquement ceux ayant des heures"
+                        >
+                            {showAllMembers ? 'Affichage : Tous les membres (y compris 0h)' : 'Affichage : Membres avec heures uniquement'}
+                        </button>
+                    )}
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -169,12 +363,12 @@ export function PlanningRecap() {
                     <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value as 'week' | 'month' | 'year' | 'all')}
-                        className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40"
+                        className="bg-[#1F0422]/80 border border-[#6F2B75]/50 rounded-full px-4 py-2.5 text-white text-xs font-school uppercase tracking-wider outline-none focus:border-[#EC602B] cursor-pointer"
                     >
-                        <option value="all" className="bg-gray-900">Toutes les dates</option>
-                        <option value="year" className="bg-gray-900">Par année</option>
-                        <option value="month" className="bg-gray-900">Par mois</option>
-                        <option value="week" className="bg-gray-900">Par semaine</option>
+                        <option value="all" className="bg-[#2D0A32]">Toutes les dates</option>
+                        <option value="year" className="bg-[#2D0A32]">Par année</option>
+                        <option value="month" className="bg-[#2D0A32]">Par mois</option>
+                        <option value="week" className="bg-[#2D0A32]">Par semaine</option>
                     </select>
 
                     {/* Conditional Date Filters */}
@@ -182,11 +376,11 @@ export function PlanningRecap() {
                         <select
                             value={selectedWeek}
                             onChange={(e) => setSelectedWeek(e.target.value)}
-                            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40"
+                            className="bg-[#1F0422]/80 border border-[#6F2B75]/50 rounded-full px-4 py-2.5 text-white text-xs font-school uppercase tracking-wider outline-none focus:border-[#EC602B] cursor-pointer"
                         >
-                            <option value={currentWeekKey} className="bg-gray-900">Semaine actuelle ({selectedWeek})</option>
+                            <option value={currentWeekKey} className="bg-[#2D0A32]">Semaine actuelle ({selectedWeek})</option>
                             {Array.from(new Set(bookings.map(b => b.weekKey))).sort().reverse().map(wk => (
-                                <option key={wk} value={wk} className="bg-gray-900">{formatWeekLabel(wk)}</option>
+                                <option key={wk} value={wk} className="bg-[#2D0A32]">{formatWeekLabel(wk)}</option>
                             ))}
                         </select>
                     )}
@@ -196,19 +390,19 @@ export function PlanningRecap() {
                             <select
                                 value={selectedMonth}
                                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                                className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40"
+                                className="bg-[#1F0422]/80 border border-[#6F2B75]/50 rounded-full px-4 py-2.5 text-white text-xs font-school uppercase tracking-wider outline-none focus:border-[#EC602B] cursor-pointer"
                             >
-                                {months.map((m, i) => (
-                                    <option key={i} value={i} className="bg-gray-900">{m}</option>
+                                {months.map((m, idx) => (
+                                    <option key={m} value={idx} className="bg-[#2D0A32]">{m}</option>
                                 ))}
                             </select>
                             <select
                                 value={selectedYear}
                                 onChange={(e) => setSelectedYear(Number(e.target.value))}
-                                className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40"
+                                className="bg-[#1F0422]/80 border border-[#6F2B75]/50 rounded-full px-4 py-2.5 text-white text-xs font-school uppercase tracking-wider outline-none focus:border-[#EC602B] cursor-pointer"
                             >
                                 {availableYears.map(y => (
-                                    <option key={y} value={y} className="bg-gray-900">{y}</option>
+                                    <option key={y} value={y} className="bg-[#2D0A32]">{y}</option>
                                 ))}
                             </select>
                         </>
@@ -218,10 +412,10 @@ export function PlanningRecap() {
                         <select
                             value={selectedYear}
                             onChange={(e) => setSelectedYear(Number(e.target.value))}
-                            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40 lg:col-span-2"
+                            className="bg-[#1F0422]/80 border border-[#6F2B75]/50 rounded-full px-4 py-2.5 text-white text-xs font-school uppercase tracking-wider outline-none focus:border-[#EC602B] cursor-pointer"
                         >
                             {availableYears.map(y => (
-                                <option key={y} value={y} className="bg-gray-900">{y}</option>
+                                <option key={y} value={y} className="bg-[#2D0A32]">{y}</option>
                             ))}
                         </select>
                     )}
@@ -230,184 +424,448 @@ export function PlanningRecap() {
                     <select
                         value={selectedProjectId}
                         onChange={(e) => setSelectedProjectId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                        className={`bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-white/40 ${filterType === 'all' || filterType === 'week' ? 'sm:col-span-3 lg:col-span-3' : 'lg:col-span-1'}`}
+                        className="bg-[#1F0422]/80 border border-[#6F2B75]/50 rounded-full px-4 py-2.5 text-white text-xs font-school uppercase tracking-wider outline-none focus:border-[#EC602B] cursor-pointer"
                     >
-                        <option value="all" className="bg-gray-900">Tous les projets</option>
+                        <option value="all" className="bg-[#2D0A32]">Tous les projets</option>
                         {projectsData.map(p => (
-                            <option key={p.id} value={p.id} className="bg-gray-900">{p.name}</option>
+                            <option key={p.id} value={p.id} className="bg-[#2D0A32]">{p.name}</option>
                         ))}
                     </select>
                 </div>
             </div>
 
-            {/* Global Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
-                    <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Heures totales</p>
-                    <p className="text-3xl font-black text-white mt-1">{totalPeriodHours} <span className="text-lg text-white/40 font-medium">h</span></p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
-                    <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Membres actifs</p>
-                    <p className="text-3xl font-black text-white mt-1">{recapData.length}</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
-                    <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Taux de présence</p>
-                    <p className="text-3xl font-black text-emerald-400 mt-1">
-                        {bookings.filter(b => b.status === 'confirme').length > 0
-                            ? Math.round((bookings.filter(b => b.status === 'confirme').length / (bookings.filter(b => b.status === 'confirme' || b.status === 'absent').length || 1)) * 100)
-                            : 100}%
+            {/* Overview Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
+                    <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Total période</p>
+                    <p className="text-3xl font-display text-white mt-1">
+                        {totalPeriodHours}<span className="text-lg text-[#EC602B] font-school ml-1">h</span>
                     </p>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
-                    <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Moyenne / Tuteur</p>
-                    <p className="text-3xl font-black text-orange-400 mt-1">
-                        {recapData.length > 0 ? (totalPeriodHours / recapData.length).toFixed(1) : 0} <span className="text-lg text-white/40 font-medium">h</span>
+
+                <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
+                    <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Bénévoles actifs</p>
+                    <p className="text-3xl font-display text-white mt-1">
+                        {recapData.length}
+                    </p>
+                </div>
+
+                <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
+                    <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Attestations validées (≥ 50h ou N-1)</p>
+                    <p className="text-3xl font-display text-emerald-400 mt-1">
+                        {recapData.filter(u => u.totalHours >= 50 || isQuotaExempt(u.id)).length}
+                        <span className="text-xs font-school text-[#ECDDFD]/60 ml-2 font-normal">/ {recapData.length}</span>
                     </p>
                 </div>
             </div>
-
-            {/* Visual Impact Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                {/* Chart 1: Répartition des heures par Projet */}
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center justify-between">
-                        <span>Répartition des Heures par Projet</span>
-                        <span className="text-xs font-normal text-white/40">{projectsData.length} programmes</span>
-                    </h3>
-                    <div className="space-y-3">
-                        {projectsData.map(proj => {
-                            const projHours = recapData.reduce((sum, u) => sum + (u.byProject[proj.id] || 0), 0);
-                            const pct = totalPeriodHours > 0 ? Math.round((projHours / totalPeriodHours) * 100) : 0;
-                            return (
-                                <div key={proj.id} className="space-y-1">
-                                    <div className="flex items-center justify-between text-xs font-semibold">
-                                        <span className="text-white/80">{proj.name}</span>
-                                        <span className="text-orange-400 font-bold">{projHours} h ({pct}%)</span>
-                                    </div>
-                                    <div className="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${pct}%` }}
-                                            transition={{ duration: 0.8, ease: "easeOut" }}
-                                            className="h-full bg-gradient-to-r from-orange-500 to-violet-500 rounded-full"
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Chart 2: Répartition de présence (Confirmé vs Prévu vs Absent) */}
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
-                        Assiduité & Présences Globales
-                    </h3>
-                    {(() => {
-                        const totalB = bookings.length || 1;
-                        const confCount = bookings.filter(b => b.status === 'confirme').length;
-                        const prevuCount = bookings.filter(b => b.status === 'prevu').length;
-                        const absentCount = bookings.filter(b => b.status === 'absent').length;
-                        const annuleCount = bookings.filter(b => b.status === 'annule').length;
-
-                        const confPct = Math.round((confCount / totalB) * 100);
-                        const prevuPct = Math.round((prevuCount / totalB) * 100);
-                        const absentPct = Math.round((absentCount / totalB) * 100);
-                        const annulePct = Math.round((annuleCount / totalB) * 100);
-
-                        return (
-                            <div className="space-y-4">
-                                {/* Stacked progress bar */}
-                                <div className="w-full h-4 rounded-full bg-white/10 overflow-hidden flex">
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${confPct}%` }} className="h-full bg-emerald-500" title={`Confirmé (${confCount})`} />
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${prevuPct}%` }} className="h-full bg-blue-500" title={`Prévu (${prevuCount})`} />
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${absentPct}%` }} className="h-full bg-red-500" title={`Absent (${absentCount})`} />
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${annulePct}%` }} className="h-full bg-gray-500" title={`Annulé (${annuleCount})`} />
-                                </div>
-
-                                {/* Legend */}
-                                <div className="grid grid-cols-2 gap-3 text-xs pt-2">
-                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
-                                        <span className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
-                                        <span className="text-white/60">Confirmés :</span>
-                                        <strong className="text-emerald-400 font-bold ml-auto">{confCount} ({confPct}%)</strong>
-                                    </div>
-                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
-                                        <span className="w-3 h-3 rounded-full bg-blue-500 shrink-0" />
-                                        <span className="text-white/60">Prévus :</span>
-                                        <strong className="text-blue-300 font-bold ml-auto">{prevuCount} ({prevuPct}%)</strong>
-                                    </div>
-                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
-                                        <span className="w-3 h-3 rounded-full bg-red-500 shrink-0" />
-                                        <span className="text-white/60">Absences :</span>
-                                        <strong className="text-red-400 font-bold ml-auto">{absentCount} ({absentPct}%)</strong>
-                                    </div>
-                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5">
-                                        <span className="w-3 h-3 rounded-full bg-gray-500 shrink-0" />
-                                        <span className="text-white/60">Annulés :</span>
-                                        <strong className="text-gray-400 font-bold ml-auto">{annuleCount} ({annulePct}%)</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })()}
-                </div>
-            </div>
-
 
             {/* List */}
-            <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">
-                Détail par membre
-            </h3>
+            <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="font-school text-xs uppercase tracking-widest text-[#ECDDFD]/70 font-semibold">
+                    Détail par bénévole
+                </span>
+                <span className="text-[11px] text-[#ECDDFD]/50 font-mono">
+                    Seuil d'attestation : 50 heures (ou Quota N-1 validé)
+                </span>
+            </div>
             
             {recapData.length === 0 ? (
-                <div className="flex flex-col items-center py-12 text-center rounded-2xl bg-white/5 border border-white/10">
-                    <FileText size={40} className="text-white/20 mb-3" />
-                    <p className="text-white/50 font-medium">Aucune heure validée pour ces critères.</p>
+                <div className="flex flex-col items-center py-12 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30">
+                    <FileText size={40} className="text-[#ECDDFD]/30 mb-3" />
+                    <p className="text-[#ECDDFD]/60 font-medium">Aucune heure validée pour ces critères.</p>
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {recapData.map((u, i) => (
-                        <motion.div
-                            key={u.name}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-white font-bold text-xs">
-                                        {u.name.charAt(0)}
+                    {recapData.map((u, i) => {
+                        const isExempt = isQuotaExempt(u.id);
+                        return (
+                            <motion.div
+                                key={u.id || u.name}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.04 }}
+                                className="p-5 rounded-[2rem] bg-[#2D0A32]/80 border border-[#6F2B75]/30 hover:border-[#6F2B75]/60 transition-all shadow-sm"
+                            >
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                                    <div className="flex items-center gap-3.5">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] flex items-center justify-center text-white font-bold text-xs shadow-soft shrink-0">
+                                            {u.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-white tracking-wide">{u.name}</p>
+                                            <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                                                {isExempt ? (
+                                                    <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-school uppercase tracking-wider font-bold flex items-center gap-1">
+                                                        <GraduationCap size={12} />
+                                                        <span>Quota N-1 Validé · Renouvelant</span>
+                                                    </span>
+                                                ) : (
+                                                    <span className={`text-[10px] font-school uppercase tracking-wider font-bold ${
+                                                        u.totalHours >= 50 ? 'text-emerald-400' : 'text-amber-300'
+                                                    }`}>
+                                                        {u.totalHours >= 50
+                                                            ? '✅ Seuil 50h atteint (Attestation Validée)'
+                                                            : `⏳ ${u.totalHours}/50h (Reste ${Math.max(0, 50 - u.totalHours)}h)`}
+                                                    </span>
+                                                )}
+
+                                                {u.manualHoursCount > 0 && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-[#EC602B]/20 border border-[#EC602B]/40 text-[#EC602B] text-[10px] font-school uppercase tracking-wider font-bold">
+                                                        +{u.manualHoursCount}h valorisées
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <p className="font-semibold text-white">{u.name}</p>
+
+                                    <div className="flex items-center gap-2 self-end sm:self-center flex-wrap">
+                                        {isBureau && (
+                                            <>
+                                                {/* Bouton de validation / bascule Quota N-1 pour membre renouvelant */}
+                                                <button
+                                                    type="button"
+                                                    onClick={async () => {
+                                                        const newStatus = !isExempt;
+                                                        const confirmMsg = newStatus
+                                                            ? `Confirmer que ${u.name} a déjà validé son quota de 50h l'année dernière (Membre renouvelant) ?`
+                                                            : `Retirer le statut renouvelant (quota N-1) de ${u.name} ?`;
+                                                        if (window.confirm(confirmMsg)) {
+                                                            await toggleQuotaExemption(u.id, u.name, newStatus);
+                                                        }
+                                                    }}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-school uppercase tracking-wider font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                                        isExempt
+                                                            ? 'bg-purple-500/20 text-purple-300 border-purple-500/40 hover:bg-purple-500/30'
+                                                            : 'bg-white/5 text-[#ECDDFD]/60 border-white/10 hover:border-purple-400/50 hover:text-purple-300'
+                                                    }`}
+                                                    title={isExempt ? "Cliquer pour retirer la validation N-1" : "Valider le quota 50h acquis l'an dernier"}
+                                                >
+                                                    <GraduationCap size={13} />
+                                                    <span>{isExempt ? 'Quota N-1 Acquis' : 'Valider N-1'}</span>
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setIsCustomMember(false);
+                                                        setCustomMemberName('');
+                                                        setSelectedUserId(u.id);
+                                                        setShowAddModal(true);
+                                                    }}
+                                                    className="px-3 py-1.5 rounded-full bg-[#EC602B]/15 hover:bg-[#EC602B]/30 border border-[#EC602B]/40 text-[#EC602B] text-xs font-school uppercase tracking-wider font-bold transition-all cursor-pointer flex items-center gap-1"
+                                                    title={`Ajouter des heures manuelles à ${u.name}`}
+                                                >
+                                                    <Plus size={13} />
+                                                    <span>+ Heures</span>
+                                                </button>
+                                            </>
+                                        )}
+
+                                        <div className={`px-4 py-1.5 rounded-full border font-school font-bold text-sm ${
+                                            isExempt || u.totalHours >= 50
+                                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                                                : 'bg-[#6F2B75]/40 border-[#ECDDFD]/30 text-white'
+                                        }`}>
+                                            {u.totalHours} h
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-sm">
-                                    {u.totalHours} h
+                                
+                                {/* Barre de progression vers les 50h */}
+                                <div className="w-full h-1.5 rounded-full bg-[#1F0422] overflow-hidden my-2.5">
+                                    <div
+                                        className={`h-full rounded-full transition-all ${
+                                            isExempt
+                                                ? 'bg-gradient-to-r from-purple-500 to-indigo-400'
+                                                : u.totalHours >= 50
+                                                ? 'bg-emerald-500'
+                                                : 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B]'
+                                        }`}
+                                        style={{ width: `${isExempt ? 100 : Math.min(100, (u.totalHours / 50) * 100)}%` }}
+                                    />
                                 </div>
-                            </div>
-                            
+
+                            {/* Détail par projet */}
                             {selectedProjectId === 'all' && Object.keys(u.byProject).length > 0 && (
-                                <div className="mt-3 pl-11 space-y-1.5">
+                                <div className="mt-2 pl-2 sm:pl-12 space-y-1.5 border-t border-[#6F2B75]/20 pt-2">
                                     {Object.entries(u.byProject).map(([pId, hrs]) => {
                                         const p = projectsData.find(proj => proj.id === Number(pId));
                                         return (
                                             <div key={pId} className="flex items-center justify-between text-xs">
-                                                <span className="text-white/50 flex items-center gap-1.5">
-                                                    <span className="w-1 h-1 rounded-full bg-white/30" />
-                                                    {p?.name}
+                                                <span className="text-[#ECDDFD]/60 flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#EC602B]" />
+                                                    <span>{p?.name || 'Projet'}</span>
                                                 </span>
-                                                <span className="text-white/70 font-medium">{hrs} h</span>
+                                                <span className="font-mono text-white/80">{hrs}h</span>
                                             </div>
                                         );
                                     })}
                                 </div>
                             )}
                         </motion.div>
-                    ))}
+                    );
+                })}
                 </div>
             )}
 
+            {/* Modal d'ajout d'heures manuelles (Bureau uniquement) */}
+            {showAddModal && (
+                <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-[#2D0A32] text-white rounded-[2.5rem] max-w-lg w-full p-6 sm:p-8 border border-[#6F2B75]/50 shadow-2xl relative"
+                    >
+                        <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#6F2B75]/40">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] flex items-center justify-center text-white shadow-soft">
+                                    <Clock size={16} />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-display text-white">Ajout d'heures manuelles</h3>
+                                    <p className="text-[11px] text-[#ECDDFD]/60 font-school uppercase tracking-wider">Réservé aux membres du Bureau</p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowAddModal(false)}
+                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] flex items-center justify-center transition-colors cursor-pointer"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddManualSubmit} className="space-y-4 text-xs font-sans">
+                            {/* Bénéficiaire */}
+                            <div>
+                                <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5 font-bold">
+                                    Membre bénéficiaire *
+                                </label>
+                                <select
+                                    value={isCustomMember ? '__custom__' : selectedUserId}
+                                    onChange={(e) => {
+                                        if (e.target.value === '__custom__') {
+                                            setIsCustomMember(true);
+                                            setSelectedUserId('');
+                                        } else {
+                                            setIsCustomMember(false);
+                                            setSelectedUserId(e.target.value);
+                                        }
+                                    }}
+                                    required={!isCustomMember}
+                                    className="w-full bg-[#1F0422] border border-[#6F2B75]/50 rounded-2xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#EC602B] transition-all cursor-pointer font-sans"
+                                >
+                                    <option value="" disabled>Sélectionnez un membre ({memberOptions.length} membres disponibles)</option>
+                                    {memberOptions.map(m => (
+                                        <option key={m.id} value={m.id} className="bg-[#2D0A32]">
+                                            {m.name} {currentUser?.id === m.id ? '(Vous)' : ''}
+                                        </option>
+                                    ))}
+                                    <option value="__custom__" className="bg-[#2D0A32] text-[#EC602B] font-bold">
+                                        ➕ Autre membre (saisie manuelle du prénom & nom)...
+                                    </option>
+                                </select>
+
+                                {isCustomMember && (
+                                    <div className="mt-3 p-3.5 rounded-2xl bg-[#1F0422] border border-[#EC602B]/60 space-y-2">
+                                        <label className="block text-[11px] font-school uppercase tracking-wider text-[#EC602B] font-bold">
+                                            Prénom et Nom du membre bénéficiaire *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={customMemberName}
+                                            onChange={(e) => setCustomMemberName(e.target.value)}
+                                            placeholder="Ex: Clara Martin"
+                                            className="w-full bg-[#2D0A32] border border-white/20 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-[#EC602B]"
+                                            autoFocus
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsCustomMember(false);
+                                                if (memberOptions.length > 0) setSelectedUserId(memberOptions[0].id);
+                                            }}
+                                            className="text-[11px] text-[#ECDDFD]/60 hover:text-white underline cursor-pointer"
+                                        >
+                                            Annuler et choisir un membre dans la liste officielle
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Nombre d'heures */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5 font-bold">
+                                        Nombre d'heures *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="0.5"
+                                        min="0.5"
+                                        max="50"
+                                        required
+                                        value={manualHoursInput}
+                                        onChange={(e) => setManualHoursInput(e.target.value)}
+                                        placeholder="Ex: 5"
+                                        className="w-full bg-[#1F0422] border border-[#6F2B75]/50 rounded-2xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#EC602B] transition-all font-mono"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5 font-bold">
+                                        Projet rattaché
+                                    </label>
+                                    <select
+                                        value={selectedManualProject}
+                                        onChange={(e) => setSelectedManualProject(e.target.value)}
+                                        className="w-full bg-[#1F0422] border border-[#6F2B75]/50 rounded-2xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#EC602B] transition-all cursor-pointer font-sans"
+                                    >
+                                        <option value="general" className="bg-[#2D0A32]">Mission Générale / Bureau</option>
+                                        {projectsData.map(p => (
+                                            <option key={p.id} value={p.id} className="bg-[#2D0A32]">{p.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Justification écrite obligatoire */}
+                            <div>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <label className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 font-bold">
+                                        Justification écrite obligatoire *
+                                    </label>
+                                    <span className="text-[10px] text-amber-400 font-school">Min. 8 caractères</span>
+                                </div>
+                                <textarea
+                                    required
+                                    minLength={8}
+                                    rows={3}
+                                    value={manualReasonInput}
+                                    onChange={(e) => setManualReasonInput(e.target.value)}
+                                    placeholder="Ex: Participation active à l'organisation des Olympiades tout le weekend, création des supports pédagogiques, remplacement d'urgence..."
+                                    className="w-full bg-[#1F0422] border border-[#6F2B75]/50 rounded-2xl p-3 text-white placeholder-white/25 focus:outline-none focus:border-[#EC602B] transition-all resize-none leading-relaxed"
+                                />
+                            </div>
+
+                            {/* Notice de transparence */}
+                            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5 text-[11px] text-amber-200">
+                                <AlertCircle size={15} className="text-amber-400 shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-bold">Règle de traçabilité et de transparence :</p>
+                                    <p className="text-amber-200/80 mt-0.5">
+                                        Ce motif sera consigné dans le registre officiel de l'association, signé par <strong>{currentUser?.name}</strong>, et imprimé sur l'attestation finale du membre.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="pt-3 border-t border-[#6F2B75]/30 flex items-center justify-end gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddModal(false)}
+                                    className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] font-school uppercase tracking-wider transition-colors cursor-pointer"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmittingManual}
+                                    className="btn-phoenix-gradient px-5 py-2 rounded-full text-white font-school uppercase tracking-wider font-bold shadow-soft transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    {isSubmittingManual ? 'Enregistrement...' : 'Valider l\'attribution'}
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* ── MODAL : HISTORIQUE DES HEURES MANUELLES ACCORDÉES (BUREAU) ───── */}
+            {showHistoryModal && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-[#2D0A32] text-white rounded-[2.5rem] max-w-2xl w-full p-6 sm:p-8 border border-[#6F2B75]/50 shadow-2xl relative max-h-[85vh] flex flex-col"
+                    >
+                        <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#6F2B75]/40 shrink-0">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] flex items-center justify-center text-white shadow-soft">
+                                    <History size={16} />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-display text-white">Registre des valorisations manuelles</h3>
+                                    <p className="text-[11px] text-[#ECDDFD]/60 font-school uppercase tracking-wider">
+                                        {manualHours.length} attribution{manualHours.length > 1 ? 's' : ''} consignée{manualHours.length > 1 ? 's' : ''}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowHistoryModal(false)}
+                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] flex items-center justify-center transition-colors cursor-pointer"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        <div className="overflow-y-auto space-y-3 pr-1 flex-1">
+                            {manualHours.length === 0 ? (
+                                <p className="text-center py-8 text-[#ECDDFD]/60 text-xs">Aucune heure manuelle enregistrée.</p>
+                            ) : (
+                                manualHours.map((mh) => (
+                                    <div
+                                        key={mh.id}
+                                        className="p-4 rounded-2xl bg-[#1F0422]/80 border border-[#6F2B75]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                                    >
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-white text-sm">{mh.userName}</span>
+                                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold text-[11px]">
+                                                    +{mh.hours} h
+                                                </span>
+                                            </div>
+                                            <p className="text-[#ECDDFD]/90 font-medium italic">
+                                                « {mh.reason} »
+                                            </p>
+                                            <p className="text-[10px] text-[#ECDDFD]/50 font-mono">
+                                                Accordé par {mh.grantedBy} · {new Date(mh.createdAt).toLocaleString('fr-FR')}
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (window.confirm(`Supprimer cette attribution de ${mh.hours}h accordée à ${mh.userName} ?`)) {
+                                                    deleteManualHours(mh.id);
+                                                }
+                                            }}
+                                            className="self-end sm:self-center p-2 rounded-xl text-rose-400 hover:text-white hover:bg-rose-500/20 transition-colors cursor-pointer shrink-0"
+                                            title="Révoquer cette attribution"
+                                        >
+                                            <Trash2 size={15} />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="pt-4 border-t border-[#6F2B75]/30 flex justify-end shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => setShowHistoryModal(false)}
+                                className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] font-school uppercase tracking-wider text-xs transition-colors cursor-pointer"
+                            >
+                                Fermer
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </PlanningLayout>
     );
 }

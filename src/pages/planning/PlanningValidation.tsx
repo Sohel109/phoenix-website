@@ -97,36 +97,41 @@ export function PlanningValidation() {
             </AnimatePresence>
 
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-6 mt-2">
+            <div className="flex items-center justify-between mb-6 p-4 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                 <motion.button
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+                    className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                 >
                     <ChevronLeft size={18} />
                 </motion.button>
-                <p className="text-white font-semibold text-sm">{formatWeekLabel(currentWeekKey)}</p>
+                <div className="text-center">
+                    <p className="text-white font-school font-bold text-sm sm:text-base uppercase tracking-wider">{formatWeekLabel(currentWeekKey)}</p>
+                    <p className="text-[#ECDDFD]/70 font-mono text-xs mt-0.5">{currentWeekKey}</p>
+                </div>
                 <motion.button
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'next'))}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+                    className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                 >
                     <ChevronRight size={18} />
                 </motion.button>
             </div>
 
             {/* À valider */}
-            <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">
-                À valider ({prevuBookings.length})
-            </h3>
+            <div className="flex items-center gap-2 mb-3">
+                <span className="font-school text-xs uppercase tracking-widest text-[#ECDDFD]/70 font-semibold">
+                    À valider ({prevuBookings.length})
+                </span>
+            </div>
 
             {prevuBookings.length === 0 ? (
-                <div className="flex flex-col items-center py-10 text-center mb-6 rounded-2xl bg-white/5 border border-white/10">
-                    <Users size={32} className="text-white/20 mb-2" />
-                    <p className="text-white/40 text-sm">Aucune présence à valider pour cette semaine.</p>
+                <div className="flex flex-col items-center py-10 text-center mb-8 rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                    <Users size={32} className="text-[#ECDDFD]/30 mb-2" />
+                    <p className="text-[#ECDDFD]/60 text-sm">Aucune présence à valider pour cette semaine.</p>
                 </div>
             ) : (
-                <div className="space-y-3 mb-6">
+                <div className="space-y-4 mb-8">
                     {prevuBookings.map((b, i) => {
                         const { slot, project, userName } = enrichBooking(b.id);
                         const loading = isPending(b.id);
@@ -136,19 +141,19 @@ export function PlanningValidation() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                                className="flex items-center gap-3 p-4 rounded-xl bg-blue-500/5 border border-blue-500/20"
+                                className="flex items-center gap-4 p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 shadow-soft-lg backdrop-blur-md"
                             >
-                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-bold text-sm">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center font-bold text-sm shadow-soft">
                                     {userName.charAt(0)}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-white">{userName}</p>
-                                    <p className="text-xs text-white/50">{slot?.day} · {slot?.startTime}–{slot?.endTime} · {project?.name}</p>
+                                    <p className="text-base font-bold text-white tracking-wide">{userName}</p>
+                                    <p className="text-xs text-[#ECDDFD]/70 mt-0.5 font-mono">{slot?.day} · {slot?.startTime}–{slot?.endTime} · {project?.name}</p>
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0">
                                     {loading ? (
-                                        <div className="p-2 rounded-xl bg-white/10 text-white/40 flex items-center justify-center">
-                                            <LoaderCircle size={18} className="animate-spin text-orange-400" />
+                                        <div className="w-10 h-10 rounded-full bg-[#1F0422]/60 border border-[#6F2B75]/40 flex items-center justify-center">
+                                            <LoaderCircle size={18} className="animate-spin text-[#EC602B]" />
                                         </div>
                                     ) : (
                                         <>
@@ -161,7 +166,7 @@ export function PlanningValidation() {
                                                     projectName: project?.name || '',
                                                     day: `${slot?.day} (${slot?.startTime}-${slot?.endTime})`
                                                 })}
-                                                className="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-400 transition-colors"
+                                                className="w-10 h-10 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 flex items-center justify-center transition-colors shadow-soft"
                                                 title="Confirmer la présence"
                                             >
                                                 <CheckCircle size={18} />
@@ -175,7 +180,7 @@ export function PlanningValidation() {
                                                     projectName: project?.name || '',
                                                     day: `${slot?.day} (${slot?.startTime}-${slot?.endTime})`
                                                 })}
-                                                className="p-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-colors"
+                                                className="w-10 h-10 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 flex items-center justify-center transition-colors shadow-soft"
                                                 title="Marquer absent"
                                             >
                                                 <XCircle size={18} />
@@ -192,28 +197,30 @@ export function PlanningValidation() {
             {/* Already processed */}
             {doneBookings.length > 0 && (
                 <>
-                    <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">
-                        Déjà traités ({doneBookings.length})
-                    </h3>
-                    <div className="space-y-2">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="font-school text-xs uppercase tracking-widest text-[#ECDDFD]/70 font-semibold">
+                            Déjà traités ({doneBookings.length})
+                        </span>
+                    </div>
+                    <div className="space-y-2.5">
                         {doneBookings.map(b => {
                             const { slot, project, userName } = enrichBooking(b.id);
                             const isConfirme = b.status === 'confirme';
                             const loading = isPending(b.id);
                             return (
-                                <div key={b.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 opacity-70">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold">
+                                <div key={b.id} className="flex items-center gap-3.5 p-4 rounded-2xl bg-[#2D0A32]/70 border border-[#6F2B75]/30">
+                                    <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#1F0422]/80 border border-[#6F2B75]/40 flex items-center justify-center text-white text-xs font-bold">
                                         {userName.charAt(0)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm text-white">{userName}</p>
-                                        <p className="text-xs text-white/40">{slot?.day} · {project?.name}</p>
+                                        <p className="text-sm font-bold text-white tracking-wide">{userName}</p>
+                                        <p className="text-xs text-[#ECDDFD]/60 font-mono mt-0.5">{slot?.day} · {project?.name}</p>
                                     </div>
-                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${isConfirme ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10'}`}>
+                                    <span className={`text-xs font-school uppercase tracking-wider px-3 py-1 rounded-full border ${isConfirme ? 'text-emerald-300 border-emerald-500/30 bg-emerald-500/15' : 'text-red-300 border-red-500/30 bg-red-500/15'}`}>
                                         {isConfirme ? 'Confirmé' : 'Absent'}
                                     </span>
                                     {loading ? (
-                                        <LoaderCircle size={14} className="animate-spin text-orange-400" />
+                                        <LoaderCircle size={14} className="animate-spin text-[#EC602B]" />
                                     ) : (
                                         <motion.button
                                             whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
@@ -224,7 +231,7 @@ export function PlanningValidation() {
                                                 projectName: project?.name || '',
                                                 day: `${slot?.day}`
                                             })}
-                                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-colors"
+                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-[#ECDDFD]/60 hover:text-white flex items-center justify-center transition-colors border border-white/10"
                                             title="Annuler la validation (remettre en attente)"
                                         >
                                             <RotateCcw size={14} />
@@ -240,31 +247,31 @@ export function PlanningValidation() {
             {/* Confirmation Dialog Modal */}
             <AnimatePresence>
                 {confirmTarget && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="w-full max-w-sm rounded-2xl bg-[#1A103C] border border-white/20 p-6 text-center shadow-2xl"
+                            className="w-full max-w-sm rounded-[2.5rem] bg-[#2D0A32] border border-[#6F2B75]/60 p-7 text-center shadow-2xl text-white"
                         >
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-violet-600 flex items-center justify-center mx-auto mb-4 text-white">
-                                {confirmTarget.actionType === 'validate' && <CheckCircle size={24} />}
-                                {confirmTarget.actionType === 'absent' && <XCircle size={24} />}
-                                {confirmTarget.actionType === 'reset' && <RotateCcw size={24} />}
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] flex items-center justify-center mx-auto mb-4 text-white shadow-soft">
+                                {confirmTarget.actionType === 'validate' && <CheckCircle size={26} />}
+                                {confirmTarget.actionType === 'absent' && <XCircle size={26} />}
+                                {confirmTarget.actionType === 'reset' && <RotateCcw size={26} />}
                             </div>
 
-                            <h4 className="text-lg font-bold text-white mb-2">
+                            <h4 className="text-lg font-bold text-white mb-2 tracking-wide">
                                 {confirmTarget.actionType === 'validate' && 'Confirmer la présence'}
                                 {confirmTarget.actionType === 'absent' && 'Marquer comme absent'}
                                 {confirmTarget.actionType === 'reset' && 'Annuler la validation'}
                             </h4>
 
-                            <p className="text-xs text-white/70 mb-6 leading-relaxed">
+                            <p className="text-xs text-[#ECDDFD]/75 mb-6 leading-relaxed">
                                 {confirmTarget.actionType === 'validate' && (
-                                    <>Voulez-vous valider la présence de <strong className="text-white">{confirmTarget.userName}</strong> pour le projet <strong className="text-white">{confirmTarget.projectName}</strong> le <span className="text-orange-400">{confirmTarget.day}</span> ?</>
+                                    <>Voulez-vous valider la présence de <strong className="text-white">{confirmTarget.userName}</strong> pour le projet <strong className="text-white">{confirmTarget.projectName}</strong> le <span className="text-[#EC602B] font-bold">{confirmTarget.day}</span> ?</>
                                 )}
                                 {confirmTarget.actionType === 'absent' && (
-                                    <>Voulez-vous marquer <strong className="text-white">{confirmTarget.userName}</strong> comme <span className="text-red-400">absent(e)</span> le <span className="text-white">{confirmTarget.day}</span> ?</>
+                                    <>Voulez-vous marquer <strong className="text-white">{confirmTarget.userName}</strong> comme <span className="text-rose-400 font-bold">absent(e)</span> le <span className="text-white">{confirmTarget.day}</span> ?</>
                                 )}
                                 {confirmTarget.actionType === 'reset' && (
                                     <>Voulez-vous réinitialiser le statut de <strong className="text-white">{confirmTarget.userName}</strong> et le remettre en attente ?</>
@@ -274,16 +281,16 @@ export function PlanningValidation() {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setConfirmTarget(null)}
-                                    className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition-colors"
+                                    className="flex-1 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white font-school uppercase text-xs tracking-wider transition-colors"
                                 >
                                     Annuler
                                 </button>
                                 <button
                                     onClick={handleConfirm}
-                                    className={`flex-1 py-2.5 rounded-xl font-bold text-xs text-white transition-all shadow-lg ${
-                                        confirmTarget.actionType === 'validate' ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30' :
-                                        confirmTarget.actionType === 'absent' ? 'bg-red-600 hover:bg-red-500 shadow-red-600/30' :
-                                        'bg-orange-600 hover:bg-orange-500 shadow-orange-600/30'
+                                    className={`flex-1 py-2.5 rounded-full font-school uppercase text-xs tracking-wider text-white transition-all shadow-soft ${
+                                        confirmTarget.actionType === 'validate' ? 'bg-emerald-600 hover:bg-emerald-500' :
+                                        confirmTarget.actionType === 'absent' ? 'bg-rose-600 hover:bg-rose-500' :
+                                        'btn-phoenix-gradient'
                                     }`}
                                 >
                                     Confirmer

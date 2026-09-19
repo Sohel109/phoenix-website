@@ -128,15 +128,15 @@ export function PlanningLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-[#07071a] flex flex-col items-center justify-center px-4 relative py-12">
+        <div className="min-h-screen bg-[#1F0422] text-[#FFFBF4] bg-bird-pattern-dark flex flex-col items-center justify-center px-4 relative py-12 selection:bg-[#EC602B]/30 selection:text-white">
             {/* Bouton retour au site public */}
             <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-20">
                 <Link
                     to="/"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-xs sm:text-sm font-semibold backdrop-blur-md border border-white/15 transition-all shadow-md group"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white text-xs font-school uppercase tracking-wider backdrop-blur-md border border-[#ECDDFD]/20 transition-all shadow-md group cursor-pointer"
                     title="Retourner à l'accueil du site Phoenix"
                 >
-                    <ArrowLeft size={16} className="text-orange-400 group-hover:-translate-x-0.5 transition-transform" />
+                    <ArrowLeft size={16} className="text-[#EC602B] group-hover:-translate-x-0.5 transition-transform" />
                     <span>Retour au site</span>
                 </Link>
             </div>
@@ -145,40 +145,45 @@ export function PlanningLogin() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-                className="relative w-full max-w-sm"
+                className="relative w-full max-w-md"
             >
-                {/* Logo */}
+                {/* Logo & Header */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4">
-                        <CalendarCheck size={30} className="text-white" />
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white shadow-soft mb-4 border-2 border-white/20">
+                        <CalendarCheck size={36} />
                     </div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-violet-500">
-                        Phoenix Planning
+                    <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">
+                        Phoenix <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ECDDFD] via-white to-[#EC602B]">Planning</span>
                     </h1>
-                    <p className="text-white/40 mt-2 text-sm">Connectez-vous à votre espace membre</p>
+                    <p className="font-script text-2xl text-[#EC602B] mt-1">
+                        ~ Espace Membre & Bénévoles ~
+                    </p>
+                    <p className="text-[#ECDDFD]/70 mt-1 text-xs font-sans">
+                        Connectez-vous à votre espace associatif
+                    </p>
                 </div>
 
                 {/* Card */}
                 <motion.div
                     animate={isShaking ? { x: [-8, 8, -6, 6, -4, 4, 0] } : { x: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-lg"
+                    className="bg-[#2D0A32]/90 backdrop-blur-md border border-[#6F2B75]/50 rounded-[2.5rem] p-8 sm:p-10 shadow-soft-lg"
                 >
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Identifiant */}
                         <div>
-                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
+                            <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-2">
                                 Identifiant
                             </label>
                             <div className="relative">
-                                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 pointer-events-none" />
                                 <input
                                     type="text"
                                     value={loginId}
                                     onChange={e => { setLoginId(e.target.value); setError(''); }}
                                     placeholder="prenom.nom"
                                     autoComplete="username"
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-4 py-3 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all text-sm"
+                                    className="w-full bg-white/5 border border-[#6F2B75]/40 rounded-2xl pl-10 pr-4 py-3 text-white placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#EC602B]/40 focus:border-[#EC602B] transition-all text-sm font-sans"
                                 />
                             </div>
                         </div>
@@ -186,7 +191,7 @@ export function PlanningLogin() {
                         {/* Mot de passe */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wide">
+                                <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80">
                                     Mot de passe
                                 </label>
                                 <button
@@ -195,25 +200,25 @@ export function PlanningLogin() {
                                         setResetLoginId(loginId);
                                         setShowForgotPassword(true);
                                     }}
-                                    className="text-xs text-orange-400/90 hover:text-orange-300 transition-colors font-medium hover:underline"
+                                    className="text-xs text-[#EC602B] hover:text-[#FF7E2E] transition-colors font-school uppercase tracking-wider font-semibold cursor-pointer"
                                 >
                                     Mot de passe oublié ?
                                 </button>
                             </div>
                             <div className="relative">
-                                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 pointer-events-none" />
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={e => { setPassword(e.target.value); setError(''); }}
                                     placeholder="••••••••••"
                                     autoComplete="current-password"
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-10 py-3 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all text-sm"
+                                    className="w-full bg-white/5 border border-[#6F2B75]/40 rounded-2xl pl-10 pr-10 py-3 text-white placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#EC602B]/40 focus:border-[#EC602B] transition-all text-sm font-sans"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(v => !v)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 hover:text-white transition-colors cursor-pointer"
                                     tabIndex={-1}
                                 >
                                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -226,7 +231,7 @@ export function PlanningLogin() {
                             <motion.p
                                 initial={{ opacity: 0, y: -4 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2"
+                                className="text-red-300 text-xs font-school uppercase tracking-wider text-center bg-red-500/20 border border-red-500/40 rounded-xl px-3.5 py-2.5"
                             >
                                 {error}
                             </motion.p>
@@ -236,52 +241,52 @@ export function PlanningLogin() {
                         <motion.button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 text-white font-bold shadow-md transition-all mt-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-full btn-phoenix-gradient text-white font-school uppercase tracking-wider text-xs font-bold shadow-soft-lg transition-all mt-3 cursor-pointer ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             whileHover={!isLoading ? { scale: 1.02 } : {}}
-                            whileTap={!isLoading ? { scale: 0.97 } : {}}
+                            whileTap={!isLoading ? { scale: 0.98 } : {}}
                         >
                             {isLoading ? (
                                 <Loader2 size={18} className="animate-spin" />
                             ) : (
                                 <LogIn size={18} />
                             )}
-                            {isLoading ? 'Connexion...' : 'Se connecter'}
+                            {isLoading ? 'Connexion en cours...' : 'Se connecter'}
                         </motion.button>
                     </form>
                 </motion.div>
 
-                <div className="mt-4 text-center">
+                <div className="mt-5 text-center">
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-orange-400 transition-colors py-1 px-3 rounded-lg hover:bg-white/5"
+                        className="inline-flex items-center gap-1.5 text-xs font-school uppercase tracking-wider text-[#ECDDFD]/60 hover:text-[#EC602B] transition-colors py-1.5 px-4 rounded-full hover:bg-white/5"
                     >
                         <ArrowLeft size={13} />
                         <span>Quitter et retourner au site public</span>
                     </Link>
                 </div>
 
-                <p className="text-center text-white/20 text-xs mt-3">
+                <p className="text-center text-[#ECDDFD]/40 text-xs mt-3 font-sans">
                     Espace réservé aux membres Phoenix · Identifiants fournis par l'administration
                 </p>
             </motion.div>
 
             {/* Modale de réinitialisation sécurisée par e-mail (OTP) */}
             {showForgotPassword && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="bg-[#120e2e] border border-white/15 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative"
+                        className="bg-[#2D0A32] border border-[#6F2B75]/60 rounded-[2.5rem] p-7 sm:p-8 max-w-sm w-full shadow-2xl relative text-[#FFFBF4]"
                     >
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                        <div className="flex items-center gap-3.5 mb-5">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
                                 {resetStep === 1 ? <Mail size={22} /> : <KeyRound size={22} />}
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-white leading-tight">Mot de passe oublié</h3>
-                                <p className="text-white/50 text-xs mt-0.5">
-                                    {resetStep === 1 ? 'Vérification de compte par e-mail' : 'Validation du code de sécurité'}
+                                <h3 className="text-xl font-display text-white leading-tight">Mot de passe oublié</h3>
+                                <p className="text-[#ECDDFD]/70 text-xs mt-0.5 font-sans">
+                                    {resetStep === 1 ? 'Vérification par e-mail' : 'Validation du code OTP'}
                                 </p>
                             </div>
                         </div>
@@ -290,10 +295,10 @@ export function PlanningLogin() {
                             <motion.div
                                 initial={{ opacity: 0, y: -4 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className={`flex items-start gap-2 p-3 rounded-xl mb-4 text-xs border ${
+                                className={`flex items-start gap-2 p-3 rounded-2xl mb-4 text-xs font-sans border ${
                                     resetFeedback.type === 'success'
-                                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
-                                        : 'bg-red-500/10 border-red-500/20 text-red-300'
+                                        ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                                        : 'bg-red-500/15 border-red-500/30 text-red-300'
                                 }`}
                             >
                                 {resetFeedback.type === 'success' ? (
@@ -307,47 +312,47 @@ export function PlanningLogin() {
 
                         {/* ÉTAPE 1 : Saisir l'identifiant pour envoyer le code par email */}
                         {resetStep === 1 && (
-                            <form onSubmit={handleRequestCode} className="space-y-3.5">
-                                <p className="text-white/70 text-xs leading-relaxed">
+                            <form onSubmit={handleRequestCode} className="space-y-4">
+                                <p className="text-[#ECDDFD]/80 text-xs leading-relaxed font-sans">
                                     Saisissez votre identifiant. Un code de sécurité à 6 chiffres sera envoyé à l'adresse e-mail enregistrée sur votre compte.
                                 </p>
 
                                 <div>
-                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                    <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5">
                                         Identifiant
                                     </label>
                                     <div className="relative">
-                                        <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                        <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 pointer-events-none" />
                                         <input
                                             type="text"
                                             value={resetLoginId}
                                             onChange={e => setResetLoginId(e.target.value)}
                                             placeholder="ex: prenom.nom"
-                                            className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                            className="w-full bg-white/5 border border-[#6F2B75]/40 rounded-2xl pl-10 pr-3 py-2.5 text-white placeholder-white/25 focus:outline-none focus:border-[#EC602B] transition-all text-xs font-sans"
                                             required
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2 pt-2">
+                                <div className="flex gap-2.5 pt-2">
                                     <button
                                         type="button"
                                         onClick={closeResetModal}
-                                        className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors"
+                                        className="flex-1 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] font-school uppercase tracking-wider text-xs transition-colors cursor-pointer"
                                     >
                                         Annuler
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isResetting}
-                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 hover:opacity-95 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full btn-phoenix-gradient text-white font-school uppercase tracking-wider text-xs font-bold shadow-soft transition-all disabled:opacity-50 cursor-pointer"
                                     >
                                         {isResetting ? (
                                             <Loader2 size={15} className="animate-spin" />
                                         ) : (
                                             <Mail size={15} />
                                         )}
-                                        {isResetting ? 'Envoi...' : 'Envoyer le code'}
+                                        {isResetting ? 'Envoi...' : 'Envoyer'}
                                     </button>
                                 </div>
                             </form>
@@ -355,17 +360,17 @@ export function PlanningLogin() {
 
                         {/* ÉTAPE 2 : Saisir le code OTP + le nouveau mot de passe */}
                         {resetStep === 2 && (
-                            <form onSubmit={handleConfirmReset} className="space-y-3.5">
+                            <form onSubmit={handleConfirmReset} className="space-y-4">
                                 {maskedEmail && (
-                                    <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white/70 flex items-center gap-2">
-                                        <Mail size={14} className="text-orange-400 shrink-0" />
+                                    <div className="bg-white/5 border border-[#6F2B75]/40 rounded-2xl p-3 text-xs text-[#ECDDFD]/90 flex items-center gap-2 font-sans">
+                                        <Mail size={14} className="text-[#EC602B] shrink-0" />
                                         <span>Code envoyé à <strong className="text-white">{maskedEmail}</strong></span>
                                     </div>
                                 )}
 
                                 {/* Code 6 chiffres */}
                                 <div>
-                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                    <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5">
                                         Code de vérification (6 chiffres)
                                     </label>
                                     <input
@@ -374,30 +379,30 @@ export function PlanningLogin() {
                                         value={otpCode}
                                         onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
                                         placeholder="Ex: 583920"
-                                        className="w-full bg-white/5 border border-white/15 rounded-xl px-3 py-2.5 text-white placeholder-white/20 text-center tracking-[0.3em] font-mono text-base font-bold focus:outline-none focus:border-orange-500/60 transition-all"
+                                        className="w-full bg-white/5 border border-[#6F2B75]/40 rounded-2xl px-3 py-2.5 text-white placeholder-white/25 text-center tracking-[0.3em] font-mono text-base font-bold focus:outline-none focus:border-[#EC602B] transition-all"
                                         required
                                     />
                                 </div>
 
                                 {/* Nouveau mot de passe */}
                                 <div>
-                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                    <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5">
                                         Nouveau mot de passe
                                     </label>
                                     <div className="relative">
-                                        <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                        <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 pointer-events-none" />
                                         <input
                                             type={showResetNew ? 'text' : 'password'}
                                             value={resetNewPassword}
                                             onChange={e => setResetNewPassword(e.target.value)}
                                             placeholder="Au moins 4 caractères"
-                                            className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-9 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                            className="w-full bg-white/5 border border-[#6F2B75]/40 rounded-2xl pl-10 pr-10 py-2.5 text-white placeholder-white/25 focus:outline-none focus:border-[#EC602B] transition-all text-xs font-sans"
                                             required
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowResetNew(!showResetNew)}
-                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 hover:text-white transition-colors cursor-pointer"
                                             tabIndex={-1}
                                         >
                                             {showResetNew ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -407,38 +412,38 @@ export function PlanningLogin() {
 
                                 {/* Confirmation */}
                                 <div>
-                                    <label className="block text-xs font-medium text-white/70 mb-1">
+                                    <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-1.5">
                                         Confirmer le mot de passe
                                     </label>
                                     <div className="relative">
-                                        <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                                        <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40 pointer-events-none" />
                                         <input
                                             type={showResetNew ? 'text' : 'password'}
                                             value={resetConfirmPassword}
                                             onChange={e => setResetConfirmPassword(e.target.value)}
                                             placeholder="Répéter le mot de passe"
-                                            className="w-full bg-white/5 border border-white/15 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-all text-xs"
+                                            className="w-full bg-white/5 border border-[#6F2B75]/40 rounded-2xl pl-10 pr-3 py-2.5 text-white placeholder-white/25 focus:outline-none focus:border-[#EC602B] transition-all text-xs font-sans"
                                             required
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2 pt-2">
+                                <div className="flex gap-2.5 pt-2">
                                     <button
                                         type="button"
                                         onClick={() => {
                                             setResetStep(1);
                                             setResetFeedback(null);
                                         }}
-                                        className="flex items-center justify-center px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors shrink-0"
+                                        className="flex items-center justify-center p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] transition-colors shrink-0 cursor-pointer"
                                         title="Retour"
                                     >
-                                        <ArrowLeft size={15} />
+                                        <ArrowLeft size={16} />
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isResetting}
-                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-violet-500 hover:opacity-95 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full btn-phoenix-gradient text-white font-school uppercase tracking-wider text-xs font-bold shadow-soft transition-all disabled:opacity-50 cursor-pointer"
                                     >
                                         {isResetting ? (
                                             <Loader2 size={15} className="animate-spin" />

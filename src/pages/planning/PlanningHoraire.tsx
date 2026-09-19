@@ -8,10 +8,10 @@ import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWe
 import { generateICS, downloadICSFile } from '../../utils/icsExport';
 
 const STATUS_CONFIG = {
-    prevu:    { label: 'Prévu',     color: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
-    confirme: { label: 'Confirmé',  color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
-    absent:   { label: 'Absent',    color: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
-    annule:   { label: 'Annulé',    color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' },
+    prevu:    { label: 'Prévu',     color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
+    confirme: { label: 'Confirmé',  color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
+    absent:   { label: 'Absent',    color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
+    annule:   { label: 'Annulé',    color: 'bg-white/10 text-[#ECDDFD]/50 border-white/15' },
 };
 
 export function PlanningHoraire() {
@@ -62,25 +62,25 @@ export function PlanningHoraire() {
         <PlanningLayout title="Horaire">
             {/* Navigation Tabs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
-                <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
+                <div className="flex bg-[#2D0A32]/90 p-1.5 rounded-full border border-[#6F2B75]/40 shrink-0 backdrop-blur-md shadow-soft">
                     <button
                         onClick={() => setActiveTab('global')}
-                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2 rounded-full text-xs font-school uppercase tracking-wider transition-all ${
                             activeTab === 'global'
-                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                ? 'btn-phoenix-gradient text-white shadow-soft'
+                                : 'text-[#ECDDFD]/70 hover:text-white'
                         }`}
                     >
                         <Grid size={15} />
-                        <span>Vue globale par projet</span>
+                        <span>Vue globale</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('mine')}
-                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2 rounded-full text-xs font-school uppercase tracking-wider transition-all ${
                             activeTab === 'mine'
-                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                ? 'btn-phoenix-gradient text-white shadow-soft'
+                                : 'text-[#ECDDFD]/70 hover:text-white'
                         }`}
                     >
                         <User size={15} />
@@ -92,30 +92,30 @@ export function PlanningHoraire() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleExportCalendar}
-                    className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-bold border border-orange-500/30 transition-all self-stretch sm:self-auto shrink-0"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white text-xs font-school uppercase tracking-wider border border-[#ECDDFD]/30 hover:border-[#EC602B]/60 shadow-soft transition-all self-stretch sm:self-auto shrink-0"
                 >
-                    <Download size={14} />
-                    <span>Exporter mon agenda (.ics)</span>
+                    <Download size={14} className="text-[#EC602B]" />
+                    <span>Exporter (.ics)</span>
                 </motion.button>
             </div>
 
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-6 p-3 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-center justify-between mb-6 p-4 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
-                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors border border-slate-700/60"
+                    className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                 >
                     <ChevronLeft size={18} />
                 </motion.button>
                 <div className="text-center">
-                    <p className="text-white font-bold text-sm sm:text-base">{formatWeekLabel(currentWeekKey)}</p>
-                    <p className="text-slate-400 text-[10px] uppercase tracking-wider font-semibold mt-0.5">{currentWeekKey}</p>
+                    <p className="text-white font-school font-bold text-sm sm:text-base uppercase tracking-wider">{formatWeekLabel(currentWeekKey)}</p>
+                    <p className="text-[#ECDDFD]/70 font-mono text-xs mt-0.5">{currentWeekKey}</p>
                 </div>
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'next'))}
-                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors border border-slate-700/60"
+                    className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                 >
                     <ChevronRight size={18} />
                 </motion.button>
@@ -124,13 +124,15 @@ export function PlanningHoraire() {
             {/* TAB 1: MON EMPLOI DU TEMPS */}
             {activeTab === 'mine' && (
                 enrichedMyBookings.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-white/5 border border-white/10">
-                        <Clock size={40} className="text-white/20 mb-3" />
-                        <p className="text-white/50 font-medium">Aucun créneau pour vous cette semaine</p>
-                        <p className="text-white/30 text-sm mt-1">Activez vos disponibilités dans la section dédiée ou consultez le planning global.</p>
+                    <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                        <div className="w-14 h-14 rounded-full bg-[#6F2B75]/30 border border-[#6F2B75]/50 flex items-center justify-center text-[#ECDDFD]/60 mb-3 shadow-soft">
+                            <Clock size={28} />
+                        </div>
+                        <p className="text-white font-bold text-base">Aucun créneau pour vous cette semaine</p>
+                        <p className="text-[#ECDDFD]/60 text-xs mt-1">Activez vos disponibilités dans la section dédiée ou consultez la vue globale.</p>
                     </div>
                 ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {enrichedMyBookings.map(({ booking, slot, project }, i) => {
                             const config = STATUS_CONFIG[booking.status];
                             const attendees = getSlotAttendees(slot!.id);
@@ -139,36 +141,36 @@ export function PlanningHoraire() {
                                     key={booking.id}
                                     initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.06, type: 'spring', stiffness: 260, damping: 24 }}
+                                    transition={{ delay: i * 0.05 }}
                                     onClick={() => setSelectedSlotForModal(slot!)}
-                                    className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500/40 hover:bg-white/[0.08] transition-all cursor-pointer group"
+                                    className="flex items-center gap-4 p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all cursor-pointer group shadow-soft-lg hover:-translate-y-0.5"
                                 >
-                                    <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-white/10 border border-white/10 flex flex-col items-center justify-center text-center group-hover:border-orange-500/50 transition-colors">
-                                        <span className="text-xs text-white/50 leading-none">{slot!.day.slice(0, 3)}</span>
-                                        <span className="text-lg font-black text-white mt-0.5">{slot!.startTime}</span>
+                                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex flex-col items-center justify-center text-center shadow-soft group-hover:scale-105 transition-transform">
+                                        <span className="text-[11px] font-school uppercase tracking-wider text-white/90 leading-none">{slot!.day.slice(0, 3)}</span>
+                                        <span className="text-base font-black text-white mt-0.5 font-mono">{slot!.startTime}</span>
                                     </div>
 
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <p className="text-white font-semibold truncate">{project!.name}</p>
+                                            <p className="text-white font-bold text-base truncate tracking-wide">{project!.name}</p>
                                         </div>
-                                        <div className="flex flex-wrap items-center gap-3 mt-1">
-                                            <span className="flex items-center gap-1 text-xs text-white/50">
-                                                <Clock size={11} />
+                                        <div className="flex flex-wrap items-center gap-3 mt-1.5">
+                                            <span className="flex items-center gap-1.5 text-xs text-[#ECDDFD]/70 font-mono">
+                                                <Clock size={12} className="text-[#EC602B]" />
                                                 {slot!.startTime} – {slot!.endTime}
                                             </span>
-                                            <span className="flex items-center gap-1 text-xs text-white/50 truncate">
-                                                <MapPin size={11} />
+                                            <span className="flex items-center gap-1.5 text-xs text-[#ECDDFD]/70 truncate">
+                                                <MapPin size={12} className="text-[#EC602B]" />
                                                 {project!.address.split(',')[0]}
                                             </span>
-                                            <span className="flex items-center gap-1 text-xs font-semibold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full border border-orange-500/20">
-                                                <Users size={11} />
-                                                {attendees.length} tuteur{attendees.length > 1 ? 's' : ''} inscrit{attendees.length > 1 ? 's' : ''}
+                                            <span className="flex items-center gap-1 text-xs font-school uppercase tracking-wider text-[#ECDDFD] bg-[#6F2B75]/40 px-2.5 py-0.5 rounded-full border border-[#ECDDFD]/20">
+                                                <Users size={11} className="text-[#EC602B]" />
+                                                {attendees.length} tuteur{attendees.length > 1 ? 's' : ''}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border ${config.color}`}>
+                                    <span className={`flex-shrink-0 text-xs font-school uppercase tracking-wider px-3 py-1 rounded-full border ${config.color}`}>
                                         {config.label}
                                     </span>
                                 </motion.div>
@@ -182,15 +184,15 @@ export function PlanningHoraire() {
             {activeTab === 'global' && (
                 <div className="space-y-6">
                     {/* Project Filter Toolbar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                        <div className="flex items-center gap-2 text-slate-300 text-xs font-bold uppercase tracking-wider">
-                            <Filter size={14} className="text-orange-400" />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
+                        <div className="flex items-center gap-2.5 text-[#ECDDFD] text-xs font-school uppercase tracking-wider font-semibold">
+                            <Filter size={15} className="text-[#EC602B]" />
                             <span>Filtrer par projet :</span>
                         </div>
                         <select
                             value={selectedProjectId}
                             onChange={(e) => setSelectedProjectId(e.target.value)}
-                            className="bg-slate-800 text-white text-xs font-medium border border-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:border-orange-500 transition-colors cursor-pointer"
+                            className="bg-[#1F0422]/80 text-white text-xs font-school uppercase tracking-wider border border-[#6F2B75]/50 rounded-full px-4 py-2.5 focus:outline-none focus:border-[#EC602B] transition-colors cursor-pointer"
                         >
                             <option value="all">Tous les projets ({projectsData.length})</option>
                             {projectsData.map(p => (
@@ -200,20 +202,20 @@ export function PlanningHoraire() {
                     </div>
 
                     {slotsByDay.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-slate-900 border border-slate-800">
-                            <Clock size={40} className="text-slate-600 mb-3" />
-                            <p className="text-slate-400 font-medium">Aucun créneau programmé pour ce filtre cette semaine</p>
+                        <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                            <Clock size={36} className="text-[#ECDDFD]/30 mb-3" />
+                            <p className="text-white font-medium">Aucun créneau programmé pour ce filtre cette semaine</p>
                         </div>
                     ) : (
                         slotsByDay.map(({ day, slots }) => (
-                            <div key={day} className="space-y-3">
-                                <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
-                                    <Calendar size={14} className="text-orange-400" />
-                                    <h3 className="text-sm font-black uppercase tracking-wider text-white">{day}</h3>
-                                    <span className="text-xs text-slate-400 font-medium">({slots.length} séance{slots.length > 1 ? 's' : ''})</span>
+                            <div key={day} className="space-y-4">
+                                <div className="flex items-center gap-2.5 border-b border-[#6F2B75]/40 pb-2.5">
+                                    <Calendar size={16} className="text-[#EC602B]" />
+                                    <h3 className="text-base font-school font-bold uppercase tracking-widest text-white">{day}</h3>
+                                    <span className="text-xs text-[#ECDDFD]/60 font-school">({slots.length} séance{slots.length > 1 ? 's' : ''})</span>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {slots.map(slot => {
                                         const project = projectsData.find(p => p.id === slot.projectId);
                                         const attendees = getSlotAttendees(slot.id);
@@ -222,34 +224,34 @@ export function PlanningHoraire() {
                                         return (
                                             <motion.div
                                                 key={slot.id}
-                                                whileHover={{ scale: 1.01 }}
+                                                whileHover={{ y: -2 }}
                                                 onClick={() => setSelectedSlotForModal(slot)}
-                                                className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                                                className={`p-5 rounded-[2rem] border transition-all cursor-pointer flex flex-col justify-between backdrop-blur-md shadow-soft-lg ${
                                                     hasAttendees
-                                                        ? 'bg-slate-900 border-slate-800 hover:border-orange-500/40 hover:bg-slate-850 shadow-xs'
-                                                        : 'bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50 hover:bg-amber-500/10'
+                                                        ? 'bg-[#2D0A32]/90 border-[#6F2B75]/40 hover:border-[#EC602B]/60'
+                                                        : 'bg-[#2D0A32]/60 border-amber-500/30 hover:border-amber-500/60'
                                                 }`}
                                             >
                                                 <div>
-                                                    <div className="flex items-start justify-between gap-2 mb-2">
+                                                    <div className="flex items-start justify-between gap-2 mb-3">
                                                         <div>
-                                                            <h4 className="text-white font-bold text-sm leading-snug">{project?.name}</h4>
-                                                            <p className="text-white/40 text-xs flex items-center gap-1 mt-0.5">
-                                                                <MapPin size={10} />
+                                                            <h4 className="text-white font-bold text-base leading-snug tracking-wide">{project?.name}</h4>
+                                                            <p className="text-[#ECDDFD]/60 text-xs flex items-center gap-1 mt-1">
+                                                                <MapPin size={11} className="text-[#EC602B]" />
                                                                 {project?.address.split(',')[0]}
                                                             </p>
                                                         </div>
-                                                        <span className="shrink-0 text-xs font-bold text-orange-300 bg-orange-500/20 px-2.5 py-1 rounded-lg border border-orange-500/30">
+                                                        <span className="shrink-0 text-xs font-mono font-bold text-[#EC602B] bg-[#EC602B]/15 px-3 py-1 rounded-full border border-[#EC602B]/30">
                                                             {slot.startTime} – {slot.endTime}
                                                         </span>
                                                     </div>
 
                                                     {/* Attendees preview list */}
-                                                    <div className="mt-3 pt-3 border-t border-white/10">
-                                                        <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center justify-between">
+                                                    <div className="mt-4 pt-3 border-t border-[#6F2B75]/30">
+                                                        <p className="text-[11px] font-school font-semibold text-[#ECDDFD]/70 uppercase tracking-wider mb-2 flex items-center justify-between">
                                                             <span>Inscrits ({attendees.length})</span>
                                                             {!hasAttendees && (
-                                                                <span className="text-amber-400 font-bold flex items-center gap-1">
+                                                                <span className="text-amber-300 font-bold flex items-center gap-1">
                                                                     <AlertTriangle size={12} />
                                                                     Aucun tuteur
                                                                 </span>
@@ -263,11 +265,11 @@ export function PlanningHoraire() {
                                                                     return (
                                                                         <span
                                                                             key={att.id}
-                                                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-xs text-white font-medium"
+                                                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1F0422]/80 border border-[#6F2B75]/40 text-xs text-white font-medium"
                                                                         >
                                                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                                                             {att.userName || att.userId}
-                                                                            <span className={`text-[9px] px-1 rounded ${conf.color}`}>
+                                                                            <span className={`text-[10px] font-school uppercase px-1.5 py-0.5 rounded-full border ${conf.color}`}>
                                                                                 {conf.label}
                                                                             </span>
                                                                         </span>
@@ -275,17 +277,17 @@ export function PlanningHoraire() {
                                                                 })}
                                                             </div>
                                                         ) : (
-                                                            <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs font-medium flex items-center gap-2">
+                                                            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs font-medium flex items-center gap-2">
                                                                 <AlertTriangle size={14} className="shrink-0 text-amber-400" />
-                                                                <span>⚠️ Personne ne s'est encore inscrit sur cette séance.</span>
+                                                                <span>Personne ne s'est encore inscrit sur cette séance.</span>
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
 
-                                                <div className="mt-3 text-right">
-                                                    <span className="text-[11px] font-semibold text-orange-400 hover:underline">
-                                                        Cliquer pour détails & liste →
+                                                <div className="mt-4 pt-2 text-right">
+                                                    <span className="text-xs font-school uppercase tracking-wider text-[#EC602B] hover:underline">
+                                                        Détails & liste →
                                                     </span>
                                                 </div>
                                             </motion.div>
@@ -300,37 +302,37 @@ export function PlanningHoraire() {
 
             {/* Modale des tuteurs inscrits à la séance */}
             {selectedSlotForModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative"
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="bg-[#2D0A32] border border-[#6F2B75]/60 rounded-[2.5rem] p-7 max-w-md w-full shadow-2xl relative text-white"
                     >
                         <button
                             onClick={() => setSelectedSlotForModal(null)}
-                            className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+                            className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 border border-[#ECDDFD]/10 flex items-center justify-center text-[#ECDDFD]/60 hover:text-white transition-colors"
                         >
-                            <X size={20} />
+                            <X size={18} />
                         </button>
 
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                        <div className="flex items-center gap-3.5 mb-5">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
                                 <Users size={22} />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-white leading-tight">
+                                <h3 className="text-lg font-bold text-white leading-tight tracking-wide">
                                     {projectsData.find(p => p.id === selectedSlotForModal.projectId)?.name}
                                 </h3>
-                                <p className="text-white/50 text-xs mt-0.5">
+                                <p className="text-[#ECDDFD]/70 text-xs mt-0.5">
                                     {selectedSlotForModal.day} · {selectedSlotForModal.startTime} – {selectedSlotForModal.endTime} ({formatWeekLabel(currentWeekKey)})
                                 </p>
                             </div>
                         </div>
 
-                        <div className="space-y-2 max-h-60 overflow-y-auto pr-1 my-4">
+                        <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1 my-5">
                             {getSlotAttendees(selectedSlotForModal.id).length === 0 ? (
-                                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                                <div className="p-5 rounded-[2rem] bg-amber-500/10 border border-amber-500/20 text-center">
                                     <AlertTriangle size={24} className="mx-auto text-amber-400 mb-2" />
                                     <p className="text-amber-200 text-xs font-bold">Aucun tuteur inscrit pour cette séance</p>
                                     <p className="text-amber-200/60 text-[11px] mt-1">N'hésitez pas à vous inscrire dans l'onglet Disponibilités !</p>
@@ -339,17 +341,17 @@ export function PlanningHoraire() {
                                 getSlotAttendees(selectedSlotForModal.id).map(att => {
                                     const conf = STATUS_CONFIG[att.status] || STATUS_CONFIG.prevu;
                                     return (
-                                        <div key={att.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-8 h-8 rounded-full bg-primary/20 text-orange-400 border border-primary/30 flex items-center justify-center font-bold text-xs">
+                                        <div key={att.id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1F0422]/80 border border-[#6F2B75]/30">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center font-bold text-xs shadow-soft">
                                                     {(att.userName || att.userId).slice(0, 2).toUpperCase()}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-white">{att.userName || att.userId}</p>
-                                                    <p className="text-[10px] text-white/40">Tuteur inscrit</p>
+                                                    <p className="text-[10px] text-[#ECDDFD]/50 font-school uppercase">Tuteur inscrit</p>
                                                 </div>
                                             </div>
-                                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${conf.color}`}>
+                                            <span className={`text-[11px] font-school uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${conf.color}`}>
                                                 {conf.label}
                                             </span>
                                         </div>
@@ -360,7 +362,7 @@ export function PlanningHoraire() {
 
                         <button
                             onClick={() => setSelectedSlotForModal(null)}
-                            className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition-colors"
+                            className="btn-phoenix-gradient w-full py-3 rounded-full text-white font-school text-xs uppercase tracking-wider shadow-soft transition-all"
                         >
                             Fermer
                         </button>

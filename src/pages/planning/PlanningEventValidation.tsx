@@ -120,28 +120,27 @@ export function PlanningEventValidation() {
 
     return (
         <PlanningLayout title="Validation Événements">
-            <div className="mb-6 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="mb-6 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-black text-white">Validation Événements</h1>
-                    <p className="text-white/50 text-sm mt-1">Gérez les présences pour les grands événements.</p>
+                    <h1 className="text-2xl sm:text-3xl font-display text-white tracking-wide">Validation Événements</h1>
+                    <p className="text-[#ECDDFD]/70 text-sm mt-1">Gérez les présences pour les grands événements Phœnix.</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     <motion.button
                         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         onClick={loadData}
                         disabled={isRefreshing}
-                        className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/10 transition-colors"
+                        className="w-10 h-10 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white border border-[#ECDDFD]/30 flex items-center justify-center transition-colors shadow-soft"
                         title="Rafraîchir les données"
                     >
                         <RotateCcw size={16} className={isRefreshing ? "animate-spin" : ""} />
-                        <span className="hidden sm:inline">Actualiser</span>
                     </motion.button>
                     <motion.button
                         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         onClick={handleExport}
-                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm"
+                        className="btn-phoenix-gradient flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-white font-school text-xs uppercase tracking-wider shadow-soft transition-all"
                     >
-                        <Download size={18} />
+                        <Download size={16} />
                         Exporter CSV
                     </motion.button>
                 </div>
@@ -153,10 +152,10 @@ export function PlanningEventValidation() {
                     <button
                         key={event.id}
                         onClick={() => setSelectedEventId(event.id)}
-                        className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all ${
+                        className={`px-5 py-2 rounded-full whitespace-nowrap text-xs font-school uppercase tracking-wider transition-all ${
                             selectedEventId === event.id
-                                ? 'bg-white text-gray-900 shadow-lg'
-                                : 'bg-white/5 text-white/50 hover:bg-white/10'
+                                ? 'btn-phoenix-gradient text-white shadow-soft'
+                                : 'bg-[#2D0A32]/90 text-[#ECDDFD]/70 hover:text-white border border-[#6F2B75]/40'
                         }`}
                     >
                         {event.label}
@@ -166,29 +165,29 @@ export function PlanningEventValidation() {
 
             {/* Stats Summary */}
             <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                    <p className="text-white/40 text-[10px] font-bold uppercase mb-1">Présents</p>
-                    <p className="text-xl font-black text-emerald-400">{stats.present}</p>
+                <div className="p-4 sm:p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
+                    <p className="text-[#ECDDFD]/60 text-[10px] font-school uppercase tracking-wider font-bold mb-1">Présents</p>
+                    <p className="text-2xl sm:text-3xl font-display text-emerald-400">{stats.present}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                    <p className="text-white/40 text-[10px] font-bold uppercase mb-1">Absents</p>
-                    <p className="text-xl font-black text-rose-400">{stats.absent}</p>
+                <div className="p-4 sm:p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
+                    <p className="text-[#ECDDFD]/60 text-[10px] font-school uppercase tracking-wider font-bold mb-1">Absents</p>
+                    <p className="text-2xl sm:text-3xl font-display text-rose-400">{stats.absent}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                    <p className="text-white/40 text-[10px] font-bold uppercase mb-1">Taux</p>
-                    <p className="text-xl font-black text-white">{stats.percent}%</p>
+                <div className="p-4 sm:p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
+                    <p className="text-[#ECDDFD]/60 text-[10px] font-school uppercase tracking-wider font-bold mb-1">Taux</p>
+                    <p className="text-2xl sm:text-3xl font-display text-white">{stats.percent}%</p>
                 </div>
             </div>
 
             {/* Search */}
             <div className="relative mb-6">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#ECDDFD]/40" size={18} />
                 <input
                     type="text"
                     placeholder="Rechercher un membre..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-white outline-none focus:border-white/30 transition-colors"
+                    className="w-full bg-[#1F0422]/70 border border-[#6F2B75]/50 rounded-full py-3 pl-12 pr-4 text-white placeholder-[#ECDDFD]/40 outline-none focus:border-[#EC602B] text-sm transition-colors"
                 />
             </div>
 
@@ -196,13 +195,13 @@ export function PlanningEventValidation() {
             <div className="space-y-3">
                 {loading ? (
                     <div className="flex flex-col items-center py-20">
-                        <Loader2 className="w-10 h-10 text-orange-500 animate-spin mb-4" />
-                        <p className="text-white/40 animate-pulse">Chargement des membres depuis Google Sheet...</p>
+                        <Loader2 className="w-10 h-10 text-[#EC602B] animate-spin mb-4" />
+                        <p className="text-[#ECDDFD]/60 text-sm animate-pulse">Chargement des membres depuis Google Sheet...</p>
                     </div>
                 ) : filteredMembers.length === 0 ? (
-                    <div className="text-center py-12 rounded-xl bg-white/5 border border-white/10">
-                        <Users size={48} className="mx-auto text-white/10 mb-3" />
-                        <p className="text-white/30 font-medium">Aucun membre trouvé.</p>
+                    <div className="text-center py-12 rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30">
+                        <Users size={48} className="mx-auto text-[#ECDDFD]/20 mb-3" />
+                        <p className="text-[#ECDDFD]/40 font-medium">Aucun membre trouvé.</p>
                     </div>
                 ) : (
                     filteredMembers.map((member, index) => {
@@ -214,25 +213,23 @@ export function PlanningEventValidation() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.02 }}
                                 onClick={() => toggleEventAttendance(member.id, selectedEventId)}
-                                className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${
+                                className={`flex items-center justify-between p-4 sm:p-5 rounded-[2rem] border transition-all cursor-pointer backdrop-blur-md shadow-soft ${
                                     isPresent 
-                                        ? 'bg-emerald-500/10 border-emerald-500/30' 
-                                        : 'bg-white/5 border-white/10 hover:border-white/20'
+                                        ? 'bg-[#2D0A32]/95 border-emerald-500/40' 
+                                        : 'bg-[#2D0A32]/60 border-[#6F2B75]/30 hover:border-[#6F2B75]/60'
                                 }`}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs text-white ${
-                                        isPresent ? 'bg-emerald-500' : 'bg-white/10'
-                                    }`}>
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] flex items-center justify-center font-bold text-xs text-white shadow-soft">
                                         {member.name.charAt(0)}
                                     </div>
-                                    <p className="font-bold text-white">{member.name}</p>
+                                    <p className="font-bold text-white text-base tracking-wide">{member.name}</p>
                                 </div>
                                 
                                 {isPresent ? (
-                                    <CheckCircle size={24} className="text-emerald-500" fill="currentColor" fillOpacity={0.2} />
+                                    <CheckCircle size={24} className="text-emerald-400" fill="currentColor" fillOpacity={0.2} />
                                 ) : (
-                                    <div className="w-6 h-6 rounded-full border-2 border-white/10" />
+                                    <div className="w-6 h-6 rounded-full border-2 border-[#6F2B75]/50" />
                                 )}
                             </motion.div>
                         );
