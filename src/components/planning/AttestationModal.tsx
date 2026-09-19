@@ -14,56 +14,6 @@ interface AttestationModalProps {
     onClose: () => void;
 }
 
-/**
- * Cachet Officiel Associatif vectoriel réaliste
- */
-function OfficialStamp({ academicYear }: { academicYear: string }) {
-    return (
-        <div className="relative w-28 h-28 shrink-0 select-none pointer-events-none -rotate-3 transition-transform">
-            <svg viewBox="0 0 200 200" className="w-full h-full text-[#6F2B75]/90 drop-shadow-xs">
-                {/* Double anneau concentrique officiel */}
-                <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="3" />
-                <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" />
-                <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" strokeWidth="1.8" />
-
-                {/* Texte circulaire supérieur */}
-                <path
-                    id="stamp-arc-top"
-                    d="M 22 100 A 78 78 0 0 1 178 100"
-                    fill="none"
-                />
-                <text className="text-[11px] font-black uppercase tracking-[0.16em]" fill="currentColor">
-                    <textPath href="#stamp-arc-top" startOffset="50%" textAnchor="middle">
-                        ★ PHOENIX ÉGALITÉ DES CHANCES ★
-                    </textPath>
-                </text>
-
-                {/* Texte circulaire inférieur */}
-                <path
-                    id="stamp-arc-bottom"
-                    d="M 178 100 A 78 78 0 0 1 22 100"
-                    fill="none"
-                />
-                <text className="text-[9.5px] font-bold uppercase tracking-[0.13em]" fill="currentColor">
-                    <textPath href="#stamp-arc-bottom" startOffset="50%" textAnchor="middle">
-                        MARSEILLE · KEDGE BUSINESS SCHOOL
-                    </textPath>
-                </text>
-
-                {/* Coeur du cachet */}
-                <g transform="translate(100, 100)" textAnchor="middle" fill="currentColor">
-                    {/* Étoile centrale */}
-                    <path d="M 0 -34 L 3 -24 L 13 -24 L 5 -17 L 8 -7 L 0 -13 L -8 -7 L -5 -17 L -13 -24 L -3 -24 Z" fill="currentColor" opacity="0.85" />
-                    <text y="-5" className="text-[10.5px] font-black uppercase tracking-wider">BUREAU</text>
-                    <text y="8" className="text-[9px] font-black uppercase tracking-wider">EXÉCUTIF</text>
-                    <line x1="-28" y1="12" x2="28" y2="12" stroke="currentColor" strokeWidth="1" />
-                    <text y="21" className="text-[7.5px] font-bold uppercase tracking-wider">CERTIFIÉ CONFORME</text>
-                    <text y="30" className="text-[7.5px] font-mono font-bold">{academicYear}</text>
-                </g>
-            </svg>
-        </div>
-    );
-}
 
 export function AttestationModal({ user, bookings, onClose }: AttestationModalProps) {
     const { manualHours, isQuotaExempt } = usePlanning();
@@ -616,36 +566,27 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                     </div>
                                 </div>
 
-                                {/* Colonne Droite : Cachet Officiel Associatif & Signature du Président */}
-                                <div className="text-right flex items-end gap-3">
-                                    {/* Véritable Tampon Associatif Phœnix */}
-                                    <OfficialStamp academicYear={academicYear} />
-
-                                    {/* Bloc Signature du Président */}
-                                    <div className="text-center min-w-[140px] pb-1">
-                                        <p className="text-[11px] font-bold text-zinc-900 font-school uppercase tracking-wider">
-                                            Le Bureau Exécutif
-                                        </p>
-                                        <p className="text-[10px] text-zinc-600 font-semibold mt-0.5">
-                                            {president.name} · {president.role}
-                                        </p>
-
-                                        {/* Tracé de signature manuscrite réaliste */}
-                                        <div className="my-1 flex justify-center">
-                                            <svg viewBox="0 0 160 50" className="w-32 h-10 text-[#2A082D]">
-                                                <path
-                                                    d="M 15 35 C 32 10, 45 42, 60 22 C 78 4, 82 34, 98 22 C 112 12, 122 38, 148 16 M 35 32 L 135 32"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2.2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                />
-                                            </svg>
+                                {/* Colonne Droite : Espace officiel réservé au tampon et à la signature manuscrite */}
+                                <div className="text-right flex flex-col items-end">
+                                    <div className="w-[260px] min-w-[260px] h-28 border border-dashed border-zinc-300 rounded-xl bg-zinc-50/40 p-2.5 flex flex-col justify-between text-center">
+                                        <div>
+                                            <p className="text-[10.5px] font-bold text-zinc-900 font-school uppercase tracking-wider">
+                                                Le Bureau Exécutif Phœnix EDC
+                                            </p>
+                                            <p className="text-[9.5px] text-zinc-600 font-semibold">
+                                                {president.name} · {president.role}
+                                            </p>
                                         </div>
 
-                                        <p className="text-[9px] text-zinc-400 italic">
-                                            Signature officielle validée
+                                        {/* Espace libre réservé au tampon et à la signature manuscrite */}
+                                        <div className="py-2">
+                                            <p className="text-[9.5px] text-zinc-400 font-medium italic">
+                                                (À faire tamponner et signer par Samy RABHI)
+                                            </p>
+                                        </div>
+
+                                        <p className="text-[8.5px] text-zinc-400 uppercase tracking-widest font-mono">
+                                            Signature &amp; Cachet Officiel
                                         </p>
                                     </div>
                                 </div>
