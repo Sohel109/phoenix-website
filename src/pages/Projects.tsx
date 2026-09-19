@@ -57,23 +57,23 @@ export function Projects() {
                         ~ Au cœur des collèges et lycées marseillais ~
                     </p>
 
-                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1]">
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1] text-balance">
                         Des Projets Concrets pour l'Égalité
                     </h1>
-                    <p className="text-[#2A082D]/80 font-medium max-w-3xl mx-auto text-sm sm:text-base leading-relaxed mb-8">
+                    <p className="text-[#2A082D]/80 font-medium max-w-3xl mx-auto text-sm sm:text-base leading-relaxed mb-8 text-pretty">
                         Chaque semaine, nos +100 étudiants bénévoles accompagnent <strong className="text-[#2A082D] font-bold">300 jeunes marseillais</strong> de la 6ème à la Terminale. Nos actions combinent soutien scolaire, éveil culturel, aide à l'orientation et développement personnel.
                     </p>
 
                     {/* Stats pills */}
                     <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-8">
                         <span className="px-4 py-2 rounded-full bg-white border border-[#ECDDFD] text-xs font-school font-bold text-[#2A082D] shadow-soft">
-                            <strong className="text-[#EC602B] font-black">300</strong> tutorés suivis
+                            <strong className="text-[#EC602B] font-black tabular-nums">300</strong> tutorés suivis
                         </span>
                         <span className="px-4 py-2 rounded-full bg-[#ECDDFD] border border-[#D9BEF8] text-xs font-school font-bold text-[#6F2B75] shadow-soft">
-                            <strong className="text-[#6F2B75] font-black">5</strong> Cordées de la Réussite
+                            <strong className="text-[#6F2B75] font-black tabular-nums">5</strong> Cordées de la Réussite
                         </span>
                         <span className="px-4 py-2 rounded-full bg-[#E1BBCB]/50 border border-[#E1BBCB] text-xs font-school font-bold text-[#2A082D] shadow-soft">
-                            <strong className="text-[#EC602B] font-black">9</strong> implantations à Marseille
+                            <strong className="text-[#EC602B] font-black tabular-nums">9</strong> implantations à Marseille
                         </span>
                         <span className="px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-school font-bold text-emerald-800 shadow-soft">
                             <strong className="text-emerald-900 font-black">Du lundi au samedi</strong>
@@ -84,7 +84,7 @@ export function Projects() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link
                             to="/carte-des-projets"
-                            className="btn-phoenix-outline px-6 py-3 rounded-full text-xs sm:text-sm font-school font-bold shadow-soft flex items-center gap-2"
+                            className="btn-phoenix-outline px-6 py-3 rounded-full text-xs sm:text-sm font-school font-bold shadow-soft flex items-center gap-2 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                         >
                             <MapPin size={16} className="text-[#EC602B]" />
                             <span>Voir la carte interactive des projets</span>
@@ -97,7 +97,7 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('all')}
-                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft ${
+                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'all'
                                     ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
@@ -108,7 +108,7 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('cordees')}
-                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all flex items-center gap-1.5 shadow-soft ${
+                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all flex items-center gap-1.5 shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'cordees'
                                     ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
                                     : 'bg-white text-[#6F2B75] hover:bg-[#ECDDFD] border border-[#ECDDFD]'
@@ -120,7 +120,7 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('college')}
-                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft ${
+                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'college'
                                     ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
@@ -131,7 +131,7 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('lycee')}
-                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft ${
+                            className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                 activeFilter === 'lycee'
                                     ? 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
@@ -142,7 +142,7 @@ export function Projects() {
                     </div>
                 </div>
 
-                {/* Projects Grid */}
+                {/* Grid des Projets */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
                     {filteredProjects.map((project) => (
                         <div
@@ -151,7 +151,7 @@ export function Projects() {
                         >
                             <Link
                                 to={`/projets/${project.id}`}
-                                className="bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer relative"
+                                className="bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer relative active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             >
                                 {/* Image Header */}
                                 <div className={`relative aspect-video w-full overflow-hidden ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]/60' : 'bg-slate-900'} flex items-center justify-center`}>

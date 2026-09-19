@@ -33,7 +33,7 @@ function StatCard({ icon, label, value, unit, sublabel, gradient, progressBar }:
                 {icon}
             </div>
             <div>
-                <p className="text-2xl sm:text-3xl font-display text-white">
+                <p className="text-2xl sm:text-3xl font-display text-white tabular-nums">
                     {value}<span className="text-base font-school text-[#ECDDFD]/70 ml-1">{unit}</span>
                 </p>
                 <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 mt-1">{label}</p>
@@ -44,7 +44,7 @@ function StatCard({ icon, label, value, unit, sublabel, gradient, progressBar }:
                     <div className="mt-3 pt-2 border-t border-white/10">
                         <div className="flex justify-between text-[10px] font-school uppercase tracking-wider text-[#ECDDFD]/70 mb-1">
                             <span>Objectif attestation</span>
-                            <span>{progressBar.customLabel || `${progressBar.current}/${progressBar.max}h`}</span>
+                            <span className="tabular-nums">{progressBar.customLabel || `${progressBar.current}/${progressBar.max}h`}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
                             <div

@@ -26,7 +26,7 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 
     if (isMobile) {
         return (
-            <span className="inline-flex items-center justify-center">
+            <span className="inline-flex items-center justify-center tabular-nums">
                 {prefix && <span>{prefix}</span>}
                 <span>{value}</span>
                 {suffix && <span>{suffix}</span>}
@@ -35,7 +35,7 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
     }
 
     return (
-        <span ref={ref} className="inline-flex items-center justify-center">
+        <span ref={ref} className="inline-flex items-center justify-center tabular-nums">
             {prefix && <span>{prefix}</span>}
             <motion.span>{displayValue}</motion.span>
             {suffix && <span>{suffix}</span>}
@@ -60,13 +60,13 @@ export function KeyFigures() {
                         ~ L'humain et la proximité avant tout ~
                     </p>
 
-                    <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3">
+                    <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3 text-balance">
                         Des résultats{' '}
                         <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent">
                             qui ont du sens.
                         </span>
                     </h2>
-                    <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl mx-auto">
+                    <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl mx-auto text-pretty">
                         Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
                     </p>
                 </div>

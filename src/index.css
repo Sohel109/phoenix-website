@@ -10,6 +10,49 @@
   color-scheme: light;
   color: #2A082D;
   background-color: #FFFBF4;
+
+  /* ── Design Engineering Motion Tokens (transitions.dev / ibelick) ── */
+  --duration-stagger: 40ms;
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+/* ── Global Focus Ring (A11y Baseline) ── */
+:focus-visible {
+  outline: 2px solid #EC602B;
+  outline-offset: 2px;
+}
+
+.focus-ring-phoenix:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFBF4, 0 0 0 4px #EC602B;
+}
+
+/* ── Numerical Stability & Text Balance (baseline-ui) ── */
+.tabular-nums,
+[data-numeric="tabular"] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* ── Tactile Press Feedback (baseline-ui) ── */
+.touch-tactile {
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.touch-tactile:active {
+  transform: scale(0.98);
 }
 
 body {

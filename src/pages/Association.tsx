@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
     Award, 
@@ -845,24 +846,32 @@ export function Association() {
             )}
 
             {/* Modal de modification de Pôle (Responsable & Chargés de mission) */}
-            {editingPole && (
-                <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
-                        <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
-                            <div>
-                                <span className="text-[10px] font-school uppercase tracking-widest text-[#EC602B] font-bold">Pôle Opérationnel</span>
-                                <h3 className="text-lg font-display text-slate-900">
-                                    {editingPole.title}
-                                </h3>
+            <AnimatePresence>
+                {editingPole && (
+                    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200"
+                        >
+                            <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
+                                <div>
+                                    <span className="text-[10px] font-school uppercase tracking-widest text-[#EC602B] font-bold">Pôle Opérationnel</span>
+                                    <h3 className="text-lg font-display text-slate-900">
+                                        {editingPole.title}
+                                    </h3>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingPole(null)}
+                                    className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                                    aria-label="Fermer la fenêtre de modification"
+                                >
+                                    <X size={18} />
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => setEditingPole(null)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
 
                         <form
                             onSubmit={(e) => {
@@ -939,21 +948,22 @@ export function Association() {
                                 <button
                                     type="button"
                                     onClick={() => setEditingPole(null)}
-                                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
+                                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                                 >
                                     Annuler
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                                    className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                                 >
                                     Enregistrer le pôle
                                 </button>
                             </div>
                         </form>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     );
 }

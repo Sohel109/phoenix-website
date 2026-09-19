@@ -126,8 +126,9 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
             <button
                 type="button"
                 onClick={onClose}
-                className="fixed top-4 right-4 z-[110] bg-[#2A082D]/95 hover:bg-[#6F2B75] text-white border border-[#6F2B75]/60 rounded-full px-4 py-2.5 shadow-2xl flex items-center gap-2 font-school text-xs tracking-wider uppercase transition-all print:hidden cursor-pointer backdrop-blur-md hover:scale-105 active:scale-95"
+                className="fixed top-4 right-4 z-[110] bg-[#2A082D]/95 hover:bg-[#6F2B75] text-white border border-[#6F2B75]/60 rounded-full px-4 py-2.5 shadow-2xl flex items-center gap-2 font-school text-xs tracking-wider uppercase transition-all print:hidden cursor-pointer backdrop-blur-md hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                 title="Fermer (Échap)"
+                aria-label="Fermer l'attestation"
             >
                 <X size={16} />
                 <span className="hidden sm:inline">Fermer</span>
@@ -135,9 +136,10 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
 
             {/* Document blanc A4 */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, scale: 0.97, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.97, y: 6 }}
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                 onClick={(e) => e.stopPropagation()}
                 id="printable-attestation-content"
                 className="bg-white text-zinc-900 rounded-3xl shadow-2xl max-w-2xl w-full p-6 sm:p-10 relative my-4 sm:my-8 print:shadow-none print:max-w-none print:w-full print:p-8 print:m-0 print:rounded-none"
@@ -158,7 +160,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                             type="button"
                             onClick={handleDownloadPdf}
                             disabled={isGeneratingPdf}
-                            className="btn-phoenix-gradient flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-white font-school text-xs uppercase tracking-wider shadow-soft transition-all cursor-pointer disabled:opacity-60"
+                            className="btn-phoenix-gradient flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-white font-school text-xs uppercase tracking-wider shadow-soft transition-all cursor-pointer disabled:opacity-60 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title="Télécharger directement le fichier PDF"
                         >
                             {isGeneratingPdf ? (
@@ -172,7 +174,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                         <button
                             type="button"
                             onClick={handlePrint}
-                            className="flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-school text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                            className="flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-school text-xs uppercase tracking-wider transition-colors cursor-pointer active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title="Imprimer ou enregistrer au format PDF"
                         >
                             <Printer size={15} />
@@ -182,8 +184,9 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                         <button
                             type="button"
                             onClick={onClose}
-                            className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center transition-colors cursor-pointer"
+                            className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center transition-colors cursor-pointer active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title="Fermer la modale"
+                            aria-label="Fermer la modale d'attestation"
                         >
                             <X size={18} />
                         </button>
@@ -342,7 +345,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                         <td className="p-3 text-center text-purple-800 font-medium text-[11px]">
                                             Acquis (Renouvelant)
                                         </td>
-                                        <td className="p-3 text-right font-bold text-purple-900">
+                                        <td className="p-3 text-right font-bold text-purple-900 tabular-nums">
                                             50 h
                                         </td>
                                     </tr>
@@ -352,8 +355,8 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                 {projectBreakdown.map(({ project, hours, count }) => (
                                     <tr key={project?.id}>
                                         <td className="p-3 font-semibold text-zinc-900">{project?.name}</td>
-                                        <td className="p-3 text-center text-zinc-600">{count} séance{count > 1 ? 's' : ''} effective{count > 1 ? 's' : ''}</td>
-                                        <td className="p-3 text-right font-bold text-zinc-900">{hours} h</td>
+                                        <td className="p-3 text-center text-zinc-600 tabular-nums">{count} séance{count > 1 ? 's' : ''} effective{count > 1 ? 's' : ''}</td>
+                                        <td className="p-3 text-right font-bold text-zinc-900 tabular-nums">{hours} h</td>
                                     </tr>
                                 ))}
 
@@ -372,7 +375,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                         <td className="p-3 text-center text-orange-700 font-medium text-[11px]">
                                             Valorisation Bureau
                                         </td>
-                                        <td className="p-3 text-right font-bold text-orange-600">
+                                        <td className="p-3 text-right font-bold text-orange-600 tabular-nums">
                                             +{mh.hours} h
                                         </td>
                                     </tr>
@@ -385,7 +388,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                                 ? `Projets affectés : ${user.projectIds.map(id => projectsData.find(p => p.id === id)?.name || id).join(', ')} (Séances en cours de validation)`
                                                 : "Aucun projet affecté"}
                                         </td>
-                                        <td className="p-3 text-right font-bold text-zinc-500">0 h</td>
+                                        <td className="p-3 text-right font-bold text-zinc-500 tabular-nums">0 h</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -394,10 +397,10 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                     <td className="p-3 text-sm text-zinc-900">
                                         {isExempt ? "Total Heures 2025–2026 (Année en cours)" : "Total d'Heures Consolidé"}
                                     </td>
-                                    <td className="p-3 text-center text-xs font-mono text-zinc-500">
+                                    <td className="p-3 text-center text-xs font-mono text-zinc-500 tabular-nums">
                                         {isExempt ? "Quota 50h acquis N-1" : isValidated ? "Seuil officiel 50h atteint" : `Reste : ${remainingHours}h`}
                                     </td>
-                                    <td className={`p-3 text-right text-base font-black ${isValidated ? 'text-emerald-600' : 'text-orange-600'}`}>
+                                    <td className={`p-3 text-right text-base font-black tabular-nums ${isValidated ? 'text-emerald-600' : 'text-orange-600'}`}>
                                         {totalHours % 1 === 0 ? totalHours : totalHours.toFixed(1)} h
                                     </td>
                                 </tr>

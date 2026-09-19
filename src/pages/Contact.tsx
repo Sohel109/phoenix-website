@@ -53,10 +53,10 @@ export function Contact() {
                         ) : (
                             <motion.div
                                 key="form"
-                                initial={{ opacity: 0, x: 100 }}
+                                initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -100 }}
-                                transition={{ duration: 0.5 }}
+                                exit={{ opacity: 0, x: -16 }}
+                                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                 className="w-full"
                             >
                                 <ContactForm

@@ -43,14 +43,15 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                         {showBack && (
                             <Link
                                 to={backTo}
-                                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white transition-all border border-[#ECDDFD]/20 shadow-xs group"
+                                className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white transition-all border border-[#ECDDFD]/20 shadow-xs group active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                                 title="Retour"
+                                aria-label="Retourner à la page précédente"
                             >
                                 <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                             </Link>
                         )}
 
-                        <Link to="/planning" className="flex items-center gap-2.5 group">
+                        <Link to="/planning" className="flex items-center gap-2.5 group active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-full p-1">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center border border-white/20 shadow-soft group-hover:scale-105 transition-transform">
                                 <CalendarCheck size={16} />
                             </div>
@@ -74,7 +75,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`px-3.5 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all flex items-center gap-1.5 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                         isActive
                                             ? 'bg-gradient-to-r from-[#6F2B75] to-[#8E3B95] text-white border border-[#ECDDFD]/40 shadow-soft'
                                             : 'text-[#ECDDFD]/75 hover:text-white hover:bg-white/10 border border-transparent'
@@ -91,7 +92,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                         {/* Always visible button to return to public site WITHOUT logging out */}
                         <Link
                             to="/"
-                            className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full bg-white/10 hover:bg-[#6F2B75]/40 text-[#ECDDFD] hover:text-white transition-all text-xs font-school uppercase tracking-wider border border-[#ECDDFD]/30 shadow-xs"
+                            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 min-h-[38px] rounded-full bg-white/10 hover:bg-[#6F2B75]/40 text-[#ECDDFD] hover:text-white transition-all text-xs font-school uppercase tracking-wider border border-[#ECDDFD]/30 shadow-xs active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title="Quitter l'espace membre et revenir au site public (sans vous déconnecter)"
                         >
                             <Globe size={14} className="text-[#EC602B]" />
@@ -104,8 +105,9 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                                 <button
                                     type="button"
                                     onClick={() => setIsDrawerOpen(true)}
-                                    className="relative p-2 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white transition-all border border-[#ECDDFD]/20 shadow-xs cursor-pointer"
+                                    className="relative w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white transition-all border border-[#ECDDFD]/20 shadow-xs cursor-pointer flex items-center justify-center active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                                     title="Notifications"
+                                    aria-label="Ouvrir le panneau de notifications"
                                 >
                                     <Bell size={16} />
                                     {unreadCount > 0 && (
@@ -124,8 +126,9 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
 
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-red-500/20 hover:text-red-300 text-[#ECDDFD]/80 transition-all text-xs font-school uppercase tracking-wider border border-white/10 cursor-pointer"
+                                    className="flex items-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-full bg-white/10 hover:bg-red-500/20 hover:text-red-300 text-[#ECDDFD]/80 transition-all text-xs font-school uppercase tracking-wider border border-white/10 cursor-pointer active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                                     title="Se déconnecter"
+                                    aria-label="Se déconnecter de l'espace membre"
                                 >
                                     <LogOut size={14} />
                                     <span className="hidden sm:block">Déconnexion</span>

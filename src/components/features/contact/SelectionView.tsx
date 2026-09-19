@@ -34,8 +34,17 @@ export function SelectionView({ onSelect }: SelectionViewProps) {
 function Card({ category, onSelect }: { category: any, onSelect: (id: string) => void }) {
     return (
         <div
+            role="button"
+            tabIndex={0}
             onClick={() => onSelect(category.id)}
-            className="flex-1 group cursor-pointer relative"
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelect(category.id);
+                }
+            }}
+            className="flex-1 group cursor-pointer relative active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-[2.5rem] outline-none"
+            aria-label={`Sélectionner la catégorie ${category.label} : ${category.description}`}
         >
             {/* Card Container */}
             <div className="relative h-64 md:h-80 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 hover:border-phoenix-purple overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1">

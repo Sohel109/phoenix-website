@@ -112,37 +112,37 @@ export function Footer() {
                                 href="https://www.instagram.com/phoenixedc/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-all duration-200"
-                                aria-label="Instagram"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                                aria-label="Suivez-nous sur Instagram"
                             >
-                                <Instagram size={17} />
+                                <Instagram size={18} />
                             </a>
                             <a
                                 href="https://fr.linkedin.com/company/phoenix-egalit%C3%A9deschances"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-all duration-200"
-                                aria-label="LinkedIn"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                                aria-label="Rejoignez notre réseau sur LinkedIn"
                             >
-                                <Linkedin size={17} />
+                                <Linkedin size={18} />
                             </a>
                             <a
                                 href="https://www.tiktok.com/@phoenixedc"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-all duration-200"
-                                aria-label="TikTok"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                                aria-label="Regardez nos vidéos sur TikTok"
                             >
-                                <Music2 size={17} />
+                                <Music2 size={18} />
                             </a>
                             <a
                                 href="https://www.facebook.com/phoenix.egalitedeschances/?locale=fr_FR"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-all duration-200"
-                                aria-label="Facebook"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-[#EC602B] flex items-center justify-center text-white shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                                aria-label="Suivez nos actualités sur Facebook"
                             >
-                                <Facebook size={17} />
+                                <Facebook size={18} />
                             </a>
                         </div>
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ECDDFD]/15 border border-[#ECDDFD]/20 text-[11px] text-[#ECDDFD]">

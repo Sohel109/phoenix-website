@@ -82,7 +82,7 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`px-4 py-2 rounded-full text-xs xl:text-sm font-semibold transition-all relative ${
+                                className={`px-4 py-2 rounded-full text-xs xl:text-sm font-semibold transition-all relative focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                     isActive
                                         ? 'text-[#6F2B75] bg-[#ECDDFD] font-bold shadow-xs'
                                         : 'text-[#2A082D] hover:text-[#EC602B] hover:bg-[#ECDDFD]/40'
@@ -107,7 +107,7 @@ export function Header() {
                     {currentUser ? (
                         <Link
                             to="/planning"
-                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#2A082D] text-xs font-bold border border-[#6F2B75]/20 hover:border-[#6F2B75]/50 transition-all shadow-xs group"
+                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#2A082D] text-xs font-bold border border-[#6F2B75]/20 hover:border-[#6F2B75]/50 transition-all shadow-xs group active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title={`Connecté : ${currentUser.name} (Espace Membre)`}
                         >
                             <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-[10px] font-black shrink-0">
@@ -119,7 +119,7 @@ export function Header() {
                     ) : (
                         <Link
                             to="/planning/login"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] hover:text-[#2A082D] hover:bg-[#ECDDFD]/50 text-xs font-bold border border-[#6F2B75]/20 transition-all shadow-xs"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] hover:text-[#2A082D] hover:bg-[#ECDDFD]/50 text-xs font-bold border border-[#6F2B75]/20 transition-all shadow-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title="Accéder à l'Espace Membre"
                         >
                             <User size={13} className="text-[#904990]" />
@@ -132,7 +132,7 @@ export function Header() {
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-phoenix-gradient px-4 py-2 rounded-full text-xs"
+                        className="btn-phoenix-gradient px-4 py-2 rounded-full text-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                     >
                         <Heart size={13} fill="currentColor" />
                         <span>Faire un don</span>
@@ -153,8 +153,8 @@ export function Header() {
 
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="p-2 rounded-full bg-white border border-[#6F2B75]/20 hover:bg-[#ECDDFD] text-[#2A082D] transition-colors cursor-pointer shadow-xs"
-                        aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                        className="w-11 h-11 rounded-full bg-white border border-[#6F2B75]/20 hover:bg-[#ECDDFD] text-[#2A082D] transition-colors cursor-pointer shadow-xs flex items-center justify-center active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                        aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu de navigation"}
                         aria-expanded={isMobileMenuOpen}
                         aria-controls="mobile-menu"
                     >
@@ -163,18 +163,18 @@ export function Header() {
                 </div>
             </div>
 
-            {/* Mobile Dropdown Menu */}
+            {/* Mobile Dropdown Menu (GPU composite motion without layout thrashing) */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
                         id="mobile-menu"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:hidden border-t border-[#6F2B75]/10 bg-[#FFFBF4]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
                     >
-                        <div className="flex flex-col gap-1 mb-4">
+                        <div className="flex flex-col gap-1.5 mb-4">
                             {navLinks.map((link) => {
                                 const isActive = link.path === '/'
                                     ? location.pathname === '/'
@@ -184,9 +184,9 @@ export function Header() {
                                     <Link
                                         key={link.path}
                                         to={link.path}
-                                        className={`px-4 py-2.5 rounded-full text-sm font-semibold transition-colors flex items-center justify-between ${
+                                        className={`px-4 py-3 min-h-[44px] rounded-full text-sm font-semibold transition-all flex items-center justify-between active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                             isActive
-                                                ? 'text-[#6F2B75] bg-[#ECDDFD] font-bold'
+                                                ? 'text-[#6F2B75] bg-[#ECDDFD] font-bold shadow-xs'
                                                 : 'text-[#2A082D] hover:text-[#EC602B] hover:bg-[#ECDDFD]/50'
                                         }`}
                                     >
@@ -201,7 +201,7 @@ export function Header() {
                             {currentUser ? (
                                 <Link
                                     to="/planning"
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full border border-[#6F2B75]/20 bg-white text-[#2A082D] text-xs font-bold hover:bg-[#ECDDFD]/50 transition-colors"
+                                    className="w-full min-h-[44px] flex items-center justify-center gap-2 py-3 rounded-full border border-[#6F2B75]/20 bg-white text-[#2A082D] text-xs font-bold hover:bg-[#ECDDFD]/50 transition-all active:scale-[0.98] shadow-xs"
                                 >
                                     <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-[10px] font-black shrink-0">
                                         {currentUser.name.charAt(0).toUpperCase()}
@@ -212,7 +212,7 @@ export function Header() {
                             ) : (
                                 <Link
                                     to="/planning/login"
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full border border-[#6F2B75]/20 text-[#6F2B75] bg-white hover:bg-[#ECDDFD]/50 text-xs font-bold transition-colors"
+                                    className="w-full min-h-[44px] flex items-center justify-center gap-2 py-3 rounded-full border border-[#6F2B75]/20 text-[#6F2B75] bg-white hover:bg-[#ECDDFD]/50 text-xs font-bold transition-all active:scale-[0.98] shadow-xs"
                                 >
                                     <User size={14} className="text-[#904990]" />
                                     <span>Accéder à l'Espace Membre</span>
@@ -223,7 +223,7 @@ export function Header() {
                                 href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full btn-phoenix-gradient py-3 rounded-full text-sm"
+                                className="w-full min-h-[44px] btn-phoenix-gradient py-3 rounded-full text-sm active:scale-[0.98]"
                             >
                                 <Heart size={15} fill="currentColor" />
                                 <span>Faire un don pour nos actions</span>
