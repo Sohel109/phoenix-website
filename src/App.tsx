@@ -25,6 +25,7 @@ import { NotFound } from './pages/NotFound';
 
 // Pages lourdes en lazy (code-splitting)
 const ProjectMap = lazy(() => import('./pages/ProjectMap').then(m => ({ default: m.ProjectMap })));
+const VerifyAttestation = lazy(() => import('./pages/VerifyAttestation').then(m => ({ default: m.VerifyAttestation })));
 
 
 // Planning module (lazy)
@@ -85,6 +86,8 @@ function App() {
                   <Route path="/mentions-legales" element={<LegalMentions />} />
                   <Route path="/transparence" element={<Transparency />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/verifier" element={<VerifyAttestation />} />
+                  <Route path="/attestation/verifier" element={<VerifyAttestation />} />
                   {/* Alias / Redirections Association */}
                   <Route path="/qui-sommes-nous" element={<Navigate to="/association" replace />} />
                   <Route path="/histoire" element={<Navigate to="/association" replace />} />
