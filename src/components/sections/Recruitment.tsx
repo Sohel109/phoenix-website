@@ -2,19 +2,19 @@ import { ArrowRight, Users, GraduationCap, Briefcase } from 'lucide-react';
 
 export function Recruitment() {
     return (
-        <section className="py-20 relative overflow-hidden">
+        <section className="pt-14 pb-10 relative overflow-hidden">
             <div className="container mx-auto px-6">
                 <div className="max-w-4xl mx-auto">
 
                     {/* Header */}
-                    <div className="text-center mb-16">
-                        <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full inline-block mb-4">
+                    <div className="text-center mb-8 sm:mb-10">
+                        <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full inline-block mb-3">
                             On recrute !
                         </span>
                         <h2 className="text-4xl md:text-5xl font-display text-phoenix-dark mb-2">
                             Rejoignez l'Aventure
                         </h2>
-                        <p className="font-script text-2xl text-phoenix-purple mb-4">
+                        <p className="font-script text-2xl text-phoenix-purple mb-3">
                             ~ Deviens acteur du changement à Marseille ~
                         </p>
                         <p className="text-slate-600 font-sans text-base max-w-2xl mx-auto leading-relaxed">
@@ -24,7 +24,7 @@ export function Recruitment() {
                     </div>
 
                     {/* Cards Grid */}
-                    <div className="grid md:grid-cols-3 gap-6 mb-16">
+                    <div className="grid md:grid-cols-3 gap-6 mb-10 sm:mb-12">
                         <Card icon={Users} title="Esprit d'Équipe" description="Intégrez une famille soudée et passionnée par l'impact social." />
                         <Card icon={Briefcase} title="Compétences" description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante." />
                         <Card icon={GraduationCap} title="Engagement" description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais." />
