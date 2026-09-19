@@ -13,6 +13,7 @@ import {
     UserCheck
 } from 'lucide-react';
 import { useState } from 'react';
+import { SEO } from '../components/common/SEO';
 
 type FilterType = 'all' | 'cordees' | 'college' | 'lycee';
 
@@ -26,12 +27,12 @@ export function Projects() {
         return true;
     });
 
-    // Planning weekly matrix data from official recap sheet
-    const weeklySchedule = [
-        { name: "ACSE", monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: true, isCordee: true },
-        { name: "Apprentis D'auteuil", monday: false, tuesday: true, wednesday: false, thursday: true, friday: false, saturday: false, isCordee: false },
-        { name: "Arthur Rimbaud", monday: false, tuesday: false, wednesday: false, thursday: true, friday: false, saturday: false, isCordee: true },
-        { name: "Izzo", fullName: "Jean-Claude Izzo", monday: false, tuesday: false, wednesday: false, thursday: true, friday: false, saturday: false, isCordee: true },
+    const weeklySchedules = [
+        { name: "ACSE", monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, isCordee: true },
+        { name: "Batelière", monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, isCordee: true },
+        { name: "Brossolette", monday: false, tuesday: false, wednesday: false, thursday: false, friday: true, saturday: false, isCordee: true },
+        { name: "Estaque", monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, isCordee: false },
+        { name: "Izzo", monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, isCordee: false },
         { name: "Jules Ferry", monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, isCordee: true },
         { name: "Massa 13", monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, isCordee: false },
         { name: "Roy d'Espagne", monday: false, tuesday: false, wednesday: false, thursday: true, friday: false, saturday: false, isCordee: true },
@@ -40,20 +41,22 @@ export function Projects() {
     ];
 
     return (
-        <div className="pt-page-safe pb-24 bg-[#FFFBF4] bg-bird-pattern min-h-screen">
+        <div className="pt-page-safe pb-28 bg-[#FFFBF4] bg-bird-pattern min-h-screen">
+            {/* Balises SEO dynamiques */}
+            <SEO
+                title="Nos 9 Projets de Terrain | Phœnix Égalité des Chances - KEDGE BS"
+                description="Découvrez les 9 projets de tutorat et mentorat menés par les étudiants de KEDGE BS dans les collèges et lycées de Marseille, dont 5 labellisés Cordées de la Réussite."
+            />
+
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header Section */}
-                <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
-                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#ECDDFD] text-[#6F2B75] shadow-soft text-xs font-school font-bold uppercase tracking-wider mb-4 rotate-1 hover:rotate-0 transition-transform">
-                        <span className="text-[#EC602B]">Nos Antennes de Terrain</span>
-                        <span className="text-[#904990] font-bold">·</span>
-                        <span className="text-[#6F2B75] flex items-center gap-1">
-                            <Award size={14} />
-                            5 Labellisés Cordées de la Réussite
-                        </span>
+                <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
+                    <div className="flex items-center justify-center gap-2 text-xs font-school font-bold tracking-wider text-[#6F2B75] mb-2">
+                        <Award size={14} className="text-[#EC602B]" />
+                        <span>Nos Antennes de Terrain · 5 Labellisées Cordées de la Réussite</span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ Au cœur des collèges et lycées marseillais ~
                     </p>
 
@@ -201,9 +204,10 @@ export function Projects() {
                                 {/* Corps de la carte */}
                                 <div className="p-6 sm:p-7 flex flex-col flex-grow bg-white">
                                     <div className="flex items-center justify-between gap-2 mb-3">
-                                        <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#EC602B] bg-[#FFFBF4] px-3 py-1 rounded-full border border-[#EC602B]/25">
+                                        <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#6F2B75] bg-[#ECDDFD]/70 px-3 py-1 rounded-full border border-[#6F2B75]/20">
                                             {project.type}
                                         </span>
+
                                         <span className="text-xs font-school font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
                                             <Users size={12} />
                                             <span>{project.tutorCount} élèves</span>
@@ -382,7 +386,7 @@ export function Projects() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#2A082D]/15 font-medium">
-                                {weeklySchedule.map((item, idx) => (
+                                {weeklySchedules.map((item, idx) => (
                                     <tr key={idx} className="hover:bg-[#ECDDFD]/40 transition-colors">
                                         <td className="py-3.5 px-5 font-school font-bold text-[#2A082D] border-r border-[#2A082D]/15 flex items-center justify-between gap-2">
                                             <span className="text-sm">{item.name}</span>

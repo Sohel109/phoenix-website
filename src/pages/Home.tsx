@@ -4,6 +4,8 @@ import { KeyFigures } from '../components/sections/KeyFigures';
 import { HeroScroll } from '../components/sections/HeroScroll';
 import { ConcreteActions } from '../components/sections/ConcreteActions';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
+import { DonationSection } from '../components/sections/DonationSection';
+import { SEO } from '../components/common/SEO';
 import { useTranslation } from 'react-i18next';
 
 export function Home() {
@@ -11,6 +13,12 @@ export function Home() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#FFFBF4] bg-bird-pattern">
+            {/* Balises SEO dynamiques */}
+            <SEO
+                title="Phœnix Égalité des Chances | Tutorat & Réussite à Marseille - KEDGE BS"
+                description="Association étudiante de KEDGE Business School : tutorat, mentorat étudiant et égalité des chances pour 300 collégiens et lycéens à Marseille depuis 2011."
+            />
+
             {/* Scroll Reveal Hero */}
             <HeroScroll />
 
@@ -23,17 +31,18 @@ export function Home() {
             {/* Section 2: Paroles de jeunes & tuteurs (Témoignages incarnés) */}
             <TestimonialsSection />
 
-            {/* Partners Section */}
-            <section className="py-16 md:py-24 bg-transparent">
+            {/* Section 3: Soutien financier & Collecte de dons déductibles (66%) */}
+            <DonationSection />
+
+            {/* Section 4: Partenaires & Réseau */}
+            <section className="py-20 md:py-28 bg-transparent">
                 <div className="container mx-auto px-4 text-center max-w-7xl">
-                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#ECDDFD] text-[#6F2B75] shadow-soft mb-4 rotate-1 hover:rotate-0 transition-transform">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
                         <Sparkles size={14} className="text-[#EC602B]" />
-                        <span className="text-xs font-school font-bold uppercase tracking-wider">
-                            Réseau Associatif & Éducatif
-                        </span>
+                        <span>Réseau Associatif, Éducatif &amp; Entreprises</span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ Ils nous font confiance ~
                     </p>
 
@@ -44,19 +53,19 @@ export function Home() {
                         </span>
                     </h2>
 
-                    <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base max-w-xl mx-auto mb-10">
+                    <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base max-w-xl mx-auto mb-12">
                         Entreprises engagées, fondations et institutions marseillaises : ils soutiennent nos actions pour l'égalité des chances.
                     </p>
 
                     <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 justify-items-center mb-10 max-w-4xl mx-auto">
                         {[
-                            { name: "Olympique de Marseille", src: "/partners/om.png" },
-                            { name: "Decathlon", src: "/partners/decathlon.png" },
-                            { name: "Deloitte", src: "/partners/deloitte.jpg" },
-                            { name: "Apprentis d'Auteuil", src: "/partners/apprentis-auteuil.png", rounded: true },
-                            { name: "Darty", src: "/partners/darty.png", rounded: true },
-                            { name: "Kedge Business School", src: "/partners/kedge.png" },
-                            { name: "Lydia", src: "/partners/lydia.png" },
+                            { name: "Olympique de Marseille", src: "/partners/om.png", alt: "Logo partenaire officiel Olympique de Marseille" },
+                            { name: "Decathlon", src: "/partners/decathlon.png", alt: "Logo partenaire officiel Decathlon" },
+                            { name: "Deloitte", src: "/partners/deloitte.jpg", alt: "Logo partenaire officiel Deloitte" },
+                            { name: "Apprentis d'Auteuil", src: "/partners/apprentis-auteuil.png", rounded: true, alt: "Logo partenaire officiel Apprentis d'Auteuil" },
+                            { name: "Darty", src: "/partners/darty.png", rounded: true, alt: "Logo partenaire officiel Darty" },
+                            { name: "Kedge Business School", src: "/partners/kedge.png", alt: "Logo institutionnel Kedge Business School" },
+                            { name: "Lydia", src: "/partners/lydia.png", alt: "Logo partenaire officiel Lydia" },
                         ].map((partner) => (
                             <div
                                 key={partner.name}
@@ -64,7 +73,7 @@ export function Home() {
                             >
                                 <img
                                     src={partner.src}
-                                    alt={partner.name}
+                                    alt={partner.alt}
                                     className={`max-h-12 sm:max-h-14 max-w-[85%] w-auto h-auto object-contain transition-transform duration-200 group-hover:scale-105 ${
                                         partner.rounded ? "rounded-md" : ""
                                     }`}
@@ -85,5 +94,3 @@ export function Home() {
         </div>
     );
 }
-
-

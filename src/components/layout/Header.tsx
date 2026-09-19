@@ -127,17 +127,22 @@ export function Header() {
                         </Link>
                     )}
 
-                    {/* Faire un don (Gradient Pilule CTA) */}
+                    {/* Faire un don (Gradient Pilule CTA Valorisé) */}
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-phoenix-gradient px-4 py-2 rounded-full text-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                        className="btn-phoenix-gradient px-4 py-2 rounded-full text-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] flex items-center gap-1.5 shadow-soft hover:shadow-soft-lg group"
+                        title="Faire un don déductible des impôts à 66% (HelloAsso sécurisé)"
                     >
-                        <Heart size={13} fill="currentColor" />
+                        <Heart size={13} fill="currentColor" className="text-white group-hover:scale-110 transition-transform" />
                         <span>Faire un don</span>
+                        <span className="ml-1 px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-bold font-school tracking-tight text-white">
+                            -66%
+                        </span>
                     </a>
                 </div>
+
 
                 {/* Mobile Menu Button */}
                 <div className="flex items-center gap-2 lg:hidden">

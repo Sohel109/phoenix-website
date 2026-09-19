@@ -47,16 +47,19 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 export function KeyFigures() {
 
     return (
-        <section className="relative py-16 md:py-24 bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
+        <section className="relative py-20 md:py-28 bg-[#FFFBF4] overflow-hidden">
+            {/* Trame filigrane Phœnix officielle */}
+            <div className="pattern-watermark" aria-hidden="true" />
+
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* Header with human associative touch */}
-                <div className="text-center mb-12 md:mb-16">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider mb-4 shadow-xs">
+                <div className="text-center mb-14 md:mb-20">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
                         <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
-                        <span>Mesure de notre action sur le terrain</span>
+                        <span>Résultats &amp; Impact Mesuré sur le Terrain</span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ L'humain et la proximité avant tout ~
                     </p>
 
@@ -81,7 +84,7 @@ export function KeyFigures() {
                                 <Users size={20} />
                             </div>
                             <span className="px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] border border-[#6F2B75]/20 text-xs font-school font-bold tracking-wider shadow-xs">
-                                Collèges & Lycées de Marseille
+                                Collèges &amp; Lycées de Marseille
                             </span>
                         </div>
 
@@ -105,8 +108,8 @@ export function KeyFigures() {
                                     </span>
                                 ))}
                             </div>
-                            <span className="font-script text-lg text-[#EC602B]">
-                                ~ Rendez-vous chaque mercredi ~
+                            <span className="font-script text-lg text-[#2A082D]">
+                                ~ Des séances tout au long de la semaine ~
                             </span>
                         </div>
                     </div>
@@ -117,7 +120,7 @@ export function KeyFigures() {
                             <div className="w-11 h-11 rounded-full bg-[#EC602B] text-white flex items-center justify-center shadow-xs">
                                 <Heart size={20} />
                             </div>
-                            <span className="px-3.5 py-1.5 rounded-full bg-white text-[#EC602B] border border-[#EC602B]/20 text-xs font-school font-bold tracking-wider shadow-xs">
+                            <span className="px-3.5 py-1.5 rounded-full bg-white text-[#2A082D] border border-white/40 text-xs font-school font-bold tracking-wider shadow-xs">
                                 100% Bénévolat
                             </span>
                         </div>
@@ -135,14 +138,15 @@ export function KeyFigures() {
                         </div>
 
                         <div className="pt-4 border-t border-[#EC602B]/20 flex items-center justify-between">
-                            <span className="text-xs font-school font-bold text-[#6F2B75]">
+                            <span className="text-xs font-school font-bold text-[#2A082D]">
                                 Campus Marseille Luminy
                             </span>
-                            <span className="font-script text-lg text-[#EC602B]">
+                            <span className="font-script text-lg text-[#2A082D]">
                                 ~ Grandir ensemble ~
                             </span>
                         </div>
                     </div>
+
 
                     {/* CARTE 3 (5 cols) : Les 9 Projets de terrain */}
                     <div className="lg:col-span-5 bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-7 sm:p-9 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
@@ -192,10 +196,11 @@ export function KeyFigures() {
                                 <div className="text-5xl sm:text-6xl font-display bg-gradient-to-r from-[#6F2B75] to-[#EC602B] bg-clip-text text-transparent leading-none mb-1">
                                     <AnimatedCounter value={100} suffix="%" />
                                 </div>
-                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B]">
-                                    De Réussite
+                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#2A082D]">
+                                    Taux de Réussite aux Examens
                                 </p>
                             </div>
+
                             <div className="sm:col-span-7 sm:border-l sm:border-[#ECDDFD] sm:pl-6">
                                 <h3 className="text-lg font-bold text-[#2A082D] tracking-tight mb-1.5">
                                     Excellence & Confiance retrouvée

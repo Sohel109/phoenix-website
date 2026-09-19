@@ -10,7 +10,10 @@ export function Footer() {
     if (location.pathname.startsWith('/planning')) return null;
 
     return (
-        <footer className="relative bg-[#2A082D] bg-bird-pattern-dark text-slate-300 pt-16 pb-12 border-t border-[#6F2B75]/40 overflow-hidden">
+        <footer className="relative bg-[#2A082D] text-slate-300 pt-20 pb-14 border-t border-[#6F2B75]/40 overflow-hidden">
+            {/* Trame filigrane Phœnix officielle sur fond violet sombre */}
+            <div className="pattern-watermark-dark" aria-hidden="true" />
+
             <div className="container mx-auto px-6 max-w-7xl relative z-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
 
@@ -19,7 +22,7 @@ export function Footer() {
                         <div className="flex items-center gap-3.5">
                             <img
                                 src="/logo-badge.jpg"
-                                alt="Phœnix EDC Logo"
+                                alt="Logo officiel de l'association Phœnix Égalité des Chances KEDGE Business School"
                                 className="w-12 h-12 rounded-full object-contain border-2 border-white/20 shadow-md"
                             />
                             <div className="flex flex-col">
@@ -43,37 +46,38 @@ export function Footer() {
                         </h3>
                         <ul className="space-y-2.5 text-xs sm:text-sm">
                             <li>
-                                <Link to="/association" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/association" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     L'Association (Histoire & Valeurs)
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/projets" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/projets" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     {t('footer.ourProjects')}
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/evenements" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/evenements" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     {t('footer.events')}
                                 </Link>
                             </li>
+
                             <li>
-                                <Link to="/partenaires" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/partenaires" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     {t('footer.becomePartner')}
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/documents" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/documents" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     Documents & Guides
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/transparence" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/transparence" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     {t('footer.transparency')}
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/mentions-legales" className="text-slate-300 hover:text-[#FF7E2E] transition-colors duration-200">
+                                <Link to="/mentions-legales" className="text-slate-300 hover:text-white hover:underline transition-colors duration-200">
                                     {t('footer.legalMentions')}
                                 </Link>
                             </li>

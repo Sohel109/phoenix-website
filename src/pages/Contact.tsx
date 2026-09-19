@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { SelectionView } from '../components/features/contact/SelectionView';
 import { ContactForm } from '../components/features/contact/ContactForm';
 import { Recruitment } from '../components/sections/Recruitment';
-
+import { SEO } from '../components/common/SEO';
 
 export function Contact() {
     const location = useLocation();
@@ -15,21 +15,24 @@ export function Contact() {
 
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
-            <div className="container mx-auto px-6 max-w-5xl">
+            <SEO
+                title="Contactez-nous & Devenez Bénévole | Phœnix Égalité des Chances"
+                description="Écrivez à l'équipe de Phœnix Égalité des Chances pour devenir partenaire, bénévole ou poser vos questions sur nos programmes d'accompagnement scolaire."
+            />
+            <div className="container mx-auto px-6 max-w-5xl relative z-10">
 
                 {/* Header */}
                 <div className="text-center mb-8 sm:mb-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-phoenix-lilac/40 border border-phoenix-lilac/70 text-phoenix-purple text-xs font-school uppercase tracking-widest mb-3">
-                        <span className="w-2 h-2 rounded-full bg-phoenix-orange animate-pulse" />
-                        <span>Écrivez-nous</span>
-                    </div>
+                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
+                        Écrivez-nous
+                    </span>
                     <h1 className="text-4xl sm:text-6xl font-display text-phoenix-dark mb-2">
                         {selectedCategory ? 'Votre Demande' : 'Contactez-nous'}
                     </h1>
-                    <p className="font-script text-2xl text-phoenix-purple mb-3">
+                    <p className="font-script text-2xl text-[#2A082D] mb-3">
                         ~ À votre écoute pour faire grandir l'égalité des chances ~
                     </p>
-                    <p className="text-slate-600 font-sans text-base max-w-xl mx-auto leading-relaxed">
+                    <p className="text-slate-600 font-sans text-base max-w-xl mx-auto leading-relaxed font-normal">
                         {selectedCategory 
                             ? 'Dites-nous en plus sur votre projet ou votre question.'
                             : 'Une question sur nos programmes, envie de devenir partenaire ou bénévole ? Choisissez votre motif ci-dessous.'}

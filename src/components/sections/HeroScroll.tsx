@@ -42,22 +42,24 @@ export function HeroScroll() {
             {/* ══════════════════════════════════════════════════════
                 SECTION DESKTOP (≥ 768px)
             ══════════════════════════════════════════════════════ */}
-            <section className="hidden md:block relative w-full min-h-[92vh] bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
+            <section className="hidden md:block relative w-full min-h-[92vh] bg-[#FFFBF4] overflow-hidden">
+                {/* Trame filigrane Phœnix officielle (5% opacité) */}
+                <div className="pattern-watermark" aria-hidden="true" />
 
                 {/* ── GRILLE PRINCIPALE ── */}
                 <div className="relative z-10 container mx-auto px-6 lg:px-10 xl:px-16 max-w-7xl h-full min-h-[92vh] flex items-center">
-                    <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-24 lg:py-12">
+                    <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-24 lg:py-16">
 
                         {/* ── COLONNE GAUCHE : Message & Action chaleureux ── */}
                         <div
                             className="lg:col-span-7 flex flex-col gap-6 items-start text-left"
                         >
-                            {/* Pastille officielle KEDGE BS */}
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider shadow-xs">
+                            {/* Kicker éditorial direct & élégant */}
+                            <div className="flex items-center gap-2.5 text-xs font-school font-bold tracking-wider text-[#6F2B75]">
                                 <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
-                                <span>KEDGE Business School · Association étudiante</span>
-                                <span className="text-[#904990]">·</span>
-                                <span className="text-[#EC602B]">100% Bénévole</span>
+                                <span>KEDGE Business School Marseille</span>
+                                <span className="text-[#6F2B75]/40">•</span>
+                                <span>Engagement 100% Bénévole</span>
                             </div>
 
                             {/* Titre Shrikhand signature */}
@@ -70,14 +72,14 @@ export function HeroScroll() {
                                 de Marseille.
                             </h1>
 
-                            {/* Note manuscrite Allura */}
-                            <div className="font-script text-2xl xl:text-3xl text-[#EC602B] -mt-2 rotate-[-2deg] select-none">
+                            {/* Note manuscrite Allura en violet profond pour contraste WCAG AAA */}
+                            <div className="font-script text-2xl xl:text-3xl text-[#2A082D] -mt-2 rotate-[-2deg] select-none">
                                 ~ Depuis 2011, l'égalité des chances sur le terrain ~
                             </div>
 
-                            {/* Paragraphe chaleureux */}
+                            {/* Paragraphe chaleureux avec contraste optimal */}
                             <p className="text-slate-700 text-base sm:text-lg max-w-xl leading-relaxed font-medium">
-                                Chaque semaine, plus de <strong className="text-[#6F2B75] font-bold">100 étudiants de KEDGE BS</strong> accompagnent <strong className="text-[#EC602B] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre engagement : créer le déclic, vaincre l'autocensure et ouvrir grand le champ des possibles.
+                                Chaque semaine, plus de <strong className="text-[#2A082D] font-bold">100 étudiants de KEDGE BS</strong> accompagnent <strong className="text-[#2A082D] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre engagement : créer le déclic, vaincre l'autocensure et ouvrir grand le champ des possibles.
                             </p>
 
                             {/* Double CTA en pilules douces */}
@@ -100,13 +102,13 @@ export function HeroScroll() {
                             </div>
 
                             {/* Micro-mention de réassurance */}
-                            <div className="flex items-center gap-3 pt-2 text-xs font-semibold text-slate-500">
-                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#ECDDFD] text-[#6F2B75]">
+                            <div className="flex items-center gap-3 pt-2 text-xs font-semibold text-slate-600">
+                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECDDFD]/70 border border-[#6F2B75]/20 text-[#6F2B75] font-bold">
                                     <Sparkles size={12} className="text-[#EC602B]" />
                                     5 Cordées de la Réussite
                                 </span>
                                 <span className="text-slate-400">·</span>
-                                <span>Reconnue d'Intérêt Général</span>
+                                <span>Association Reconnue d'Intérêt Général</span>
                             </div>
                         </div>
 
@@ -116,7 +118,7 @@ export function HeroScroll() {
                             <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-[3rem] overflow-hidden shadow-soft-lg border-4 border-white z-10">
                                 <img
                                     src="/images/projects/hero-1.png"
-                                    alt="Tuteurs et tutorés de Phoenix EDC à Marseille"
+                                    alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
                                     className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out"
                                     draggable={false}
                                 />
@@ -127,7 +129,7 @@ export function HeroScroll() {
                             <div className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-soft border-4 border-white z-20">
                                 <img
                                     src="/images/projects/hero-3.png"
-                                    alt="Sorties et ateliers"
+                                    alt="Sortie culturelle au musée avec les jeunes tutorés Phœnix"
                                     className="w-full h-full object-cover"
                                     draggable={false}
                                 />
@@ -155,7 +157,7 @@ export function HeroScroll() {
                             <div className="absolute bottom-4 right-6 z-30 p-1.5 rounded-full bg-white shadow-soft border border-[#ECDDFD]">
                                 <img
                                     src="/logo-badge.jpg"
-                                    alt="Logo officiel Phoenix"
+                                    alt="Logo officiel de l'association Phœnix Égalité des Chances"
                                     className="w-14 h-14 rounded-full object-contain"
                                 />
                             </div>
@@ -169,16 +171,19 @@ export function HeroScroll() {
             ══════════════════════════════════════════════════════ */}
             <section 
                 style={{ paddingTop: 'calc(max(6.5rem, env(safe-area-inset-top, 0px) + 5rem))' }}
-                className="md:hidden relative w-full pb-14 px-5 bg-[#FFFBF4] bg-bird-pattern overflow-hidden flex flex-col items-center text-center"
+                className="md:hidden relative w-full pb-16 px-5 bg-[#FFFBF4] overflow-hidden flex flex-col items-center text-center"
             >
-                {/* Pastille mobile */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-[11px] font-school font-bold tracking-wider mb-4 shadow-xs">
+                {/* Trame filigrane Phœnix officielle mobile */}
+                <div className="pattern-watermark" aria-hidden="true" />
+
+                {/* Kicker mobile direct */}
+                <div className="relative z-10 flex items-center gap-2 text-[11px] font-school font-bold tracking-wider text-[#6F2B75] mb-3">
                     <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
-                    <span>KEDGE BS · 100% Bénévole</span>
+                    <span>KEDGE BS · 100% Bénévole à Marseille</span>
                 </div>
 
                 {/* H1 mobile Shrikhand */}
-                <h1 className="text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight">
+                <h1 className="relative z-10 text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight">
                     Faire briller <br />
                     <span className="bg-gradient-to-r from-[#6F2B75] via-[#904990] to-[#EC602B] bg-clip-text text-transparent">
                         tous les talents
@@ -187,17 +192,17 @@ export function HeroScroll() {
                     de Marseille.
                 </h1>
 
-                {/* Note manuscrite mobile */}
-                <div className="font-script text-2xl text-[#EC602B] mb-3 -rotate-2">
+                {/* Note manuscrite mobile en violet profond */}
+                <div className="relative z-10 font-script text-2xl text-[#2A082D] mb-3 -rotate-2">
                     ~ Depuis 2011 sur le terrain ~
                 </div>
 
-                <p className="text-slate-700 text-sm leading-relaxed mb-6 max-w-xs font-medium">
-                    Tutorat, sorties culturelles et mentorat pour 300 jeunes marseillais chaque semaine.
+                <p className="relative z-10 text-slate-700 text-sm leading-relaxed mb-6 max-w-xs font-medium">
+                    Tutorat académique, sorties culturelles et mentorat pour 300 jeunes marseillais chaque semaine.
                 </p>
 
-                {/* CTAs mobile en pilules */}
-                <div className="flex flex-row gap-2.5 w-full max-w-xs justify-center items-center mb-8">
+                {/* CTAs mobile */}
+                <div className="relative z-10 flex flex-row gap-2.5 w-full max-w-xs justify-center items-center mb-8">
                     <Link
                         to="/projets"
                         className="flex-1 btn-phoenix-gradient py-3 px-4 text-xs"
@@ -215,11 +220,11 @@ export function HeroScroll() {
                 </div>
 
                 {/* Composition photo mobile arrondie */}
-                <div className="relative w-full max-w-sm mx-auto mb-4">
+                <div className="relative z-10 w-full max-w-sm mx-auto mb-4">
                     <div className="relative w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-soft border-3 border-white">
                         <img
                             src="/images/projects/hero-1.png"
-                            alt="Phoenix EDC Marseille"
+                            alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
                             className="w-full h-full object-cover object-top"
                             draggable={false}
                         />

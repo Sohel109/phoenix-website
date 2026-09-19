@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Handshake, School, GraduationCap, Building2, Gift, Sparkles } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 const majorPartners = [
     { name: "Olympique de Marseille", logo: "/partners/om.png", desc: "Soutien et accueil des séances OM Campus & Commanderie" },
@@ -43,13 +44,17 @@ export function Partners() {
 
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
-            <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+            <SEO
+                title="Nos Partenaires | Phœnix Égalité des Chances"
+                description="Découvrez les entreprises, collèges, lycées et institutions engagés aux côtés de Phœnix EDC pour la réussite des jeunes marseillais : OM, KEDGE, Deloitte..."
+            />
+            <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] shadow-soft px-5 py-2 rounded-full inline-block mb-4">
+                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
                         Réseau & Écosystème
                     </span>
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ Mobilisés ensemble pour la jeunesse ~
                     </p>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
@@ -187,10 +192,10 @@ export function Partners() {
                 </div>
 
                 {/* CTA Devenir Partenaire */}
-                <div className="bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-[#FF7E2E] border border-white/20 text-xs font-school font-bold mb-4 shadow-soft">
-                            <Handshake size={14} />
+                <div className="bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                    <div className="max-w-xl relative z-10">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white border border-white/20 text-xs font-school font-bold mb-4 shadow-soft">
+                            <Handshake size={14} className="text-[#FF7E2E]" />
                             <span>Rejoindre notre réseau</span>
                         </div>
                         <h3 className="text-2xl sm:text-4xl font-display tracking-tight mb-3 text-white">

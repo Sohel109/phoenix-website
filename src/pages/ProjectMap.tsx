@@ -4,6 +4,7 @@ import { Icon, type LatLngExpression } from 'leaflet';
 import { MapPin, Users, ArrowLeft, Navigation, ArrowUpRight } from 'lucide-react';
 import { projectsData, projectTypeColors, projectTypeLabels } from '../data/projectsData';
 import { useNavigate, Link } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icon in production
@@ -51,7 +52,11 @@ export function ProjectMap() {
 
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
-            <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+            <SEO
+                title="Carte des Projets à Marseille | Phœnix Égalité des Chances"
+                description="Explorez la carte interactive des 9 projets de tutorat et d'ouverture culturelle de Phœnix EDC répartis dans les collèges, lycées et centres sociaux de Marseille."
+            />
+            <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header */}
                 <div className="mb-8">
                     <button
@@ -69,7 +74,7 @@ export function ProjectMap() {
                             </div>
                             <div>
                                 <h1 className="text-3xl sm:text-5xl font-display text-phoenix-dark tracking-tight">Carte des Projets</h1>
-                                <p className="font-script text-xl text-phoenix-purple">~ 9 projets ancrés dans Marseille ~</p>
+                                <p className="font-script text-xl text-[#2A082D]">~ 9 projets ancrés dans Marseille ~</p>
                             </div>
                         </div>
 

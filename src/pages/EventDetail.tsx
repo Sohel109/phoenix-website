@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Calendar, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { events } from '../data/events';
 import { useState, useEffect } from 'react';
+import { SEO } from '../components/common/SEO';
 
 export function EventDetail() {
     const { id } = useParams();
@@ -43,6 +44,11 @@ export function EventDetail() {
 
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
+            <SEO
+                title={`${event.title} | Événement Phœnix EDC`}
+                description={event.description.slice(0, 155)}
+                ogImage={event.headerImage || event.image}
+            />
             {/* Background Elements */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-50 dark:opacity-30">
                 <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-secondary/10 rounded-full blur-[100px]" />
@@ -60,7 +66,7 @@ export function EventDetail() {
                     <div className={`relative h-64 md:h-[420px] w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : 'bg-phoenix-dark'}`}>
                         <img
                             src={event.headerImage || event.image}
-                            alt={event.title}
+                            alt={`Événement Phœnix : ${event.title}`}
                             className={`w-full h-full ${
                                 event.id === 'entretiens-excellence'
                                     ? 'object-contain p-6 md:p-12 max-h-[90%]'
@@ -135,7 +141,7 @@ export function EventDetail() {
                                             <motion.img
                                                 key={currentImageIndex}
                                                 src={event.gallery[currentImageIndex]}
-                                                alt={`Gallery image ${currentImageIndex + 1}`}
+                                                alt={`Galerie de l'événement ${event.title} - photo ${currentImageIndex + 1}`}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}

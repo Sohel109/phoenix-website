@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Download, Archive, Sparkles, ChevronDown } from 'lucide-react';
+import { SEO } from '../components/common/SEO';
 
 export function Documents() {
     const [isArchiveOpen, setIsArchiveOpen] = useState(false);
@@ -45,13 +46,17 @@ export function Documents() {
 
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
-            <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+            <SEO
+                title="Documents & Ressources Officielles | Phœnix Égalité des Chances"
+                description="Téléchargez le Guide du Phœnicien 2026-2027, les fiches de postes et toutes les documentations officielles de l'association Phœnix EDC."
+            />
+            <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] shadow-soft px-5 py-2 rounded-full inline-block mb-4">
+                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
                         Ressources & Guides
                     </span>
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ Documentation & transparence ~
                     </p>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
@@ -86,7 +91,7 @@ export function Documents() {
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-slate-600 leading-relaxed text-sm font-normal">
+                                        <p className="text-slate-700 leading-relaxed text-sm font-medium">
                                             {doc.description}
                                         </p>
                                     </div>
@@ -175,7 +180,7 @@ export function Documents() {
                                                             Archive {doc.year}
                                                         </span>
                                                     </div>
-                                                    <p className="text-slate-600 leading-relaxed text-xs font-normal">
+                                                    <p className="text-slate-700 leading-relaxed text-xs font-medium">
                                                         {doc.description}
                                                     </p>
                                                 </div>

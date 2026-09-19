@@ -149,39 +149,38 @@ export function NotFound() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 pt-page-safe pb-16 bg-[#FFFBF4] bg-bird-pattern">
-            <div className="max-w-xl w-full text-center">
+            <div className="max-w-xl w-full text-center relative z-10">
                 {/* 404 Badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 border border-orange-200 text-orange-600 text-xs font-black uppercase tracking-wider mb-6">
-                    <Compass size={14} className="text-orange-500" />
+                <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
                     Erreur 404 · Page introuvable
-                </div>
+                </span>
 
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
+                <h1 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-tight mb-4">
                     Oups, cette page n'existe plus !
                 </h1>
 
-                <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
-                    Le site de <strong className="text-slate-900 font-semibold">Phoenix Égalité des Chances</strong> a fait peau neuve. 
+                <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto font-normal">
+                    Le site de <strong className="text-[#2A082D] font-semibold">Phoenix Égalité des Chances</strong> a fait peau neuve. 
                     Si vous venez d'un ancien lien ou d'une recherche Google, la page que vous recherchez a probablement changé d'adresse.
                 </p>
 
                 {/* Suggestion intelligente si ancien lien détecté */}
                 {suggestedRedirect && (
-                    <div className="p-4 rounded-2xl bg-white border border-orange-200/80 shadow-sm mb-8 text-left flex items-center justify-between gap-4">
+                    <div className="p-4 rounded-2xl bg-white border border-[#ECDDFD] shadow-soft mb-8 text-left flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0">
                                 {suggestedRedirect.icon}
                             </div>
                             <div>
                                 <p className="text-xs text-slate-500 font-medium">Vous cherchiez peut-être :</p>
-                                <p className="text-sm font-bold text-slate-900">{suggestedRedirect.label}</p>
+                                <p className="text-sm font-bold text-[#2A082D]">{suggestedRedirect.label}</p>
                             </div>
                         </div>
                         <Link
                             to={suggestedRedirect.to}
-                            className="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold transition-all shadow-md shrink-0"
+                            className="btn-phoenix-orange !py-2 !px-4 !text-xs rounded-xl shadow-glow-orange flex items-center gap-1 shrink-0"
                         >
-                            Y aller
+                            <span>Y aller</span>
                             <ArrowRight size={14} />
                         </Link>
                     </div>
@@ -191,31 +190,31 @@ export function NotFound() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                     <Link
                         to="/"
-                        className="flex flex-col items-center gap-2 p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-orange-500/40 hover:bg-orange-50/50 hover:shadow-sm text-slate-700 hover:text-orange-600 transition-all group shadow-xs"
+                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
                     >
-                        <Home size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold">Accueil</span>
+                        <Home size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-school font-bold">Accueil</span>
                     </Link>
                     <Link
                         to="/projets"
-                        className="flex flex-col items-center gap-2 p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-orange-500/40 hover:bg-orange-50/50 hover:shadow-sm text-slate-700 hover:text-orange-600 transition-all group shadow-xs"
+                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
                     >
-                        <FolderOpen size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold">Projets</span>
+                        <FolderOpen size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-school font-bold">Projets</span>
                     </Link>
                     <Link
                         to="/evenements"
-                        className="flex flex-col items-center gap-2 p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-orange-500/40 hover:bg-orange-50/50 hover:shadow-sm text-slate-700 hover:text-orange-600 transition-all group shadow-xs"
+                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
                     >
-                        <Calendar size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold">Événements</span>
+                        <Calendar size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-school font-bold">Événements</span>
                     </Link>
                     <Link
                         to="/contact"
-                        className="flex flex-col items-center gap-2 p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-orange-500/40 hover:bg-orange-50/50 hover:shadow-sm text-slate-700 hover:text-orange-600 transition-all group shadow-xs"
+                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
                     >
-                        <Mail size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold">Contact</span>
+                        <Mail size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-school font-bold">Contact</span>
                     </Link>
                 </div>
 

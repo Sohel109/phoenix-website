@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { projects } from '../data/projects';
+import { SEO } from '../components/common/SEO';
 import { 
     ArrowLeft, 
     MapPin, 
@@ -50,7 +51,12 @@ export function ProjectDetail() {
 
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
-            <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+            <SEO
+                title={`${project.title} | Projet Égalité des Chances Phœnix`}
+                description={project.description.slice(0, 155)}
+                ogImage={project.banner || project.image}
+            />
+            <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Back Button & Map Link */}
                 <div className="flex items-center justify-between gap-4 mb-6">
                     <Link 
@@ -63,9 +69,9 @@ export function ProjectDetail() {
 
                     <Link 
                         to="/carte-des-projets" 
-                        className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#EC602B] bg-[#ECDDFD] hover:bg-[#D9BEF8] px-4 py-2 rounded-full shadow-soft transition-all"
+                        className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#6F2B75] bg-[#ECDDFD] hover:bg-[#D9BEF8] px-4 py-2 rounded-full shadow-soft transition-all"
                     >
-                        <MapPin size={13} />
+                        <MapPin size={13} className="text-[#EC602B]" />
                         <span>Situer à Marseille</span>
                     </Link>
                 </div>
@@ -77,7 +83,7 @@ export function ProjectDetail() {
                         {project.banner ? (
                             <img
                                 src={project.banner}
-                                alt={`${project.title} Banner`}
+                                alt={`Bannière du projet ${project.title} - Phœnix Égalité des Chances`}
                                 className={`w-full h-full ${
                                     project.id === 'sup-d-om'
                                         ? 'object-contain p-6 sm:p-10 object-center'
@@ -109,7 +115,7 @@ export function ProjectDetail() {
                         {/* Round Macaron Logo Overlay (CERCLE AVANT LE RECTANGLE) */}
                         {project.image && (
                             <div className="absolute -bottom-8 left-6 sm:left-10 w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center border-2 border-white overflow-hidden p-1.5 z-10">
-                                <img src={project.image} alt={project.title} className="w-full h-full object-contain" />
+                                <img src={project.image} alt={`Logo officiel du projet ${project.title}`} className="w-full h-full object-contain" />
                             </div>
                         )}
                     </div>
@@ -158,7 +164,7 @@ export function ProjectDetail() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                             {/* Card 1: Horaires */}
                             <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
-                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-2">
+                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <Clock size={15} />
                                     <span>Horaires</span>
                                 </div>
@@ -180,7 +186,7 @@ export function ProjectDetail() {
 
                             {/* Card 3: Chefs de projet */}
                             <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
-                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-2">
+                                <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <UserCheck size={15} />
                                     <span>{project.chefs.length > 1 ? 'Chefs de projet' : 'Chef de projet'}</span>
                                 </div>
@@ -244,7 +250,7 @@ export function ProjectDetail() {
                                         <UserCheck size={22} />
                                     </div>
                                     <div>
-                                        <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#EC602B] block mb-0.5">
+                                        <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#6F2B75] block mb-0.5">
                                             {project.chefs.length > 1 ? 'Chefs de projet responsables' : 'Chef de projet responsable'}
                                         </span>
                                         <h3 className="text-base sm:text-lg font-display text-[#2A082D]">
@@ -338,7 +344,7 @@ export function ProjectDetail() {
                                         {op.description}
                                     </p>
                                 </div>
-                                <div className="mt-4 pt-3 border-t border-[#ECDDFD]/60 flex items-center justify-between text-xs font-school font-bold text-[#EC602B] group-hover:translate-x-0.5 transition-transform">
+                                <div className="mt-4 pt-3 border-t border-[#ECDDFD]/60 flex items-center justify-between text-xs font-school font-bold text-[#6F2B75] group-hover:text-[#EC602B] group-hover:translate-x-0.5 transition-all">
                                     <span>Voir le projet</span>
                                     <ArrowRight size={13} />
                                 </div>

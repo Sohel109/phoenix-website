@@ -1,17 +1,22 @@
 import { Calendar, ArrowRight } from 'lucide-react';
 import { events } from '../data/events';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 
 export function Events() {
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
-            <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+            <SEO
+                title="Événements & Concours d'Éloquence | Phœnix Égalité des Chances"
+                description="Découvrez les événements phares de Phœnix Égalité des Chances : Concours d'Éloquence Kedge, simulation ONU PhoenixMUN, Journée de l'Égalité des Chances..."
+            />
+            <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-14 sm:mb-18">
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] shadow-soft px-5 py-2 rounded-full inline-block mb-4">
+                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
                         Moments Forts & Vie Associative
                     </span>
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ L'émulation et l'éloquence en action ~
                     </p>
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
@@ -44,7 +49,7 @@ function EventCard({ event, index }: { event: any; index: number }) {
             }`}>
                 <img
                     src={event.image}
-                    alt={event.title}
+                    alt={`Événement Phœnix : ${event.title}`}
                     loading={index < 3 ? "eager" : "lazy"}
                     decoding="async"
                     className={`w-full h-full transform group-hover:scale-105 transition-transform duration-500 ease-out ${

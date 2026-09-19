@@ -51,26 +51,21 @@ export function ConcreteActions() {
     };
 
     return (
-        <section className="relative py-16 md:py-28 overflow-hidden bg-transparent">
+        <section className="relative py-20 md:py-32 overflow-hidden bg-transparent">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
-                {/* Header with Youth Association Styling */}
-                <div className="text-center max-w-3xl mx-auto mb-14 md:mb-20">
-                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#ECDDFD] text-[#6F2B75] shadow-soft mb-4 -rotate-1 hover:rotate-0 transition-transform">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#EC602B] animate-pulse" />
-                        <span className="text-xs font-school font-bold uppercase tracking-wider">
-                            Sur le terrain chaque semaine
-                        </span>
-                        <span className="text-xs text-[#904990]">·</span>
-                        <span className="text-xs font-school font-bold text-[#EC602B] flex items-center gap-1">
-                            <MapPin size={13} /> Marseille & Métropole
-                        </span>
+                {/* Header direct et aéré */}
+                <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
+                        <span className="w-2 h-2 rounded-full bg-[#EC602B] animate-pulse" />
+                        <span>Sur le terrain chaque semaine à Marseille &amp; Métropole</span>
                     </div>
 
-                    <p className="font-script text-2xl md:text-3xl text-[#EC602B] mb-1">
+                    <p className="font-script text-2xl md:text-3xl text-[#2A082D] mb-1">
                         ~ L'engagement au quotidien ~
                     </p>
 
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-5">
+
                         Des actions{' '}
                         <span className="bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-transparent bg-clip-text">
                             concrètes.
@@ -334,14 +329,17 @@ export function ConcreteActions() {
 
                 </div>
 
-                {/* Bottom Callout Banner - Deep Violet Charte Strip with Bird Pattern */}
-                <div className="rounded-[2.5rem] bg-[#2A082D] bg-bird-pattern-dark p-8 sm:p-11 text-white flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-soft-lg">
+                {/* Bottom Callout Banner - Deep Violet Charte Strip with Official Pattern */}
+                <div className="rounded-[2.5rem] bg-[#2A082D] p-8 sm:p-11 text-white flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-soft-lg">
+                    {/* Trame filigrane Phœnix officielle sur fond sombre */}
+                    <div className="pattern-watermark-dark" aria-hidden="true" />
+
                     <div className="relative z-10 flex items-center gap-5">
                         <div className="w-14 h-14 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0 shadow-soft">
-                            <HeartHandshake size={28} className="text-[#FF7E2E]" />
+                            <HeartHandshake size={28} className="text-[#EC602B]" />
                         </div>
                         <div>
-                            <span className="font-script text-2xl text-[#FF7E2E] block">~ Présents partout ~</span>
+                            <span className="font-script text-2xl text-[#ECDDFD] block">~ Présents partout ~</span>
                             <h4 className="text-xl sm:text-2xl font-display tracking-tight text-white">
                                 9 projets de terrain répartis dans tout Marseille
                             </h4>
@@ -350,6 +348,7 @@ export function ConcreteActions() {
                             </p>
                         </div>
                     </div>
+
 
                     <Link
                         to="/projets"
