@@ -1,6 +1,6 @@
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
 import { Users, Heart, Zap, Award } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 // --- COUNTER COMPONENT ---
 function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
@@ -45,16 +45,14 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 
 // --- MAIN SECTION ---
 export function KeyFigures() {
-    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
     return (
         <section className="relative py-16 md:py-24 bg-[#FFFBF4] bg-bird-pattern overflow-hidden">
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* Header with human associative touch */}
                 <motion.div
-                    initial={isMobile ? false : { opacity: 0, y: 15 }}
-                    whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-20px" }}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     className="text-center mb-12 md:mb-16"
                 >
@@ -83,9 +81,8 @@ export function KeyFigures() {
 
                     {/* CARTE 1 (Héroïque - 7 cols) : Les Jeunes Accompagnés */}
                     <motion.div
-                        initial={isMobile ? false : { opacity: 0, y: 15 }}
-                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-20px" }}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:col-span-7 bg-[#ECDDFD] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#6F2B75]/15 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
                     >
@@ -126,9 +123,8 @@ export function KeyFigures() {
 
                     {/* CARTE 2 (5 cols) : Les Tuteurs KEDGE */}
                     <motion.div
-                        initial={isMobile ? false : { opacity: 0, y: 15 }}
-                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-20px" }}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.45, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:col-span-5 bg-[#E1BBCB] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#EC602B]/20 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
                     >
@@ -165,9 +161,8 @@ export function KeyFigures() {
 
                     {/* CARTE 3 (5 cols) : Les 9 Projets de terrain */}
                     <motion.div
-                        initial={isMobile ? false : { opacity: 0, y: 15 }}
-                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-20px" }}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:col-span-5 bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-7 sm:p-9 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
                     >
@@ -203,9 +198,8 @@ export function KeyFigures() {
 
                     {/* CARTE 4 (7 cols) : Réussite et Cordées */}
                     <motion.div
-                        initial={isMobile ? false : { opacity: 0, y: 15 }}
-                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-20px" }}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.45, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:col-span-7 bg-white text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between"
                     >

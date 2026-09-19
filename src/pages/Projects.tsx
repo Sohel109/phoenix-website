@@ -18,7 +18,6 @@ import { useState } from 'react';
 type FilterType = 'all' | 'cordees' | 'college' | 'lycee';
 
 export function Projects() {
-    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
     const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
     const filteredProjects = projects.filter(p => {
@@ -149,10 +148,9 @@ export function Projects() {
                     {filteredProjects.map((project, index) => (
                         <motion.div
                             key={project.id}
-                            initial={isMobile ? false : { opacity: 0, y: 20 }}
-                            whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.35, delay: index * 0.05 }}
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
                             className="h-full"
                         >
                             <Link

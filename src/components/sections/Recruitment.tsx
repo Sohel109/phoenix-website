@@ -1,11 +1,8 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, GraduationCap, Briefcase } from 'lucide-react';
-import { useState } from 'react';
 
 
 export function Recruitment() {
-    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
-
     return (
         <section className="py-20 relative overflow-hidden">
             <div className="container mx-auto px-6">
@@ -13,9 +10,9 @@ export function Recruitment() {
 
                     {/* Header */}
                     <motion.div
-                        initial={isMobile ? false : { opacity: 0, y: 20 }}
-                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                         className="text-center mb-16"
                     >
                         <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full inline-block mb-4">
@@ -35,35 +32,16 @@ export function Recruitment() {
 
                     {/* Cards Grid */}
                     <div className="grid md:grid-cols-3 gap-6 mb-16">
-                        <Card
-                            icon={Users}
-                            title="Esprit d'Équipe"
-                            description="Intégrez une famille soudée et passionnée par l'impact social."
-                            delay={0.1}
-                            isMobile={isMobile}
-                        />
-                        <Card
-                            icon={Briefcase}
-                            title="Compétences"
-                            description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante."
-                            delay={0.2}
-                            isMobile={isMobile}
-                        />
-                        <Card
-                            icon={GraduationCap}
-                            title="Engagement"
-                            description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais."
-                            delay={0.3}
-                            isMobile={isMobile}
-                        />
+                        <Card icon={Users} title="Esprit d'Équipe" description="Intégrez une famille soudée et passionnée par l'impact social." delay={0.1} />
+                        <Card icon={Briefcase} title="Compétences" description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante." delay={0.2} />
+                        <Card icon={GraduationCap} title="Engagement" description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais." delay={0.3} />
                     </div>
 
                     {/* CTA */}
                     <motion.div
-                        initial={isMobile ? false : { opacity: 0, y: 20 }}
-                        whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={isMobile ? undefined : { delay: 0.4 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                         className="text-center"
                     >
                         <a
@@ -86,13 +64,12 @@ export function Recruitment() {
     );
 }
 
-function Card({ icon: Icon, title, description, delay, isMobile }: { icon: any, title: string, description: string, delay: number, isMobile?: boolean }) {
+function Card({ icon: Icon, title, description, delay }: { icon: any, title: string, description: string, delay: number }) {
     return (
         <motion.div
-            initial={isMobile ? false : { opacity: 0, y: 20 }}
-            whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={isMobile ? undefined : { delay }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white border border-phoenix-lilac/50 p-8 rounded-[2.5rem] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center group shadow-sm flex flex-col items-center"
         >
             <div className="w-16 h-16 mx-auto bg-phoenix-cream text-phoenix-purple rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-phoenix-purple group-hover:to-phoenix-orange group-hover:text-white transition-all duration-300 border border-phoenix-lilac/60">

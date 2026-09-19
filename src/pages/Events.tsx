@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { events } from '../data/events';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 
 export function Events() {
     return (
@@ -36,14 +35,11 @@ export function Events() {
 }
 
 function EventCard({ event, index }: { event: any, index: number }) {
-    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
-
     return (
         <motion.div
-            initial={isMobile ? false : { opacity: 0, y: 25 }}
-            whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.4 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.07, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white border border-[#ECDDFD] rounded-[2.5rem] p-7 flex flex-col h-full shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 group"
         >
             {/* Image Container with strict 16:9 fixed aspect ratio */}

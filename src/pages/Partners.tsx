@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Handshake, School, GraduationCap, Building2, Gift, Sparkles } from 'lucide-react';
-import { useState } from 'react';
 
 const majorPartners = [
     { name: "Olympique de Marseille", logo: "/partners/om.png", desc: "Soutien et accueil des séances OM Campus & Commanderie" },
@@ -42,7 +41,6 @@ const otherPartners = [
 ];
 
 export function Partners() {
-    const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
@@ -74,10 +72,9 @@ export function Partners() {
                         {majorPartners.map((partner, index) => (
                             <motion.div
                                 key={partner.name}
-                                initial={isMobile ? false : { opacity: 0, y: 20 }}
-                                whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={isMobile ? undefined : { delay: index * 0.06 }}
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.06, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                 className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border border-[#ECDDFD] rounded-[2rem] p-6 flex flex-col justify-between shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
                             >
                                 <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-2xl border border-[#ECDDFD] group-hover:bg-[#ECDDFD]/30 transition-colors">
