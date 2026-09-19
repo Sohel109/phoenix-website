@@ -1,15 +1,9 @@
-import { useState, useRef } from 'react';
-import { motion, useScroll, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Download, Archive, Sparkles, ChevronDown } from 'lucide-react';
 
 export function Documents() {
-    const containerRef = useRef<HTMLDivElement>(null);
     const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-
-    useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
 
     const currentDocuments = [
         {
@@ -50,7 +44,7 @@ export function Documents() {
     ];
 
     return (
-        <div ref={containerRef} className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                 {/* Header */}
                 <div className="text-center mb-16">
@@ -73,9 +67,9 @@ export function Documents() {
                     {currentDocuments.map((doc, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, y: 25 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.15 }}
+                            transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
                             className="bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 p-8 flex flex-col justify-between group"
                         >
                             <div>

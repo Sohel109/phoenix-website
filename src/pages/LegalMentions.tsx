@@ -5,8 +5,9 @@ export function LegalMentions() {
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20 transition-colors duration-300">
             <div className="container mx-auto px-4 max-w-4xl">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     className="mb-16"
                 >
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">Mentions Légales</h1>

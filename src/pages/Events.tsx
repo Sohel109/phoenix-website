@@ -39,7 +39,7 @@ function EventCard({ event, index }: { event: any, index: number }) {
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.07, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white border border-[#ECDDFD] rounded-[2.5rem] p-7 flex flex-col h-full shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 group"
         >
             {/* Image Container with strict 16:9 fixed aspect ratio */}

@@ -35,12 +35,9 @@ export function SelectionView({ onSelect }: SelectionViewProps) {
 function Card({ category, index, onSelect }: { category: any, index: number, onSelect: (id: string) => void }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 25 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{
-                duration: 0.4,
-                delay: index * 0.1
-            }}
+            transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
             onClick={() => onSelect(category.id)}
             className="flex-1 group cursor-pointer relative"
         >

@@ -98,9 +98,9 @@ export function ProjectMap() {
 
                 {/* Map */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.15 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     className="rounded-[2.5rem] overflow-hidden border border-phoenix-lilac/50 shadow-xl"
                     style={{ height: '600px' }}
                 >
@@ -184,9 +184,9 @@ export function ProjectMap() {
 
                 {/* Stats */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5"
                 >
                     <div className="p-6 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 shadow-sm text-center">

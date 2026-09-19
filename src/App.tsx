@@ -11,22 +11,20 @@ import { AuroraBackground } from './components/layout/AuroraBackground';
 import { ThemeProvider } from './context/ThemeContext';
 import { PlanningProvider, usePlanning } from './context/PlanningContext';
 
-// Pages principales chargées immédiatement pour navigation instantanée (sans spinner)
+// Pages publiques chargées immédiatement pour navigation 100% instantanée (sans flash blanc ni spinner)
 import { Home } from './pages/Home';
+import { Association } from './pages/Association';
+import { Projects } from './pages/Projects';
+import { ProjectDetail } from './pages/ProjectDetail';
+import { ProjectMap } from './pages/ProjectMap';
 import { Events } from './pages/Events';
-
-// Pages secondaires en lazy loading (chargées uniquement à la navigation)
-const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.Projects })));
-const ProjectDetail = lazy(() => import('./pages/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
-const ProjectMap = lazy(() => import('./pages/ProjectMap').then(m => ({ default: m.ProjectMap })));
-const Association = lazy(() => import('./pages/Association').then(m => ({ default: m.Association })));
-const EventDetail = lazy(() => import('./pages/EventDetail').then(m => ({ default: m.EventDetail })));
-const Partners = lazy(() => import('./pages/Partners').then(m => ({ default: m.Partners })));
-const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
-const LegalMentions = lazy(() => import('./pages/LegalMentions').then(m => ({ default: m.LegalMentions })));
-const Transparency = lazy(() => import('./pages/Transparency').then(m => ({ default: m.Transparency })));
-const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
-const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
+import { EventDetail } from './pages/EventDetail';
+import { Partners } from './pages/Partners';
+import { Documents } from './pages/Documents';
+import { LegalMentions } from './pages/LegalMentions';
+import { Transparency } from './pages/Transparency';
+import { Contact } from './pages/Contact';
+import { NotFound } from './pages/NotFound';
 
 // Planning module (lazy)
 const PlanningLogin = lazy(() => import('./pages/planning/PlanningLogin').then(m => ({ default: m.PlanningLogin })));
