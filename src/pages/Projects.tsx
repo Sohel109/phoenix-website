@@ -15,6 +15,25 @@ import { SEO } from '../components/common/SEO';
 
 type FilterType = 'all' | 'cordees' | 'college' | 'lycee';
 
+const projectsBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Projets de Tutorat",
+            "item": "https://www.phoenix-egalite-des-chances.com/projets"
+        }
+    ]
+};
+
 export function Projects() {
     const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
@@ -42,8 +61,9 @@ export function Projects() {
         <div className="pt-page-safe pb-28 bg-[#FFFBF4] bg-bird-pattern min-h-screen">
             {/* Balises SEO dynamiques */}
             <SEO
-                title="Nos 9 Projets de Terrain | Phœnix Égalité des Chances - KEDGE BS"
-                description="Découvrez les 9 projets de tutorat et mentorat menés par les étudiants de KEDGE BS dans les collèges et lycées de Marseille, dont 5 labellisés Cordées de la Réussite."
+                title="Projets de Tutorat Scolaire – Cordées de la Réussite & Lycées – Marseille (13)"
+                description="Découvrez les 9 projets de tutorat et soutien scolaire menés par les étudiants de KEDGE BS à Marseille : ACSE, Massa 13, Jules Ferry, Batelière, Sup d'OM..."
+                schema={projectsBreadcrumbSchema}
             />
 
             <div className="container mx-auto px-4 max-w-7xl">

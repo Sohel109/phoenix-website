@@ -44,11 +44,31 @@ export function Documents() {
         }
     ];
 
+    const documentsBreadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Accueil",
+                "item": "https://www.phoenix-egalite-des-chances.com/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Documents & Ressources",
+                "item": "https://www.phoenix-egalite-des-chances.com/documents"
+            }
+        ]
+    };
+
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title="Documents & Ressources Officielles | Phœnix Égalité des Chances"
-                description="Téléchargez le Guide du Phœnicien 2026-2027, les fiches de postes et toutes les documentations officielles de l'association Phœnix EDC."
+                title="Guides & Fiches de Postes Associatives – Documentation Officielle Phœnix EDC Marseille"
+                description="Consultez et téléchargez les ressources officielles de Phœnix EDC : Guide du Phœnicien 2026-2027, fiches de postes du Bureau et des Pôles associatifs."
+                schema={documentsBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Header */}

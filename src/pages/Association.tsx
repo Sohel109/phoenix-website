@@ -33,6 +33,25 @@ import {
 
 const LOCAL_STORAGE_KEY = 'phoenix_bureau_members_v1';
 
+const associationBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "L'Association",
+            "item": "https://www.phoenix-egalite-des-chances.com/association"
+        }
+    ]
+};
+
 export function Association() {
     const { currentUser } = usePlanning();
     const isBureau = currentUser?.role === 'bureau';
@@ -261,8 +280,9 @@ export function Association() {
         <div className="pt-page-safe pb-28 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             {/* Balises SEO dynamiques */}
             <SEO
-                title="L'Association Phœnix EDC | Histoire, Valeurs & Équipe - KEDGE BS"
-                description="Découvrez l'histoire de Phœnix Égalité des Chances depuis 2011, notre charte de valeurs OHIEE, l'équipe du Bureau et notre engagement bénévole à Marseille."
+                title="Association Égalité des Chances – Histoire, Valeurs & Tuteurs KEDGE BS – Marseille (13)"
+                description="Depuis 2011, Phœnix EDC mobilise plus de 100 étudiants tuteurs de KEDGE Business School pour l'égalité des chances et la réussite scolaire à Marseille."
+                schema={associationBreadcrumbSchema}
             />
 
             {/* Toast de confirmation de sauvegarde */}

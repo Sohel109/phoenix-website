@@ -19,6 +19,25 @@ Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
+const mapBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Carte des Projets",
+            "item": "https://www.phoenix-egalite-des-chances.com/carte-des-projets"
+        }
+    ]
+};
+
 export function ProjectMap() {
     const navigate = useNavigate();
     const marseilleCenter: LatLngExpression = [43.2965, 5.3698]; // Centre de Marseille
@@ -53,8 +72,9 @@ export function ProjectMap() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
             <SEO
-                title="Carte des Projets à Marseille | Phœnix Égalité des Chances"
-                description="Explorez la carte interactive des 9 projets de tutorat et d'ouverture culturelle de Phœnix EDC répartis dans les collèges, lycées et centres sociaux de Marseille."
+                title="Carte des Collèges & Lycées Partenaires – Tutorat Scolaire à Marseille – Phœnix EDC"
+                description="Explorez la carte interactive des 9 antennes de tutorat de Phœnix EDC réparties dans les collèges, lycées et quartiers prioritaires de Marseille."
+                schema={mapBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header */}

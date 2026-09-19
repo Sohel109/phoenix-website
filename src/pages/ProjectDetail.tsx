@@ -46,15 +46,40 @@ export function ProjectDetail() {
         );
     }
 
-    // Projets alternatifs pour la navigation en bas de page
     const otherProjects = projects.filter(p => p.id !== project.id).slice(0, 3);
+
+    const projectBreadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Accueil",
+                "item": "https://www.phoenix-egalite-des-chances.com/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Projets de Tutorat",
+                "item": "https://www.phoenix-egalite-des-chances.com/projets"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": project.title,
+                "item": `https://www.phoenix-egalite-des-chances.com/projets/${project.id}`
+            }
+        ]
+    };
 
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title={`${project.title} | Projet Égalité des Chances Phœnix`}
-                description={project.description.slice(0, 155)}
+                title={`${project.title} – Tutorat ${project.category} & Égalité des Chances – Marseille (13)`}
+                description={`${project.description.slice(0, 140)}... Tutorat scolaire et mentorat étudiant KEDGE BS à Marseille.`}
                 ogImage={project.banner || project.image}
+                schema={projectBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Back Button & Map Link */}

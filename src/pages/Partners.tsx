@@ -40,13 +40,33 @@ const otherPartners = [
     { name: "Échanges Phocéens", category: "Association étudiante", icon: Handshake },
 ];
 
+const partnersBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Partenaires",
+            "item": "https://www.phoenix-egalite-des-chances.com/partenaires"
+        }
+    ]
+};
+
 export function Partners() {
 
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title="Nos Partenaires | Phœnix Égalité des Chances"
-                description="Découvrez les entreprises, collèges, lycées et institutions engagés aux côtés de Phœnix EDC pour la réussite des jeunes marseillais : OM, KEDGE, Deloitte..."
+                title="Partenaires Entreprises & Mécénat RSE – Égalité des Chances KEDGE – Marseille (13)"
+                description="Devenez entreprise partenaire mécène de Phœnix EDC : soutenez l'égalité des chances à Marseille, valorisez votre démarche RSE et défiscalisez vos dons à 60%."
+                schema={partnersBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* Header */}

@@ -3,12 +3,32 @@ import { events } from '../data/events';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 
+const eventsBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Événements",
+            "item": "https://www.phoenix-egalite-des-chances.com/evenements"
+        }
+    ]
+};
+
 export function Events() {
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title="Événements & Concours d'Éloquence | Phœnix Égalité des Chances"
-                description="Découvrez les événements phares de Phœnix Égalité des Chances : Concours d'Éloquence Kedge, simulation ONU PhoenixMUN, Journée de l'Égalité des Chances..."
+                title="Événements & Concours d'Éloquence – Ouverture Culturelle Jeunesse – Marseille (13)"
+                description="Participez aux événements phares de Phœnix EDC : Concours d'Éloquence KEDGE, simulation diplomatique SIMONU Marseille, Journée de l'Égalité des Chances."
+                schema={eventsBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header */}

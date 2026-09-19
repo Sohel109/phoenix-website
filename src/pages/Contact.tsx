@@ -6,6 +6,25 @@ import { ContactForm } from '../components/features/contact/ContactForm';
 import { Recruitment } from '../components/sections/Recruitment';
 import { SEO } from '../components/common/SEO';
 
+const contactBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Contact",
+            "item": "https://www.phoenix-egalite-des-chances.com/contact"
+        }
+    ]
+};
+
 export function Contact() {
     const location = useLocation();
     const queryCategory = new URLSearchParams(location.search).get('category');
@@ -16,8 +35,9 @@ export function Contact() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
             <SEO
-                title="Contactez-nous & Devenez Bénévole | Phœnix Égalité des Chances"
-                description="Écrivez à l'équipe de Phœnix Égalité des Chances pour devenir partenaire, bénévole ou poser vos questions sur nos programmes d'accompagnement scolaire."
+                title="Contact & Recrutement Bénévolat – Association Égalité des Chances KEDGE – Marseille (13)"
+                description="Contactez l'équipe de Phœnix Égalité des Chances à KEDGE Business School Marseille pour devenir tuteur bénévole, établissement ou entreprise partenaire."
+                schema={contactBreadcrumbSchema}
             />
             <div className="container mx-auto px-6 max-w-5xl relative z-10">
 

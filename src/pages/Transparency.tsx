@@ -47,14 +47,34 @@ const impactExamples = [
     }
 ];
 
+const transparencyBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Transparence Financière & Dons",
+            "item": "https://www.phoenix-egalite-des-chances.com/transparence"
+        }
+    ]
+};
+
 export function Transparency() {
     const navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-16">
             <SEO
-                title="Transparence Financière & Dons | Phœnix Égalité des Chances"
-                description="Découvrez en toute transparence l'utilisation de vos dons chez Phœnix EDC : 70% pour les sorties et projets, 25% matériel pédagogique, 66% déductible."
+                title="Dons Déductibles d'Impôts (66%) & Transparence Financière – Phœnix EDC Marseille"
+                description="Soutenez l'éducation à Marseille : vos dons à Phœnix EDC sont déductibles d'impôts à 66% (IR) et 60% (IS). 70% des fonds financent directement les sorties et ateliers."
+                schema={transparencyBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 max-w-5xl relative z-10">
                 {/* Back Button */}

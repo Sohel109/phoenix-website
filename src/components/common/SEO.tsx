@@ -7,14 +7,15 @@ export interface SEOProps {
     image?: string;
     ogImage?: string;
     type?: string;
+    schema?: Record<string, any> | Record<string, any>[];
 }
 
-const DEFAULT_IMAGE = 'https://phoenixedc.fr/logo-badge.jpg';
-const BASE_URL = 'https://phoenixedc.fr';
+const DEFAULT_IMAGE = 'https://www.phoenix-egalite-des-chances.com/logo-badge.jpg';
+const BASE_URL = 'https://www.phoenix-egalite-des-chances.com';
 
 /**
  * SEO Component — Met à jour dynamiquement les balises documentaires et Open Graph
- * par page sans dépendance externe.
+ * ainsi que le balisage sémantique Schema.org (JSON-LD) par page.
  */
 export function SEO({
     title,
@@ -22,6 +23,7 @@ export function SEO({
     image,
     ogImage,
     type = 'website',
+    schema,
 }: SEOProps) {
     const finalImage = ogImage || image || DEFAULT_IMAGE;
     const location = useLocation();
@@ -67,7 +69,27 @@ export function SEO({
         updateMeta('twitter:description', description);
         updateMeta('twitter:image', finalImage);
         updateCanonical(currentUrl);
-    }, [title, description, finalImage, type, currentUrl]);
+
+        // Update Dynamic Schema.org JSON-LD Script
+        const schemaId = 'dynamic-page-schema';
+        let schemaScript = document.getElementById(schemaId) as HTMLScriptElement | null;
+        if (schema) {
+            if (!schemaScript) {
+                schemaScript = document.createElement('script');
+                schemaScript.id = schemaId;
+                schemaScript.type = 'application/ld+json';
+                document.head.appendChild(schemaScript);
+            }
+            schemaScript.textContent = JSON.stringify(schema);
+        } else if (schemaScript) {
+            schemaScript.remove();
+        }
+
+        return () => {
+            const existingScript = document.getElementById(schemaId);
+            if (existingScript) existingScript.remove();
+        };
+    }, [title, description, finalImage, type, currentUrl, schema]);
 
     return null;
 }

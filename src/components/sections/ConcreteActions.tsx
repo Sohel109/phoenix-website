@@ -79,7 +79,7 @@ export function ConcreteActions() {
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900">
                             <img
                                 src="/images/home/tutorat-hebdo-terrain.jpg"
-                                alt="Séance studieuse de tutorat hebdomadaire Phoenix"
+                                alt="Séance studieuse de tutorat hebdomadaire et soutien scolaire à Marseille - Phœnix EDC"
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                 loading="lazy"
                             />
@@ -245,7 +245,7 @@ export function ConcreteActions() {
                         <Link to="/evenements" className="block relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 group/ev cursor-pointer">
                             <img
                                 src={eventHighlights[activeEventIdx].image}
-                                alt={eventHighlights[activeEventIdx].title}
+                                alt={`${eventHighlights[activeEventIdx].title} – Événement égalité des chances et éloquence Phœnix EDC Marseille`}
                                 style={{ objectPosition: eventHighlights[activeEventIdx].objectPosition }}
                                 className="w-full h-full object-cover group-hover/ev:scale-105 transition-transform duration-500 ease-out"
                                 loading="lazy"

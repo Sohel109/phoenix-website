@@ -42,12 +42,63 @@ export function EventDetail() {
         }
     };
 
+    const eventSchema = [
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Accueil",
+                    "item": "https://www.phoenix-egalite-des-chances.com/"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Événements",
+                    "item": "https://www.phoenix-egalite-des-chances.com/evenements"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": event.title,
+                    "item": `https://www.phoenix-egalite-des-chances.com/evenements/${event.id}`
+                }
+            ]
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "Event",
+            "name": event.title,
+            "description": event.description,
+            "image": event.headerImage || event.image,
+            "organizer": {
+                "@type": "NonProfitOrganization",
+                "name": "Phœnix Égalité des Chances",
+                "url": "https://www.phoenix-egalite-des-chances.com"
+            },
+            "location": {
+                "@type": "Place",
+                "name": "KEDGE Business School Marseille",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Domaine de Luminy",
+                    "addressLocality": "Marseille",
+                    "postalCode": "13009",
+                    "addressCountry": "FR"
+                }
+            }
+        }
+    ];
+
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
             <SEO
-                title={`${event.title} | Événement Phœnix EDC`}
-                description={event.description.slice(0, 155)}
+                title={`${event.title} – Événement Jeunesse & Éloquence Phœnix EDC – Marseille (13)`}
+                description={`${event.description.slice(0, 140)}... Événement organisé par l'association Phœnix EDC à Marseille.`}
                 ogImage={event.headerImage || event.image}
+                schema={eventSchema}
             />
             {/* Background Elements */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-50 dark:opacity-30">

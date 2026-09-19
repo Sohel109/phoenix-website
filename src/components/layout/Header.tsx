@@ -57,7 +57,7 @@ export function Header() {
                     <div className="relative">
                         <img
                             src="/logo-badge.jpg"
-                            alt="Phœnix Égalité des Chances Logo"
+                            alt="Phœnix Égalité des Chances - Association de tutorat et mentorat étudiant KEDGE BS Marseille"
                             className="w-10 h-10 sm:w-11 sm:h-11 object-contain rounded-full shadow-md border-2 border-white group-hover:scale-105 group-hover:rotate-3 transition-transform"
                         />
                     </div>

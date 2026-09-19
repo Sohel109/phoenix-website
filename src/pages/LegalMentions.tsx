@@ -1,12 +1,32 @@
 
 import { SEO } from '../components/common/SEO';
 
+const legalBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.phoenix-egalite-des-chances.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Mentions Légales",
+            "item": "https://www.phoenix-egalite-des-chances.com/mentions-legales"
+        }
+    ]
+};
+
 export function LegalMentions() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
             <SEO
-                title="Mentions Légales | Phœnix Égalité des Chances"
-                description="Consultez les mentions légales et informations administratives de l'association Phœnix Égalité des Chances (KEDGE Business School Marseille)."
+                title="Mentions Légales & RGPD – Association Phœnix Égalité des Chances Marseille"
+                description="Informations légales, hébergement Vercel et politique de confidentialité de l'association Phœnix Égalité des Chances (loi 1901, KEDGE Business School)."
+                schema={legalBreadcrumbSchema}
             />
             <div className="container mx-auto px-4 max-w-4xl relative z-10">
                 <div className="mb-12 text-center">
@@ -22,10 +42,10 @@ export function LegalMentions() {
                     <section>
                         <h2 className="text-xl sm:text-2xl font-display text-[#2A082D] mb-3">1. Édition du site</h2>
                         <p>
-                            En vertu de l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, il est précisé aux utilisateurs du site internet <strong>Phoenix Égalité des Chances</strong> l'identité des différents intervenants dans le cadre de sa réalisation et de son suivi :
+                            En vertu de l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, il est précisé aux utilisateurs du site internet <strong>Phœnix Égalité des Chances</strong> l'identité des différents intervenants dans le cadre de sa réalisation et de son suivi :
                         </p>
                         <ul className="list-disc list-inside mt-4 space-y-2 text-slate-600">
-                            <li><strong>Propriétaire du site :</strong> Association Phoenix Égalité des Chances</li>
+                            <li><strong>Propriétaire du site :</strong> Association Phœnix Égalité des Chances</li>
                             <li><strong>Statut :</strong> Association loi 1901 d'intérêt général</li>
                             <li><strong>Adresse :</strong> KEDGE Business School, Domaine de Luminy, 13009 Marseille</li>
                             <li><strong>Contact :</strong> phoenixedc.asso@gmail.com</li>
@@ -36,8 +56,8 @@ export function LegalMentions() {
                         <h2 className="text-xl sm:text-2xl font-display text-[#2A082D] mb-3">2. Hébergement</h2>
                         <p>
                             Le site est hébergé par :<br />
-                            <strong>GitHub Pages</strong><br />
-                            88 Colin P Kelly Jr St, San Francisco, CA 94107, United States
+                            <strong>Vercel Inc.</strong><br />
+                            440 N Barranca Ave #4133, Covina, CA 91723, États-Unis
                         </p>
                     </section>
 
