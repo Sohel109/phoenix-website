@@ -149,22 +149,24 @@ h1, h2, h3, .font-display {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #6F2B75 0%, #904990 40%, #EC602B 100%);
+  background-color: #C94D1F;
   color: #FFFFFF;
-  border-radius: 9999px;
+  border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  box-shadow: 0 10px 25px -5px rgba(236, 96, 43, 0.35);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px -2px rgba(201, 77, 31, 0.30);
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .btn-phoenix-gradient:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 15px 30px -5px rgba(111, 43, 117, 0.45);
+  background-color: #B03E12;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -2px rgba(201, 77, 31, 0.40);
 }
 
 .btn-phoenix-gradient:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(1px);
+  box-shadow: none;
 }
 
 .btn-phoenix-outline {
@@ -172,23 +174,23 @@ h1, h2, h3, .font-display {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background-color: #FFFFFF;
-  color: #6F2B75;
-  border: 2px solid #6F2B75;
-  border-radius: 9999px;
+  background-color: transparent;
+  color: #2A082D;
+  border: 1.5px solid #2A082D;
+  border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  transition: all 0.2s ease-in-out;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-phoenix-outline:hover {
-  background-color: #ECDDFD;
-  color: #2A082D;
-  transform: translateY(-2px);
+  background-color: #2A082D;
+  color: #FFFFFF;
+  border-color: #2A082D;
 }
 
 .btn-phoenix-outline:active {
-  transform: translateY(1px) scale(0.98);
+  opacity: 0.85;
 }
 
 .btn-phoenix-orange {
@@ -198,10 +200,10 @@ h1, h2, h3, .font-display {
   gap: 0.5rem;
   background-color: #EC602B;
   color: #FFFFFF;
-  border-radius: 9999px;
+  border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  box-shadow: 0 8px 20px -4px rgba(236, 96, 43, 0.4);
+  box-shadow: 0 4px 14px -2px rgba(236, 96, 43, 0.35);
   transition: all 0.2s ease-in-out;
 }
 
@@ -215,24 +217,24 @@ h1, h2, h3, .font-display {
   transform: translateY(1px) scale(0.98);
 }
 
-/* Compatibilité des classes tactiles vers le style chaleureux & circulaire */
+/* Compatibilité des classes tactiles */
 .btn-tactile-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #6F2B75 0%, #EC602B 100%);
+  background-color: #C94D1F;
   color: #FFFFFF;
-  border-radius: 9999px;
+  border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  box-shadow: 0 8px 20px -5px rgba(236, 96, 43, 0.35);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px -2px rgba(201, 77, 31, 0.28);
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .btn-tactile-primary:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 25px -5px rgba(111, 43, 117, 0.45);
+  background-color: #B03E12;
+  transform: translateY(-1px);
 }
 
 .btn-tactile-secondary {
@@ -240,36 +242,31 @@ h1, h2, h3, .font-display {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background-color: #FFFFFF;
-  color: #6F2B75;
-  border: 1.5px solid #ECDDFD;
-  border-radius: 9999px;
+  background-color: transparent;
+  color: #2A082D;
+  border: 1.5px solid #2A082D;
+  border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  box-shadow: 0 4px 15px -3px rgba(111, 43, 117, 0.1);
-  transition: all 0.2s ease-in-out;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-tactile-secondary:hover {
-  background-color: #ECDDFD;
-  border-color: #6F2B75;
-  color: #2A082D;
+  background-color: #2A082D;
+  color: #FFFFFF;
 }
 
 .sticker-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  background-color: #ECDDFD;
+  /* Plus sobre : couleur texte simple, pas de fond pill */
   color: #6F2B75;
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  box-shadow: 0 2px 10px -2px rgba(111, 43, 117, 0.15);
+  letter-spacing: 0.07em;
 }
 
 /* ── Typographie officielle Charte Lise Dehedin (p. 17) ─────────────── */
@@ -280,21 +277,45 @@ h1, h2, h3, .font-display {
   text-shadow: 2px 3px 0px rgba(42, 8, 45, 0.85);
 }
 
+/* badge-blockletter — style éditorial (inspiré GenAct/Article-1) */
+/* Plus de pill ronde : juste du texte uppercase avec soulignement */
 .badge-blockletter {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  background-color: #ECDDFD;
-  color: #6F2B75;
+  color: #904990;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  border: 1px solid rgba(111, 43, 117, 0.2);
-  box-shadow: 0 4px 12px -2px rgba(111, 43, 117, 0.12);
+  letter-spacing: 0.1em;
+  /* Pas de background, pas de border-radius pill */
+}
+
+/* ── Texture grain subtile (inspiré Cop1 / sites authentiques) ── */
+.texture-grain {
+  position: relative;
+}
+.texture-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+/* ── Séparateur éditorial horizontal (inspiré Article-1 / Wellesley) ── */
+.section-rule {
+  width: 3rem;
+  height: 3px;
+  background-color: #EC602B;
+  border: none;
+  border-radius: 0;
+  margin: 0;
 }
 
 /* Custom Scrollbar chaleureuse */

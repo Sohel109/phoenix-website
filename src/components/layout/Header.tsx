@@ -82,20 +82,13 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`px-4 py-2 rounded-full text-xs xl:text-sm font-semibold transition-all relative focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
+                                className={`px-3 py-2 text-xs xl:text-sm font-semibold transition-all relative focus-visible:ring-2 focus-visible:ring-[#EC602B] border-b-2 ${
                                     isActive
-                                        ? 'text-[#6F2B75] bg-[#ECDDFD] font-bold shadow-xs'
-                                        : 'text-[#2A082D] hover:text-[#EC602B] hover:bg-[#ECDDFD]/40'
+                                        ? 'text-[#2A082D] border-[#EC602B] font-bold'
+                                        : 'text-[#2A082D] hover:text-[#6F2B75] border-transparent'
                                 }`}
                             >
                                 {link.label}
-                                {isActive && (
-                                    <motion.span
-                                        layoutId="activeNavIndicator"
-                                        className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-[#6F2B75] to-[#EC602B] rounded-full"
-                                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                                    />
-                                )}
                             </Link>
                         );
                     })}
@@ -127,17 +120,17 @@ export function Header() {
                         </Link>
                     )}
 
-                    {/* Faire un don (Gradient Pilule CTA Valorisé) */}
+                    {/* Faire un don — bouton sobre */}
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-phoenix-gradient px-4 py-2 rounded-full text-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] flex items-center gap-1.5 shadow-soft hover:shadow-soft-lg group"
+                        className="btn-phoenix-gradient px-4 py-2 text-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] flex items-center gap-1.5"
                         title="Faire un don déductible des impôts à 66% (HelloAsso sécurisé)"
                     >
-                        <Heart size={13} fill="currentColor" className="text-white group-hover:scale-110 transition-transform" />
+                        <Heart size={13} fill="currentColor" className="text-white" />
                         <span>Faire un don</span>
-                        <span className="ml-1 px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-bold font-school tracking-tight text-white">
+                        <span className="ml-1 px-1.5 py-0.5 rounded bg-white/20 text-[10px] font-bold font-school tracking-tight text-white">
                             -66%
                         </span>
                     </a>

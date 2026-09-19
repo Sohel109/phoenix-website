@@ -38,7 +38,7 @@ export function LegalMentions() {
                     </h1>
                 </div>
 
-                <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-soft border border-[#ECDDFD] space-y-8 text-slate-700 leading-relaxed font-normal">
+                <div className="bg-white rounded-xl p-8 md:p-12 shadow-soft border border-[#ECDDFD] space-y-8 text-slate-700 leading-relaxed font-normal">
                     <section>
                         <h2 className="text-xl sm:text-2xl font-display text-[#2A082D] mb-3">1. Édition du site</h2>
                         <p>

@@ -1,5 +1,4 @@
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
-import { Users, Heart, Zap, Award } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 // --- COUNTER COMPONENT ---
@@ -26,7 +25,7 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 
     if (isMobile) {
         return (
-            <span className="inline-flex items-center justify-center tabular-nums">
+            <span className="inline-flex items-baseline tabular-nums">
                 {prefix && <span>{prefix}</span>}
                 <span>{value}</span>
                 {suffix && <span>{suffix}</span>}
@@ -35,7 +34,7 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
     }
 
     return (
-        <span ref={ref} className="inline-flex items-center justify-center tabular-nums">
+        <span ref={ref} className="inline-flex items-baseline tabular-nums">
             {prefix && <span>{prefix}</span>}
             <motion.span>{displayValue}</motion.span>
             {suffix && <span>{suffix}</span>}
@@ -43,178 +42,149 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
     );
 }
 
+// --- STAT ITEM (style éditorial — inspiré Article-1 / Wellesley) ---
+function StatItem({
+    value,
+    prefix,
+    suffix,
+    label,
+    sublabel,
+    accent = '#6F2B75',
+}: {
+    value: number;
+    prefix?: string;
+    suffix?: string;
+    label: string;
+    sublabel?: string;
+    accent?: string;
+}) {
+    return (
+        <div className="flex flex-col gap-1 py-6 sm:py-0 sm:px-8 first:pl-0 last:pr-0 text-left">
+            {/* Chiffre en Shrikhand — grand, lisible */}
+            <div className="font-display leading-none mb-1" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', color: accent }}>
+                <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
+            </div>
+            {/* Label court */}
+            <p className="text-[#2A082D] font-bold text-sm leading-snug">{label}</p>
+            {/* Sous-label optionnel */}
+            {sublabel && <p className="text-slate-500 text-xs font-medium mt-0.5">{sublabel}</p>}
+        </div>
+    );
+}
+
 // --- MAIN SECTION ---
 export function KeyFigures() {
-
     return (
         <section className="relative py-20 md:py-28 bg-[#FFFBF4] overflow-hidden">
             {/* Trame filigrane Phœnix officielle */}
             <div className="pattern-watermark" aria-hidden="true" />
 
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
-                {/* Header with authentic brand identity */}
-                <div className="text-center mb-14 md:mb-20">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
-                            Résultats &amp; Impact Terrain
+                {/* En-tête éditorial — kicker ligne + titre (pas de badge-pill) */}
+                <div className="mb-14 md:mb-20">
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <span className="w-6 h-[2px] bg-[#EC602B] shrink-0" />
+                        <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">
+                            Résultats & Impact Terrain
                         </span>
                     </div>
-
                     <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3 text-balance">
                         Des résultats qui ont du sens.
                     </h2>
-                    <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl mx-auto text-pretty">
+                    <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl text-pretty">
                         Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
                     </p>
                 </div>
 
-                {/* ── BENTO ASYMÉTRIQUE CHALEUREUX (Charte Lise Dehedin : Le cercle avant le rectangle) ── */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* ── RANGÉE ÉDITORIALE 4 CHIFFRES (inspiré Article-1 / Wellesley) ── */}
+                {/* Desktop : 4 stats séparées par des lignes verticales */}
+                <div className="hidden sm:flex flex-row items-stretch divide-x divide-[#2A082D]/10 mb-16">
+                    <StatItem
+                        value={300}
+                        suffix="+"
+                        label="Jeunes accompagnés"
+                        sublabel="Collégiens & lycéens marseillais"
+                        accent="#6F2B75"
+                    />
+                    <StatItem
+                        value={100}
+                        prefix="+"
+                        label="Étudiants tuteurs"
+                        sublabel="100% bénévolat KEDGE BS"
+                        accent="#EC602B"
+                    />
+                    <StatItem
+                        value={9}
+                        label="Projets de terrain"
+                        sublabel="Actifs dans les quartiers"
+                        accent="#2A082D"
+                    />
+                    <StatItem
+                        value={100}
+                        suffix="%"
+                        label="Taux de réussite"
+                        sublabel="Aux examens officiels"
+                        accent="#6F2B75"
+                    />
+                </div>
 
-                    {/* CARTE 1 (Héroïque - 7 cols) : Les Jeunes Accompagnés */}
-                    <div className="lg:col-span-7 bg-[#ECDDFD] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#6F2B75]/15 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
-                        <div className="flex items-center justify-between gap-4 mb-6">
-                            <div className="w-11 h-11 rounded-full bg-[#6F2B75] text-white flex items-center justify-center shadow-xs">
-                                <Users size={20} />
+                {/* Mobile : 2x2 grid */}
+                <div className="sm:hidden grid grid-cols-2 gap-px bg-[#2A082D]/10 rounded-xl overflow-hidden mb-12">
+                    {[
+                        { value: 300, suffix: '+', label: 'Jeunes accompagnés', sub: 'Collégiens & lycéens', accent: '#6F2B75' },
+                        { value: 100, prefix: '+', label: 'Étudiants tuteurs', sub: '100% bénévolat', accent: '#EC602B' },
+                        { value: 9, label: 'Projets actifs', sub: 'Dans les quartiers', accent: '#2A082D' },
+                        { value: 100, suffix: '%', label: 'Taux de réussite', sub: 'Aux examens', accent: '#6F2B75' },
+                    ].map((stat, i) => (
+                        <div key={i} className="bg-[#FFFBF4] p-5 flex flex-col gap-1">
+                            <div className="font-display text-4xl leading-none mb-1" style={{ color: stat.accent }}>
+                                <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
                             </div>
-                            <span className="px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] border border-[#6F2B75]/20 text-xs font-school font-bold tracking-wider shadow-xs">
-                                Collèges &amp; Lycées de Marseille
-                            </span>
+                            <p className="text-[#2A082D] font-bold text-xs leading-snug">{stat.label}</p>
+                            <p className="text-slate-400 text-[11px]">{stat.sub}</p>
                         </div>
+                    ))}
+                </div>
 
-                        <div>
-                            <div className="text-5xl sm:text-6xl font-display text-[#6F2B75] leading-none mb-2">
-                                <AnimatedCounter value={300} suffix="+" />
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-bold text-[#2A082D] tracking-tight mb-2">
-                                Jeunes marseillais accompagnés
-                            </h3>
-                            <p className="text-[#2A082D]/80 text-sm leading-relaxed max-w-lg mb-4 font-medium">
-                                De la 6ème jusqu'au baccalauréat, suivis individuellement ou en petits groupes chaque semaine par nos étudiants tuteurs.
-                            </p>
-                        </div>
+                {/* ── BLOC NARRATIF (remplace les 4 cartes bento) ── */}
+                {/* 2 colonnes : détail Jeunes + Cordées/Intérêt général */}
+                <div className="grid md:grid-cols-2 gap-8 pt-10 border-t border-[#2A082D]/10">
 
-                        <div className="pt-4 border-t border-[#6F2B75]/15 flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex flex-wrap gap-1.5">
-                                {['L\'Estaque', 'Quartiers Nord', 'Saint-Gabriel', 'Roy d\'Espagne'].map((quartier) => (
-                                    <span key={quartier} className="px-2.5 py-0.5 rounded-full bg-white/70 text-[#6F2B75] text-[11px] font-school font-bold">
-                                        {quartier}
-                                    </span>
-                                ))}
-                            </div>
-                            <span className="font-script text-xl text-[#2A082D]/80">
-                                Séances tout au long de la semaine
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* CARTE 2 (5 cols) : Les Tuteurs KEDGE */}
-                    <div className="lg:col-span-5 bg-[#E1BBCB] text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#EC602B]/20 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
-                        <div className="flex items-center justify-between gap-4 mb-6">
-                            <div className="w-11 h-11 rounded-full bg-[#EC602B] text-white flex items-center justify-center shadow-xs">
-                                <Heart size={20} />
-                            </div>
-                            <span className="px-3.5 py-1.5 rounded-full bg-white text-[#2A082D] border border-white/40 text-xs font-school font-bold tracking-wider shadow-xs">
-                                100% Bénévolat
-                            </span>
-                        </div>
-
-                        <div>
-                            <div className="text-5xl sm:text-6xl font-display text-[#EC602B] leading-none mb-2">
-                                <AnimatedCounter value={100} prefix="+" />
-                            </div>
-                            <h3 className="text-xl font-bold text-[#2A082D] tracking-tight mb-2">
-                                Étudiants tuteurs de KEDGE BS
-                            </h3>
-                            <p className="text-[#2A082D]/80 text-sm leading-relaxed font-medium">
-                                Mobilisés chaque semaine pour transmettre le goût d'apprendre, la méthodologie et ouvrir les perspectives d'avenir.
-                            </p>
-                        </div>
-
-                        <div className="pt-4 border-t border-[#EC602B]/20 flex items-center justify-between">
-                            <span className="text-xs font-school font-bold text-[#2A082D]">
-                                Campus Marseille Luminy
-                            </span>
-                            <span className="font-script text-xl text-[#2A082D]/80">
-                                Grandir ensemble
-                            </span>
-                        </div>
-                    </div>
-
-
-                    {/* CARTE 3 (5 cols) : Les 9 Projets de terrain */}
-                    <div className="lg:col-span-5 bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-7 sm:p-9 shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
-                        <div className="flex items-center justify-between gap-4 mb-6">
-                            <div className="w-11 h-11 rounded-full bg-white text-[#EC602B] flex items-center justify-center shadow-xs">
-                                <Zap size={20} />
-                            </div>
-                            <span className="px-3.5 py-1.5 rounded-full bg-white/15 text-[#FF7E2E] border border-white/20 text-xs font-school font-bold tracking-wider">
-                                Ancrage Local
-                            </span>
-                        </div>
-
-                        <div>
-                            <div className="text-5xl sm:text-6xl font-display text-white leading-none mb-2">
-                                <AnimatedCounter value={9} />
-                            </div>
-                            <h3 className="text-xl font-bold text-white tracking-tight mb-2">
-                                Projets de terrain actifs
-                            </h3>
-                            <p className="text-white/80 text-sm leading-relaxed mb-4 font-medium">
-                                Des antennes scolaires au cœur des quartiers pour intervenir au plus près des besoins des élèves.
-                            </p>
-                        </div>
-
-                        <div className="pt-4 border-t border-white/15 flex flex-wrap gap-1.5">
-                            {['Sup d\'OM', 'Massa 13', 'Izzo', 'Jules Ferry', 'ACSE'].map((p) => (
-                                <span key={p} className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[11px] font-school font-bold">
-                                    {p}
+                    {/* Colonne 1 : Quartiers et projets */}
+                    <div>
+                        <h3 className="text-lg font-bold text-[#2A082D] mb-2">Au cœur des quartiers de Marseille</h3>
+                        <p className="text-slate-600 text-sm leading-relaxed mb-4 font-medium">
+                            De L'Estaque aux Quartiers Nord, nos antennes interviennent chaque semaine dans les établissements scolaires pour un suivi personnalisé, en groupe ou en individuel.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {["L'Estaque", "Quartiers Nord", "Saint-Gabriel", "Roy d'Espagne", "Sup d'OM", "Massa 13"].map((q) => (
+                                <span
+                                    key={q}
+                                    className="px-2.5 py-1 rounded text-[11px] font-school font-bold text-[#6F2B75] bg-[#ECDDFD]/60 border border-[#6F2B75]/15"
+                                >
+                                    {q}
                                 </span>
                             ))}
                         </div>
                     </div>
 
-                    {/* CARTE 4 (7 cols) : Réussite et Cordées */}
-                    <div className="lg:col-span-7 bg-white text-[#2A082D] rounded-[2.5rem] p-7 sm:p-9 border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all flex flex-col justify-between">
-                        <div className="flex items-center justify-between gap-4 mb-6">
-                            <div className="w-11 h-11 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shadow-xs">
-                                <Award size={20} />
-                            </div>
-                            <span className="px-3.5 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] border border-[#6F2B75]/15 text-xs font-school font-bold tracking-wider shadow-xs">
-                                Brevet & Baccalauréat
-                            </span>
-                        </div>
-
-                        <div className="grid sm:grid-cols-12 gap-6 items-center">
-                            <div className="sm:col-span-5">
-                                <div className="text-5xl sm:text-6xl font-display text-[#6F2B75] leading-none mb-1">
-                                    <AnimatedCounter value={100} suffix="%" />
-                                </div>
-                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#2A082D]">
-                                    Taux de Réussite aux Examens
-                                </p>
-                            </div>
-
-                            <div className="sm:col-span-7 sm:border-l sm:border-[#ECDDFD] sm:pl-6">
-                                <h3 className="text-lg font-bold text-[#2A082D] tracking-tight mb-1.5">
-                                    Excellence & Confiance retrouvée
-                                </h3>
-                                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-medium">
-                                    100% de réussite aux examens officiels pour les collégiens et lycéens assidus à nos séances hebdomadaires.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="pt-4 mt-4 border-t border-[#ECDDFD] flex flex-wrap items-center justify-between gap-3">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECDDFD]/60 text-[#6F2B75] text-xs font-school font-bold">
-                                5 Cordées de la Réussite
-                            </span>
-                            <span className="text-xs font-medium text-slate-500">
-                                Reconnue d'Intérêt Général
-                            </span>
+                    {/* Colonne 2 : Reconnaissance institutionnelle */}
+                    <div>
+                        <h3 className="text-lg font-bold text-[#2A082D] mb-2">Reconnue et labellisée</h3>
+                        <p className="text-slate-600 text-sm leading-relaxed mb-4 font-medium">
+                            Phœnix EDC fait partie des 5 <strong className="text-[#2A082D]">Cordées de la Réussite</strong> de KEDGE BS et est reconnue Association d'Intérêt Général — un gage de sérieux et de transparence.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {["5 Cordées de la Réussite", "Intérêt Général", "Campus Luminy"].map((l) => (
+                                <span
+                                    key={l}
+                                    className="px-2.5 py-1 rounded text-[11px] font-school font-bold text-[#EC602B] bg-[#EC602B]/8 border border-[#EC602B]/20"
+                                >
+                                    {l}
+                                </span>
+                            ))}
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>

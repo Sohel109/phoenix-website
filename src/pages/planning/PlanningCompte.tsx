@@ -233,7 +233,7 @@ export function PlanningCompte() {
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 rounded-[2.5rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg mb-8 mt-2"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg mb-8 mt-2"
             >
                 <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center flex-shrink-0 shadow-soft">
@@ -330,7 +330,7 @@ export function PlanningCompte() {
             <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-6 sm:p-7 rounded-[2.5rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-8 backdrop-blur-md shadow-soft-lg relative overflow-hidden"
+                className="p-6 sm:p-7 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-8 backdrop-blur-md shadow-soft-lg relative overflow-hidden"
             >
                 <div className="flex items-center gap-3.5 mb-5">
                     <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
@@ -494,7 +494,7 @@ export function PlanningCompte() {
                 <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-6 sm:p-7 rounded-[2.5rem] bg-[#2D0A32]/90 border border-purple-500/30 mb-8 backdrop-blur-md shadow-soft-lg"
+                    className="p-6 sm:p-7 rounded-xl bg-[#2D0A32]/90 border border-purple-500/30 mb-8 backdrop-blur-md shadow-soft-lg"
                 >
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                         <div className="flex items-center gap-3">

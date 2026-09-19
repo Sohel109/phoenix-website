@@ -252,7 +252,7 @@ export function PlanningValidation() {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="w-full max-w-sm rounded-[2.5rem] bg-[#2D0A32] border border-[#6F2B75]/60 p-7 text-center shadow-2xl text-white"
+                            className="w-full max-w-sm rounded-xl bg-[#2D0A32] border border-[#6F2B75]/60 p-7 text-center shadow-2xl text-white"
                         >
                             <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] flex items-center justify-center mx-auto mb-4 text-white shadow-soft">
                                 {confirmTarget.actionType === 'validate' && <CheckCircle size={26} />}

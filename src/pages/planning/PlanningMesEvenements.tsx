@@ -58,7 +58,7 @@ export function PlanningMesEvenements() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.08 }}
-                            className="p-6 sm:p-7 rounded-[2.5rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 backdrop-blur-md shadow-soft-lg"
+                            className="p-6 sm:p-7 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 backdrop-blur-md shadow-soft-lg"
                         >
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
                                 {/* Event Details */}

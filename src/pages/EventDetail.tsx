@@ -107,12 +107,12 @@ export function EventDetail() {
             </div>
 
             <div className="container mx-auto px-4 relative z-10 max-w-6xl">
-                <Link to="/evenements" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-phoenix-lilac/60 text-phoenix-dark font-school text-xs tracking-wider uppercase hover:text-phoenix-purple hover:border-phoenix-purple transition-all shadow-xs group">
+                <Link to="/evenements" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-phoenix-lilac/60 text-phoenix-dark font-school text-xs tracking-wider uppercase hover:text-phoenix-purple hover:border-phoenix-purple transition-all shadow-xs group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                     <span>Retour aux événements</span>
                 </Link>
 
-                <div className="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-phoenix-lilac/40 mt-6">
+                <div className="bg-white rounded-xl shadow-soft-lg overflow-hidden border border-phoenix-lilac/40 mt-6">
                     {/* Header Image */}
                     <div className={`relative h-64 md:h-[420px] w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : 'bg-phoenix-dark'}`}>
                         <img
@@ -128,7 +128,7 @@ export function EventDetail() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-phoenix-dark/90 via-phoenix-dark/40 to-transparent pointer-events-none" />
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 text-white">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-phoenix-purple/90 backdrop-blur-md border border-white/20 text-xs font-school uppercase tracking-wider mb-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-phoenix-purple/90 backdrop-blur-md border border-white/20 text-xs font-school uppercase tracking-wider mb-4">
                                 <Calendar size={14} className="text-phoenix-orange-light" />
                                 <span>{event.date}</span>
                             </div>

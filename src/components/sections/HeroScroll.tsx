@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart, Zap, GraduationCap, Sparkles } from 'lucide-react';
+import { ArrowRight, Heart, GraduationCap } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────
-   MACARON BADGE ROND (Charte p. 12 & 14 — "Le cercle avant le rectangle")
+   MACARON BADGE (simplifié — 1 seul badge, plus sobre)
 ───────────────────────────────────────────────────────────── */
 function MacaronBadge({
     icon,
@@ -17,12 +17,12 @@ function MacaronBadge({
 }) {
     return (
         <div
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-full
-                bg-white/95 backdrop-blur-md border border-[#6F2B75]/20
-                shadow-soft hover:shadow-soft-lg text-xs font-sans text-[#2A082D]
-                select-none pointer-events-none transition-all whitespace-nowrap ${className}`}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg
+                bg-white/95 border border-[#6F2B75]/15
+                shadow-soft text-xs font-sans text-[#2A082D]
+                select-none pointer-events-none whitespace-nowrap ${className}`}
         >
-            <div className="w-8 h-8 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0">
                 {icon}
             </div>
             <div className="flex flex-col text-left">
@@ -35,6 +35,8 @@ function MacaronBadge({
 
 /* ─────────────────────────────────────────────────────────────
    HERO PRINCIPAL (Charte Graphique DA Lise Dehedin 2025-2026)
+   De-IA-fié : kicker éditorial, moins de badges flottants,
+   boutons sobres, pas de glassmorphisme sur les badges
 ───────────────────────────────────────────────────────────── */
 export function HeroScroll() {
     return (
@@ -50,14 +52,15 @@ export function HeroScroll() {
                 <div className="relative z-10 container mx-auto px-6 lg:px-10 xl:px-16 max-w-7xl h-full min-h-[92vh] flex items-center">
                     <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-24 lg:py-16">
 
-                        {/* ── COLONNE GAUCHE : Message & Action chaleureux ── */}
-                        <div
-                            className="lg:col-span-7 flex flex-col gap-6 items-start text-left"
-                        >
-                            {/* Kicker officiel Blockletter */}
-                            <div className="badge-blockletter">
-                                <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
-                                <span>KEDGE Business School Marseille · 100% Bénévole</span>
+                        {/* ── COLONNE GAUCHE : Message éditorial ── */}
+                        <div className="lg:col-span-7 flex flex-col gap-6 items-start text-left">
+
+                            {/* Kicker éditorial sobre — ligne + texte uppercase (inspiré GenAct / Article-1) */}
+                            <div className="flex items-center gap-2.5">
+                                <span className="w-6 h-[2px] bg-[#EC602B] shrink-0" />
+                                <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">
+                                    KEDGE Business School Marseille · 100% Bénévole
+                                </span>
                             </div>
 
                             {/* Titre Shrikhand signature de la Charte */}
@@ -69,17 +72,17 @@ export function HeroScroll() {
                                 de Marseille.
                             </h1>
 
-                            {/* Note d'ancrage authentique */}
+                            {/* Note manuscrite d'ancrage authentique */}
                             <div className="font-script text-2xl xl:text-3xl text-[#6F2B75] -mt-2 select-none">
                                 L'égalité des chances sur le terrain depuis 2011
                             </div>
 
-                            {/* Paragraphe chaleureux avec contraste optimal */}
+                            {/* Paragraphe chaleureux */}
                             <p className="text-slate-700 text-base sm:text-lg max-w-xl leading-relaxed font-medium">
                                 Chaque semaine, plus de <strong className="text-[#2A082D] font-bold">100 étudiants de KEDGE BS</strong> accompagnent <strong className="text-[#2A082D] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre engagement : créer le déclic, vaincre l'autocensure et ouvrir grand le champ des possibles.
                             </p>
 
-                            {/* Double CTA en pilules douces */}
+                            {/* Double CTA — boutons sobres sans gradient */}
                             <div className="flex flex-wrap items-center gap-4 pt-2">
                                 <Link
                                     to="/projets"
@@ -98,21 +101,16 @@ export function HeroScroll() {
                                 </Link>
                             </div>
 
-                            {/* Micro-mention de réassurance */}
-                            <div className="flex items-center gap-3 pt-2 text-xs font-semibold text-slate-600">
-                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECDDFD]/70 border border-[#6F2B75]/20 text-[#6F2B75] font-bold">
-                                    <Sparkles size={12} className="text-[#EC602B]" />
-                                    5 Cordées de la Réussite
-                                </span>
-                                <span className="text-slate-400">·</span>
-                                <span>Association Reconnue d'Intérêt Général</span>
-                            </div>
+                            {/* Réassurance en texte simple — pas de pill badge */}
+                            <p className="text-xs font-semibold text-slate-400 tracking-wide pt-1">
+                                5 Cordées de la Réussite · Association Reconnue d'Intérêt Général
+                            </p>
                         </div>
 
-                        {/* ── COLONNE DROITE : Composition circulaire & douce ── */}
+                        {/* ── COLONNE DROITE : Photo principale + 1 badge clé ── */}
                         <div className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center">
-                            {/* Grand médaillon central arrondi / pilule */}
-                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-[3rem] overflow-hidden shadow-soft-lg border-4 border-white z-10">
+                            {/* Grand médaillon central — border-radius réduit (moins "template") */}
+                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-2xl overflow-hidden shadow-soft-lg border-4 border-white z-10">
                                 <img
                                     src="/images/projects/hero-1.png"
                                     alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
@@ -122,7 +120,7 @@ export function HeroScroll() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent pointer-events-none" />
                             </div>
 
-                            {/* Médaillon circulaire d'ambiance 2 */}
+                            {/* Médaillon circulaire d'ambiance */}
                             <div className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-soft border-4 border-white z-20">
                                 <img
                                     src="/images/projects/hero-3.png"
@@ -132,30 +130,12 @@ export function HeroScroll() {
                                 />
                             </div>
 
-                            {/* Badge Macaron 1 : Projets actifs */}
-                            <div className="absolute top-10 -right-4 xl:-right-6 z-30">
-                                <MacaronBadge
-                                    icon={<Zap size={16} />}
-                                    value="9 Projets"
-                                    label="Sur le terrain marseillais"
-                                />
-                            </div>
-
-                            {/* Badge Macaron 2 : Jeunes accompagnés */}
+                            {/* 1 seul badge flottant — le chiffre le plus parlant */}
                             <div className="absolute bottom-6 -left-4 xl:-left-6 z-30">
                                 <MacaronBadge
                                     icon={<GraduationCap size={16} />}
                                     value="300+ Jeunes"
                                     label="Collégiens & lycéens suivis"
-                                />
-                            </div>
-
-                            {/* Pastille officielle Phœnix avec logo rond */}
-                            <div className="absolute bottom-4 right-6 z-30 p-1.5 rounded-full bg-white shadow-soft border border-[#ECDDFD]">
-                                <img
-                                    src="/logo-badge.jpg"
-                                    alt="Logo officiel de l'association Phœnix Égalité des Chances"
-                                    className="w-14 h-14 rounded-full object-contain"
                                 />
                             </div>
                         </div>
@@ -166,17 +146,17 @@ export function HeroScroll() {
             {/* ══════════════════════════════════════════════════════
                 SECTION MOBILE (< 768px)
             ══════════════════════════════════════════════════════ */}
-            <section 
+            <section
                 style={{ paddingTop: 'calc(max(6.5rem, env(safe-area-inset-top, 0px) + 5rem))' }}
                 className="md:hidden relative w-full pb-16 px-5 bg-[#FFFBF4] overflow-hidden flex flex-col items-center text-center"
             >
                 {/* Trame filigrane Phœnix officielle mobile */}
                 <div className="pattern-watermark" aria-hidden="true" />
 
-                {/* Kicker mobile direct */}
-                <div className="relative z-10 badge-blockletter mb-3">
-                    <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
-                    <span>KEDGE BS · 100% Bénévole à Marseille</span>
+                {/* Kicker mobile — éditorial (ligne + texte, pas de badge-pill) */}
+                <div className="relative z-10 flex items-center gap-2 mb-3">
+                    <span className="w-5 h-[2px] bg-[#EC602B]" />
+                    <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">KEDGE BS · 100% Bénévole à Marseille</span>
                 </div>
 
                 {/* H1 mobile Shrikhand */}
@@ -215,9 +195,9 @@ export function HeroScroll() {
                     </Link>
                 </div>
 
-                {/* Composition photo mobile arrondie */}
+                {/* Composition photo mobile */}
                 <div className="relative z-10 w-full max-w-sm mx-auto mb-4">
-                    <div className="relative w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-soft border-3 border-white">
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft border-4 border-white">
                         <img
                             src="/images/projects/hero-1.png"
                             alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
@@ -227,16 +207,10 @@ export function HeroScroll() {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent" />
                     </div>
 
-                    {/* Badge rond mobile 1 */}
-                    <div className="absolute -bottom-3 -left-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#ECDDFD] shadow-soft text-[11px] font-bold text-[#6F2B75]">
-                        <Zap size={13} className="text-[#EC602B]" />
-                        <span>9 Projets de terrain</span>
-                    </div>
-
-                    {/* Badge rond mobile 2 */}
-                    <div className="absolute -top-3 -right-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#ECDDFD] shadow-soft text-[11px] font-bold text-[#2A082D]">
+                    {/* 1 badge mobile sobre — sans glassmorphisme */}
+                    <div className="absolute -bottom-3 -left-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#ECDDFD] shadow-soft text-[11px] font-bold text-[#6F2B75]">
                         <GraduationCap size={13} className="text-[#6F2B75]" />
-                        <span>300+ Jeunes</span>
+                        <span>300+ Jeunes accompagnés</span>
                     </div>
                 </div>
             </section>

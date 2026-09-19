@@ -77,10 +77,12 @@ export function Home() {
             {/* Section 4: Partenaires & Réseau */}
             <section className="py-20 md:py-28 bg-transparent">
                 <div className="container mx-auto px-4 text-center max-w-7xl">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
+                    <div className="flex justify-center items-center gap-3 mb-4">
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                             Réseau Associatif &amp; Partenaires
                         </span>
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
                     </div>
 
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1]">
@@ -103,7 +105,7 @@ export function Home() {
                         ].map((partner) => (
                             <div
                                 key={partner.name}
-                                className="bg-white border border-[#ECDDFD] rounded-2xl p-3 sm:p-4 w-full h-20 sm:h-24 flex items-center justify-center overflow-hidden shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
+                                className="bg-white border border-[#ECDDFD] rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 flex items-center justify-center overflow-hidden shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
                             >
                                 <img
                                     src={partner.src}
@@ -118,7 +120,7 @@ export function Home() {
 
                     <Link
                         to="/partenaires"
-                        className="btn-phoenix-orange px-8 py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-wider text-white shadow-glow-orange inline-flex items-center gap-2"
+                        className="btn-phoenix-orange px-7 py-3 rounded-lg text-xs sm:text-sm uppercase tracking-wider text-white shadow-glow-orange inline-flex items-center gap-2"
                     >
                         <span>{t('partners.viewAll')}</span>
                         <ArrowRight size={16} />

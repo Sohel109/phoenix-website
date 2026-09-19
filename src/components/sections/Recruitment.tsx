@@ -7,13 +7,15 @@ export function Recruitment() {
                 <div className="max-w-4xl mx-auto">
 
                     {/* Header */}
-                    <div className="text-center mb-8 sm:mb-10">
-                        <div className="flex justify-center mb-3">
-                            <span className="badge-blockletter">
+                    <div className="text-center mb-8 sm:mb-12">
+                        <div className="flex justify-center items-center gap-3 mb-4">
+                            <span className="h-px w-8 bg-[#EC602B]"></span>
+                            <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                                 Étudiants KEDGE · On recrute !
                             </span>
+                            <span className="h-px w-8 bg-[#EC602B]"></span>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-display text-phoenix-dark mb-3">
+                        <h2 className="text-3xl sm:text-5xl font-display text-phoenix-dark mb-3">
                             Rejoignez l'Aventure
                         </h2>
                         <p className="text-slate-600 font-sans text-base max-w-2xl mx-auto leading-relaxed">
@@ -35,7 +37,7 @@ export function Recruitment() {
                             href="https://m.facebook.com/groups/1045459488302373/?ref=share"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group inline-flex items-center gap-3 px-8 py-4 btn-phoenix-orange text-white rounded-full font-school uppercase tracking-wider text-xs shadow-glow-orange hover:scale-105 active:scale-95 transition-all duration-200"
+                            className="group inline-flex items-center gap-3 px-8 py-3.5 btn-phoenix-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-glow-orange hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
                         >
                             <span>Postuler Maintenant</span>
                             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -53,11 +55,11 @@ export function Recruitment() {
 
 function Card({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
     return (
-        <div className="bg-white border border-phoenix-lilac/50 p-8 rounded-[2.5rem] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center group shadow-sm flex flex-col items-center">
-            <div className="w-16 h-16 mx-auto bg-phoenix-cream text-phoenix-purple rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-phoenix-purple group-hover:to-phoenix-orange group-hover:text-white transition-all duration-300 border border-phoenix-lilac/60">
-                <Icon size={26} strokeWidth={1.8} />
+        <div className="bg-white border border-[#ECDDFD]/80 p-8 rounded-xl hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 text-center group shadow-soft flex flex-col items-center">
+            <div className="w-14 h-14 mx-auto bg-[#ECDDFD]/50 text-[#6F2B75] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#6F2B75] group-hover:text-white transition-all duration-300 border border-[#ECDDFD]">
+                <Icon size={24} strokeWidth={1.8} />
             </div>
-            <h3 className="text-lg font-school font-bold text-phoenix-dark mb-2 uppercase tracking-wide">{title}</h3>
+            <h3 className="text-base font-school font-bold text-phoenix-dark mb-2 uppercase tracking-wide">{title}</h3>
             <p className="text-sm font-sans text-slate-600 leading-relaxed">{description}</p>
         </div>
     );

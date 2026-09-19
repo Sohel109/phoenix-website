@@ -489,7 +489,7 @@ export function PlanningRecap() {
 
 
             {/* Filtres */}
-            <div className="p-6 rounded-[2.5rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 backdrop-blur-md shadow-soft-lg space-y-4">
+            <div className="p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 backdrop-blur-md shadow-soft-lg space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                     <div className="flex items-center gap-2">
                         <Filter size={16} className="text-[#EC602B]" />
@@ -865,7 +865,7 @@ export function PlanningRecap() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.96, y: 8 }}
                             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                            className="bg-[#2D0A32] text-white rounded-[2.5rem] max-w-lg w-full p-6 sm:p-8 border border-[#6F2B75]/50 shadow-2xl relative"
+                            className="bg-[#2D0A32] text-white rounded-xl max-w-lg w-full p-6 sm:p-8 border border-[#6F2B75]/50 shadow-2xl relative"
                         >
                             <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#6F2B75]/40">
                                 <div className="flex items-center gap-2.5">
@@ -1044,7 +1044,7 @@ export function PlanningRecap() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.96, y: 8 }}
                             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                            className="bg-[#2D0A32] text-white rounded-[2.5rem] max-w-2xl w-full p-6 sm:p-8 border border-[#6F2B75]/50 shadow-2xl relative max-h-[85vh] flex flex-col"
+                            className="bg-[#2D0A32] text-white rounded-xl max-w-2xl w-full p-6 sm:p-8 border border-[#6F2B75]/50 shadow-2xl relative max-h-[85vh] flex flex-col"
                         >
                             <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#6F2B75]/40 shrink-0">
                                 <div className="flex items-center gap-2.5">

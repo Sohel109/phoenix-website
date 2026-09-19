@@ -43,11 +43,11 @@ function Card({ category, onSelect }: { category: any, onSelect: (id: string) =>
                     onSelect(category.id);
                 }
             }}
-            className="flex-1 group cursor-pointer relative active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-[2.5rem] outline-none"
+            className="flex-1 group cursor-pointer relative active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-xl outline-none"
             aria-label={`Sélectionner la catégorie ${category.label} : ${category.description}`}
         >
             {/* Card Container */}
-            <div className="relative h-64 md:h-80 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 hover:border-phoenix-purple overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1">
+            <div className="relative h-64 md:h-80 bg-white rounded-xl border border-phoenix-lilac/50 hover:border-phoenix-purple overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1">
 
                 {/* Background blob on hover */}
                 <div className="absolute inset-0 bg-gradient-to-b from-phoenix-cream/50 to-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />

@@ -102,15 +102,17 @@ export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
             return [{ id: 'slot-8-jeu', projectId: 8, day: 'Jeudi', startTime: '15:30', endTime: '18:00' }];
         case 7: // Jules Ferry : 14h00-16h30 Mercredi (Bi-hebdomadaire)
             return [{ id: 'slot-7-mer', projectId: 7, day: 'Mercredi', startTime: '14:00', endTime: '16:30' }];
-        case 1: // Supd’OM : 18h00-19h30 Mardi Jeudi
-            return ['Mardi', 'Jeudi'].map(day => ({
-                id: `slot-1-${day.toLowerCase().substring(0,3)}`,
-                projectId: 1, day: day as DayOfWeek, startTime: '18:00', endTime: '19:30'
-            }));
+        case 1: // Sup d'OM : Mardi, Mercredi, Jeudi, Samedi
+            return [
+                { id: 'slot-1-mar', projectId: 1, day: 'Mardi', startTime: '18:00', endTime: '19:30' },
+                { id: 'slot-1-mer', projectId: 1, day: 'Mercredi', startTime: '14:00', endTime: '16:30' },
+                { id: 'slot-1-jeu', projectId: 1, day: 'Jeudi', startTime: '18:00', endTime: '19:30' },
+                { id: 'slot-1-sam', projectId: 1, day: 'Samedi', startTime: '10:00', endTime: '12:30' }
+            ];
         case 9: // Roy d’Espagne : 16h00-18h30 Jeudi
             return [{ id: 'slot-9-jeu', projectId: 9, day: 'Jeudi', startTime: '16:00', endTime: '18:30' }];
-        case 3: // MASSA 13 : Jeudi 18h00-19h30 (Par défaut)
-            return [{ id: 'slot-3-jeu', projectId: 3, day: 'Jeudi', startTime: '18:00', endTime: '19:30' }];
+        case 3: // MASSA 13 : Mercredi 18h00-20h00
+            return [{ id: 'slot-3-mer', projectId: 3, day: 'Mercredi', startTime: '18:00', endTime: '20:00' }];
         default:
             return [];
     }

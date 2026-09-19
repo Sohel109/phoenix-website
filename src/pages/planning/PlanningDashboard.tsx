@@ -149,10 +149,10 @@ export function PlanningDashboard() {
                 <motion.div
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-8 p-5 rounded-[2rem] bg-gradient-to-r from-[#EC602B]/20 via-[#6F2B75]/25 to-[#2A082D]/60 border border-[#EC602B]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 backdrop-blur-md shadow-soft"
+                    className="mb-8 p-5 rounded-xl bg-gradient-to-r from-[#EC602B]/20 via-[#6F2B75]/25 to-[#2A082D]/60 border border-[#EC602B]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 backdrop-blur-md shadow-soft"
                 >
                     <div className="flex items-center gap-3.5">
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
+                        <div className="w-11 h-11 rounded-lg bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
                             <Bell size={20} />
                         </div>
                         <div>
@@ -166,7 +166,7 @@ export function PlanningDashboard() {
                     </div>
                     <Link
                         to="/planning/notifications"
-                        className="btn-phoenix-gradient px-5 py-2 rounded-full text-white text-xs font-school uppercase tracking-wider whitespace-nowrap shadow-soft self-end sm:self-center"
+                        className="btn-phoenix-orange px-5 py-2 rounded-lg text-white text-xs font-school uppercase tracking-wider whitespace-nowrap shadow-soft self-end sm:self-center"
                     >
                         Consulter
                     </Link>
@@ -184,7 +184,7 @@ export function PlanningDashboard() {
                     >
                         <Link
                             to={card.to}
-                            className="flex flex-col gap-4 p-6 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all duration-300 group hover:-translate-y-1 shadow-soft-lg h-full"
+                            className="flex flex-col gap-4 p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all duration-300 group hover:-translate-y-1 shadow-soft-lg h-full"
                         >
                             <div className="flex items-center justify-between">
                                 <div className={`w-14 h-14 rounded-full bg-gradient-to-tr ${card.gradient} flex items-center justify-center text-white shadow-soft relative group-hover:scale-105 transition-transform duration-300`}>
@@ -213,7 +213,7 @@ export function PlanningDashboard() {
             </div>
 
             {/* Naviguer vers le site public sans se déconnecter */}
-            <div className="mt-8 p-6 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-5 shadow-soft-lg">
+            <div className="mt-8 p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-5 shadow-soft-lg">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
                         <Globe size={22} />

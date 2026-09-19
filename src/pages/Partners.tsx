@@ -71,10 +71,12 @@ export function Partners() {
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
+                    <div className="flex justify-center items-center gap-3 mb-4">
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                             Réseau &amp; Écosystème
                         </span>
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
                     </div>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Nos Partenaires Engagés
@@ -95,9 +97,9 @@ export function Partners() {
                         {majorPartners.map((partner) => (
                             <div
                                 key={partner.name}
-                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border border-[#ECDDFD] rounded-[2rem] p-6 flex flex-col justify-between shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
+                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border border-[#ECDDFD] rounded-xl p-6 flex flex-col justify-between shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-200 group"
                             >
-                                <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-2xl border border-[#ECDDFD] group-hover:bg-[#ECDDFD]/30 transition-colors">
+                                <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-lg border border-[#ECDDFD] group-hover:bg-[#ECDDFD]/30 transition-colors">
                                     <img
                                         src={partner.logo}
                                         alt={partner.name}
@@ -126,7 +128,7 @@ export function Partners() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Collèges */}
-                        <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 shadow-soft">
+                        <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 shadow-soft">
                             <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#ECDDFD]/60">
                                 <School size={20} className="text-[#EC602B]" />
                                 <h3 className="font-display text-[#2A082D] text-base">Collèges</h3>
@@ -147,7 +149,7 @@ export function Partners() {
                         </div>
 
                         {/* Lycées */}
-                        <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 shadow-soft">
+                        <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 shadow-soft">
                             <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#ECDDFD]/60">
                                 <GraduationCap size={20} className="text-[#EC602B]" />
                                 <h3 className="font-display text-[#2A082D] text-base">Lycées</h3>
@@ -168,7 +170,7 @@ export function Partners() {
                         </div>
 
                         {/* Centres sociaux & structures */}
-                        <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 shadow-soft">
+                        <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 shadow-soft">
                             <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#ECDDFD]/60">
                                 <Building2 size={20} className="text-[#EC602B]" />
                                 <h3 className="font-display text-[#2A082D] text-base">Centres & Fondations</h3>
@@ -211,9 +213,9 @@ export function Partners() {
                 </div>
 
                 {/* CTA Devenir Partenaire */}
-                <div className="bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                <div className="bg-[#2A082D] bg-bird-pattern-dark text-white rounded-xl p-8 sm:p-12 shadow-soft-lg flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
                     <div className="max-w-xl relative z-10">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white border border-white/20 text-xs font-school font-bold mb-4 shadow-soft">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white/10 text-white border border-white/20 text-xs font-school font-bold mb-4 shadow-soft">
                             <Handshake size={14} className="text-[#FF7E2E]" />
                             <span>Rejoindre notre réseau</span>
                         </div>
@@ -227,7 +229,7 @@ export function Partners() {
 
                     <Link
                         to="/contact?category=partenariat"
-                        className="btn-phoenix-orange !py-3.5 !px-8 rounded-full shadow-glow-orange shrink-0 flex items-center gap-2"
+                        className="btn-phoenix-orange !py-3.5 !px-7 rounded-lg shadow-glow-orange shrink-0 flex items-center gap-2"
                     >
                         <span>Nous contacter</span>
                         <ArrowRight size={18} />

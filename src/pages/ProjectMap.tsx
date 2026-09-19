@@ -81,7 +81,7 @@ export function ProjectMap() {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate(-1)}
-                        className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-phoenix-lilac/70 text-xs font-school uppercase tracking-wider text-phoenix-dark hover:text-phoenix-purple transition-all shadow-xs group cursor-pointer"
+                        className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-phoenix-lilac/70 text-xs font-school uppercase tracking-wider text-phoenix-dark hover:text-phoenix-purple transition-all shadow-xs group cursor-pointer"
                     >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                         <span>Retour</span>
@@ -89,7 +89,7 @@ export function ProjectMap() {
 
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-full bg-[#6F2B75] text-white flex items-center justify-center shadow-md shrink-0">
+                            <div className="w-14 h-14 rounded-lg bg-[#6F2B75] text-white flex items-center justify-center shadow-md shrink-0">
                                 <MapPin className="w-7 h-7" />
                             </div>
                             <div>
@@ -99,7 +99,7 @@ export function ProjectMap() {
                         </div>
 
                         {/* Legend */}
-                        <div className="flex flex-wrap items-center gap-4 p-3 px-6 bg-white rounded-full border border-phoenix-lilac/50 shadow-sm self-start sm:self-auto">
+                        <div className="flex flex-wrap items-center gap-4 p-3 px-5 bg-white rounded-lg border border-phoenix-lilac/50 shadow-sm self-start sm:self-auto">
                             <div className="flex items-center gap-2">
                                 <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: projectTypeColors.soutien }} />
                                 <span className="text-xs font-school uppercase tracking-wider text-slate-700">{projectTypeLabels.soutien}</span>
@@ -118,7 +118,7 @@ export function ProjectMap() {
 
                 {/* Map */}
                 <div
-                    className="rounded-[2.5rem] overflow-hidden border border-phoenix-lilac/50 shadow-xl"
+                    className="rounded-xl overflow-hidden border border-phoenix-lilac/50 shadow-xl"
                     style={{ height: '600px' }}
                 >
                     <MapContainer
@@ -201,15 +201,15 @@ export function ProjectMap() {
 
                 {/* Stats */}
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div className="p-6 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 shadow-sm text-center">
+                    <div className="p-6 bg-white rounded-xl border border-phoenix-lilac/50 shadow-sm text-center">
                         <div className="text-4xl font-display text-phoenix-purple mb-1">9</div>
                         <div className="text-xs font-school uppercase tracking-wider text-slate-600">Projets actifs à Marseille</div>
                     </div>
-                    <div className="p-6 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 shadow-sm text-center">
+                    <div className="p-6 bg-white rounded-xl border border-phoenix-lilac/50 shadow-sm text-center">
                         <div className="text-4xl font-display text-phoenix-orange mb-1">~300</div>
                         <div className="text-xs font-school uppercase tracking-wider text-slate-600">Jeunes accompagnés / an</div>
                     </div>
-                    <div className="p-6 bg-white rounded-[2.5rem] border border-phoenix-lilac/50 shadow-sm text-center">
+                    <div className="p-6 bg-white rounded-xl border border-phoenix-lilac/50 shadow-sm text-center">
                         <div className="text-4xl font-display text-phoenix-purple-light mb-1">+100</div>
                         <div className="text-xs font-school uppercase tracking-wider text-slate-600">Bénévoles Kedge mobilisés</div>
                     </div>

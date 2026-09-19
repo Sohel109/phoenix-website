@@ -54,14 +54,14 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="w-full max-w-xl mx-auto bg-white rounded-[2.5rem] p-10 sm:p-14 text-center border border-phoenix-lilac/50 shadow-xl"
+                className="w-full max-w-xl mx-auto bg-white rounded-xl p-10 sm:p-14 text-center border border-phoenix-lilac/50 shadow-xl"
             >
                 <div className="w-20 h-20 bg-phoenix-lilac/40 text-phoenix-purple rounded-full flex items-center justify-center mx-auto mb-6 border border-phoenix-lilac/70">
                     <CheckCircle size={36} className="text-phoenix-purple" />
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-school uppercase tracking-wide text-phoenix-dark mb-3">Message bien reçu !</h2>
-                <div className="w-12 h-1 bg-gradient-to-r from-phoenix-purple to-phoenix-orange mx-auto mb-6 rounded-full" />
+                <div className="w-12 h-1 bg-[#EC602B] mx-auto mb-6 rounded-full" />
 
                 <p className="text-slate-600 font-sans mb-8 leading-relaxed text-sm sm:text-base">
                     Merci pour votre message concernant <span className="font-bold text-phoenix-purple">{category}</span>.<br />
@@ -70,7 +70,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
 
                 <button
                     onClick={onBack}
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-phoenix-lilac/80 bg-phoenix-cream/60 hover:bg-phoenix-purple hover:text-white text-phoenix-dark text-xs font-school uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg border border-phoenix-lilac/80 bg-phoenix-cream/60 hover:bg-phoenix-purple hover:text-white text-phoenix-dark text-xs font-school uppercase tracking-wider transition-all cursor-pointer shadow-xs"
                 >
                     <ArrowLeft size={16} />
                     <span>Retour au choix</span>
@@ -89,18 +89,20 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
         >
             <button
                 onClick={onBack}
-                className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-phoenix-lilac/80 hover:border-phoenix-purple text-xs font-school uppercase tracking-wider text-phoenix-dark hover:text-phoenix-purple shadow-xs transition-all group cursor-pointer"
+                className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-phoenix-lilac/80 hover:border-phoenix-purple text-xs font-school uppercase tracking-wider text-phoenix-dark hover:text-phoenix-purple shadow-xs transition-all group cursor-pointer"
             >
                 <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                 <span>Changer de motif</span>
             </button>
 
             {/* Form Container */}
-            <div className="bg-white border border-phoenix-lilac/50 rounded-[2.5rem] p-8 sm:p-12 shadow-xl relative overflow-hidden">
+            <div className="bg-white border border-phoenix-lilac/50 rounded-xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
                 <div className="text-center mb-8">
-                    <span className="text-xs font-school uppercase tracking-widest text-phoenix-purple bg-phoenix-lilac/40 border border-phoenix-lilac/70 px-4 py-1.5 rounded-full mb-3 inline-block">
-                        Demande de contact
-                    </span>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                        <span className="h-px w-6 bg-[#EC602B]"></span>
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">Demande de contact</span>
+                        <span className="h-px w-6 bg-[#EC602B]"></span>
+                    </div>
                     <h2 className="text-2xl sm:text-3xl font-school uppercase tracking-wide text-phoenix-dark">
                         {category}
                     </h2>
@@ -145,14 +147,14 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
 
                     <div>
                         <label className="block text-xs font-school uppercase tracking-wider text-phoenix-dark mb-2">
-                            Votre Message
+                            Votre message
                         </label>
                         <textarea
                             required
                             rows={4}
                             value={formData.message}
                             onChange={e => setFormData({ ...formData, message: e.target.value })}
-                            className="w-full bg-phoenix-cream/40 rounded-2xl border border-phoenix-lilac/80 px-4 py-3 text-phoenix-dark font-sans focus:outline-none focus:border-phoenix-purple focus:ring-2 focus:ring-phoenix-purple/20 transition-all resize-none placeholder-slate-400 text-sm"
+                            className="w-full bg-phoenix-cream/40 rounded-lg border border-phoenix-lilac/80 px-4 py-3 text-phoenix-dark font-sans focus:outline-none focus:border-phoenix-purple focus:ring-2 focus:ring-phoenix-purple/20 transition-all resize-none placeholder-slate-400 text-sm"
                             placeholder="Expliquez-nous votre projet ou votre demande..."
                         />
                     </div>
@@ -160,7 +162,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="w-full py-4 px-6 btn-phoenix-gradient text-white rounded-full font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                        className="w-full py-4 px-6 btn-phoenix-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                     >
                         {status === 'loading' ? (
                             <>

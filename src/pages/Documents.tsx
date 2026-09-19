@@ -73,10 +73,12 @@ export function Documents() {
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
+                    <div className="flex justify-center items-center gap-3 mb-4">
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                             Ressources &amp; Documentation
                         </span>
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
                     </div>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Documents Utiles
@@ -91,12 +93,12 @@ export function Documents() {
                     {currentDocuments.map((doc, index) => (
                         <div
                             key={index}
-                            className="bg-white rounded-[2.5rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 p-8 flex flex-col justify-between group"
+                            className="bg-white rounded-xl border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 p-8 flex flex-col justify-between group"
                         >
                             <div>
                                 <div className="flex items-start gap-5 mb-6">
-                                    <div className="w-14 h-14 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-soft">
-                                        <FileText size={26} />
+                                    <div className="w-12 h-12 rounded-lg bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-soft">
+                                        <FileText size={24} />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -104,7 +106,7 @@ export function Documents() {
                                                 {doc.title}
                                             </h3>
                                             {doc.isNew && (
-                                                <span className="inline-flex items-center gap-1 text-[11px] font-school font-bold px-3 py-0.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] shrink-0">
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-school font-bold px-2.5 py-0.5 rounded bg-[#ECDDFD] text-[#6F2B75] shrink-0">
                                                     <Sparkles size={11} />
                                                     <span>Édition 2026-2027</span>
                                                 </span>
@@ -119,14 +121,14 @@ export function Documents() {
 
                             <div className="pt-5 border-t border-[#ECDDFD]/60 flex items-center justify-between mt-auto">
                                 <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-600">
-                                    <span className="bg-[#ECDDFD]/50 px-3 py-1 rounded-full text-[#6F2B75]">{doc.type}</span>
+                                    <span className="bg-[#ECDDFD]/50 px-2.5 py-1 rounded text-[#6F2B75]">{doc.type}</span>
                                     <span>{doc.size}</span>
                                 </div>
                                 <a
                                     href={`/documents/${doc.filename}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-phoenix-gradient !py-2 !px-5 !text-xs rounded-full text-white shadow-soft flex items-center gap-1.5"
+                                    className="btn-phoenix-orange !py-2 !px-4 !text-xs rounded-lg text-white shadow-soft flex items-center gap-1.5"
                                 >
                                     <Download size={14} />
                                     <span>Télécharger</span>
@@ -140,11 +142,11 @@ export function Documents() {
                 <div className="pt-8 border-t border-[#ECDDFD]/60">
                     <button
                         onClick={() => setIsArchiveOpen(!isArchiveOpen)}
-                        className="w-full flex items-center justify-between p-6 sm:p-7 rounded-[2rem] bg-white border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all group cursor-pointer text-left"
+                        className="w-full flex items-center justify-between p-6 sm:p-7 rounded-xl bg-white border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg transition-all group cursor-pointer text-left"
                         aria-expanded={isArchiveOpen}
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 group-hover:bg-gradient-to-r group-hover:from-[#6F2B75] group-hover:to-[#EC602B] group-hover:text-white transition-all shadow-soft">
+                            <div className="w-12 h-12 rounded-lg bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 group-hover:bg-[#6F2B75] group-hover:text-white transition-all shadow-soft">
                                 <Archive size={20} />
                             </div>
                             <div>
@@ -184,7 +186,7 @@ export function Documents() {
                                     {archiveDocuments.map((doc, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white rounded-[2rem] border border-[#ECDDFD] p-6 flex flex-col justify-between shadow-soft"
+                                            className="bg-white rounded-xl border border-[#ECDDFD] p-6 flex flex-col justify-between shadow-soft"
                                         >
                                             <div className="flex items-start gap-4 mb-4">
                                                 <div className="w-12 h-12 rounded-full bg-[#ECDDFD]/60 text-[#6F2B75] flex items-center justify-center shrink-0">

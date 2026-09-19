@@ -38,7 +38,7 @@ export function ProjectDetail() {
             <div className="pt-32 pb-20 text-center container mx-auto px-4">
                 <h1 className="text-3xl font-display text-[#2A082D] mb-4">Projet Introuvable</h1>
                 <p className="text-slate-500 mb-6">Le projet demandé n'existe pas ou a été déplacé.</p>
-                <Link to="/projets" className="btn-phoenix-gradient inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-school font-bold text-sm shadow-soft">
+                <Link to="/projets" className="btn-phoenix-orange inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-school font-bold text-sm shadow-soft">
                     <ArrowLeft size={16} />
                     <span>Retour à tous les projets</span>
                 </Link>
@@ -94,7 +94,7 @@ export function ProjectDetail() {
 
                     <Link 
                         to="/carte-des-projets" 
-                        className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#6F2B75] bg-[#ECDDFD] hover:bg-[#D9BEF8] px-4 py-2 rounded-full shadow-soft transition-all"
+                        className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#6F2B75] bg-[#ECDDFD] hover:bg-[#D9BEF8] px-3.5 py-1.5 rounded-lg shadow-soft transition-all"
                     >
                         <MapPin size={13} className="text-[#EC602B]" />
                         <span>Situer à Marseille</span>
@@ -102,7 +102,7 @@ export function ProjectDetail() {
                 </div>
 
                 {/* Main Card */}
-                <div className="bg-white rounded-[2.5rem] shadow-soft-lg border border-[#ECDDFD] overflow-hidden">
+                <div className="bg-white rounded-xl shadow-soft-lg border border-[#ECDDFD] overflow-hidden">
                     {/* Header with Banner Image */}
                     <div className={`h-64 sm:h-84 relative ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]' : 'bg-slate-900'} flex items-center justify-center overflow-hidden`}>
                         {project.banner ? (
@@ -178,14 +178,14 @@ export function ProjectDetail() {
 
                         {/* Chefs de projet sous le titre */}
                         <div className="flex flex-wrap items-center gap-2 mb-6">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ECDDFD]/60 border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#ECDDFD]/60 border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft">
                                 <UserCheck size={16} className="text-[#EC602B] shrink-0" />
                                 <span>{project.chefs.length > 1 ? 'Chefs de projet :' : 'Chef de projet :'} <strong className="text-[#6F2B75]">{project.chefs.join(' & ')}</strong></span>
                             </div>
                         </div>
 
                         {/* Highlight intro box */}
-                        <div className="mb-8 p-6 sm:p-7 bg-[#ECDDFD]/30 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                        <div className="mb-8 p-6 sm:p-7 bg-[#ECDDFD]/30 rounded-xl border border-[#ECDDFD] shadow-soft">
                             <p className="text-[#2A082D] text-base sm:text-lg font-medium leading-relaxed">
                                 {project.description}
                             </p>
@@ -194,7 +194,7 @@ export function ProjectDetail() {
                         {/* 4 Key Details Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                             {/* Card 1: Horaires */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <Clock size={15} />
                                     <span>Horaires</span>
@@ -205,7 +205,7 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 2: Lieu */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <MapPin size={15} />
                                     <span>Lieu</span>
@@ -216,7 +216,7 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 3: Chefs de projet */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <UserCheck size={15} />
                                     <span>{project.chefs.length > 1 ? 'Chefs de projet' : 'Chef de projet'}</span>
@@ -231,7 +231,7 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 4: Voyage / Sorties */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-2xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-emerald-700 mb-2">
                                     <Compass size={15} />
                                     <span>Voyage & Sorties</span>
@@ -255,7 +255,7 @@ export function ProjectDetail() {
 
                         {/* Axes de Travail */}
                         {project.axes && project.axes.length > 0 && (
-                            <div className="mb-10 p-6 bg-[#ECDDFD]/30 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                            <div className="mb-10 p-6 bg-[#ECDDFD]/30 rounded-xl border border-[#ECDDFD] shadow-soft">
                                 <h3 className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-3">
                                     Axes d'intervention prioritaires
                                 </h3>
@@ -263,7 +263,7 @@ export function ProjectDetail() {
                                     {project.axes.map((axe, i) => (
                                         <span 
                                             key={i} 
-                                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft"
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft"
                                         >
                                             <CheckCircle2 size={14} className="text-[#EC602B]" />
                                             <span>{axe}</span>
@@ -274,10 +274,10 @@ export function ProjectDetail() {
                         )}
 
                         {/* Section Chefs de Projet Responsables */}
-                        <div className="mb-10 p-6 sm:p-7 bg-white rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                        <div className="mb-10 p-6 sm:p-7 bg-white rounded-xl border border-[#ECDDFD] shadow-soft">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-13 h-13 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shadow-soft shrink-0">
+                                    <div className="w-12 h-12 rounded-xl bg-[#6F2B75] text-white flex items-center justify-center shadow-soft shrink-0">
                                         <UserCheck size={22} />
                                     </div>
                                     <div>
@@ -291,7 +291,7 @@ export function ProjectDetail() {
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
                                     {project.chefs.map((chef, idx) => (
-                                        <span key={idx} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] font-school font-bold text-xs shadow-soft">
+                                        <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#ECDDFD] text-[#6F2B75] font-school font-bold text-xs shadow-soft">
                                             <span className="w-2 h-2 rounded-full bg-[#EC602B] shrink-0"></span>
                                             <span>{chef}</span>
                                         </span>
@@ -308,7 +308,7 @@ export function ProjectDetail() {
                                         href={`https://instagram.com/${project.instagram}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft hover:-translate-y-0.5 transition-transform"
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E1306C] text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft hover:-translate-y-0.5 transition-transform"
                                     >
                                         <Instagram size={15} />
                                         <span>@{project.instagram}</span>
@@ -320,7 +320,7 @@ export function ProjectDetail() {
                                         href={project.facebook.startsWith('http') ? project.facebook : `https://facebook.com/${project.facebook}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft hover:-translate-y-0.5 transition-transform"
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1877F2] hover:bg-[#166fe5] text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft hover:-translate-y-0.5 transition-transform"
                                     >
                                         <Facebook size={15} />
                                         <span>{project.facebook.startsWith('http') ? 'Facebook' : `@${project.facebook}`}</span>
@@ -329,7 +329,7 @@ export function ProjectDetail() {
 
                                 <Link
                                     to="/carte-des-projets"
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#ECDDFD] text-[#2A082D] hover:text-[#EC602B] font-school font-bold text-xs uppercase tracking-wider transition-colors shadow-soft hover:-translate-y-0.5"
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#ECDDFD] text-[#2A082D] hover:text-[#EC602B] font-school font-bold text-xs uppercase tracking-wider transition-colors shadow-soft hover:-translate-y-0.5"
                                 >
                                     <MapPin size={14} className="text-[#EC602B]" />
                                     <span>Localiser sur la carte</span>
@@ -338,7 +338,7 @@ export function ProjectDetail() {
 
                             <Link
                                 to="/contact"
-                                className="btn-phoenix-orange !py-3 !px-7 !text-xs uppercase tracking-wider rounded-full shadow-glow-orange flex items-center gap-2"
+                                className="btn-phoenix-orange !py-3 !px-6 !text-xs uppercase tracking-wider rounded-lg shadow-glow-orange flex items-center gap-2"
                             >
                                 <span>Rejoindre ou soutenir ce projet</span>
                                 <ArrowRight size={14} />
@@ -357,11 +357,11 @@ export function ProjectDetail() {
                             <Link
                                 key={op.id}
                                 to={`/projets/${op.id}`}
-                                className="group bg-white rounded-[2rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 p-6 transition-all flex flex-col justify-between"
+                                className="group bg-white rounded-xl border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 p-6 transition-all flex flex-col justify-between"
                             >
                                 <div>
                                     <div className="flex items-center justify-between gap-2 mb-3">
-                                        <span className="text-[10px] font-school font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#ECDDFD] text-[#6F2B75]">
+                                        <span className="text-[10px] font-school font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-[#ECDDFD] text-[#6F2B75]">
                                             {op.category}
                                         </span>
                                         <span className="text-xs text-slate-500 font-school font-bold">

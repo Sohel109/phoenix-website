@@ -33,10 +33,12 @@ export function Events() {
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header */}
                 <div className="text-center mb-14 sm:mb-18">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
+                    <div className="flex justify-center items-center gap-3 mb-4">
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                             Moments Forts &amp; Vie Associative
                         </span>
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
                     </div>
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
                         Nos Événements Phares
@@ -60,10 +62,10 @@ export function Events() {
 function EventCard({ event, index }: { event: any; index: number }) {
     return (
         <div
-            className="bg-white border border-[#ECDDFD] rounded-[2.5rem] p-7 flex flex-col h-full shadow-soft hover:shadow-soft-lg hover:-translate-y-1.5 transition-all duration-300 group"
+            className="bg-white border border-[#ECDDFD] rounded-xl p-7 flex flex-col h-full shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 group"
         >
             {/* Image Container with strict 16:9 fixed aspect ratio */}
-            <div className={`relative aspect-video w-full rounded-[2rem] overflow-hidden mb-6 shadow-soft flex items-center justify-center ${
+            <div className={`relative aspect-video w-full rounded-lg overflow-hidden mb-6 shadow-soft flex items-center justify-center ${
                 event.id === 'entretiens-excellence' ? 'bg-white p-5' : 'bg-slate-900'
             }`}>
                 <img
@@ -82,14 +84,14 @@ function EventCard({ event, index }: { event: any; index: number }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/80 via-transparent to-transparent pointer-events-none" />
 
                 {/* Date Badge */}
-                <div className="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-xs px-3.5 py-1.5 rounded-full text-xs font-school font-bold text-[#2A082D] shadow-soft flex items-center gap-1.5">
+                <div className="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-xs px-3 py-1 rounded text-xs font-school font-bold text-[#2A082D] shadow-soft flex items-center gap-1.5">
                     <Calendar size={13} className="text-[#EC602B]" />
                     <span>{event.date}</span>
                 </div>
 
                 {/* Event Category Badge */}
                 {event.badge && (
-                    <div className="absolute top-3.5 left-3.5 bg-[#6F2B75] text-white px-3 py-1 rounded-full text-[10px] font-school font-bold uppercase tracking-wider shadow-soft">
+                    <div className="absolute top-3.5 left-3.5 bg-[#6F2B75] text-white px-2.5 py-1 rounded text-[10px] font-school font-bold uppercase tracking-wider shadow-soft">
                         {event.badge}
                     </div>
                 )}
@@ -115,7 +117,7 @@ function EventCard({ event, index }: { event: any; index: number }) {
 
                 <Link
                     to={`/evenements/${event.id}`}
-                    className="btn-phoenix-gradient w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-white font-school font-bold text-xs shadow-soft transition-all mt-auto"
+                    className="btn-phoenix-orange w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-school font-bold text-xs shadow-soft transition-all mt-auto"
                 >
                     <span>En savoir plus</span>
                     <ArrowRight size={15} />

@@ -167,7 +167,7 @@ export function PlanningLogin() {
                 <motion.div
                     animate={isShaking ? { x: [-8, 8, -6, 6, -4, 4, 0] } : { x: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="bg-[#2D0A32]/90 backdrop-blur-md border border-[#6F2B75]/50 rounded-[2.5rem] p-8 sm:p-10 shadow-soft-lg"
+                    className="bg-[#2D0A32]/90 backdrop-blur-md border border-[#6F2B75]/50 rounded-xl p-8 sm:p-10 shadow-soft-lg"
                 >
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Identifiant */}
@@ -277,7 +277,7 @@ export function PlanningLogin() {
                         initial={{ opacity: 0, scale: 0.9, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="bg-[#2D0A32] border border-[#6F2B75]/60 rounded-[2.5rem] p-7 sm:p-8 max-w-sm w-full shadow-2xl relative text-[#FFFBF4]"
+                        className="bg-[#2D0A32] border border-[#6F2B75]/60 rounded-xl p-7 sm:p-8 max-w-sm w-full shadow-2xl relative text-[#FFFBF4]"
                     >
                         <div className="flex items-center gap-3.5 mb-5">
                             <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">

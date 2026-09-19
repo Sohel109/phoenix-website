@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Quote, ArrowRight, CheckCircle2, GraduationCap, Sparkles, ChevronDown, MapPin } from 'lucide-react';
+import { Quote, ArrowRight, CheckCircle2, ChevronDown, MapPin } from 'lucide-react';
 
 export function TestimonialsSection() {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -24,12 +24,14 @@ export function TestimonialsSection() {
     return (
         <section className="relative py-20 md:py-32 bg-transparent overflow-hidden">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
-                {/* Header direct & chaleureux */}
+                {/* En-tête éditorial */}
                 <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
+                    <div className="flex justify-center items-center gap-2.5 mb-4">
+                        <span className="w-6 h-[2px] bg-[#EC602B] shrink-0" />
+                        <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">
                             Impact concret &amp; histoires vraies
                         </span>
+                        <span className="w-6 h-[2px] bg-[#EC602B] shrink-0" />
                     </div>
 
                     <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-4">
@@ -41,14 +43,12 @@ export function TestimonialsSection() {
                     </p>
                 </div>
 
-                {/* ──────────────── CARTE ÉDITORIALE UNIQUE & PERCUTANTE ──────────────── */}
-                <div className="max-w-3xl mx-auto bg-[#ECDDFD] rounded-[2.5rem] p-8 sm:p-12 border border-[#D9BEF8] shadow-soft-lg relative overflow-hidden bg-bird-pattern">
-                    {/* Corner Sticker */}
-                    <div className="absolute top-6 right-6 z-10 hidden sm:block">
-                        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white shadow-soft">
-                            <Quote size={12} className="text-white" />
-                            <span>Parole d'Élève</span>
-                        </span>
+                {/* ── CARTE TÉMOIGNAGE ÉDITORIALE ── */}
+                <div className="max-w-3xl mx-auto bg-white rounded-xl p-8 sm:p-12 border border-[#E5E5E5] shadow-soft relative overflow-hidden">
+                    {/* Étiquette simple — pas de pill */}
+                    <div className="absolute top-6 right-6 z-10 hidden sm:flex items-center gap-1.5 text-[10px] font-school font-bold uppercase tracking-wider text-[#EC602B]">
+                        <span className="w-3 h-px bg-[#EC602B]" />
+                        Parole d'Élève
                     </div>
 
                     {/* Top : Avatar + Identité */}
@@ -111,7 +111,7 @@ export function TestimonialsSection() {
                     <button
                         type="button"
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 hover:bg-white text-xs font-school font-bold text-[#6F2B75] hover:text-[#EC602B] border border-[#D9BEF8] shadow-soft active:scale-[0.98] transition-all mb-6 group cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded text-xs font-school font-bold text-[#6F2B75] hover:text-[#EC602B] border border-[#D9BEF8] active:opacity-80 transition-all mb-6 cursor-pointer"
                     >
                         <span>{isExpanded ? 'Réduire le récit' : 'Lire tout son témoignage'}</span>
                         <ChevronDown
@@ -121,15 +121,15 @@ export function TestimonialsSection() {
                     </button>
 
                     {/* Pied de Carte : Lien vers le projet ACSE */}
-                    <div className="pt-5 border-t border-[#6F2B75]/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="pt-5 border-t border-[#E5E5E5] flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2 text-xs font-school font-bold text-[#6F2B75]">
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#EC602B]" />
+                            <span className="w-2.5 h-px bg-[#EC602B]" />
                             <span>{student.projectTag}</span>
                         </div>
 
                         <Link
                             to={student.projectLink}
-                            className="btn-phoenix-orange px-5 py-2.5 rounded-full text-xs text-white shadow-soft flex items-center gap-1.5 shrink-0"
+                            className="btn-phoenix-gradient px-5 py-2.5 text-xs flex items-center gap-1.5 shrink-0"
                         >
                             <span>Découvrir le projet ACSE</span>
                             <ArrowRight size={13} />
@@ -137,20 +137,14 @@ export function TestimonialsSection() {
                     </div>
                 </div>
 
-                {/* Trust Bar en Pilule Large */}
-                <div className="mt-8 sm:mt-12 text-center">
-                    <div className="inline-flex flex-wrap items-center justify-center gap-4 sm:gap-7 px-8 py-4 rounded-full bg-white border border-[#ECDDFD] shadow-soft text-xs font-school font-bold text-[#2A082D]">
-                        <span className="flex items-center gap-1.5 text-[#EC602B]">
-                            <Sparkles size={15} /> 100% de réussite au bac pour nos élèves suivis
-                        </span>
-                        <span className="hidden sm:inline text-[#6F2B75]/30 font-bold">•</span>
-                        <span className="flex items-center gap-1.5 text-[#6F2B75]">
-                            <GraduationCap size={15} /> +3000 jeunes accompagnés depuis 2011
-                        </span>
-                        <span className="hidden sm:inline text-[#6F2B75]/30 font-bold">•</span>
-                        <span className="flex items-center gap-1.5 text-emerald-700">
-                            <CheckCircle2 size={15} /> Labellisé « Cordées de la Réussite »
-                        </span>
+                {/* Trust Bar — style éditorial simple (pas de pill container) */}
+                <div className="mt-10 pt-8 border-t border-[#2A082D]/8 text-center">
+                    <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs font-school font-bold text-[#2A082D]">
+                        <span className="text-[#EC602B]">100% de réussite au bac pour nos élèves suivis</span>
+                        <span className="hidden sm:inline text-[#2A082D]/20">/</span>
+                        <span className="text-[#6F2B75]">+3000 jeunes accompagnés depuis 2011</span>
+                        <span className="hidden sm:inline text-[#2A082D]/20">/</span>
+                        <span className="text-slate-600">Labellisé « Cordées de la Réussite »</span>
                     </div>
                 </div>
             </div>

@@ -82,7 +82,7 @@ export const projects: ProjectItem[] = [
         isCordee: true,
         targetAudience: "Collégiens de 3ème",
         locationName: "Collège Arthur Rimbaud (13015 Marseille)",
-        schedule: "Jeudi après-midi (un mercredi sur deux au collège)",
+        schedule: "Chaque jeudi après-midi",
         axes: ["Ouverture culturelle", "Esprit critique & Débat"],
         chefs: ["Haïtam BEBBI"],
         instagram: "arthurrimbaud_phoenix",

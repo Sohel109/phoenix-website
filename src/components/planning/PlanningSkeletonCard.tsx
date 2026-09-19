@@ -4,7 +4,7 @@
  */
 export function PlanningSkeletonCard() {
     return (
-        <div className="p-5 rounded-[2rem] bg-[#2D0A32]/80 border border-[#6F2B75]/30 animate-pulse space-y-3">
+        <div className="p-5 rounded-xl bg-[#2D0A32]/80 border border-[#6F2B75]/30 animate-pulse space-y-3">
             {/* Ligne nom + avatar */}
             <div className="flex items-center gap-3.5">
                 {/* Avatar */}

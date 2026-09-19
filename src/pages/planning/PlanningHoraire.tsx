@@ -307,7 +307,7 @@ export function PlanningHoraire() {
                         initial={{ opacity: 0, scale: 0.95, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                        className="bg-[#2D0A32] border border-[#6F2B75]/60 rounded-[2.5rem] p-7 max-w-md w-full shadow-2xl relative text-white"
+                        className="bg-[#2D0A32] border border-[#6F2B75]/60 rounded-xl p-7 max-w-md w-full shadow-2xl relative text-white"
                     >
                         <button
                             onClick={() => setSelectedSlotForModal(null)}

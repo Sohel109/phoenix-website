@@ -333,7 +333,7 @@ export function Association() {
 
                         {/* Colonne Photo Chaleureuse */}
                         <div className="lg:col-span-5">
-                            <div className="relative rounded-[2.5rem] overflow-hidden shadow-soft-lg border border-[#ECDDFD] group bg-[#2A082D]">
+                            <div className="relative rounded-xl overflow-hidden shadow-soft-lg border border-[#ECDDFD] group bg-[#2A082D]">
                                 <div className="absolute top-4 right-4 z-20">
                                     <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white shadow-soft rotate-2">
                                         100% sur le terrain
@@ -380,7 +380,7 @@ export function Association() {
                             return (
                                 <div
                                     key={idx}
-                                    className="rounded-[2rem] p-6 border border-[#ECDDFD] shadow-soft bg-white flex flex-col justify-between hover:-translate-y-1 hover:shadow-soft-lg transition-all"
+                                    className="rounded-xl p-6 border border-[#ECDDFD] shadow-soft bg-white flex flex-col justify-between hover:-translate-y-1 hover:shadow-soft-lg transition-all"
                                 >
                                     <div>
                                         <div className={`w-13 h-13 rounded-full flex items-center justify-center mb-4 bg-white border border-[#ECDDFD] shadow-soft ${val.color}`}>
@@ -404,10 +404,10 @@ export function Association() {
 
 
                 {/* ──────────────── 3. CHRONOLOGIE CONDENSÉE (5 DATES CLÉS) ──────────────── */}
-                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/40 rounded-[2.5rem] p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
+                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/40 rounded-xl p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 rotate-1 shadow-soft border border-[#ECDDFD]">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 shadow-soft border border-[#ECDDFD]">
                                 <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
                                 <span>Histoire &amp; Transmission</span>
                             </div>
@@ -422,7 +422,7 @@ export function Association() {
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
                         {keyDates.map((item, idx) => (
-                            <div key={idx} className="flex flex-col relative bg-white p-6 rounded-[2rem] border border-[#ECDDFD] shadow-soft">
+                            <div key={idx} className="flex flex-col relative bg-white p-6 rounded-xl border border-[#ECDDFD] shadow-soft">
                                 <div className={`font-display text-[#EC602B] mb-2 leading-tight whitespace-nowrap ${
                                     item.year.length > 5 
                                         ? "text-lg sm:text-base lg:text-lg xl:text-xl tracking-tight" 
@@ -503,7 +503,7 @@ export function Association() {
                         {bureauMembers.map((member) => (
                             <div
                                 key={member.id}
-                                className="bg-white rounded-[2rem] border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all p-6 flex flex-col justify-between text-center relative group"
+                                className="bg-white rounded-xl border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all p-6 flex flex-col justify-between text-center relative group"
                             >
                                 {/* Bouton Crayon (visible uniquement pour role === 'bureau') */}
                                 {isBureau && (
@@ -573,7 +573,7 @@ export function Association() {
                     </div>
 
                     {/* Pôles Opérationnels sous forme d'accordéons / fiches légères */}
-                    <div className="bg-[#ECDDFD]/30 rounded-[2.5rem] p-6 sm:p-8 border border-[#ECDDFD] shadow-soft">
+                    <div className="bg-[#ECDDFD]/30 rounded-xl p-6 sm:p-8 border border-[#ECDDFD] shadow-soft">
                         <div className="mb-6">
                             <h3 className="text-xl font-display text-[#2A082D]">
                                 Pôles Opérationnels &amp; Équipes
@@ -589,7 +589,7 @@ export function Association() {
                                 return (
                                     <div
                                         key={pole.id}
-                                        className="rounded-2xl border border-[#ECDDFD] bg-white shadow-soft overflow-hidden transition-all flex flex-col justify-between"
+                                        className="rounded-xl border border-[#ECDDFD] bg-white shadow-soft overflow-hidden transition-all flex flex-col justify-between"
                                     >
                                         <button
                                             type="button"
@@ -645,7 +645,7 @@ export function Association() {
                                                                 setPoleMembers(pole.members.join(', '));
                                                                 setPoleDesc(pole.description);
                                                             }}
-                                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EC602B]/10 hover:bg-[#EC602B]/20 text-[#EC602B] font-school text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#EC602B]/10 hover:bg-[#EC602B]/20 text-[#EC602B] font-school text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
                                                         >
                                                             <Pencil size={11} />
                                                             <span>Modifier le pôle</span>
@@ -662,7 +662,7 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 5. BANDEAU DE RESSOURCES ──────────────── */}
-                <section className="relative overflow-hidden bg-[#2A082D] text-white rounded-[2.5rem] p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-lg">
+                <section className="relative overflow-hidden bg-[#2A082D] text-white rounded-xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-lg">
                     {/* Trame filigrane officielle sur fond sombre */}
                     <div className="pattern-watermark-dark" aria-hidden="true" />
 
@@ -682,14 +682,14 @@ export function Association() {
                     <div className="flex items-center gap-3 shrink-0">
                         <Link
                             to="/documents"
-                            className="btn-phoenix-orange !text-xs sm:!text-sm rounded-full px-6 py-3 shadow-glow-orange flex items-center gap-2"
+                            className="btn-phoenix-orange !text-xs sm:!text-sm rounded-lg px-6 py-3 shadow-glow-orange flex items-center gap-2"
                         >
                             <Download size={15} />
                             <span>Télécharger le PDF</span>
                         </Link>
                         <Link
                             to="/projets"
-                            className="btn-phoenix-outline !bg-white/10 !text-white hover:!bg-white/20 !border-white/30 !text-xs sm:!text-sm rounded-full px-6 py-3 flex items-center gap-2"
+                            className="btn-phoenix-outline !bg-white/10 !text-white hover:!bg-white/20 !border-white/30 !text-xs sm:!text-sm rounded-lg px-6 py-3 flex items-center gap-2"
                         >
                             <span>Nos 9 projets</span>
                             <ArrowRight size={14} />

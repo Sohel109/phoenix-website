@@ -103,7 +103,7 @@ export function Transparency() {
                 </div>
 
                 {/* Trust Message */}
-                <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 md:p-8 mb-12 shadow-soft">
+                <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 md:p-8 mb-12 shadow-soft">
                     <div className="flex items-start gap-4">
                         <div className="p-3 bg-[#ECDDFD] rounded-xl flex-shrink-0 text-[#6F2B75]">
                             <Heart className="w-6 h-6" />
@@ -123,7 +123,7 @@ export function Transparency() {
                 <div className="mb-12">
                     <h2 className="text-2xl sm:text-3xl font-display text-[#2A082D] mb-6 text-center tracking-tight">Répartition des Dons</h2>
 
-                    <div className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 md:p-8 shadow-soft">
+                    <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 md:p-8 shadow-soft">
                         <div className="space-y-6">
                             {donationBreakdown.map((item, index) => (
                                 <div key={item.category}>
@@ -163,7 +163,7 @@ export function Transparency() {
                             return (
                                 <div
                                     key={item.category}
-                                    className="bg-white border border-[#ECDDFD] rounded-[2rem] p-6 hover:shadow-soft-lg transition-all hover:-translate-y-0.5 shadow-soft"
+                                    className="bg-white border border-[#ECDDFD] rounded-xl p-6 hover:shadow-soft-lg transition-all hover:-translate-y-0.5 shadow-soft"
                                 >
                                     <div className="flex items-start gap-4">
                                         <div
@@ -210,10 +210,10 @@ export function Transparency() {
                 </div>
 
                 {/* Widget don avec simulateur fiscal interactif */}
-                <div className="text-center bg-[#2A082D] bg-bird-pattern-dark text-white rounded-[2.5rem] p-8 md:p-12 shadow-soft-lg relative overflow-hidden">
+                <div className="text-center bg-[#2A082D] bg-bird-pattern-dark text-white rounded-xl p-8 md:p-12 shadow-soft-lg relative overflow-hidden">
                     <div className="relative z-10">
-                        <div className="p-4 bg-white/10 rounded-full w-fit mx-auto mb-5">
-                            <Heart className="w-10 h-10 text-[#FF7E2E]" fill="currentColor" />
+                        <div className="p-3.5 bg-white/10 rounded-xl w-fit mx-auto mb-5">
+                            <Heart className="w-8 h-8 text-[#FF7E2E]" fill="currentColor" />
                         </div>
                         <h2 className="text-3xl sm:text-4xl font-display text-white mb-3">Soutenez Notre Mission</h2>
                         <p className="text-[#ECDDFD] mb-7 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base font-normal">
@@ -227,7 +227,7 @@ export function Transparency() {
                             href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-phoenix-orange inline-flex items-center gap-2 px-8 py-4 rounded-full font-school font-bold text-sm uppercase tracking-wider shadow-glow-orange mt-6"
+                            className="btn-phoenix-orange inline-flex items-center gap-2 px-7 py-3.5 rounded-lg font-school font-bold text-sm uppercase tracking-wider shadow-glow-orange mt-6"
                         >
                             <Heart size={18} fill="currentColor" />
                             <span>Faire un don sur HelloAsso</span>
