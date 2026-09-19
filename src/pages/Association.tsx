@@ -61,7 +61,7 @@ export function Association() {
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    fetch('http://localhost:3002/api/team/members', {
+                    fetch('/api/team/members', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ members: parsed })
@@ -81,7 +81,7 @@ export function Association() {
         }
 
         // Si aucun cache local, charger depuis le serveur physique
-        fetch('http://localhost:3002/api/team/members')
+        fetch('/api/team/members')
             .then((res) => res.json())
             .then((data) => {
                 if (data?.success && Array.isArray(data.members) && data.members.length > 0) {
@@ -103,7 +103,7 @@ export function Association() {
 
         // Tentative de synchronisation physique sur le serveur local
         try {
-            const res = await fetch('http://localhost:3002/api/team/members', {
+            const res = await fetch('/api/team/members', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ members: updated })
@@ -151,7 +151,7 @@ export function Association() {
     const [poleDesc, setPoleDesc] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:3002/api/team/poles')
+        fetch('/api/team/poles')
             .then(res => res.json())
             .then(data => {
                 if (data?.success && Array.isArray(data.poles) && data.poles.length > 0) {
@@ -166,7 +166,7 @@ export function Association() {
         setPoles(updated);
         try {
             localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(updated));
-            const res = await fetch('http://localhost:3002/api/team/poles', {
+            const res = await fetch('/api/team/poles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ poles: updated })

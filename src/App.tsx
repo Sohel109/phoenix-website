@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useState } from 'react';
+
 import { AnimatePresence } from 'framer-motion';
 
 import { ScrollToTop } from './components/layout/ScrollToTop';
@@ -16,7 +17,6 @@ import { Home } from './pages/Home';
 import { Association } from './pages/Association';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
-import { ProjectMap } from './pages/ProjectMap';
 import { Events } from './pages/Events';
 import { EventDetail } from './pages/EventDetail';
 import { Partners } from './pages/Partners';
@@ -25,6 +25,10 @@ import { LegalMentions } from './pages/LegalMentions';
 import { Transparency } from './pages/Transparency';
 import { Contact } from './pages/Contact';
 import { NotFound } from './pages/NotFound';
+
+// Pages lourdes en lazy (code-splitting)
+const ProjectMap = lazy(() => import('./pages/ProjectMap').then(m => ({ default: m.ProjectMap })));
+
 
 // Planning module (lazy)
 const PlanningLogin = lazy(() => import('./pages/planning/PlanningLogin').then(m => ({ default: m.PlanningLogin })));
@@ -58,11 +62,16 @@ function PlanningGuard({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const [showIntro, setShowIntro] = useState(true);
+  // L'intro ne se rejoue qu'à la 1ère visite de la session (nouvel onglet ou F5 complet)
+  const [showIntro, setShowIntro] = useState(() => {
+    return !sessionStorage.getItem('phoenix_intro_seen');
+  });
 
   const handleIntroComplete = () => {
+    sessionStorage.setItem('phoenix_intro_seen', '1');
     setShowIntro(false);
   };
+
 
   return (
     <ThemeProvider>

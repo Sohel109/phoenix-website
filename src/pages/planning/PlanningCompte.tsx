@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award, Sparkles, GraduationCap } from 'lucide-react';
+import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award, Sparkles, GraduationCap, CalendarPlus } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, getSlotDuration } from '../../data/planningData';
+import { timeSlots, getSlotDuration, getWeekStartDate } from '../../data/planningData';
 import { AttestationModal } from '../../components/planning/AttestationModal';
 
 interface StatCardProps {
@@ -119,8 +119,78 @@ export function PlanningCompte() {
     const STATUS_LABELS: Record<string, string> = {
         prevu: 'Prévu', confirme: 'Confirmé', absent: 'Absent', annule: 'Annulé',
     };
+    // Export iCal / .ics — compatible Google Calendar, Apple Calendar, Outlook
+    const handleExportIcal = () => {
+        const confirmedBookings = myBookings.filter(b => b.status === 'confirme' || b.status === 'prevu');
+        if (confirmedBookings.length === 0) {
+            alert('Aucun créneau confirmé ou prévu à exporter.');
+            return;
+        }
+
+        const DAY_OFFSET: Record<string, number> = {
+            Lundi: 0, Mardi: 1, Mercredi: 2, Jeudi: 3, Vendredi: 4, Samedi: 5, Dimanche: 6
+        };
+
+        const formatIcalDate = (date: Date, timeStr: string) => {
+            const [h, m] = timeStr.split(':').map(Number);
+            const d = new Date(date);
+            d.setHours(h, m, 0, 0);
+            return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+
+        const lines: string[] = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Phoenix EDC//Planning Bénévoles//FR',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            `X-WR-CALNAME:Phoenix EDC – ${currentUser.name}`,
+            'X-WR-TIMEZONE:Europe/Paris',
+        ];
+
+        confirmedBookings.forEach(b => {
+            const slot = timeSlots.find(s => s.id === b.slotId);
+            if (!slot) return;
+            const project = projectsData.find(p => p.id === slot.projectId);
+            const weekStart = getWeekStartDate(b.weekKey);
+            const dayOffset = DAY_OFFSET[slot.day] ?? 0;
+            const eventDate = new Date(weekStart);
+            eventDate.setDate(eventDate.getDate() + dayOffset);
+
+            const dtstart = formatIcalDate(eventDate, slot.startTime);
+            const dtend = formatIcalDate(eventDate, slot.endTime);
+            const uid = `${b.id}@phoenixedc.fr`;
+            const summary = `Phoenix EDC – ${project?.name || slot.projectId}`;
+            const location = project?.address || 'Marseille';
+
+            lines.push(
+                'BEGIN:VEVENT',
+                `UID:${uid}`,
+                `DTSTART:${dtstart}`,
+                `DTEND:${dtend}`,
+                `SUMMARY:${summary}`,
+                `LOCATION:${location}`,
+                `DESCRIPTION:Créneau bénévole Phoenix EDC · Statut : ${b.status}`,
+                `STATUS:${b.status === 'confirme' ? 'CONFIRMED' : 'TENTATIVE'}`,
+                'END:VEVENT',
+            );
+        });
+
+        lines.push('END:VCALENDAR');
+        const icsContent = lines.join('\r\n');
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Phoenix_Planning_${currentUser.name.replace(/\s+/g, '_')}.ics`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
 
     const handlePasswordSubmit = async (e: React.FormEvent) => {
+
         e.preventDefault();
         setFeedback(null);
 
@@ -190,27 +260,43 @@ export function PlanningCompte() {
                     </div>
                 </div>
 
-                {/* Attestation PDF button */}
-                <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setShowAttestation(true)}
-                    className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider shadow-soft transition-all self-start sm:self-auto cursor-pointer ${
-                        isAttestationEligible
-                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/40'
-                            : 'btn-phoenix-gradient text-white'
-                    }`}
-                >
-                    <Award size={16} className={isAttestationEligible ? 'text-emerald-200' : ''} />
-                    <span>
-                        {isExempt
-                            ? `Attestation validée (Quota N-1 · ${totalConsolide}h)`
-                            : isAttestationEligible
-                                ? `Attestation validée (${totalConsolide}h)`
-                                : `Attestation (${totalConsolide}h / ${ATTESTATION_THRESHOLD}h)`}
-                    </span>
-                </motion.button>
+                {/* Actions du profil : Attestation + Export Calendrier */}
+                <div className="flex flex-wrap gap-2.5 self-start sm:self-auto">
+                    {/* Attestation PDF button */}
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setShowAttestation(true)}
+                        className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider shadow-soft transition-all cursor-pointer ${
+                            isAttestationEligible
+                                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/40'
+                                : 'btn-phoenix-gradient text-white'
+                        }`}
+                    >
+                        <Award size={16} className={isAttestationEligible ? 'text-emerald-200' : ''} />
+                        <span>
+                            {isExempt
+                                ? `Attestation validée (Quota N-1 · ${totalConsolide}h)`
+                                : isAttestationEligible
+                                    ? `Attestation validée (${totalConsolide}h)`
+                                    : `Attestation (${totalConsolide}h / ${ATTESTATION_THRESHOLD}h)`}
+                        </span>
+                    </motion.button>
+
+                    {/* Export iCal button */}
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleExportIcal}
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-school text-xs uppercase tracking-wider border border-[#ECDDFD]/30 bg-[#6F2B75]/30 hover:bg-[#6F2B75]/50 text-[#ECDDFD] transition-all cursor-pointer"
+                        title="Exporter mes créneaux vers Google Calendar / Apple Calendar (.ics)"
+                    >
+                        <CalendarPlus size={15} />
+                        <span>Sync Calendrier</span>
+                    </motion.button>
+                </div>
             </motion.div>
+
 
             {/* Banner for Renewing Member (Quota N-1 Acquis) */}
             {isExempt && (

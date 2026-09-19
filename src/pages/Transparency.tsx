@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { PieChart, Heart, BookOpen, PartyPopper, FileText, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DonationSimulator } from '../components/DonationSimulator';
 
 const donationBreakdown = [
     {
@@ -184,7 +185,7 @@ export function Transparency() {
                     </div>
                 </div>
 
-                {/* CTA Section */}
+                {/* Widget don avec simulateur fiscal interactif */}
                 <div className="text-center bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 md:p-12 shadow-lg">
                     <div className="p-4 bg-white/20 rounded-full w-fit mx-auto mb-5">
                         <Heart className="w-12 h-12 text-white" fill="currentColor" />
@@ -193,19 +194,24 @@ export function Transparency() {
                     <p className="text-white/90 mb-7 max-w-2xl mx-auto leading-relaxed">
                         Chaque don compte. Ensemble, donnons à tous les jeunes les mêmes chances de réussir.
                     </p>
+
+                    {/* Simulateur fiscal interactif */}
+                    <DonationSimulator />
+
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-8 py-4 bg-white text-orange-600 rounded-xl font-bold text-base hover:bg-orange-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-white text-orange-600 rounded-xl font-bold text-base hover:bg-orange-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 mt-6"
                     >
                         <Heart size={20} fill="currentColor" />
-                        Faire un don déductible
+                        Faire un don sur HelloAsso
                     </a>
                     <p className="text-white/75 text-sm mt-4">
-                        66% de réduction d'impôts · Reçu fiscal automatique
+                        66% de réduction d'impôts · Reçu fiscal automatique · Paiement sécurisé
                     </p>
                 </div>
+
             </div>
         </div>
     );

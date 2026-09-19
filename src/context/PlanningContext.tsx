@@ -155,7 +155,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     });
 
     useEffect(() => {
-        fetch('http://localhost:3002/api/planning/manual-hours')
+        fetch('/api/planning/manual-hours')
             .then(res => res.json())
             .then(data => {
                 if (data?.success && Array.isArray(data.manualHours)) {
@@ -179,7 +179,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     });
 
     useEffect(() => {
-        fetch('http://localhost:3002/api/planning/exemptions')
+        fetch('/api/planning/exemptions')
             .then(res => res.json())
             .then(data => {
                 if (data?.success && Array.isArray(data.exemptions)) {
@@ -480,7 +480,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         setManualHours(updated);
         try {
             localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(updated));
-            await fetch('http://localhost:3002/api/planning/manual-hours', {
+            await fetch('/api/planning/manual-hours', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ manualHours: updated })
@@ -497,7 +497,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         setManualHours(updated);
         try {
             localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(updated));
-            await fetch('http://localhost:3002/api/planning/manual-hours', {
+            await fetch('/api/planning/manual-hours', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ manualHours: updated })
@@ -534,7 +534,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         setExemptions(updated);
         try {
             localStorage.setItem('phoenix_quota_exemptions_v1', JSON.stringify(updated));
-            await fetch('http://localhost:3002/api/planning/exemptions', {
+            await fetch('/api/planning/exemptions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ exemptions: updated })

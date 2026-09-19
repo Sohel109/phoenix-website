@@ -443,7 +443,31 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                             </div>
                         </div>
                     </div>
+
+                    {/* QR Code d'authentification certifié */}
+                    <div className="mt-4 pt-4 border-t border-zinc-200 flex justify-between items-center">
+                        <div className="flex-1">
+                            <p className="text-[10px] text-zinc-500 font-mono">Réf. : {refNumber}</p>
+                            <p className="text-[10px] text-zinc-400 mt-0.5 leading-tight">
+                                Document délivré par l'Association Phoenix Égalité des Chances<br />
+                                Enregistrée à la Préfecture des Bouches-du-Rhône · KEDGE Business School Marseille
+                            </p>
+                        </div>
+                        {/* QR Code dynamique via api.qrserver.com */}
+                        <div className="flex flex-col items-center gap-1 ml-4">
+                            <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&color=2A082D&bgcolor=FFFFFF&data=${encodeURIComponent(`https://phoenixedc.fr/verifier?ref=${refNumber}&u=${user.id}&h=${totalHours}&y=${new Date().getFullYear()}`)}`}
+                                alt={`QR Code attestation ${refNumber}`}
+                                width={80}
+                                height={80}
+                                className="rounded border border-zinc-200"
+                                crossOrigin="anonymous"
+                            />
+                            <span className="text-[9px] text-zinc-400 font-mono text-center">Scanner pour vérifier</span>
+                        </div>
+                    </div>
                 </div>
+
 
                 {/* ── PIED DE MODALE (NON IMPRIMABLE) ────────────────────────────── */}
                 <div className="mt-8 pt-6 border-t border-zinc-200 flex items-center justify-between text-xs text-zinc-500 print:hidden">

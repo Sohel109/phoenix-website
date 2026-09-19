@@ -1,9 +1,13 @@
 import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export function Footer() {
     const { t } = useTranslation();
+    const location = useLocation();
+
+    // Masquer le footer dans l'intranet planning (design sombre, pas de footer public)
+    if (location.pathname.startsWith('/planning')) return null;
 
     return (
         <footer className="relative bg-[#2A082D] bg-bird-pattern-dark text-slate-300 pt-16 pb-12 border-t border-[#6F2B75]/40 overflow-hidden">

@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/app-icon.png" />
 
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+
   <!-- iOS PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,10 +15,10 @@
   <link rel="apple-touch-icon" href="/app-icon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/app-icon.png">
   
-  
+
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#F97316" />
+  <meta name="theme-color" content="#EC602B" />
   <meta name="description" content="Association étudiante de KEDGE Business School œuvrant pour l'égalité des chances à Marseille : tutorat académique, ouverture culturelle et accompagnement des jeunes." />
   <meta name="keywords" content="Phoenix, égalité des chances, tutorat, Marseille, KEDGE Business School, association étudiante, éducation, mentorat" />
   <meta name="author" content="Phoenix Égalité des Chances" />
@@ -34,6 +37,43 @@
   <meta name="twitter:description" content="Association étudiante de KEDGE Business School œuvrant pour l'égalité des chances à Marseille : tutorat et ouverture culturelle." />
   <meta name="twitter:image" content="/logo-badge.jpg" />
 
+  <!-- Schema.org NGO (SEO structuré pour moteurs de recherche) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NGO",
+    "name": "Phœnix Égalité des Chances",
+    "alternateName": "Phoenix EDC",
+    "url": "https://phoenixedc.fr",
+    "logo": "https://phoenixedc.fr/logo-badge.jpg",
+    "image": "https://phoenixedc.fr/logo-badge.jpg",
+    "description": "Association étudiante de KEDGE Business School Marseille, œuvrant pour l'égalité des chances depuis 2011 : tutorat académique, accompagnement scolaire et ouverture culturelle.",
+    "foundingDate": "2011",
+    "email": "phoenixedc.asso@gmail.com",
+    "sameAs": [
+      "https://www.instagram.com/phoenixedc/",
+      "https://fr.linkedin.com/company/phoenix-egalit%C3%A9deschances",
+      "https://www.facebook.com/phoenix.egalitedeschances"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Domaine de Luminy",
+      "addressLocality": "Marseille",
+      "postalCode": "13009",
+      "addressCountry": "FR"
+    },
+    "parentOrganization": {
+      "@type": "CollegeOrUniversity",
+      "name": "KEDGE Business School"
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": "Marseille"
+    },
+    "knowsAbout": ["Égalité des chances", "Tutorat", "Accompagnement scolaire", "Ouverture culturelle"]
+  }
+  </script>
+
   <!-- Google Fonts: Shrikhand (Titres officiels), Montserrat (Corps), Allura (Script manuscrit), Outfit (Typo scolaire Blockletter) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,11 +86,10 @@
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light');
     } catch (e) {}
+    // Enregistrement du Service Worker PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for (let r of registrations) {
-          r.unregister();
-        }
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
       });
     }
   </script>

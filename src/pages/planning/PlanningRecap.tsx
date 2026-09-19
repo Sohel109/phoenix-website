@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, FileText, Filter, ShieldCheck, Plus, Clock, X, Trash2, History, AlertCircle, CheckCircle, GraduationCap, Search, ArrowUpDown, ArrowDownAZ, ArrowUpZA } from 'lucide-react';
+import { Download, FileText, Filter, ShieldCheck, Plus, Clock, X, Trash2, History, AlertCircle, CheckCircle, GraduationCap, Search, ArrowUpDown, ArrowDownAZ, ArrowUpZA, TableProperties } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
+import { PlanningSkeletonList } from '../../components/planning/PlanningSkeletonCard';
 
 export function PlanningRecap() {
     const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption } = usePlanning();
@@ -34,7 +35,36 @@ export function PlanningRecap() {
     const isBureau = currentUser?.role === 'bureau';
     const isAuthorized = Boolean(currentUser && (currentUser.role === 'chef_projet' || isBureau));
 
+    // Ref sur l'input de recherche (pour les raccourcis clavier)
+    const searchRef = useRef<HTMLInputElement>(null);
+
+    // Raccourcis clavier : "/" ou "Cmd+K" → focus recherche  /  "Échap" → vider recherche / fermer modal
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        const focused = document.activeElement;
+        const isTyping = focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement || focused instanceof HTMLSelectElement;
+
+        if ((e.key === '/' && !isTyping) || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
+            e.preventDefault();
+            searchRef.current?.focus();
+        }
+
+        if (e.key === 'Escape') {
+            if (showAddModal) { setShowAddModal(false); return; }
+            if (showHistoryModal) { setShowHistoryModal(false); return; }
+            if (searchQuery) { setSearchQuery(''); searchRef.current?.blur(); }
+        }
+    }, [showAddModal, showHistoryModal, searchQuery]);
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleKeyDown]);
+
+    // Loading state : données en cours de chargement depuis Google Apps Script
+    const isLoading = !allUsers || allUsers.length === 0;
+
     const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
     
     // Obtenir toutes les années uniques des bookings
     const availableYears = useMemo(() => {
@@ -238,7 +268,48 @@ export function PlanningRecap() {
         URL.revokeObjectURL(url);
     };
 
+    // Export CSV consolidé compatible KEDGE (colonnes : Nom, Prénom, Heures Terrain, Heures Valorisées, Total, Statut)
+    const handleExportCSV = () => {
+        const BOM = '\uFEFF'; // BOM UTF-8 pour Excel
+        const headers = ['Nom', 'Prénom', 'Heures terrain', 'Heures valorisées (Bureau)', 'Total heures', 'Statut attestation', 'Quota N-1 validé'];
+        const rows = displayedMembers.map(u => {
+            const isExempt = isQuotaExempt(u.id);
+            const statusLabel = isExempt
+                ? 'Quota N-1 Validé'
+                : u.totalHours >= 50
+                    ? 'Attestation validée (≥50h)'
+                    : `En cours (${u.totalHours}/50h)`;
+            const nameParts = u.name.trim().split(' ');
+            const prenom = nameParts[0] || '';
+            const nom = nameParts.slice(1).join(' ') || '';
+            return [
+                nom,
+                prenom,
+                u.slotHours,
+                u.manualHoursCount,
+                u.totalHours,
+                statusLabel,
+                isExempt ? 'Oui' : 'Non',
+            ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(';');
+        });
+        const csv = BOM + [headers.map(h => `"${h}"`).join(';'), ...rows].join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const period = filterType === 'week' ? selectedWeek
+            : filterType === 'month' ? `${months[selectedMonth]}_${selectedYear}`
+            : filterType === 'year' ? String(selectedYear)
+            : 'Toutes_periodes';
+        link.download = `Phoenix_Heures_${period}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     // Soumission du formulaire d'heures manuelles
+
     const handleAddManualSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -365,12 +436,57 @@ export function PlanningRecap() {
                         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         onClick={handleDownload}
                         className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#6F2B75]/40 hover:bg-[#6F2B75]/70 border border-[#ECDDFD]/30 text-white font-school text-xs uppercase tracking-wider transition-all cursor-pointer"
+                        title="Télécharger le récapitulatif en texte (.txt)"
                     >
                         <Download size={15} />
                         <span>Télécharger</span>
                     </motion.button>
+
+                    {isBureau && (
+                        <>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                                onClick={handleExportCSV}
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-emerald-900/40 hover:bg-emerald-900/70 border border-emerald-500/30 text-emerald-300 font-school text-xs uppercase tracking-wider transition-all cursor-pointer"
+                                title="Exporter en CSV compatible Excel / KEDGE"
+                            >
+                                <TableProperties size={15} />
+                                <span>Export CSV KEDGE</span>
+                            </motion.button>
+
+                            {/* Sauvegarde complète JSON */}
+                            <motion.button
+                                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                                onClick={() => {
+                                    const backup = {
+                                        exportedAt: new Date().toISOString(),
+                                        version: '1.0',
+                                        manualHours,
+                                        bookings: bookings.slice(0, 500),
+                                        allUsers: (allUsers || []).map(u => ({ id: u.id, name: u.name })),
+                                    };
+                                    const json = JSON.stringify(backup, null, 2);
+                                    const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.download = `Phoenix_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    URL.revokeObjectURL(url);
+                                }}
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-sky-900/40 hover:bg-sky-900/70 border border-sky-500/30 text-sky-300 font-school text-xs uppercase tracking-wider transition-all cursor-pointer"
+                                title="Exporter la sauvegarde complète des données (.json)"
+                            >
+                                <Download size={15} />
+                                <span>Sauvegarde JSON</span>
+                            </motion.button>
+                        </>
+                    )}
                 </div>
             </div>
+
 
             {/* Filtres */}
             <div className="p-6 rounded-[2.5rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 backdrop-blur-md shadow-soft-lg space-y-4">
@@ -522,10 +638,11 @@ export function PlanningRecap() {
                     <div className="relative flex-1">
                         <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/50 pointer-events-none" />
                         <input
+                            ref={searchRef}
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Rechercher par nom ou prénom..."
+                            placeholder="Rechercher par nom ou prénom... (/ ou ⌘K)"
                             className="w-full bg-[#1F0422]/90 border border-[#6F2B75]/50 focus:border-[#EC602B] rounded-full pl-9 pr-9 py-2 text-xs text-white placeholder-[#ECDDFD]/40 outline-none transition-all focus:ring-1 focus:ring-[#EC602B]"
                         />
                         {searchQuery && (
@@ -578,8 +695,11 @@ export function PlanningRecap() {
                     </div>
                 </div>
             </div>
-            
-            {displayedMembers.length === 0 ? (
+
+            {/* Skeleton loader pendant le chargement des données Google Apps Script */}
+            {isLoading ? (
+                <PlanningSkeletonList count={8} />
+            ) : displayedMembers.length === 0 ? (
                 <div className="flex flex-col items-center py-12 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 p-6">
                     <FileText size={40} className="text-[#ECDDFD]/30 mb-3" />
                     {searchQuery.trim() ? (
