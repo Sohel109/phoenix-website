@@ -119,65 +119,69 @@ export function Transparency() {
                     </div>
                 </div>
 
-                {/* Donation Breakdown - Visual Representation */}
-                <div className="mb-12">
-                    <h2 className="text-2xl sm:text-3xl font-display text-[#2A082D] mb-6 text-center tracking-tight">Répartition des Dons</h2>
+                {/* Répartition des Dons (Section unifiée, épurée et sans doublons) */}
+                <div className="mb-14">
+                    <div className="text-center mb-8">
+                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] px-3.5 py-1 rounded-full shadow-soft inline-block mb-2">
+                            Affectation Budgétaire
+                        </span>
+                        <h2 className="text-2xl sm:text-4xl font-display text-[#2A082D] tracking-tight">
+                            Répartition de Chaque Euro Donné
+                        </h2>
+                    </div>
 
-                    <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 md:p-8 shadow-soft">
-                        <div className="space-y-6">
-                            {donationBreakdown.map((item, index) => (
-                                <div key={item.category}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className="w-3 h-3 rounded-full flex-shrink-0"
-                                                style={{ backgroundColor: item.color }}
-                                            />
-                                            <span className="text-slate-800 font-semibold text-sm">{item.category}</span>
-                                        </div>
-                                        <span className="text-2xl font-black text-slate-900 min-w-[60px] text-right">
-                                            {item.percentage}%
-                                        </span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                                        <motion.div
-                                            className="h-full rounded-full"
-                                            style={{ backgroundColor: item.color }}
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${item.percentage}%` }}
-                                            transition={{ delay: 0.6 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
-                                        />
-                                    </div>
-                                </div>
+                    {/* Barre d'ensemble compacte */}
+                    <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 mb-6 shadow-soft">
+                        <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                            {donationBreakdown.map((item) => (
+                                <div
+                                    key={item.category}
+                                    style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
+                                    title={`${item.category}: ${item.percentage}%`}
+                                />
                             ))}
                         </div>
                     </div>
-                </div>
 
-                {/* Category Details */}
-                <div className="mb-12">
-                    <h2 className="text-2xl sm:text-3xl font-display text-[#2A082D] mb-6 text-center tracking-tight">Détails par Catégorie</h2>
-                    <div className="grid md:grid-cols-2 gap-5">
-                        {donationBreakdown.map((item) => {
+                    {/* 3 Cartes explicatives détaillées sans répétition */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        {donationBreakdown.map((item, index) => {
                             const Icon = item.icon;
                             return (
                                 <div
                                     key={item.category}
-                                    className="bg-white border border-[#ECDDFD] rounded-xl p-6 hover:shadow-soft-lg transition-all hover:-translate-y-0.5 shadow-soft"
+                                    className="bg-white border border-[#ECDDFD] rounded-xl p-6 hover:shadow-soft-lg transition-all hover:-translate-y-1 shadow-soft flex flex-col justify-between"
                                 >
-                                    <div className="flex items-start gap-4">
-                                        <div
-                                            className="p-3 rounded-xl flex-shrink-0"
-                                            style={{ backgroundColor: `${item.color}18` }}
-                                        >
-                                            <Icon className="w-6 h-6" style={{ color: item.color }} />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-display text-[#2A082D] mb-1">{item.category}</h3>
-                                            <p className="text-slate-600 text-sm mb-3 leading-relaxed font-normal">{item.description}</p>
-                                            <span className="text-2xl font-black" style={{ color: item.color }}>
+                                    <div>
+                                        <div className="flex items-center justify-between gap-3 mb-4">
+                                            <div
+                                                className="p-3 rounded-xl flex-shrink-0"
+                                                style={{ backgroundColor: `${item.color}18` }}
+                                            >
+                                                <Icon className="w-6 h-6" style={{ color: item.color }} />
+                                            </div>
+                                            <span className="text-3xl font-display" style={{ color: item.color }}>
                                                 {item.percentage}%
                                             </span>
+                                        </div>
+
+                                        <h3 className="text-base font-display text-[#2A082D] mb-2 leading-snug">
+                                            {item.category}
+                                        </h3>
+                                        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal">
+                                            {item.description}
+                                        </p>
+                                    </div>
+
+                                    <div className="mt-5 pt-3 border-t border-[#ECDDFD]/60">
+                                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <motion.div
+                                                className="h-full rounded-full"
+                                                style={{ backgroundColor: item.color }}
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${item.percentage}%` }}
+                                                transition={{ delay: 0.2 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
+                                            />
                                         </div>
                                     </div>
                                 </div>

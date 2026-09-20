@@ -8,7 +8,9 @@ import {
     BookOpen, 
     Compass, 
     Sparkles, 
-    Heart
+    Heart,
+    ChevronDown,
+    Calendar
 } from 'lucide-react';
 import { useState } from 'react';
 import { SEO } from '../components/common/SEO';
@@ -36,6 +38,7 @@ const projectsBreadcrumbSchema = {
 
 export function Projects() {
     const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+    const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
     const filteredProjects = projects.filter(p => {
         if (activeFilter === 'cordees') return p.isCordee;
@@ -66,8 +69,8 @@ export function Projects() {
             />
 
             <div className="container mx-auto px-4 max-w-7xl">
-                {/* Header Section */}
-                <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+                {/* Header Section Aéré */}
+                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
                     <div className="flex justify-center items-center gap-3 mb-4">
                         <span className="h-px w-8 bg-[#EC602B]"></span>
                         <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
@@ -79,44 +82,28 @@ export function Projects() {
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1] text-balance">
                         Des Projets Concrets pour l'Égalité
                     </h1>
-                    <p className="text-[#2A082D]/80 font-medium max-w-3xl mx-auto text-sm sm:text-base leading-relaxed mb-8 text-pretty">
-                        Chaque semaine, nos +100 étudiants bénévoles accompagnent <strong className="text-[#2A082D] font-bold">300 jeunes marseillais</strong> de la 6ème à la Terminale. Nos actions combinent soutien scolaire, éveil culturel, aide à l'orientation et développement personnel.
+                    <p className="text-[#2A082D]/80 font-medium max-w-2xl mx-auto text-sm sm:text-base leading-relaxed mb-8 text-pretty">
+                        Chaque semaine, nos bénévoles accompagnent 300 collégiens et lycéens marseillais à travers soutien scolaire, éveil culturel et aide à l'orientation.
                     </p>
 
-                    {/* Stats */}
-                    <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-8">
-                        <span className="px-3.5 py-1.5 rounded-lg bg-white border border-[#ECDDFD] text-xs font-school font-bold text-[#2A082D] shadow-soft">
-                            <strong className="text-[#EC602B] font-black tabular-nums">300</strong> tutorés suivis
-                        </span>
-                        <span className="px-3.5 py-1.5 rounded-lg bg-[#ECDDFD] border border-[#D9BEF8] text-xs font-school font-bold text-[#6F2B75] shadow-soft">
-                            <strong className="text-[#6F2B75] font-black tabular-nums">5</strong> Cordées de la Réussite
-                        </span>
-                        <span className="px-3.5 py-1.5 rounded-lg bg-[#E1BBCB]/50 border border-[#E1BBCB] text-xs font-school font-bold text-[#2A082D] shadow-soft">
-                            <strong className="text-[#EC602B] font-black tabular-nums">9</strong> implantations à Marseille
-                        </span>
-                        <span className="px-3.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-school font-bold text-emerald-800 shadow-soft">
-                            <strong className="text-emerald-900 font-black">Du lundi au samedi</strong>
-                        </span>
-                    </div>
-
-                    {/* Action Links & Filter Bar */}
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    {/* Action Link & Filter Bar */}
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
                         <Link
                             to="/carte-des-projets"
-                            className="btn-phoenix-outline px-6 py-3 rounded-lg text-xs sm:text-sm font-school font-bold shadow-soft flex items-center gap-2 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                            className="btn-phoenix-outline px-5 py-2.5 rounded-lg text-xs sm:text-sm font-school font-bold shadow-soft flex items-center gap-2 active:scale-95"
                         >
-                            <MapPin size={16} className="text-[#EC602B]" />
-                            <span>Voir la carte interactive des projets</span>
-                            <ArrowRight size={14} />
+                            <MapPin size={15} className="text-[#EC602B]" />
+                            <span>Carte interactive des implantations</span>
+                            <ArrowRight size={13} />
                         </Link>
                     </div>
 
                     {/* Filter Tabs */}
-                    <div className="mt-8 flex flex-wrap justify-center gap-2">
+                    <div className="flex flex-wrap justify-center gap-2">
                         <button
                             type="button"
                             onClick={() => setActiveFilter('all')}
-                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
+                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'all'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
@@ -127,7 +114,7 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('cordees')}
-                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all flex items-center gap-1.5 shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
+                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all flex items-center gap-1.5 shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'cordees'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#6F2B75] hover:bg-[#ECDDFD] border border-[#ECDDFD]'
@@ -139,7 +126,7 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('college')}
-                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
+                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'college'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
@@ -150,13 +137,13 @@ export function Projects() {
                         <button
                             type="button"
                             onClick={() => setActiveFilter('lycee')}
-                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
+                            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'lycee'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
                                     : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
                             }`}
                         >
-                            Lycées, OM & Asso (4)
+                            Lycées & Structures (4)
                         </button>
                     </div>
                 </div>
@@ -196,13 +183,6 @@ export function Projects() {
                                                 <span>Cordée</span>
                                             </span>
                                         )}
-                                    </div>
-
-                                    {/* Creation Year top right */}
-                                    <div className="absolute top-3.5 right-3.5 z-10">
-                                        <span className="px-2.5 py-1 rounded text-[11px] font-school font-bold bg-[#2A082D]/85 backdrop-blur-md text-white shadow-soft">
-                                            Depuis {project.creationYear}
-                                        </span>
                                     </div>
 
                                     {/* Round Macaron Logo Pastille bottom right */}
@@ -335,102 +315,109 @@ export function Projects() {
                     </div>
                 </div>
 
-                {/* ──────────────── SECTION ENRICHIE : PLANNING HEBDOMADAIRE (TABLEAU RÉCAPITULATIF) ──────────────── */}
-                <div className="bg-[#ECDDFD]/70 border-2 border-[#6F2B75]/20 rounded-xl p-6 sm:p-10 shadow-soft-lg overflow-hidden relative">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-                        <div className="flex items-center gap-3">
-                            <img
-                                src="/logo-badge.jpg"
-                                alt="Phœnix EDC"
-                                className="w-12 h-12 rounded-full border-2 border-white shadow-soft object-contain"
-                            />
+                {/* ──────────────── SECTION PLANNING HEBDOMADAIRE (ACCORDÉON ÉPURÉ) ──────────────── */}
+                <div className="bg-[#ECDDFD]/50 border border-[#6F2B75]/20 rounded-xl p-6 sm:p-8 shadow-soft overflow-hidden transition-all">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3.5">
+                            <div className="w-11 h-11 rounded-xl bg-[#6F2B75] text-white flex items-center justify-center shadow-soft shrink-0">
+                                <Calendar size={22} />
+                            </div>
                             <div>
-                                <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#6F2B75]">
-                                    Organisation de terrain
+                                <span className="text-[11px] font-school font-bold uppercase tracking-wider text-[#6F2B75] block">
+                                    Organisation & Rythme
                                 </span>
-                                <p className="text-xs text-[#2A082D]/80 font-medium">9 antennes actives à Marseille</p>
+                                <h2 className="text-xl sm:text-2xl font-display text-[#2A082D] tracking-tight">
+                                    Planning Hebdomadaire des Séances
+                                </h2>
                             </div>
                         </div>
 
-                        <h2 className="font-script text-4xl sm:text-5xl text-[#2A082D] tracking-wide text-center">
-                            Tableau récapitulatif
-                        </h2>
+                        <button
+                            type="button"
+                            onClick={() => setIsScheduleOpen(!isScheduleOpen)}
+                            className="btn-phoenix-gradient !py-2.5 !px-5 rounded-lg text-white font-school font-bold text-xs uppercase tracking-wider shadow-soft flex items-center gap-2 cursor-pointer active:scale-95"
+                            aria-expanded={isScheduleOpen}
+                        >
+                            <span>{isScheduleOpen ? "Masquer le planning" : "Consulter la semaine type"}</span>
+                            <ChevronDown
+                                size={16}
+                                className={`transition-transform duration-300 ${isScheduleOpen ? "rotate-180" : ""}`}
+                            />
+                        </button>
+                    </div>
 
-                        <div className="hidden sm:block text-right">
-                            <span className="text-[11px] font-school font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full bg-white/90 text-[#6F2B75] border border-[#ECDDFD] shadow-soft">
-                                Semaine type
-                            </span>
+                    {/* Schedule Table (Visible si déplié) */}
+                    {isScheduleOpen && (
+                        <div className="mt-6 pt-6 border-t border-[#ECDDFD]">
+                            <div className="overflow-x-auto bg-white rounded-xl border border-[#D6C4EC] shadow-soft">
+                                <table className="w-full text-left text-sm border-collapse min-w-[640px]">
+                                    <thead>
+                                        <tr className="border-b border-[#D6C4EC] bg-[#EBDFF5] text-xs font-school font-bold uppercase tracking-wider text-[#2A082D]">
+                                            <th className="py-4 px-5 border-r border-[#D6C4EC]/70">PROJET</th>
+                                            <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">LUNDI</th>
+                                            <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">MARDI</th>
+                                            <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">MERCREDI</th>
+                                            <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">JEUDI</th>
+                                            <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">VENDREDI</th>
+                                            <th className="py-4 px-3 text-center">SAMEDI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#E5D7F2] font-medium">
+                                        {weeklySchedules.map((item, idx) => (
+                                            <tr key={idx} className="hover:bg-[#ECDDFD]/30 transition-colors">
+                                                <td className="py-3.5 px-5 font-school font-bold text-[#2A082D] border-r border-[#E5D7F2] flex items-center justify-between gap-3">
+                                                    <span className="text-sm tracking-wide">{item.name}</span>
+                                                    {item.isCordee && (
+                                                        <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#501354] text-white font-school font-bold uppercase tracking-wider shrink-0 shadow-2xs">
+                                                            CORDÉE
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
+                                                    {item.monday && (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
+                                                    {item.tuesday && (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
+                                                    {item.wednesday && (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
+                                                    {item.thursday && (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
+                                                    {item.friday && (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3.5 px-3 text-center">
+                                                    {item.saturday && (
+                                                        item.saturdayFilled ? (
+                                                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#501354] text-white font-bold text-xs select-none shadow-sm">✕</span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
+                                                        )
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p className="text-center text-xs text-slate-600 font-medium mt-4 max-w-2xl mx-auto leading-relaxed">
+                                Pour les projets comptant plusieurs séances hebdomadaires, un système de rotation est mis en place afin que chaque tuteur n'effectue qu'une à deux séances par semaine.
+                            </p>
                         </div>
-                    </div>
-
-                    {/* Schedule Table */}
-                    <div className="overflow-x-auto bg-white rounded-xl border border-[#D6C4EC] shadow-soft">
-                        <table className="w-full text-left text-sm border-collapse min-w-[640px]">
-                            <thead>
-                                <tr className="border-b border-[#D6C4EC] bg-[#EBDFF5] text-xs font-school font-bold uppercase tracking-wider text-[#2A082D]">
-                                    <th className="py-4 px-5 border-r border-[#D6C4EC]/70">PROJET</th>
-                                    <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">LUNDI</th>
-                                    <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">MARDI</th>
-                                    <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">MERCREDI</th>
-                                    <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">JEUDI</th>
-                                    <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">VENDREDI</th>
-                                    <th className="py-4 px-3 text-center">SAMEDI</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[#E5D7F2] font-medium">
-                                {weeklySchedules.map((item, idx) => (
-                                    <tr key={idx} className="hover:bg-[#ECDDFD]/30 transition-colors">
-                                        <td className="py-3.5 px-5 font-school font-bold text-[#2A082D] border-r border-[#E5D7F2] flex items-center justify-between gap-3">
-                                            <span className="text-sm tracking-wide">{item.name}</span>
-                                            {item.isCordee && (
-                                                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#501354] text-white font-school font-bold uppercase tracking-wider shrink-0 shadow-2xs">
-                                                    CORDÉE
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
-                                            {item.monday && (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                            )}
-                                        </td>
-                                        <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
-                                            {item.tuesday && (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                            )}
-                                        </td>
-                                        <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
-                                            {item.wednesday && (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                            )}
-                                        </td>
-                                        <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
-                                            {item.thursday && (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                            )}
-                                        </td>
-                                        <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
-                                            {item.friday && (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                            )}
-                                        </td>
-                                        <td className="py-3.5 px-3 text-center">
-                                            {item.saturday && (
-                                                item.saturdayFilled ? (
-                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#501354] text-white font-bold text-xs select-none shadow-sm">✕</span>
-                                                ) : (
-                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                                )
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <p className="text-center text-xs sm:text-sm text-[#2A082D]/85 font-school font-medium mt-6 max-w-2xl mx-auto leading-relaxed">
-                        Pour les projets qui ont plusieurs séances par semaine, un système de roulement est mis en place afin que les tuteurs n'aient qu'une ou deux séances par semaine.
-                    </p>
+                    )}
                 </div>
             </div>
         </div>

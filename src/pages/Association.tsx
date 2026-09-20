@@ -403,9 +403,9 @@ export function Association() {
                 </section>
 
 
-                {/* ──────────────── 3. CHRONOLOGIE CONDENSÉE (5 DATES CLÉS) ──────────────── */}
-                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/40 rounded-xl p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+                {/* ──────────────── 3. CHRONOLOGIE FLUIDE & NARRATIVE (5 DATES CLÉS) ──────────────── */}
+                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/35 rounded-2xl p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-14">
                         <div>
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 shadow-soft border border-[#ECDDFD]">
                                 <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
@@ -420,24 +420,34 @@ export function Association() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
-                        {keyDates.map((item, idx) => (
-                            <div key={idx} className="flex flex-col relative bg-white p-6 rounded-xl border border-[#ECDDFD] shadow-soft">
-                                <div className={`font-display text-[#EC602B] mb-2 leading-tight whitespace-nowrap ${
-                                    item.year.length > 5 
-                                        ? "text-lg sm:text-base lg:text-lg xl:text-xl tracking-tight" 
-                                        : "text-2xl sm:text-3xl"
-                                }`}>
-                                    {item.year}
+                    {/* Timeline fluide : ligne continue avec jalons */}
+                    <div className="relative">
+                        {/* Ligne connectrice sur desktop */}
+                        <div className="hidden lg:block absolute top-4 left-6 right-6 h-0.5 bg-gradient-to-r from-[#EC602B] via-[#6F2B75] to-[#EC602B]/60 z-0" />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-5 relative z-10">
+                            {keyDates.map((item, idx) => (
+                                <div key={idx} className="flex flex-col relative group">
+                                    {/* Jalon visuel (Pastille ronde connectée) */}
+                                    <div className="flex items-center gap-3 lg:flex-col lg:items-start mb-3">
+                                        <div className="w-8 h-8 rounded-full bg-white border-2 border-[#EC602B] shadow-soft flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-[#6F2B75]" />
+                                        </div>
+                                        <div className="font-display text-[#EC602B] text-xl sm:text-2xl lg:text-xl xl:text-2xl tracking-tight leading-none">
+                                            {item.year}
+                                        </div>
+                                    </div>
+
+                                    {/* Contenu textuel sans boîte rigide */}
+                                    <h3 className="text-sm font-school font-bold text-[#2A082D] mb-1.5 leading-snug">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                                        {item.desc}
+                                    </p>
                                 </div>
-                                <h3 className="text-sm font-school font-bold text-[#2A082D] mb-2 leading-snug">
-                                    {item.title}
-                                </h3>
-                                <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                                    {item.desc}
-                                </p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </section>
 
