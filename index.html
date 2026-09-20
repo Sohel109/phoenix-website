@@ -94,12 +94,19 @@
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light');
     } catch (e) {}
-    // Enregistrement du Service Worker PWA avec vérification automatique des mises à jour
+    // Nettoyage automatique et immédiat des Service Workers & caches obsolètes
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(function(reg) {
-          reg.update();
-        }).catch(function() {});
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let r of registrations) {
+          r.unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (let name of names) {
+          caches.delete(name);
+        }
       });
     }
   </script>
