@@ -94,10 +94,12 @@
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light');
     } catch (e) {}
-    // Enregistrement du Service Worker PWA
+    // Enregistrement du Service Worker PWA avec vérification automatique des mises à jour
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').catch(function() {});
+        navigator.serviceWorker.register('/sw.js').then(function(reg) {
+          reg.update();
+        }).catch(function() {});
       });
     }
   </script>
