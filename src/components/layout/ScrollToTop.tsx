@@ -32,12 +32,9 @@ export function ScrollToTop() {
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
 
-        if (PAGE_TITLES[pathname]) {
-            document.title = PAGE_TITLES[pathname];
-        } else if (pathname.startsWith('/projets/')) {
-            document.title = 'Détail du Projet | Phoenix';
-        } else if (pathname.startsWith('/evenements/')) {
-            document.title = 'Détail de l’Événement | Phoenix';
+        // On gère uniquement les titres pour l'intranet /planning (les pages publiques utilisent le composant <SEO>)
+        if (pathname.startsWith('/planning')) {
+            document.title = PAGE_TITLES[pathname] || 'Phoenix Planning';
         }
     }, [pathname]);
 

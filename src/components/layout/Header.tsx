@@ -51,18 +51,18 @@ export function Header() {
                     : 'bg-[#FFFBF4]/90 backdrop-blur-sm border-b border-[#6F2B75]/5 pb-4'
             }`}
         >
-            <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between">
-                {/* Brand / Logo Circulaire Officiel */}
+            <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between gap-4 lg:gap-8">
+                {/* Brand / Logo Circulaire Officiel calé sur la gauche */}
                 <Link to="/" className="flex items-center gap-3 group shrink-0">
                     <div className="relative">
                         <img
                             src="/logo-badge.jpg"
                             alt="Phœnix Égalité des Chances - Association de tutorat et mentorat étudiant KEDGE BS Marseille"
-                            className="w-10 h-10 sm:w-11 sm:h-11 object-contain rounded-full shadow-md border-2 border-white group-hover:scale-105 group-hover:rotate-3 transition-transform"
+                            className="w-10 h-10 sm:w-11 sm:h-11 object-contain rounded-full shadow-sm border border-white/80 group-hover:scale-105 transition-transform"
                         />
                     </div>
                     <div className="flex flex-col">
-                        <span translate="no" className="notranslate font-display text-xl sm:text-2xl text-[#2A082D] leading-none">
+                        <span translate="no" className="notranslate font-display text-xl sm:text-2xl text-[#2A082D] leading-none tracking-tight">
                             PHŒNIX <span className="text-[#EC602B]">EDC</span>
                         </span>
                         <span className="hidden sm:block text-[10px] uppercase font-school font-bold tracking-wider text-[#904990] mt-0.5">
@@ -71,8 +71,8 @@ export function Header() {
                     </div>
                 </Link>
 
-                {/* Desktop Nav Links */}
-                <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+                {/* Desktop Nav Links aérés avec de l'espace */}
+                <nav className="hidden lg:flex items-center gap-2 xl:gap-5 2xl:gap-7">
                     {navLinks.map((link) => {
                         const isActive = link.path === '/'
                             ? location.pathname === '/'
@@ -82,25 +82,28 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`px-3 py-2 text-xs xl:text-sm font-semibold transition-all relative focus-visible:ring-2 focus-visible:ring-[#EC602B] border-b-2 ${
+                                className={`px-2.5 py-1.5 text-sm font-medium transition-colors relative ${
                                     isActive
-                                        ? 'text-[#2A082D] border-[#EC602B] font-bold'
-                                        : 'text-[#2A082D] hover:text-[#6F2B75] border-transparent'
+                                        ? 'text-[#EC602B] font-bold'
+                                        : 'text-[#2A082D] hover:text-[#EC602B]'
                                 }`}
                             >
                                 {link.label}
+                                {isActive && (
+                                    <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-[#EC602B] rounded-full" />
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
 
-                {/* Right Action Buttons */}
-                <div className="hidden sm:flex items-center gap-2.5">
-                    {/* User Pill / Espace Membre */}
+                {/* Right Action Buttons - Style inspiré d'Action Grand Sud */}
+                <div className="hidden sm:flex items-center gap-3 shrink-0">
+                    {/* Espace Membre (analogue à l'Espace Étudiant d'Action Grand Sud) */}
                     {currentUser ? (
                         <Link
                             to="/planning"
-                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#2A082D] text-xs font-bold border border-[#6F2B75]/20 hover:border-[#6F2B75]/50 transition-all shadow-xs group active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#2A082D]/30 hover:border-[#EC602B] text-[#2A082D] hover:text-[#EC602B] text-xs font-semibold transition-all bg-white/60 hover:bg-white shadow-2xs"
                             title={`Connecté : ${currentUser.name} (Espace Membre)`}
                         >
                             <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-[10px] font-black shrink-0">
@@ -112,25 +115,25 @@ export function Header() {
                     ) : (
                         <Link
                             to="/planning/login"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-[#6F2B75] hover:text-[#2A082D] hover:bg-[#ECDDFD]/50 text-xs font-bold border border-[#6F2B75]/20 transition-all shadow-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#2A082D]/30 hover:border-[#EC602B] text-[#2A082D] hover:text-[#EC602B] text-xs font-semibold transition-all bg-white/60 hover:bg-white shadow-2xs"
                             title="Accéder à l'Espace Membre"
                         >
-                            <User size={13} className="text-[#904990]" />
+                            <User size={13} className="text-[#EC602B]" />
                             <span>Espace Membre</span>
                         </Link>
                     )}
 
-                    {/* Faire un don — bouton sobre */}
+                    {/* Faire un don */}
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-phoenix-gradient px-4 py-2 text-xs active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] flex items-center gap-1.5"
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#EC602B] hover:bg-[#FF7E2E] text-white text-xs font-semibold shadow-2xs btn-glow-orange transition-all active:scale-[0.98] touch-tactile"
                         title="Faire un don déductible des impôts à 66% (HelloAsso sécurisé)"
                     >
                         <Heart size={13} fill="currentColor" className="text-white" />
                         <span>Faire un don</span>
-                        <span className="ml-1 px-1.5 py-0.5 rounded bg-white/20 text-[10px] font-bold font-school tracking-tight text-white">
+                        <span className="ml-0.5 px-1.5 py-0.2 bg-white/20 text-[10px] font-bold rounded text-white">
                             -66%
                         </span>
                     </a>

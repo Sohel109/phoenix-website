@@ -16,7 +16,10 @@ export function Recruitment() {
                             <span className="h-px w-8 bg-[#EC602B]"></span>
                         </div>
                         <h2 className="text-3xl sm:text-5xl font-display text-phoenix-dark mb-3">
-                            Rejoignez l'Aventure
+                            Rejoignez{' '}
+                            <span className="marker-highlight text-[#EC602B]">
+                                <span>l'Aventure</span>
+                            </span>
                         </h2>
                         <p className="text-slate-600 font-sans text-base max-w-2xl mx-auto leading-relaxed">
                             Vous êtes étudiant à KEDGE Business School et vous souhaitez vous engager concrètement pour l'égalité des chances ?
@@ -37,7 +40,7 @@ export function Recruitment() {
                             href="https://m.facebook.com/groups/1045459488302373/?ref=share"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group inline-flex items-center gap-3 px-8 py-3.5 btn-phoenix-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-glow-orange hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+                            className="group inline-flex items-center gap-3 px-8 py-3.5 btn-phoenix-orange btn-glow-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-glow-orange hover:-translate-y-0.5 active:scale-95 transition-all duration-200 touch-tactile"
                         >
                             <span>Postuler Maintenant</span>
                             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -55,12 +58,12 @@ export function Recruitment() {
 
 function Card({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
     return (
-        <div className="bg-white border border-[#ECDDFD]/80 p-8 rounded-xl hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 text-center group shadow-soft flex flex-col items-center">
-            <div className="w-14 h-14 mx-auto bg-[#ECDDFD]/50 text-[#6F2B75] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#6F2B75] group-hover:text-white transition-all duration-300 border border-[#ECDDFD]">
+        <div className="bg-white border border-[#6F2B75]/15 p-8 rounded-organic-sm hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 text-center group shadow-phoenix-colored flex flex-col items-center will-change-transform">
+            <div className="w-14 h-14 mx-auto bg-[#ECDDFD]/50 text-[#6F2B75] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#6F2B75] group-hover:text-white transition-all duration-300 border border-[#6F2B75]/15 shadow-soft">
                 <Icon size={24} strokeWidth={1.8} />
             </div>
             <h3 className="text-base font-school font-bold text-phoenix-dark mb-2 uppercase tracking-wide">{title}</h3>
-            <p className="text-sm font-sans text-slate-600 leading-relaxed">{description}</p>
+            <p className="text-sm font-sans text-slate-600 leading-relaxed font-normal">{description}</p>
         </div>
     );
 }

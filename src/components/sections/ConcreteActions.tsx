@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, ChevronLeft, ChevronRight, Compass, HeartHandshake, Sparkles } from 'lucide-react';
+import { ArrowRight, MapPin, ChevronLeft, ChevronRight, Compass, Sparkles } from 'lucide-react';
 
 const culturalTripPhotos = [
     {
@@ -64,7 +64,10 @@ export function ConcreteActions() {
                     </div>
 
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-5">
-                        Des actions concrètes.
+                        Des{' '}
+                        <span className="marker-highlight text-[#EC602B]">
+                            <span>actions concrètes</span>
+                        </span>.
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -72,30 +75,30 @@ export function ConcreteActions() {
                     </p>
                 </div>
 
-                {/* 3 Pillars Grid */}
+                {/* 3 Pillars Grid avec formes asymétriques & survol fluide */}
                 <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-14">
 
                     {/* ──────────────── PILIER 1 : LE TUTORAT HEBDOMADAIRE ──────────────── */}
-                    <article className="group flex flex-col bg-white rounded-xl border border-[#ECDDFD]/80 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+                    <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform">
                         {/* Photo terrain en salle de tutorat */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900">
                             <img
                                 src="/images/home/tutorat-hebdo-terrain.jpg"
                                 alt="Séance studieuse de tutorat hebdomadaire et soutien scolaire à Marseille - Phœnix EDC"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/80 via-transparent to-transparent" />
 
                             {/* Clean top tag */}
                             <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-                                <span className="px-3 py-1 rounded bg-[#6F2B75] text-white font-school font-bold text-xs tracking-wider">
+                                <span className="px-3 py-1 rounded-md bg-[#6F2B75] text-white font-school font-bold text-xs tracking-wider">
                                     01 · Tutorat
                                 </span>
                             </div>
 
                             <div className="absolute top-4 right-4 z-10">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-black/60 backdrop-blur-sm text-xs font-semibold text-white">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 backdrop-blur-sm text-xs font-semibold text-white">
                                     <MapPin size={12} className="text-[#EC602B]" />
                                     <span>9 projets à Marseille</span>
                                 </span>
@@ -105,19 +108,19 @@ export function ConcreteActions() {
                         {/* Content Body */}
                         <div className="p-6 sm:p-8 flex flex-col flex-grow justify-between bg-white">
                             <div>
-                                <h3 className="text-2xl font-display text-[#2A082D] tracking-tight mb-2 group-hover:text-[#EC602B] transition-colors">
+                                <h3 className="text-xl sm:text-2xl font-display text-[#2A082D] tracking-tight mb-1.5 group-hover:text-[#EC602B] transition-colors">
                                     Le Tutorat Hebdomadaire
                                 </h3>
-                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-3.5">
-                                    9 projets · Méthodologie & Aide aux devoirs
+                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-3">
+                                    9 antennes · Méthodologie &amp; Soutien
                                 </p>
-                                <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 font-normal">
-                                    Phoenix déploie <strong className="text-[#2A082D] font-bold">9 projets de terrain</strong> dans les collèges, lycées et centres sociaux de Marseille. Certains projets sont <strong className="text-[#EC602B] font-bold">100% dédiés au tutorat académique</strong> (comme Massa 13, Saint Gabriel ou Jules Ferry) pour consolider les bases scolaires et la méthodologie, tandis que d'autres intègrent un accompagnement mixte adapté aux besoins des jeunes.
+                                <p className="text-slate-600 text-sm leading-relaxed mb-6 font-normal">
+                                    Un accompagnement scolaire régulier en petits groupes dans les collèges et lycées marseillais pour consolider les fondamentaux et redonner confiance.
                                 </p>
                             </div>
 
                             {/* Bottom Link */}
-                            <div className="pt-4 border-t border-[#ECDDFD]/60 flex items-center justify-between">
+                            <div className="pt-4 border-t border-[#6F2B75]/10 flex items-center justify-between">
                                 <Link
                                     to="/projets"
                                     className="inline-flex items-center gap-2 text-sm font-school font-bold text-[#6F2B75] group-hover:text-[#EC602B] transition-colors"
@@ -130,7 +133,7 @@ export function ConcreteActions() {
                     </article>
 
                     {/* ──────────────── PILIER 2 : L'ÉVEIL CULTUREL (3 PHOTOS + ACSE) ──────────────── */}
-                    <article className="group flex flex-col bg-white rounded-xl border border-[#ECDDFD]/80 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+                    <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform">
                         {/* Mini-Carrousel des 3 photos de voyage */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 select-none">
                             <AnimatePresence mode="wait">
@@ -150,13 +153,13 @@ export function ConcreteActions() {
 
                             {/* Clean top tag */}
                             <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                                <span className="px-3 py-1 rounded bg-[#6F2B75] text-white font-school font-bold text-xs tracking-wider">
+                                <span className="px-3 py-1 rounded-md bg-[#6F2B75] text-white font-school font-bold text-xs tracking-wider">
                                     02 · Culture
                                 </span>
                             </div>
 
                             <div className="absolute top-4 right-4 z-10 pointer-events-none">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-black/60 backdrop-blur-sm text-xs font-semibold text-white">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 backdrop-blur-sm text-xs font-semibold text-white">
                                     <Compass size={12} className="text-[#EC602B]" />
                                     <span>Sorties & Voyages</span>
                                 </span>
@@ -206,19 +209,19 @@ export function ConcreteActions() {
                         {/* Content Body */}
                         <div className="p-6 sm:p-8 flex flex-col flex-grow justify-between bg-white">
                             <div>
-                                <h3 className="text-2xl font-display text-[#2A082D] tracking-tight mb-2 group-hover:text-[#6F2B75] transition-colors">
+                                <h3 className="text-xl sm:text-2xl font-display text-[#2A082D] tracking-tight mb-1.5 group-hover:text-[#6F2B75] transition-colors">
                                     L'Éveil Culturel
                                 </h3>
-                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-3.5">
-                                    Sorties, voyages & le projet ACSE
+                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-3">
+                                    Sorties, voyages &amp; Projet ACSE
                                 </p>
-                                <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 font-normal">
-                                    Sorties au théâtre, visites de musées, découvertes du littoral et <strong className="text-[#2A082D] font-bold">voyages de fin d'année</strong> : nous ouvrons le champ des possibles. Notre projet phare <strong className="text-[#6F2B75] font-bold">ACSE (À Chacun Son Excellence)</strong> est d'ailleurs <strong className="text-[#2A082D] font-bold">100% axé sur l'ouverture culturelle</strong> pour les lycéens, brisant les barrières sociales à travers l'art, le débat et l'exploration.
+                                <p className="text-slate-600 text-sm leading-relaxed mb-6 font-normal">
+                                    Musées, théâtre, découvertes du littoral et voyages de fin d'année : des expériences marquantes pour ouvrir les horizons et briser l'autocensure.
                                 </p>
                             </div>
 
-                            {/* Bottom Link */}
-                            <div className="pt-4 border-t border-[#ECDDFD]/60 flex items-center justify-between">
+                            {/* Bottom Link avec note manuscrite */}
+                            <div className="pt-4 border-t border-[#6F2B75]/10 flex items-center justify-between">
                                 <Link
                                     to="/projets/acse"
                                     className="inline-flex items-center gap-2 text-sm font-school font-bold text-[#6F2B75] group-hover:text-[#EC602B] transition-colors"
@@ -226,32 +229,35 @@ export function ConcreteActions() {
                                     <span>Découvrir le projet ACSE</span>
                                     <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
                                 </Link>
+                                <span className="font-script text-xl text-[#EC602B] hidden sm:inline -rotate-2 select-none">
+                                    Voyages & Culture ✦
+                                </span>
                             </div>
                         </div>
                     </article>
 
                     {/* ──────────────── PILIER 3 : ORIENTATION, AVENIR & ÉVÉNEMENTS ──────────────── */}
-                    <article className="group flex flex-col bg-white rounded-xl border border-[#ECDDFD]/80 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+                    <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform">
                         {/* En-tête interactif avec miniatures des événements phares */}
                         <Link to="/evenements" className="block relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 group/ev cursor-pointer">
                             <img
                                 src={eventHighlights[activeEventIdx].image}
                                 alt={`${eventHighlights[activeEventIdx].title} – Événement égalité des chances et éloquence Phœnix EDC Marseille`}
                                 style={{ objectPosition: eventHighlights[activeEventIdx].objectPosition }}
-                                className="w-full h-full object-cover group-hover/ev:scale-105 transition-transform duration-500 ease-out"
+                                className="w-full h-full object-cover group-hover/ev:scale-105 transition-transform duration-500 ease-out will-change-transform"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/80 via-transparent to-transparent" />
 
                             {/* Clean top tag */}
                             <div className="absolute top-4 left-4 z-10">
-                                <span className="px-3 py-1 rounded bg-[#EC602B] text-white font-school font-bold text-xs tracking-wider">
+                                <span className="px-3 py-1 rounded-md bg-[#EC602B] text-white font-school font-bold text-xs tracking-wider">
                                     03 · Événements
                                 </span>
                             </div>
 
                             <div className="absolute top-4 right-4 z-10">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-black/60 backdrop-blur-sm text-xs font-semibold text-white">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 backdrop-blur-sm text-xs font-semibold text-white">
                                     <Sparkles size={12} className="text-[#EC602B]" />
                                     <span>SimONU & JEDC</span>
                                 </span>
@@ -286,19 +292,19 @@ export function ConcreteActions() {
                         {/* Content Body */}
                         <div className="p-6 sm:p-8 flex flex-col flex-grow justify-between bg-white">
                             <div>
-                                <h3 className="text-2xl font-display text-[#2A082D] tracking-tight mb-2 group-hover:text-[#EC602B] transition-colors">
-                                    Orientation & Avenir
+                                <h3 className="text-xl sm:text-2xl font-display text-[#2A082D] tracking-tight mb-1.5 group-hover:text-[#EC602B] transition-colors">
+                                    Orientation &amp; Avenir
                                 </h3>
-                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-3.5">
-                                    SimONU EDC & La JEDC (Concours d'Éloquence)
+                                <p className="text-xs font-school font-bold uppercase tracking-wider text-[#EC602B] mb-3">
+                                    Éloquence, SimONU &amp; Grandes Écoles
                                 </p>
-                                <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 font-normal">
-                                    Pour que chaque jeune ose sans autocensure, Phoenix rythme l'année avec ses événements phares : la simulation diplomatique <strong className="text-[#6F2B75] font-bold">SimONU EDC</strong> (art oratoire et négociation internationale) et la prestigieuse <strong className="text-[#2A082D] font-bold">JEDC (Journée de l'Égalité des Chances)</strong> avec son concours d'éloquence. Des temps forts inoubliables pour développer la prise de parole et l'ambition.
+                                <p className="text-slate-600 text-sm leading-relaxed mb-6 font-normal">
+                                    Concours d'éloquence (JEDC), simulations diplomatiques et découvertes des filières d'excellence pour développer l'art oratoire et l'ambition.
                                 </p>
                             </div>
 
                             {/* Bottom Link */}
-                            <div className="pt-4 border-t border-[#ECDDFD]/60 flex items-center justify-between">
+                            <div className="pt-4 border-t border-[#6F2B75]/10 flex items-center justify-between">
                                 <Link
                                     to="/evenements"
                                     className="inline-flex items-center gap-2 text-sm font-school font-bold text-[#6F2B75] group-hover:text-[#EC602B] transition-colors"
@@ -310,35 +316,6 @@ export function ConcreteActions() {
                         </div>
                     </article>
 
-                </div>
-
-                {/* Bottom Callout Banner */}
-                <div className="rounded-2xl bg-[#2A082D] p-8 sm:p-10 text-white flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-soft-lg">
-                    {/* Trame filigrane Phœnix officielle sur fond sombre */}
-                    <div className="pattern-watermark-dark" aria-hidden="true" />
-
-                    <div className="relative z-10 flex items-center gap-5">
-                        <div className="w-12 h-12 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                            <HeartHandshake size={24} className="text-[#EC602B]" />
-                        </div>
-                        <div>
-                            <span className="font-script text-2xl text-[#ECDDFD] block">Présents partout</span>
-                            <h4 className="text-xl sm:text-2xl font-display tracking-tight text-white">
-                                9 projets de terrain répartis dans tout Marseille
-                            </h4>
-                            <p className="text-[#ECDDFD]/80 text-xs sm:text-sm font-medium mt-1">
-                                De l'Estaque aux quartiers Nord jusqu'au Sud : nos tuteurs interviennent là où les besoins sont les plus forts.
-                            </p>
-                        </div>
-                    </div>
-
-                    <Link
-                        to="/projets"
-                        className="relative z-10 btn-phoenix-orange px-7 py-3.5 rounded-lg text-xs sm:text-sm uppercase tracking-wider shrink-0 shadow-glow-orange flex items-center gap-2"
-                    >
-                        <span>Explorer les 9 projets</span>
-                        <ArrowRight size={16} />
-                    </Link>
                 </div>
             </div>
         </section>

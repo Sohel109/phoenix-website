@@ -60,7 +60,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                     <CheckCircle size={36} className="text-phoenix-purple" />
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-school uppercase tracking-wide text-phoenix-dark mb-3">Message bien reçu !</h2>
+                <h2 className="text-2xl sm:text-3xl font-display text-phoenix-dark mb-3">Message bien reçu !</h2>
                 <div className="w-12 h-1 bg-[#EC602B] mx-auto mb-6 rounded-full" />
 
                 <p className="text-slate-600 font-sans mb-8 leading-relaxed text-sm sm:text-base">
@@ -96,14 +96,14 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
             </button>
 
             {/* Form Container */}
-            <div className="bg-white border border-phoenix-lilac/50 rounded-xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
+            <div className="bg-white border border-[#6F2B75]/15 rounded-organic p-8 sm:p-12 shadow-phoenix-colored relative overflow-hidden">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-2 mb-2">
                         <span className="h-px w-6 bg-[#EC602B]"></span>
                         <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">Demande de contact</span>
                         <span className="h-px w-6 bg-[#EC602B]"></span>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-school uppercase tracking-wide text-phoenix-dark">
+                    <h2 className="text-2xl sm:text-3xl font-display text-phoenix-dark">
                         {category}
                     </h2>
                 </div>
@@ -162,7 +162,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="w-full py-4 px-6 btn-phoenix-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                        className="w-full py-4 px-6 btn-phoenix-orange btn-glow-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-lg hover:shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer touch-tactile"
                     >
                         {status === 'loading' ? (
                             <>

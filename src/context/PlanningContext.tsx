@@ -86,6 +86,9 @@ interface PlanningContextType {
     exemptions: QuotaExemption[];
     toggleQuotaExemption: (userId: string, userName: string, isExempt: boolean, note?: string) => Promise<boolean>;
     isQuotaExempt: (userId: string) => boolean;
+    isEditModeActive: boolean;
+    setEditModeActive: (active: boolean) => void;
+    toggleEditMode: () => void;
 }
 
 const PlanningContext = createContext<PlanningContextType | null>(null);
@@ -112,6 +115,35 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
     const [pendingKeys, setPendingKeys] = useState<Set<string>>(new Set());
+
+    // ── Mode Modification du Site (Réservé au Bureau et activable dans Mon Compte) ──
+    const EDIT_MODE_KEY = 'phoenix_edit_mode_active';
+    const [editModePreference, setEditModePreference] = useState<boolean>(() => {
+        try {
+            return localStorage.getItem(EDIT_MODE_KEY) === 'true';
+        } catch {
+            return false;
+        }
+    });
+
+    const isEditModeActive = Boolean(currentUser?.role === 'bureau' && editModePreference);
+
+    const setEditModeActive = useCallback((active: boolean) => {
+        setEditModePreference(active);
+        try {
+            localStorage.setItem(EDIT_MODE_KEY, active ? 'true' : 'false');
+        } catch {}
+    }, []);
+
+    const toggleEditMode = useCallback(() => {
+        setEditModePreference(prev => {
+            const next = !prev;
+            try {
+                localStorage.setItem(EDIT_MODE_KEY, next ? 'true' : 'false');
+            } catch {}
+            return next;
+        });
+    }, []);
 
     // ── Liste complète des membres de l'association ───────────────────────────
     const [allUsers, setAllUsers] = useState<{ id: string; name: string }[]>(() => {
@@ -250,7 +282,11 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         setBookings([]);
         setUnavailableWeeks([]);
         setEventAttendance([]);
+        setEditModePreference(false);
         sessionStorage.removeItem(SESSION_KEY);
+        try {
+            localStorage.removeItem(EDIT_MODE_KEY);
+        } catch {}
     }, []);
 
     const getWeekBookings = useCallback((weekKey: string, userId?: string): Booking[] =>
@@ -555,7 +591,8 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,
             refreshPlanningData, changePassword, isPending,
             manualHours, addManualHours, deleteManualHours,
-            exemptions, toggleQuotaExemption, isQuotaExempt
+            exemptions, toggleQuotaExemption, isQuotaExempt,
+            isEditModeActive, setEditModeActive, toggleEditMode
         }}>
             {children}
         </PlanningContext.Provider>

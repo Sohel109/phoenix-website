@@ -8,6 +8,9 @@ import { AuroraBackground } from './components/layout/AuroraBackground';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { PlanningProvider, usePlanning } from './context/PlanningContext';
+import { EditModeIndicator } from './components/common/EditModeIndicator';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { GuideFloatingTab } from './components/features/GuideFloatingTab';
 
 // Pages publiques chargées immédiatement pour navigation 100% instantanée (sans flash blanc ni spinner)
 import { Home } from './pages/Home';
@@ -68,12 +71,14 @@ function App() {
         <div className="flex flex-col min-h-screen font-sans bg-[#FFFBF4] bg-bird-pattern">
           <AuroraBackground />
           <Header />
+          <GuideFloatingTab />
             {/* Popups désactivés à la demande de l'utilisateur */}
             {/* <IOSInstallPrompt /> */}
             {/* <CrowdfundingBanner /> */}
             <main className="flex-grow">
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
+              <ErrorBoundary>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/association" element={<Association />} />
                   <Route path="/projets" element={<Projects />} />
@@ -142,8 +147,10 @@ function App() {
                   <Route path="/planning/notifications" element={<PlanningGuard><PlanningNotifications /></PlanningGuard>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </Suspense>
+                </Suspense>
+              </ErrorBoundary>
             </main>
+            <EditModeIndicator />
             <Footer />
           </div>
       </Router>

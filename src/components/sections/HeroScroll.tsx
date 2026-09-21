@@ -64,10 +64,10 @@ export function HeroScroll() {
                             </div>
 
                             {/* Titre Shrikhand signature de la Charte */}
-                            <h1 className="text-4xl xl:text-6xl font-display leading-[1.12] text-[#2A082D]">
+                            <h1 className="text-4xl xl:text-6xl font-display leading-[1.14] text-[#2A082D]">
                                 Faire briller <br />
-                                <span className="text-[#EC602B]">
-                                    tous les talents
+                                <span className="marker-highlight text-[#EC602B]">
+                                    <span>tous les talents</span>
                                 </span> <br />
                                 de Marseille.
                             </h1>
@@ -82,46 +82,53 @@ export function HeroScroll() {
                                 Chaque semaine, plus de <strong className="text-[#2A082D] font-bold">100 étudiants de KEDGE BS</strong> accompagnent <strong className="text-[#2A082D] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre engagement : créer le déclic, vaincre l'autocensure et ouvrir grand le champ des possibles.
                             </p>
 
-                            {/* Double CTA — boutons sobres sans gradient */}
-                            <div className="flex flex-wrap items-center gap-4 pt-2">
-                                <Link
-                                    to="/projets"
-                                    className="btn-phoenix-gradient px-8 py-4 text-sm"
-                                >
-                                    <span>Découvrir nos 9 projets</span>
-                                    <ArrowRight size={18} />
-                                </Link>
+                            {/* Double CTA avec annotation manuscrite et lueur au hover */}
+                            <div className="relative flex flex-wrap items-center gap-4 pt-2">
+                                <div className="relative">
+                                    <Link
+                                        to="/projets"
+                                        className="btn-phoenix-gradient btn-glow-orange px-8 py-4 text-sm rounded-lg flex items-center gap-2 touch-tactile"
+                                    >
+                                        <span>Découvrir nos 9 projets</span>
+                                        <ArrowRight size={18} />
+                                    </Link>
+                                    {/* Annotation dessinée Allura pointant vers le bouton */}
+                                    <div className="hidden xl:flex items-center gap-1.5 absolute -top-8 -right-16 font-script text-2xl text-[#6F2B75] pointer-events-none rotate-2 select-none">
+                                        <span>Sur le terrain</span>
+                                        <span className="text-xl">⤵</span>
+                                    </div>
+                                </div>
 
                                 <Link
                                     to="/contact"
-                                    className="btn-phoenix-outline px-7 py-3.5 text-sm"
+                                    className="btn-phoenix-outline px-7 py-3.5 text-sm rounded-lg hover:border-[#6F2B75] touch-tactile"
                                 >
                                     <Heart size={16} className="text-[#EC602B] fill-[#EC602B]" />
                                     <span>Rejoindre l'aventure</span>
                                 </Link>
                             </div>
 
-                            {/* Réassurance en texte simple — pas de pill badge */}
+                            {/* Réassurance en texte simple */}
                             <p className="text-xs font-semibold text-slate-400 tracking-wide pt-1">
                                 5 Cordées de la Réussite · Association Reconnue d'Intérêt Général
                             </p>
                         </div>
 
-                        {/* ── COLONNE DROITE : Photo principale + 1 badge clé ── */}
+                        {/* ── COLONNE DROITE : Composition asymétrique & chevauchements ── */}
                         <div className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center">
-                            {/* Grand médaillon central — border-radius réduit (moins "template") */}
-                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-2xl overflow-hidden shadow-soft-lg border-4 border-white z-10">
+                            {/* Grand conteneur asymétrique organique */}
+                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-organic overflow-hidden photo-frame-organic border-2 border-white/80 z-10">
                                 <img
                                     src="/images/projects/hero-1.png"
                                     alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
-                                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out"
+                                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
                                     draggable={false}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent pointer-events-none" />
                             </div>
 
-                            {/* Médaillon circulaire d'ambiance */}
-                            <div className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-soft border-4 border-white z-20">
+                            {/* Médaillon circulaire d'ambiance en déport */}
+                            <div className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-phoenix-colored border-4 border-white z-20">
                                 <img
                                     src="/images/projects/hero-3.png"
                                     alt="Sortie culturelle au musée avec les jeunes tutorés Phœnix"
@@ -130,12 +137,20 @@ export function HeroScroll() {
                                 />
                             </div>
 
-                            {/* 1 seul badge flottant — le chiffre le plus parlant */}
-                            <div className="absolute bottom-6 -left-4 xl:-left-6 z-30">
+                            {/* Micro-tampon graphique circulaire artisanal */}
+                            <div className="absolute -top-3 -right-2 xl:-right-5 z-30 badge-stamp text-[10px] -rotate-3 font-school font-bold shadow-phoenix-colored">
+                                <span className="text-[9px] text-[#6F2B75] tracking-widest font-extrabold">MARSEILLE</span>
+                                <span className="text-xs text-[#EC602B] font-black leading-tight">DEPUIS 2011</span>
+                                <span className="text-[8px] text-slate-600 font-semibold tracking-tight">100% BÉNÉVOLE</span>
+                            </div>
+
+                            {/* Pastille chiffrée flottante imbriquée (chevauchement d'angle) */}
+                            <div className="absolute -bottom-4 -left-4 xl:-left-8 z-30 shadow-phoenix-colored-lg">
                                 <MacaronBadge
                                     icon={<GraduationCap size={16} />}
                                     value="300+ Jeunes"
                                     label="Collégiens & lycéens suivis"
+                                    className="border border-[#6F2B75]/20 bg-[#FFFBF4]/95 backdrop-blur-sm"
                                 />
                             </div>
                         </div>
@@ -153,17 +168,17 @@ export function HeroScroll() {
                 {/* Trame filigrane Phœnix officielle mobile */}
                 <div className="pattern-watermark" aria-hidden="true" />
 
-                {/* Kicker mobile — éditorial (ligne + texte, pas de badge-pill) */}
+                {/* Kicker mobile */}
                 <div className="relative z-10 flex items-center gap-2 mb-3">
                     <span className="w-5 h-[2px] bg-[#EC602B]" />
                     <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">KEDGE BS · 100% Bénévole à Marseille</span>
                 </div>
 
-                {/* H1 mobile Shrikhand */}
+                {/* H1 mobile Shrikhand avec surlignage feutre */}
                 <h1 className="relative z-10 text-3xl sm:text-4xl font-display text-[#2A082D] mb-3 leading-tight">
                     Faire briller <br />
-                    <span className="text-[#EC602B]">
-                        tous les talents
+                    <span className="marker-highlight text-[#EC602B]">
+                        <span>tous les talents</span>
                     </span> <br />
                     de Marseille.
                 </h1>
@@ -181,23 +196,23 @@ export function HeroScroll() {
                 <div className="relative z-10 flex flex-row gap-2.5 w-full max-w-xs justify-center items-center mb-8">
                     <Link
                         to="/projets"
-                        className="flex-1 btn-phoenix-gradient py-3 px-4 text-xs"
+                        className="flex-1 btn-phoenix-gradient btn-glow-orange py-3 px-4 text-xs rounded-lg"
                     >
                         <span>Nos 9 projets</span>
                         <ArrowRight size={14} />
                     </Link>
                     <Link
                         to="/contact"
-                        className="flex-1 btn-phoenix-outline py-3 px-4 text-xs"
+                        className="flex-1 btn-phoenix-outline py-3 px-4 text-xs rounded-lg"
                     >
                         <Heart size={13} className="text-[#EC602B] fill-[#EC602B]" />
                         <span>Rejoindre</span>
                     </Link>
                 </div>
 
-                {/* Composition photo mobile */}
+                {/* Composition photo mobile asymétrique avec stickers */}
                 <div className="relative z-10 w-full max-w-sm mx-auto mb-4">
-                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft border-4 border-white">
+                    <div className="relative w-full aspect-[4/3] rounded-organic-sm overflow-hidden photo-frame-organic border-2 border-white/80">
                         <img
                             src="/images/projects/hero-1.png"
                             alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
@@ -207,8 +222,14 @@ export function HeroScroll() {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent" />
                     </div>
 
-                    {/* 1 badge mobile sobre — sans glassmorphisme */}
-                    <div className="absolute -bottom-3 -left-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#ECDDFD] shadow-soft text-[11px] font-bold text-[#6F2B75]">
+                    {/* Micro-tampon mobile rotatif */}
+                    <div className="absolute -top-3 -right-2 z-20 badge-stamp text-[9px] -rotate-3 font-school font-bold shadow-soft py-1 px-2.5">
+                        <span className="text-[#6F2B75] font-extrabold text-[8px]">MARSEILLE</span>
+                        <span className="text-[#EC602B] font-black text-[10px]">DEPUIS 2011</span>
+                    </div>
+
+                    {/* 1 badge mobile imbriqué chevauchant l'angle */}
+                    <div className="absolute -bottom-3 -left-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FFFBF4] border border-[#6F2B75]/20 shadow-phoenix-colored text-[11px] font-bold text-[#6F2B75]">
                         <GraduationCap size={13} className="text-[#6F2B75]" />
                         <span>300+ Jeunes accompagnés</span>
                     </div>

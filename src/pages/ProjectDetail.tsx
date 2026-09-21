@@ -102,7 +102,7 @@ export function ProjectDetail() {
                 </div>
 
                 {/* Main Card */}
-                <div className="bg-white rounded-xl shadow-soft-lg border border-[#ECDDFD] overflow-hidden">
+                <div className="bg-white rounded-organic shadow-phoenix-colored border border-[#6F2B75]/15 overflow-hidden">
                     {/* Header with Banner Image */}
                     <div className={`h-64 sm:h-84 relative ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]' : 'bg-slate-900'} flex items-center justify-center overflow-hidden`}>
                         {project.banner ? (
@@ -140,10 +140,10 @@ export function ProjectDetail() {
 
                     {/* Content Section */}
                     <div className="px-6 sm:px-10 pb-12 relative">
-                        {/* Round Macaron Logo Overlay (Unclipped, perfectly proportioned circular avatar) */}
+                        {/* Round Macaron Logo (w-12 h-12 bien calé) */}
                         {project.image && (
-                            <div className="-mt-12 sm:-mt-14 mb-4 relative z-20 inline-block">
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full shadow-soft-lg flex items-center justify-center border-4 border-white overflow-hidden p-2">
+                            <div className="-mt-6 mb-4 relative z-20 inline-block">
+                                <div className="w-12 h-12 bg-white rounded-full shadow-soft flex items-center justify-center border-2 border-white overflow-hidden p-1">
                                     <img 
                                         src={project.image} 
                                         alt={`Logo officiel du projet ${project.title}`} 
@@ -185,7 +185,7 @@ export function ProjectDetail() {
                         </div>
 
                         {/* Highlight intro box */}
-                        <div className="mb-8 p-6 sm:p-7 bg-[#ECDDFD]/30 rounded-xl border border-[#ECDDFD] shadow-soft">
+                        <div className="mb-8 p-6 sm:p-7 bg-[#ECDDFD]/30 rounded-organic-sm border border-[#6F2B75]/15 shadow-soft">
                             <p className="text-[#2A082D] text-base sm:text-lg font-medium leading-relaxed">
                                 {project.description}
                             </p>
@@ -194,7 +194,7 @@ export function ProjectDetail() {
                         {/* 4 Key Details Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                             {/* Card 1: Horaires */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-5 flex flex-col justify-between shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1 transition-all duration-200">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <Clock size={15} />
                                     <span>Horaires</span>
@@ -205,7 +205,7 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 2: Lieu */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-5 flex flex-col justify-between shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1 transition-all duration-200">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <MapPin size={15} />
                                     <span>Lieu</span>
@@ -216,7 +216,7 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 3: Chefs de projet */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-5 flex flex-col justify-between shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1 transition-all duration-200">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-2">
                                     <UserCheck size={15} />
                                     <span>{project.chefs.length > 1 ? 'Chefs de projet' : 'Chef de projet'}</span>
@@ -231,7 +231,7 @@ export function ProjectDetail() {
                             </div>
 
                             {/* Card 4: Voyage / Sorties */}
-                            <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 flex flex-col justify-between shadow-soft">
+                            <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-5 flex flex-col justify-between shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1 transition-all duration-200">
                                 <div className="flex items-center gap-2 text-xs font-school font-bold uppercase tracking-wider text-emerald-700 mb-2">
                                     <Compass size={15} />
                                     <span>Voyage & Sorties</span>
@@ -255,7 +255,7 @@ export function ProjectDetail() {
 
                         {/* Axes de Travail */}
                         {project.axes && project.axes.length > 0 && (
-                            <div className="mb-10 p-6 bg-[#ECDDFD]/30 rounded-xl border border-[#ECDDFD] shadow-soft">
+                            <div className="mb-10 p-6 bg-[#ECDDFD]/30 rounded-organic-sm border border-[#6F2B75]/15 shadow-soft">
                                 <h3 className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] mb-3">
                                     Axes d'intervention prioritaires
                                 </h3>
@@ -263,7 +263,7 @@ export function ProjectDetail() {
                                     {project.axes.map((axe, i) => (
                                         <span 
                                             key={i} 
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white border border-[#ECDDFD] text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft"
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white border border-[#6F2B75]/15 text-[#2A082D] text-xs sm:text-sm font-school font-bold shadow-soft"
                                         >
                                             <CheckCircle2 size={14} className="text-[#EC602B]" />
                                             <span>{axe}</span>
@@ -274,7 +274,7 @@ export function ProjectDetail() {
                         )}
 
                         {/* Section Chefs de Projet Responsables */}
-                        <div className="mb-10 p-6 sm:p-7 bg-white rounded-xl border border-[#ECDDFD] shadow-soft">
+                        <div className="mb-10 p-6 sm:p-7 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-xl bg-[#6F2B75] text-white flex items-center justify-center shadow-soft shrink-0">
@@ -291,7 +291,7 @@ export function ProjectDetail() {
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
                                     {project.chefs.map((chef, idx) => (
-                                        <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#ECDDFD] text-[#6F2B75] font-school font-bold text-xs shadow-soft">
+                                        <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECDDFD] text-[#6F2B75] font-school font-bold text-xs shadow-soft border border-[#6F2B75]/10">
                                             <span className="w-2 h-2 rounded-full bg-[#EC602B] shrink-0"></span>
                                             <span>{chef}</span>
                                         </span>
@@ -338,7 +338,7 @@ export function ProjectDetail() {
 
                             <Link
                                 to="/contact"
-                                className="btn-phoenix-orange !py-3 !px-6 !text-xs uppercase tracking-wider rounded-lg shadow-glow-orange flex items-center gap-2"
+                                className="btn-phoenix-orange btn-glow-orange !py-3 !px-6 !text-xs uppercase tracking-wider rounded-lg shadow-glow-orange flex items-center gap-2 touch-tactile"
                             >
                                 <span>Rejoindre ou soutenir ce projet</span>
                                 <ArrowRight size={14} />
@@ -357,7 +357,7 @@ export function ProjectDetail() {
                             <Link
                                 key={op.id}
                                 to={`/projets/${op.id}`}
-                                className="group bg-white rounded-xl border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 p-6 transition-all flex flex-col justify-between"
+                                className="group bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 p-6 transition-all duration-300 flex flex-col justify-between will-change-transform"
                             >
                                 <div>
                                     <div className="flex items-center justify-between gap-2 mb-3">

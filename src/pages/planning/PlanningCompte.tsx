@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award, Sparkles, GraduationCap, CalendarPlus } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award, Sparkles, GraduationCap, CalendarPlus, Edit3, ExternalLink } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -39,29 +40,39 @@ function StatCard({ icon, label, value, unit, sublabel, gradient, progressBar }:
                 </p>
                 <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 mt-1">{label}</p>
                 {sublabel && (
-                    <p className="text-[11px] text-[#ECDDFD]/60 mt-1 font-mono">{sublabel}</p>
-                )}
-                {progressBar && (
-                    <div className="mt-3 pt-2 border-t border-white/10">
-                        <div className="flex justify-between text-[10px] font-school uppercase tracking-wider text-[#ECDDFD]/70 mb-1">
-                            <span>Objectif attestation</span>
-                            <span className="tabular-nums">{progressBar.customLabel || `${progressBar.current}/${progressBar.max}h`}</span>
-                        </div>
-                        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all duration-500 ${progressBar.isEligible ? 'bg-gradient-to-r from-emerald-400 to-teal-400' : 'bg-gradient-to-r from-[#EC602B] to-[#F1885C]'}`}
-                                style={{ width: `${Math.min(100, Math.round((progressBar.current / progressBar.max) * 100))}%` }}
-                            />
-                        </div>
-                    </div>
+                    <p className="text-[11px] text-[#ECDDFD]/50 font-mono mt-0.5">{sublabel}</p>
                 )}
             </div>
+            {progressBar && (
+                <div className="mt-auto pt-2 border-t border-white/10">
+                    <div className="flex justify-between text-[11px] font-school uppercase tracking-wider mb-1">
+                        <span className={progressBar.isEligible ? 'text-emerald-400 font-bold' : 'text-[#ECDDFD]/70'}>
+                            {progressBar.customLabel || `${progressBar.current}/${progressBar.max}h`}
+                        </span>
+                        <span className={progressBar.isEligible ? 'text-emerald-400 font-bold' : 'text-[#ECDDFD]/50'}>
+                            {progressBar.isEligible ? 'Éligible 100%' : `${Math.min(100, Math.round((progressBar.current / progressBar.max) * 100))}%`}
+                        </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, (progressBar.current / progressBar.max) * 100)}%` }}
+                            transition={{ duration: 1, ease: 'easeOut' }}
+                            className={`h-full rounded-full ${
+                                progressBar.isEligible 
+                                    ? 'bg-gradient-to-r from-emerald-500 to-teal-400' 
+                                    : 'bg-gradient-to-r from-[#6F2B75] to-[#EC602B]'
+                            }`}
+                        />
+                    </div>
+                </div>
+            )}
         </motion.div>
     );
 }
 
 export function PlanningCompte() {
-    const { currentUser, bookings, changePassword, manualHours, isQuotaExempt } = usePlanning();
+    const { currentUser, bookings, changePassword, manualHours, isQuotaExempt, isEditModeActive, toggleEditMode } = usePlanning();
     
     // Password change state
     const [oldPassword, setOldPassword] = useState('');
@@ -325,6 +336,98 @@ export function PlanningCompte() {
                             </p>
                         </div>
                     </div>
+                </motion.div>
+            )}
+
+            {/* ── Mode Édition du Site (Bureau uniquement) ── */}
+            {currentUser.role === 'bureau' && (
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-6 sm:p-7 rounded-xl bg-gradient-to-br from-[#2D0A32]/95 to-[#1F0422]/95 border border-[#EC602B]/40 backdrop-blur-md shadow-soft-lg mb-8 relative overflow-hidden"
+                >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                        <div className="flex items-start gap-4">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all ${
+                                isEditModeActive 
+                                    ? 'bg-gradient-to-tr from-emerald-600 to-teal-600 text-white border-emerald-400/40 shadow-glow-orange' 
+                                    : 'bg-[#6F2B75]/40 text-[#ECDDFD] border-[#ECDDFD]/20'
+                            }`}>
+                                <Edit3 size={22} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-school text-xs uppercase tracking-widest text-[#ECDDFD]/70 font-semibold">
+                                        Administration Interne
+                                    </span>
+                                    <span className="text-[#EC602B] text-xs">•</span>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-school uppercase tracking-wider font-bold border ${
+                                        isEditModeActive 
+                                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' 
+                                            : 'bg-white/10 text-[#ECDDFD]/60 border-white/10'
+                                    }`}>
+                                        {isEditModeActive ? 'Mode Édition Activé' : 'Mode Édition Inactif'}
+                                    </span>
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-display text-white tracking-wide">
+                                    Mode Modification du Site
+                                </h3>
+                                <p className="text-[#ECDDFD]/80 text-xs sm:text-sm mt-1.5 max-w-xl leading-relaxed">
+                                    {isEditModeActive ? (
+                                        <span>
+                                            <strong className="text-emerald-300">Actif :</strong> Les boutons d'édition directe et crayons sont déverrouillés sur les pages du site (Dates des événements dans le planning, Documents officiels, Membres du Bureau et Pôles).
+                                        </span>
+                                    ) : (
+                                        <span>
+                                            Activez ce mode pour déverrouiller l'édition directe sur le site. Lorsqu'il est inactif, l'interface reste épurée et aucun bouton de modification n'apparaît.
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Switch toggle button */}
+                        <div className="self-start sm:self-center shrink-0">
+                            <button
+                                type="button"
+                                onClick={toggleEditMode}
+                                className={`flex items-center gap-3 px-5 py-3 rounded-2xl font-school text-xs uppercase tracking-wider font-bold transition-all duration-300 cursor-pointer shadow-soft active:scale-95 border ${
+                                    isEditModeActive
+                                        ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 border-emerald-300 shadow-glow-orange'
+                                        : 'bg-[#6F2B75]/40 hover:bg-[#6F2B75]/70 text-white border-[#ECDDFD]/30'
+                                }`}
+                            >
+                                <span>{isEditModeActive ? 'Désactiver le Mode Édition' : 'Activer le Mode Édition'}</span>
+                                <div className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-300 flex items-center ${
+                                    isEditModeActive ? 'bg-slate-950/30 justify-end' : 'bg-white/20 justify-start'
+                                }`}>
+                                    <div className="w-4 h-4 rounded-full bg-white shadow-xs" />
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    {isEditModeActive && (
+                        <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-3 text-xs">
+                            <span className="text-[#ECDDFD]/60 font-school uppercase tracking-wider text-[11px]">Accès rapide aux pages modifiables :</span>
+                            <Link to="/documents" className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 transition-colors">
+                                <span>Documents & Guides</span>
+                                <ExternalLink size={12} className="text-[#EC602B]" />
+                            </Link>
+                            <Link to="/evenements" className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 transition-colors">
+                                <span>Événements (Dates & Infos)</span>
+                                <ExternalLink size={12} className="text-[#EC602B]" />
+                            </Link>
+                            <Link to="/planning/mes-evenements" className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 transition-colors">
+                                <span>Planning Événements</span>
+                                <ExternalLink size={12} className="text-[#EC602B]" />
+                            </Link>
+                            <Link to="/association" className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 transition-colors">
+                                <span>Bureau & Pôles</span>
+                                <ExternalLink size={12} className="text-[#EC602B]" />
+                            </Link>
+                        </div>
+                    )}
                 </motion.div>
             )}
 

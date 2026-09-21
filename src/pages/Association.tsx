@@ -53,8 +53,9 @@ const associationBreadcrumbSchema = {
 };
 
 export function Association() {
-    const { currentUser } = usePlanning();
+    const { currentUser, isEditModeActive } = usePlanning();
     const isBureau = currentUser?.role === 'bureau';
+    const canEdit = Boolean(isBureau && isEditModeActive);
 
     // ─── État des membres du Bureau avec persistance ─────────────────────────
     const [bureauMembers, setBureauMembers] = useState<BureauMember[]>(() => {
@@ -300,49 +301,54 @@ export function Association() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                         {/* Colonne Texte */}
                         <div className="lg:col-span-7">
-                            <div className="mb-4">
-                                <span className="badge-blockletter">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="h-px w-8 bg-[#EC602B]"></span>
+                                <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                                     KEDGE Business School Marseille · Intérêt Général
                                 </span>
                             </div>
 
                             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.08] mb-6">
-                                Plus qu'une association, une grande famille marseillaise engagée.
+                                Plus qu'une association, une grande{' '}
+                                <span className="marker-highlight text-[#EC602B]">
+                                    <span>famille engagée</span>
+                                </span>.
                             </h1>
 
                             <p className="text-[#2A082D]/80 text-base sm:text-lg leading-relaxed mb-8 font-medium">
                                 Depuis 2011, Phœnix mobilise <strong className="text-[#2A082D] font-bold">+100 étudiants bénévoles</strong> pour accompagner chaque semaine <strong className="text-[#2A082D] font-bold">300 collégiens et lycéens</strong> des quartiers prioritaires. Notre mission : créer le déclic, ouvrir les horizons et abattre l'autocensure.
                             </p>
 
-                            {/* 3 micro-indicateurs tactiles */}
-                            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#ECDDFD]/60">
-                                <div className="p-4 bg-white rounded-2xl border border-[#ECDDFD] shadow-soft">
+                            {/* 3 micro-indicateurs tactiles asymétriques */}
+                            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#6F2B75]/10">
+                                <div className="p-4 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:-translate-y-1 transition-transform">
                                     <span className="block text-2xl sm:text-3xl font-display text-[#EC602B]">+100</span>
                                     <span className="text-[11px] sm:text-xs text-[#2A082D] font-school font-bold uppercase tracking-wider">Tuteurs</span>
                                 </div>
-                                <div className="p-4 bg-[#ECDDFD]/60 rounded-2xl border border-[#ECDDFD] shadow-soft">
+                                <div className="p-4 bg-[#ECDDFD]/60 rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:-translate-y-1 transition-transform">
                                     <span className="block text-2xl sm:text-3xl font-display text-[#6F2B75]">300</span>
                                     <span className="text-[11px] sm:text-xs text-[#2A082D] font-school font-bold uppercase tracking-wider">Jeunes / an</span>
                                 </div>
-                                <div className="p-4 bg-white rounded-2xl border border-[#ECDDFD] shadow-soft">
+                                <div className="p-4 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:-translate-y-1 transition-transform">
                                     <span className="block text-2xl sm:text-3xl font-display text-[#EC602B]">9</span>
                                     <span className="text-[11px] sm:text-xs text-[#2A082D] font-school font-bold uppercase tracking-wider">Projets</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Colonne Photo Chaleureuse */}
+                        {/* Colonne Photo Chaleureuse avec DA asymétrique */}
                         <div className="lg:col-span-5">
-                            <div className="relative rounded-xl overflow-hidden shadow-soft-lg border border-[#ECDDFD] group bg-[#2A082D]">
+                            <div className="relative rounded-organic overflow-hidden shadow-phoenix-colored-lg border-2 border-white/80 group bg-[#2A082D] photo-frame-organic">
                                 <div className="absolute top-4 right-4 z-20">
-                                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white shadow-soft rotate-2">
-                                        100% sur le terrain
-                                    </span>
+                                    <div className="badge-stamp text-[9px] rotate-3 font-school font-bold py-1 px-3 shadow-phoenix-colored">
+                                        <span className="text-[#6F2B75] font-extrabold text-[8px]">KEDGE BS</span>
+                                        <span className="text-[#EC602B] font-black text-[10px]">100% TERRAIN</span>
+                                    </div>
                                 </div>
                                 <img
                                     src="/images/home/voyage-culturel-1.jpg"
                                     alt="Étudiants de KEDGE et lycéens tutorés de l'association Phœnix en voyage culturel"
-                                    className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/85 via-[#2A082D]/20 to-transparent pointer-events-none" />
                                 <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -362,12 +368,18 @@ export function Association() {
                 {/* ──────────────── 2. VALEURS VIVANTES (GRILLE AÉRÉE) ──────────────── */}
                 <section className="mb-24 sm:mb-32">
                     <div className="text-center max-w-2xl mx-auto mb-14">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ECDDFD] text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 -rotate-1 shadow-soft">
-                            <Sparkles size={13} className="text-[#EC602B]" />
-                            <span>Notre ADN &amp; Charte Déontologique</span>
+                        <div className="flex justify-center items-center gap-3 mb-4">
+                            <span className="h-px w-8 bg-[#EC602B]"></span>
+                            <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
+                                Notre ADN &amp; Charte Déontologique
+                            </span>
+                            <span className="h-px w-8 bg-[#EC602B]"></span>
                         </div>
                         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display text-[#2A082D] tracking-tight mb-3">
-                            Les 5 Valeurs qui Guident Notre Action
+                            Les 5 Valeurs qui Guident{' '}
+                            <span className="marker-highlight text-[#6F2B75]">
+                                <span>Notre Action</span>
+                            </span>
                         </h2>
                         <p className="text-[#2A082D]/80 text-sm sm:text-base font-medium">
                             Présentes dans chaque séance de tutorat et formalisées dans la charte officielle <strong>« OHIEE »</strong>.
@@ -380,10 +392,10 @@ export function Association() {
                             return (
                                 <div
                                     key={idx}
-                                    className="rounded-xl p-6 border border-[#ECDDFD] shadow-soft bg-white flex flex-col justify-between hover:-translate-y-1 hover:shadow-soft-lg transition-all"
+                                    className="rounded-organic-sm p-6 border border-[#6F2B75]/15 shadow-phoenix-colored bg-white flex flex-col justify-between hover:-translate-y-2 hover:shadow-phoenix-colored-lg transition-all duration-300 will-change-transform"
                                 >
                                     <div>
-                                        <div className={`w-13 h-13 rounded-full flex items-center justify-center mb-4 bg-white border border-[#ECDDFD] shadow-soft ${val.color}`}>
+                                        <div className={`w-13 h-13 rounded-full flex items-center justify-center mb-4 bg-white border border-[#6F2B75]/15 shadow-soft ${val.color}`}>
                                             <IconComponent size={24} />
                                         </div>
                                         <h3 className="text-lg font-display text-[#2A082D] mb-1">
@@ -404,15 +416,20 @@ export function Association() {
 
 
                 {/* ──────────────── 3. CHRONOLOGIE FLUIDE & NARRATIVE (5 DATES CLÉS) ──────────────── */}
-                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/35 rounded-2xl p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
+                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/35 rounded-organic p-8 sm:p-12 border border-[#6F2B75]/15 shadow-phoenix-colored">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-14">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white text-[#6F2B75] text-xs font-school font-bold tracking-wider uppercase mb-3 shadow-soft border border-[#ECDDFD]">
-                                <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
-                                <span>Histoire &amp; Transmission</span>
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="h-px w-6 bg-[#EC602B]"></span>
+                                <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
+                                    Histoire &amp; Transmission
+                                </span>
                             </div>
                             <h2 className="text-2xl sm:text-4xl font-display text-[#2A082D] tracking-tight">
-                                5 Dates Repères de Phœnix
+                                5 Dates Repères de{' '}
+                                <span className="marker-highlight text-[#EC602B]">
+                                    <span>Phœnix</span>
+                                </span>
                             </h2>
                         </div>
                         <p className="text-[#2A082D]/80 text-xs sm:text-sm font-semibold max-w-sm">
@@ -455,28 +472,32 @@ export function Association() {
                 <section className="mb-24 sm:mb-32">
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
                         <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#ECDDFD] text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] -rotate-1 shadow-soft">
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="h-px w-6 bg-[#EC602B]"></span>
+                                <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                                     Gouvernance 2026-2027
                                 </span>
 
-                                {isBureau && (
+                                {canEdit && (
                                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-school font-bold uppercase tracking-wider border border-emerald-300">
                                         <Check size={11} />
-                                        Connecté : Bureau
+                                        Mode Édition Actif
                                     </span>
                                 )}
                             </div>
                             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display text-[#2A082D] tracking-tight">
-                                L'Équipe du Bureau Exécutif
+                                L'Équipe du{' '}
+                                <span className="marker-highlight text-[#EC602B]">
+                                    <span>Bureau Exécutif</span>
+                                </span>
                             </h2>
                             <p className="text-slate-600 text-sm mt-1 font-medium">
                                 Les étudiants de KEDGE Business School qui pilotent l'association cette année.
                             </p>
                         </div>
 
-                        {/* Contrôles du Mode Bureau (visibles uniquement pour role === 'bureau') */}
-                        {isBureau && (
+                        {/* Contrôles du Mode Bureau (visibles uniquement en mode édition actif) */}
+                        {canEdit && (
                             <div className="flex items-center gap-2 shrink-0">
                                 <button
                                     type="button"
@@ -513,10 +534,10 @@ export function Association() {
                         {bureauMembers.map((member) => (
                             <div
                                 key={member.id}
-                                className="bg-white rounded-xl border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all p-6 flex flex-col justify-between text-center relative group"
+                                className="bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 p-6 flex flex-col justify-between text-center relative group will-change-transform"
                             >
-                                {/* Bouton Crayon (visible uniquement pour role === 'bureau') */}
-                                {isBureau && (
+                                {/* Bouton Crayon (visible uniquement en mode édition actif) */}
+                                {canEdit && (
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -561,7 +582,7 @@ export function Association() {
                                 </div>
 
                                 {/* Pied de carte avec LinkedIn */}
-                                <div className="mt-4 pt-3 border-t border-[#ECDDFD]/60 flex items-center justify-center">
+                                <div className="mt-4 pt-3 border-t border-[#6F2B75]/10 flex items-center justify-center">
                                     {member.linkedin ? (
                                         <a
                                             href={member.linkedin}
@@ -583,7 +604,7 @@ export function Association() {
                     </div>
 
                     {/* Pôles Opérationnels sous forme d'accordéons / fiches légères */}
-                    <div className="bg-[#ECDDFD]/30 rounded-xl p-6 sm:p-8 border border-[#ECDDFD] shadow-soft">
+                    <div className="bg-[#ECDDFD]/30 rounded-organic p-6 sm:p-8 border border-[#6F2B75]/15 shadow-phoenix-colored">
                         <div className="mb-6">
                             <h3 className="text-xl font-display text-[#2A082D]">
                                 Pôles Opérationnels &amp; Équipes
@@ -599,7 +620,7 @@ export function Association() {
                                 return (
                                     <div
                                         key={pole.id}
-                                        className="rounded-xl border border-[#ECDDFD] bg-white shadow-soft overflow-hidden transition-all flex flex-col justify-between"
+                                        className="rounded-organic-sm border border-[#6F2B75]/15 bg-white shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-all flex flex-col justify-between overflow-hidden"
                                     >
                                         <button
                                             type="button"
@@ -615,7 +636,7 @@ export function Association() {
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-1.5 shrink-0">
-                                                {isBureau && (
+                                                {canEdit && (
                                                     <span
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -645,7 +666,7 @@ export function Association() {
                                                 <div className="pt-2 border-t border-[#ECDDFD] font-medium text-slate-600">
                                                     <strong className="text-[#6F2B75]">Membres &amp; Chargés :</strong> {pole.members.join(', ')}
                                                 </div>
-                                                {isBureau && (
+                                                {canEdit && (
                                                     <div className="pt-2 flex justify-end">
                                                         <button
                                                             type="button"
@@ -672,7 +693,7 @@ export function Association() {
                 </section>
 
                 {/* ──────────────── 5. BANDEAU DE RESSOURCES ──────────────── */}
-                <section className="relative overflow-hidden bg-[#2A082D] text-white rounded-xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-lg">
+                <section className="relative overflow-hidden bg-[#2A082D] text-white rounded-organic p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-phoenix-colored-lg">
                     {/* Trame filigrane officielle sur fond sombre */}
                     <div className="pattern-watermark-dark" aria-hidden="true" />
 
@@ -710,7 +731,7 @@ export function Association() {
             </div>
 
             {/* ──────────────── MODAL D'ÉDITION DE MEMBRE (ROLE BUREAU) ──────────────── */}
-            {isBureau && editingMember && (
+            {canEdit && editingMember && (
                 <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
@@ -754,7 +775,7 @@ export function Association() {
                                         {editingMember.photo ? (
                                             <img
                                                 src={editingMember.photo}
-                                                alt="Aperçu"
+                                                alt="Aperçu de la photo de profil du membre"
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
@@ -894,7 +915,7 @@ export function Association() {
 
             {/* Modal de modification de Pôle (Responsable & Chargés de mission) */}
             <AnimatePresence>
-                {editingPole && (
+                {canEdit && editingPole && (
                     <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.96 }}

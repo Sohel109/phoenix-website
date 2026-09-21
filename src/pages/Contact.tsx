@@ -43,13 +43,28 @@ export function Contact() {
 
                 {/* Header */}
                 <div className="text-center mb-8 sm:mb-10">
-                    <div className="flex justify-center mb-3">
-                        <span className="badge-blockletter">
+                    <div className="flex justify-center items-center gap-3 mb-4">
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">
                             Écrivez-nous · À votre écoute
                         </span>
+                        <span className="h-px w-8 bg-[#EC602B]"></span>
                     </div>
                     <h1 className="text-4xl sm:text-6xl font-display text-phoenix-dark mb-3">
-                        {selectedCategory ? 'Votre Demande' : 'Contactez-nous'}
+                        {selectedCategory ? (
+                            <>
+                                Votre{' '}
+                                <span className="marker-highlight text-[#EC602B]">
+                                    <span>Demande</span>
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="marker-highlight text-[#EC602B]">
+                                    <span>Contactez-nous</span>
+                                </span>
+                            </>
+                        )}
                     </h1>
                     <p className="text-slate-600 font-sans text-base max-w-xl mx-auto leading-relaxed font-normal">
                         {selectedCategory 

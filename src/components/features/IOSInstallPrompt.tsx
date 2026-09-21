@@ -123,7 +123,7 @@ export function IOSInstallPrompt() {
                             <div className="flex items-center gap-3 pr-8">
                                 <img 
                                     src="/app-icon.png" 
-                                    alt="Phoenix Logo" 
+                                    alt="Icône officielle de l'application Phœnix Égalité des Chances" 
                                     className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl border border-white/10 object-contain bg-zinc-900 shrink-0" 
                                 />
                                 <div>

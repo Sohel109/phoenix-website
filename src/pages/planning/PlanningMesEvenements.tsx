@@ -1,14 +1,27 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, CheckCircle, XCircle, AlertTriangle, Sparkles, Info } from 'lucide-react';
+import { Calendar, CheckCircle, XCircle, AlertTriangle, Sparkles, Info, Edit3 } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { SPECIAL_EVENTS } from '../../data/planningData';
-import { events as publicEvents } from '../../data/events';
+import { useEvents } from '../../hooks/useEvents';
+import { EditEventModal } from '../../components/common/EditEventModal';
+import type { EventItem } from '../../data/events';
 
 export function PlanningMesEvenements() {
-    const { currentUser, eventAttendance, setEventAttendanceStatus } = usePlanning();
+    const { currentUser, eventAttendance, setEventAttendanceStatus, isEditModeActive } = usePlanning();
+    const { events, updateEvent } = useEvents();
+    const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+
+    const canEdit = currentUser?.role === 'bureau' && isEditModeActive;
 
     if (!currentUser) return null;
+
+    // Helper to get matching full EventItem
+    const getEventItem = (specialId: string): EventItem | undefined => {
+        const targetId = specialId === 'entretiens' ? 'entretiens-excellence' : specialId;
+        return events.find(e => e.id === targetId || e.id === specialId);
+    };
 
     // Helper to get current attendance record for this user & event
     const getAttendance = (eventId: string) => {
@@ -47,10 +60,9 @@ export function PlanningMesEvenements() {
                     const isAbsent = att?.present === false;
                     const isUnset = att === undefined;
 
-                    // Match with public event info for date and description if available
-                    const publicInfo = publicEvents.find(e => e.id === event.id);
-                    const eventDate = publicInfo?.date || 'Date à venir';
-                    const eventDesc = publicInfo?.description || "Événement majeur de l'association Phœnix réunissant l'ensemble des tuteurs et tuteurés.";
+                    const eventItem = getEventItem(event.id);
+                    const eventDate = eventItem?.date || 'Date à venir';
+                    const eventDesc = eventItem?.description || "Événement majeur de l'association Phœnix réunissant l'ensemble des tuteurs et tuteurés.";
 
                     return (
                         <motion.div
@@ -69,6 +81,22 @@ export function PlanningMesEvenements() {
                                             <Calendar size={12} className="text-[#EC602B]" />
                                             {eventDate}
                                         </span>
+
+                                        {/* Bureau Edit Mode: Action to change date & details */}
+                                        {canEdit && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (eventItem) setEditingEvent(eventItem);
+                                                }}
+                                                title="Modifier la date ou les détails de cet événement"
+                                                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B]/20 text-[#EC602B] hover:bg-[#EC602B] hover:text-white border border-[#EC602B]/50 transition-all cursor-pointer shadow-xs"
+                                            >
+                                                <Edit3 size={11} />
+                                                <span>Modifier la date</span>
+                                            </button>
+                                        )}
+
                                         {/* Status badge */}
                                         {isPresent && (
                                             <span className="flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-school uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
@@ -154,6 +182,16 @@ export function PlanningMesEvenements() {
                     Les présences déclarées ici permettent au pôle Événements et au Bureau de dimensionner les équipes, la logistique et les transports. Toute modification de dernière minute doit être signalée directement aux responsables.
                 </p>
             </div>
+
+            {/* Bureau Edit Modal */}
+            <EditEventModal
+                isOpen={!!editingEvent}
+                onClose={() => setEditingEvent(null)}
+                event={editingEvent}
+                onSave={async (updated) => {
+                    await updateEvent(updated);
+                }}
+            />
         </PlanningLayout>
     );
 }

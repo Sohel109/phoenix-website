@@ -43,11 +43,11 @@ function Card({ category, onSelect }: { category: any, onSelect: (id: string) =>
                     onSelect(category.id);
                 }
             }}
-            className="flex-1 group cursor-pointer relative active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-xl outline-none"
+            className="flex-1 group cursor-pointer relative active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-organic-sm outline-none"
             aria-label={`Sélectionner la catégorie ${category.label} : ${category.description}`}
         >
             {/* Card Container */}
-            <div className="relative h-64 md:h-80 bg-white rounded-xl border border-phoenix-lilac/50 hover:border-phoenix-purple overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1">
+            <div className="relative h-64 md:h-80 bg-white rounded-organic-sm border border-[#6F2B75]/15 hover:border-[#6F2B75] overflow-hidden flex flex-col items-center justify-center p-8 transition-all duration-300 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 will-change-transform">
 
                 {/* Background blob on hover */}
                 <div className="absolute inset-0 bg-gradient-to-b from-phoenix-cream/50 to-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
@@ -69,7 +69,7 @@ function Card({ category, onSelect }: { category: any, onSelect: (id: string) =>
                         </p>
                     </div>
 
-                    <span className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full border border-phoenix-lilac/80 bg-phoenix-cream/50 group-hover:bg-phoenix-purple group-hover:text-white group-hover:border-phoenix-purple text-xs font-school uppercase tracking-wider text-phoenix-dark transition-all">
+                    <span className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full border border-[#6F2B75]/20 bg-phoenix-cream/50 group-hover:bg-[#EC602B] group-hover:text-white group-hover:border-[#EC602B] text-xs font-school uppercase tracking-wider text-phoenix-dark transition-all">
                         Sélectionner →
                     </span>
                 </div>

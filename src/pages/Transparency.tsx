@@ -91,11 +91,19 @@ export function Transparency() {
                     <div className="inline-flex items-center justify-center p-4 bg-[#ECDDFD] text-[#6F2B75] rounded-2xl mb-5 shadow-soft">
                         <PieChart className="w-10 h-10" />
                     </div>
-                    <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
-                        Transparence Financière
-                    </span>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                        <span className="h-px w-8 bg-[#EC602B]" />
+                        <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75]">
+                            Transparence Financière
+                        </span>
+                        <span className="h-px w-8 bg-[#EC602B]" />
+                    </div>
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] mb-4 tracking-tight">
-                        Comment sont utilisés vos dons ?
+                        Comment sont utilisés{' '}
+                        <span className="marker-highlight text-[#EC602B]">
+                            <span>vos dons</span>
+                        </span>{' '}
+                        ?
                     </h1>
                     <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
                         Découvrez comment vos dons transforment la vie de 300 jeunes chaque année à Marseille.
@@ -103,7 +111,7 @@ export function Transparency() {
                 </div>
 
                 {/* Trust Message */}
-                <div className="bg-white border border-[#ECDDFD] rounded-xl p-6 md:p-8 mb-12 shadow-soft">
+                <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-6 md:p-8 mb-12 shadow-phoenix-colored">
                     <div className="flex items-start gap-4">
                         <div className="p-3 bg-[#ECDDFD] rounded-xl flex-shrink-0 text-[#6F2B75]">
                             <Heart className="w-6 h-6" />
@@ -122,16 +130,20 @@ export function Transparency() {
                 {/* Répartition des Dons (Section unifiée, épurée et sans doublons) */}
                 <div className="mb-14">
                     <div className="text-center mb-8">
-                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#6F2B75] bg-[#ECDDFD] px-3.5 py-1 rounded-full shadow-soft inline-block mb-2">
-                            Affectation Budgétaire
-                        </span>
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <span className="h-px w-8 bg-[#EC602B]" />
+                            <span className="text-xs font-school font-bold uppercase tracking-widest text-[#6F2B75]">
+                                Affectation Budgétaire
+                            </span>
+                            <span className="h-px w-8 bg-[#EC602B]" />
+                        </div>
                         <h2 className="text-2xl sm:text-4xl font-display text-[#2A082D] tracking-tight">
                             Répartition de Chaque Euro Donné
                         </h2>
                     </div>
 
                     {/* Barre d'ensemble compacte */}
-                    <div className="bg-white border border-[#ECDDFD] rounded-xl p-5 mb-6 shadow-soft">
+                    <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-5 mb-6 shadow-phoenix-colored">
                         <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
                             {donationBreakdown.map((item) => (
                                 <div
@@ -150,7 +162,7 @@ export function Transparency() {
                             return (
                                 <div
                                     key={item.category}
-                                    className="bg-white border border-[#ECDDFD] rounded-xl p-6 hover:shadow-soft-lg transition-all hover:-translate-y-1 shadow-soft flex flex-col justify-between"
+                                    className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-6 shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between will-change-transform"
                                 >
                                     <div>
                                         <div className="flex items-center justify-between gap-3 mb-4">
@@ -197,7 +209,7 @@ export function Transparency() {
                         {impactExamples.map((example) => (
                             <div
                                 key={example.amount}
-                                className="bg-white border border-[#ECDDFD] rounded-2xl p-6 hover:border-[#6F2B75] hover:shadow-soft-lg transition-all shadow-soft"
+                                className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-6 hover:border-[#6F2B75] shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform"
                             >
                                 <div className="flex items-start gap-4">
                                     <div className="p-2.5 bg-[#ECDDFD] rounded-xl flex-shrink-0 mt-0.5 text-[#6F2B75]">
@@ -214,7 +226,7 @@ export function Transparency() {
                 </div>
 
                 {/* Widget don avec simulateur fiscal interactif */}
-                <div className="text-center bg-[#2A082D] bg-bird-pattern-dark text-white rounded-xl p-8 md:p-12 shadow-soft-lg relative overflow-hidden">
+                <div className="text-center bg-[#2A082D] bg-bird-pattern-dark text-white rounded-organic p-8 md:p-12 shadow-phoenix-colored relative overflow-hidden">
                     <div className="relative z-10">
                         <div className="p-3.5 bg-white/10 rounded-xl w-fit mx-auto mb-5">
                             <Heart className="w-8 h-8 text-[#FF7E2E]" fill="currentColor" />
@@ -231,7 +243,7 @@ export function Transparency() {
                             href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-phoenix-orange inline-flex items-center gap-2 px-7 py-3.5 rounded-lg font-school font-bold text-sm uppercase tracking-wider shadow-glow-orange mt-6"
+                            className="btn-phoenix-orange btn-glow-orange inline-flex items-center gap-2 px-7 py-3.5 rounded-lg font-school font-bold text-sm uppercase tracking-wider shadow-glow-orange mt-6 touch-tactile"
                         >
                             <Heart size={18} fill="currentColor" />
                             <span>Faire un don sur HelloAsso</span>

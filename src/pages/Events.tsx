@@ -1,7 +1,11 @@
-import { Calendar, ArrowRight } from 'lucide-react';
-import { events } from '../data/events';
+import { useState } from 'react';
+import { Calendar, ArrowRight, Edit3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
+import { useEvents } from '../hooks/useEvents';
+import { usePlanning } from '../context/PlanningContext';
+import { EditEventModal } from '../components/common/EditEventModal';
+import type { EventItem } from '../data/events';
 
 const eventsBreadcrumbSchema = {
     "@context": "https://schema.org",
@@ -23,6 +27,12 @@ const eventsBreadcrumbSchema = {
 };
 
 export function Events() {
+    const { events, updateEvent } = useEvents();
+    const { currentUser, isEditModeActive } = usePlanning();
+    const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+
+    const canEdit = currentUser?.role === 'bureau' && isEditModeActive;
+
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
@@ -41,7 +51,10 @@ export function Events() {
                         <span className="h-px w-8 bg-[#EC602B]"></span>
                     </div>
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4">
-                        Nos Événements Phares
+                        Nos{' '}
+                        <span className="marker-highlight text-[#EC602B]">
+                            <span>Événements Phares</span>
+                        </span>
                     </h1>
                     <p className="text-[#2A082D]/80 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
                         Chaque année, Phoenix EDC organise et participe à des événements majeurs pour stimuler l'éloquence, la négociation diplomatique, le sport et la cohésion de nos jeunes.
@@ -51,21 +64,47 @@ export function Events() {
                 {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {events.map((event, index) => (
-                        <EventCard key={event.id} event={event} index={index} />
+                        <EventCard
+                            key={event.id}
+                            event={event}
+                            index={index}
+                            canEdit={canEdit}
+                            onEdit={() => setEditingEvent(event)}
+                        />
                     ))}
                 </div>
             </div>
+
+            {/* Modal de modification */}
+            <EditEventModal
+                isOpen={!!editingEvent}
+                onClose={() => setEditingEvent(null)}
+                event={editingEvent}
+                onSave={async (updated) => {
+                    await updateEvent(updated);
+                }}
+            />
         </div>
     );
 }
 
-function EventCard({ event, index }: { event: any; index: number }) {
+function EventCard({
+    event,
+    index,
+    canEdit,
+    onEdit
+}: {
+    event: EventItem;
+    index: number;
+    canEdit: boolean;
+    onEdit: () => void;
+}) {
     return (
         <div
-            className="bg-white border border-[#ECDDFD] rounded-xl p-7 flex flex-col h-full shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 group"
+            className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-7 flex flex-col h-full shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 group relative will-change-transform"
         >
             {/* Image Container with strict 16:9 fixed aspect ratio */}
-            <div className={`relative aspect-video w-full rounded-lg overflow-hidden mb-6 shadow-soft flex items-center justify-center ${
+            <div className={`relative aspect-video w-full rounded-organic-sm overflow-hidden mb-6 shadow-soft flex items-center justify-center ${
                 event.id === 'entretiens-excellence' ? 'bg-white p-5' : 'bg-slate-900'
             }`}>
                 <img
@@ -95,6 +134,19 @@ function EventCard({ event, index }: { event: any; index: number }) {
                         {event.badge}
                     </div>
                 )}
+
+                {/* Bureau Edit Button on Image */}
+                {canEdit && (
+                    <button
+                        type="button"
+                        onClick={onEdit}
+                        title="Modifier cet événement"
+                        className="absolute bottom-3.5 right-3.5 bg-[#EC602B] hover:bg-[#d54e1b] text-white px-3 py-1 rounded-full text-xs font-school font-bold uppercase tracking-wider shadow-soft transition-all flex items-center gap-1.5 z-20 cursor-pointer"
+                    >
+                        <Edit3 size={12} />
+                        <span>Modifier</span>
+                    </button>
+                )}
             </div>
 
             {/* Content */}
@@ -115,13 +167,26 @@ function EventCard({ event, index }: { event: any; index: number }) {
                     {event.description}
                 </p>
 
-                <Link
-                    to={`/evenements/${event.id}`}
-                    className="btn-phoenix-orange w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-school font-bold text-xs shadow-soft transition-all mt-auto"
-                >
-                    <span>En savoir plus</span>
-                    <ArrowRight size={15} />
-                </Link>
+                <div className="w-full flex items-center justify-center gap-3 mt-auto">
+                    <Link
+                        to={`/evenements/${event.id}`}
+                        className="btn-phoenix-orange btn-glow-orange w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-school font-bold text-xs shadow-soft transition-all touch-tactile"
+                    >
+                        <span>En savoir plus</span>
+                        <ArrowRight size={15} />
+                    </Link>
+
+                    {canEdit && (
+                        <button
+                            type="button"
+                            onClick={onEdit}
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-[#EC602B] text-[#EC602B] hover:bg-[#EC602B] hover:text-white font-school font-bold text-xs transition-all cursor-pointer"
+                        >
+                            <Edit3 size={13} />
+                            <span>Éditer</span>
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );

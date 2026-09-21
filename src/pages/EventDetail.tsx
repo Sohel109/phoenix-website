@@ -1,14 +1,21 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Calendar, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
-import { events } from '../data/events';
+import { ArrowLeft, Calendar, ExternalLink, ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { SEO } from '../components/common/SEO';
+import { useEvents } from '../hooks/useEvents';
+import { usePlanning } from '../context/PlanningContext';
+import { EditEventModal } from '../components/common/EditEventModal';
 
 export function EventDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { events, updateEvent } = useEvents();
+    const { currentUser, isEditModeActive } = usePlanning();
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
     const event = events.find(e => e.id === id);
+    const canEdit = currentUser?.role === 'bureau' && isEditModeActive;
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
@@ -107,12 +114,25 @@ export function EventDetail() {
             </div>
 
             <div className="container mx-auto px-4 relative z-10 max-w-6xl">
-                <Link to="/evenements" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-phoenix-lilac/60 text-phoenix-dark font-school text-xs tracking-wider uppercase hover:text-phoenix-purple hover:border-phoenix-purple transition-all shadow-xs group">
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span>Retour aux événements</span>
-                </Link>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    <Link to="/evenements" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-phoenix-lilac/60 text-phoenix-dark font-school text-xs tracking-wider uppercase hover:text-phoenix-purple hover:border-phoenix-purple transition-all shadow-xs group">
+                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                        <span>Retour aux événements</span>
+                    </Link>
 
-                <div className="bg-white rounded-xl shadow-soft-lg overflow-hidden border border-phoenix-lilac/40 mt-6">
+                    {canEdit && (
+                        <button
+                            type="button"
+                            onClick={() => setIsEditModalOpen(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#EC602B] hover:bg-[#d54e1b] text-white font-school text-xs tracking-wider uppercase transition-all shadow-soft cursor-pointer"
+                        >
+                            <Edit3 size={15} />
+                            <span>Modifier cet événement</span>
+                        </button>
+                    )}
+                </div>
+
+                <div className="bg-white rounded-organic shadow-phoenix-colored overflow-hidden border border-[#6F2B75]/15 mt-6">
                     {/* Header Image */}
                     <div className={`relative h-64 md:h-[420px] w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : 'bg-phoenix-dark'}`}>
                         <img
@@ -169,7 +189,7 @@ export function EventDetail() {
                                                     <img
                                                         /* @ts-ignore */
                                                         src={(link as any).logo}
-                                                        alt="Logo"
+                                                        alt={`Logo partenaire ${link.label}`}
                                                         className="h-5 w-auto object-contain"
                                                     />
                                                 )}
@@ -235,6 +255,16 @@ export function EventDetail() {
                     </div>
                 </div>
             </div>
+
+            {/* Bureau Edit Modal */}
+            <EditEventModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                event={event}
+                onSave={async (updated) => {
+                    await updateEvent(updated);
+                }}
+            />
         </div>
     );
 }

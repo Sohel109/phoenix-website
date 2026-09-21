@@ -93,8 +93,13 @@ export function ProjectMap() {
                                 <MapPin className="w-7 h-7" />
                             </div>
                             <div>
-                                <h1 className="text-3xl sm:text-5xl font-display text-phoenix-dark tracking-tight">Carte des Projets</h1>
-                                <p className="font-script text-2xl text-[#2A082D]">9 projets ancrés dans Marseille</p>
+                                <h1 className="text-3xl sm:text-5xl font-display text-phoenix-dark tracking-tight">
+                                    Carte des{' '}
+                                    <span className="marker-highlight text-[#EC602B]">
+                                        <span>Projets</span>
+                                    </span>
+                                </h1>
+                                <p className="font-script text-2xl text-[#6F2B75]">9 projets ancrés dans Marseille</p>
                             </div>
                         </div>
 
@@ -118,7 +123,7 @@ export function ProjectMap() {
 
                 {/* Map */}
                 <div
-                    className="rounded-xl overflow-hidden border border-phoenix-lilac/50 shadow-xl"
+                    className="rounded-organic overflow-hidden border border-[#6F2B75]/20 shadow-phoenix-colored"
                     style={{ height: '600px' }}
                 >
                     <MapContainer
@@ -201,17 +206,17 @@ export function ProjectMap() {
 
                 {/* Stats */}
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div className="p-6 bg-white rounded-xl border border-phoenix-lilac/50 shadow-sm text-center">
+                    <div className="p-6 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1.5 transition-all duration-300 text-center will-change-transform">
                         <div className="text-4xl font-display text-phoenix-purple mb-1">9</div>
-                        <div className="text-xs font-school uppercase tracking-wider text-slate-600">Projets actifs à Marseille</div>
+                        <div className="text-xs font-school uppercase tracking-wider text-slate-600 font-bold">Projets actifs à Marseille</div>
                     </div>
-                    <div className="p-6 bg-white rounded-xl border border-phoenix-lilac/50 shadow-sm text-center">
+                    <div className="p-6 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1.5 transition-all duration-300 text-center will-change-transform">
                         <div className="text-4xl font-display text-phoenix-orange mb-1">~300</div>
-                        <div className="text-xs font-school uppercase tracking-wider text-slate-600">Jeunes accompagnés / an</div>
+                        <div className="text-xs font-school uppercase tracking-wider text-slate-600 font-bold">Jeunes accompagnés / an</div>
                     </div>
-                    <div className="p-6 bg-white rounded-xl border border-phoenix-lilac/50 shadow-sm text-center">
+                    <div className="p-6 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-1.5 transition-all duration-300 text-center will-change-transform">
                         <div className="text-4xl font-display text-phoenix-purple-light mb-1">+100</div>
-                        <div className="text-xs font-school uppercase tracking-wider text-slate-600">Bénévoles Kedge mobilisés</div>
+                        <div className="text-xs font-school uppercase tracking-wider text-slate-600 font-bold">Bénévoles Kedge mobilisés</div>
                     </div>
                 </div>
             </div>

@@ -204,6 +204,74 @@ app.post('/api/planning/exemptions', (req, res) => {
     }
 });
 
+// ─── Documents Officiels (Persistance locale pour Git) ───────────────────────
+
+// GET /api/documents
+app.get('/api/documents', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'documents.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, documents: JSON.parse(data) });
+        }
+        return res.json({ success: true, documents: [] });
+    } catch (err) {
+        console.error('Erreur lecture documents:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les documents' });
+    }
+});
+
+// POST /api/documents
+app.post('/api/documents', (req, res) => {
+    try {
+        const { documents } = req.body;
+        if (!Array.isArray(documents)) {
+            return res.status(400).json({ success: false, error: 'Format invalide: documents doit être un tableau' });
+        }
+        const dataFilePath = path.join(__dirname, 'src', 'data', 'documents.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(documents, null, 2), 'utf-8');
+        console.log(`📄 ${documents.length} documents enregistrés dans src/data/documents.json`);
+        return res.json({ success: true, message: 'Documents mis à jour avec succès', documents });
+    } catch (err) {
+        console.error('Erreur sauvegarde documents:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des documents' });
+    }
+});
+
+// ─── Événements Phares & Planning (Persistance locale pour Git) ─────────────
+
+// GET /api/events
+app.get('/api/events', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'events.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, events: JSON.parse(data) });
+        }
+        return res.json({ success: true, events: [] });
+    } catch (err) {
+        console.error('Erreur lecture événements:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les événements' });
+    }
+});
+
+// POST /api/events
+app.post('/api/events', (req, res) => {
+    try {
+        const { events } = req.body;
+        if (!Array.isArray(events)) {
+            return res.status(400).json({ success: false, error: 'Format invalide: events doit être un tableau' });
+        }
+        const dataFilePath = path.join(__dirname, 'src', 'data', 'events.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(events, null, 2), 'utf-8');
+        console.log(`🎉 ${events.length} événements enregistrés dans src/data/events.json`);
+        return res.json({ success: true, message: 'Événements mis à jour avec succès', events });
+    } catch (err) {
+        console.error('Erreur sauvegarde événements:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des événements' });
+    }
+});
+
 
 // 🛡️ Rate Limiter en mémoire (sécurisation anti-spam et anti-bruteforce)
 function createRateLimiter({ windowMs, maxRequests, message }) {

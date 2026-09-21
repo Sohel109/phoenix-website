@@ -35,7 +35,10 @@ export function TestimonialsSection() {
                     </div>
 
                     <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-tight leading-[1.1] mb-4">
-                        La preuve par le terrain.
+                        La preuve par{' '}
+                        <span className="marker-highlight text-[#6F2B75]">
+                            <span>le terrain</span>
+                        </span>.
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base leading-relaxed">
@@ -43,12 +46,14 @@ export function TestimonialsSection() {
                     </p>
                 </div>
 
-                {/* ── CARTE TÉMOIGNAGE ÉDITORIALE ── */}
-                <div className="max-w-3xl mx-auto bg-white rounded-xl p-8 sm:p-12 border border-[#E5E5E5] shadow-soft relative overflow-hidden">
-                    {/* Étiquette simple — pas de pill */}
-                    <div className="absolute top-6 right-6 z-10 hidden sm:flex items-center gap-1.5 text-[10px] font-school font-bold uppercase tracking-wider text-[#EC602B]">
-                        <span className="w-3 h-px bg-[#EC602B]" />
-                        Parole d'Élève
+                {/* ── CARTE TÉMOIGNAGE ÉDITORIALE & ASYMÉTRIQUE ── */}
+                <div className="max-w-3xl mx-auto bg-white rounded-organic p-8 sm:p-12 border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-shadow duration-300 relative overflow-hidden">
+                    {/* Micro-tampon graphique artisanal en haut à droite */}
+                    <div className="absolute top-5 right-5 z-10 hidden sm:flex">
+                        <div className="badge-stamp text-[9px] rotate-2 py-1 px-3 shadow-soft border-[#6F2B75]/40">
+                            <span className="text-[#6F2B75] font-extrabold text-[8px]">PROJET ACSE</span>
+                            <span className="text-[#EC602B] font-black text-[10px]">TÉMOIGNAGE VÉRIFIÉ</span>
+                        </div>
                     </div>
 
                     {/* Top : Avatar + Identité */}
@@ -63,8 +68,8 @@ export function TestimonialsSection() {
                                     <h3 className="text-2xl font-display text-[#2A082D] tracking-tight">
                                         {student.author}
                                     </h3>
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/90 text-emerald-800 border border-emerald-300 text-[10px] font-school font-bold">
-                                        <CheckCircle2 size={11} className="text-emerald-700" />
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#ECDDFD]/60 text-[#6F2B75] border border-[#6F2B75]/20 text-[10px] font-school font-bold">
+                                        <CheckCircle2 size={11} className="text-[#EC602B]" />
                                         Témoignage vérifié
                                     </span>
                                 </div>
@@ -79,7 +84,7 @@ export function TestimonialsSection() {
                         </div>
 
                         <div className="shrink-0 hidden sm:block">
-                            <Quote size={48} className="text-[#6F2B75]/20" />
+                            <Quote size={48} className="text-[#6F2B75]/15" />
                         </div>
                     </div>
 
@@ -111,7 +116,7 @@ export function TestimonialsSection() {
                     <button
                         type="button"
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded text-xs font-school font-bold text-[#6F2B75] hover:text-[#EC602B] border border-[#D9BEF8] active:opacity-80 transition-all mb-6 cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-school font-bold text-[#6F2B75] hover:text-[#EC602B] border border-[#6F2B75]/25 active:opacity-80 transition-all mb-6 cursor-pointer touch-tactile"
                     >
                         <span>{isExpanded ? 'Réduire le récit' : 'Lire tout son témoignage'}</span>
                         <ChevronDown
@@ -121,7 +126,7 @@ export function TestimonialsSection() {
                     </button>
 
                     {/* Pied de Carte : Lien vers le projet ACSE */}
-                    <div className="pt-5 border-t border-[#E5E5E5] flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="pt-5 border-t border-[#6F2B75]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2 text-xs font-school font-bold text-[#6F2B75]">
                             <span className="w-2.5 h-px bg-[#EC602B]" />
                             <span>{student.projectTag}</span>
@@ -129,7 +134,7 @@ export function TestimonialsSection() {
 
                         <Link
                             to={student.projectLink}
-                            className="btn-phoenix-gradient px-5 py-2.5 text-xs flex items-center gap-1.5 shrink-0"
+                            className="btn-phoenix-gradient btn-glow-orange px-5 py-2.5 text-xs rounded-lg flex items-center gap-1.5 shrink-0 touch-tactile"
                         >
                             <span>Découvrir le projet ACSE</span>
                             <ArrowRight size={13} />
@@ -137,7 +142,7 @@ export function TestimonialsSection() {
                     </div>
                 </div>
 
-                {/* Trust Bar — style éditorial simple (pas de pill container) */}
+                {/* Trust Bar — style éditorial simple */}
                 <div className="mt-10 pt-8 border-t border-[#2A082D]/8 text-center">
                     <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs font-school font-bold text-[#2A082D]">
                         <span className="text-[#EC602B]">100% de réussite au bac pour nos élèves suivis</span>
@@ -145,6 +150,19 @@ export function TestimonialsSection() {
                         <span className="text-[#6F2B75]">+3000 jeunes accompagnés depuis 2011</span>
                         <span className="hidden sm:inline text-[#2A082D]/20">/</span>
                         <span className="text-slate-600">Labellisé « Cordées de la Réussite »</span>
+                    </div>
+                </div>
+
+                {/* ── CHEVAUCHEMENT (OVERLAPPING) : Bulle de citation flottante sur la frontière crème/lilas ── */}
+                <div className="relative -mb-14 sm:-mb-20 mt-10 z-20 flex justify-center pointer-events-none">
+                    <div className="inline-flex items-center gap-3 px-5 sm:px-7 py-3 rounded-full bg-white border border-[#6F2B75]/20 shadow-phoenix-colored-lg pointer-events-auto backdrop-blur-sm -rotate-1 hover:rotate-0 transition-transform select-none">
+                        <Quote size={16} className="text-[#EC602B] shrink-0" />
+                        <span className="font-script text-xl sm:text-2xl text-[#2A082D]">
+                            « Avec Phœnix, j'ai compris que mon avenir m'appartenait. »
+                        </span>
+                        <span className="text-[10px] sm:text-xs font-school font-bold text-[#6F2B75] uppercase tracking-wider hidden sm:inline">
+                            — Selma, ACSE
+                        </span>
                     </div>
                 </div>
             </div>

@@ -49,23 +49,31 @@ export function DonationSection() {
                     </div>
 
                     <h2 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight leading-[1.12] mb-5">
-                        Donner pour créer le déclic.
+                        Donner pour créer{' '}
+                        <span className="marker-highlight text-[#EC602B]">
+                            <span>le déclic</span>
+                        </span>.
                     </h2>
 
                     <p className="text-[#2A082D]/80 font-medium text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                         Votre générosité finance directement les sorties culturelles, le matériel pédagogique et les projets d'avenir de 300 jeunes marseillais.
                     </p>
 
-                    {/* Mention fiscale officielle */}
-                    <div className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-lg bg-white/95 border border-[#6F2B75]/20 text-[#2A082D] text-xs sm:text-sm font-semibold shadow-soft">
-                        <Receipt size={16} className="text-[#6F2B75] shrink-0" />
-                        <span>
-                            <strong className="text-[#6F2B75]">Association d'intérêt général</strong> : 66% du montant de votre don est déductible de vos impôts.
+                    {/* Mention fiscale officielle avec note manuscrite */}
+                    <div className="inline-flex flex-wrap items-center justify-center gap-3 mt-5 px-5 py-2.5 rounded-lg bg-white/95 border border-[#6F2B75]/20 text-[#2A082D] text-xs sm:text-sm font-semibold shadow-phoenix-colored">
+                        <div className="flex items-center gap-2">
+                            <Receipt size={16} className="text-[#6F2B75] shrink-0" />
+                            <span>
+                                <strong className="text-[#6F2B75]">Association d'intérêt général</strong> : 66% du montant de votre don est déductible de vos impôts.
+                            </span>
+                        </div>
+                        <span className="font-script text-xl text-[#EC602B] hidden md:inline rotate-1 select-none">
+                            Reçu fiscal immédiat ✦
                         </span>
                     </div>
                 </div>
 
-                {/* Grille concrète des 3 paliers d'action */}
+                {/* Grille concrète des 3 paliers d'action asymétriques */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
                     {DONATION_TIERS.map((tier) => {
                         const isSelected = selectedAmount === tier.amount;
@@ -73,15 +81,15 @@ export function DonationSection() {
                             <div
                                 key={tier.amount}
                                 onClick={() => setSelectedAmount(tier.amount)}
-                                className={`rounded-xl p-7 sm:p-8 transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden border ${
+                                className={`rounded-organic-sm p-7 sm:p-8 transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden border will-change-transform ${
                                     isSelected
-                                        ? 'bg-white border-[#EC602B] shadow-soft-lg ring-2 ring-[#EC602B]/40 -translate-y-1'
-                                        : 'bg-white/90 hover:bg-white border-[#ECDDFD] shadow-soft hover:-translate-y-0.5'
+                                        ? 'bg-white border-[#EC602B] shadow-phoenix-colored-lg ring-2 ring-[#EC602B]/40 -translate-y-2'
+                                        : 'bg-white/95 hover:bg-white border-[#6F2B75]/15 shadow-phoenix-colored hover:-translate-y-2 hover:shadow-phoenix-colored-lg'
                                 }`}
                             >
                                 {tier.popular && (
                                     <div className="absolute top-4 right-4">
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EC602B] text-white text-[10px] font-school font-bold uppercase tracking-wider">
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EC602B] text-white text-[10px] font-school font-bold uppercase tracking-wider shadow-sm">
                                             <Sparkles size={11} />
                                             Impact Majeur
                                         </span>
@@ -91,7 +99,7 @@ export function DonationSection() {
                                 <div>
                                     {/* Montant & déduction */}
                                     <div className="mb-4">
-                                        <span className="text-4xl sm:text-5xl font-black text-[#EC602B] tabular-nums leading-none">
+                                        <span className="text-4xl sm:text-5xl font-black text-[#EC602B] tabular-nums leading-none font-sans">
                                             {tier.amount} €
                                         </span>
                                         <p className="text-xs text-[#2A082D] font-bold mt-1.5">
@@ -106,7 +114,7 @@ export function DonationSection() {
                                 </div>
 
                                 {/* Indicateur de sélection */}
-                                <div className="pt-4 border-t border-[#ECDDFD] flex items-center justify-between">
+                                <div className="pt-4 border-t border-[#6F2B75]/10 flex items-center justify-between">
                                     <span className="text-xs font-school font-bold uppercase tracking-wider text-[#2A082D]">
                                         {isSelected ? 'Palier sélectionné' : 'Sélectionner ce palier'}
                                     </span>
@@ -125,8 +133,16 @@ export function DonationSection() {
                     })}
                 </div>
 
-                {/* Bloc d'action centralisé */}
-                <div className="bg-white rounded-xl border border-[#ECDDFD] p-8 sm:p-10 text-center max-w-3xl mx-auto shadow-soft-lg">
+                {/* Bloc d'action centralisé asymétrique */}
+                <div className="bg-white rounded-organic-sm border border-[#6F2B75]/15 p-8 sm:p-10 text-center max-w-3xl mx-auto shadow-phoenix-colored-lg relative">
+                    {/* Micro-tampon fiscal */}
+                    <div className="hidden sm:flex absolute -top-4 -right-4 z-20">
+                        <div className="badge-stamp text-[9px] -rotate-3 py-1 px-3 shadow-soft border-[#EC602B]/50">
+                            <span className="text-[#6F2B75] font-extrabold text-[8px]">REÇU FISCAL</span>
+                            <span className="text-[#EC602B] font-black text-[10px]">66% DÉDUCTIBLE</span>
+                        </div>
+                    </div>
+
                     <p className="text-[#2A082D] text-sm sm:text-base font-semibold mb-6">
                         Vous avez choisi de soutenir Phœnix avec un don de{' '}
                         <strong className="text-[#EC602B] font-black text-xl tabular-nums">{selectedAmount} €</strong>{' '}
@@ -142,7 +158,7 @@ export function DonationSection() {
                             href={HELLOASSO_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full sm:w-auto btn-phoenix-orange px-8 py-3.5 text-sm uppercase tracking-wider text-white shadow-glow-orange inline-flex items-center justify-center gap-2.5 active:scale-95 transition-all"
+                            className="w-full sm:w-auto btn-phoenix-orange btn-glow-orange px-8 py-3.5 text-sm uppercase tracking-wider text-white inline-flex items-center justify-center gap-2.5 active:scale-95 transition-all touch-tactile rounded-lg font-bold"
                         >
                             <Heart size={18} fill="currentColor" />
                             <span>Finaliser mon don ({selectedAmount} €)</span>
@@ -153,14 +169,14 @@ export function DonationSection() {
                             href={HELLOASSO_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full sm:w-auto px-6 py-3.5 rounded-lg border border-[#6F2B75]/25 hover:border-[#6F2B75] text-[#2A082D] hover:bg-[#ECDDFD]/40 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors inline-flex items-center justify-center"
+                            className="w-full sm:w-auto px-6 py-3.5 rounded-lg border border-[#6F2B75]/25 hover:border-[#6F2B75] text-[#2A082D] hover:bg-[#ECDDFD]/40 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors inline-flex items-center justify-center touch-tactile"
                         >
                             Montant libre
                         </a>
                     </div>
 
                     {/* Réassurance de sécurité */}
-                    <div className="mt-6 pt-5 border-t border-[#ECDDFD]/70 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 font-medium">
+                    <div className="mt-6 pt-5 border-t border-[#6F2B75]/10 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 font-medium">
                         <span className="inline-flex items-center gap-1.5">
                             <ShieldCheck size={16} className="text-emerald-600" />
                             Paiement 100% sécurisé via HelloAsso

@@ -10,7 +10,9 @@ import {
     Sparkles, 
     Heart,
     ChevronDown,
-    Calendar
+    Calendar,
+    Search,
+    X
 } from 'lucide-react';
 import { useState } from 'react';
 import { SEO } from '../components/common/SEO';
@@ -38,12 +40,25 @@ const projectsBreadcrumbSchema = {
 
 export function Projects() {
     const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
     const filteredProjects = projects.filter(p => {
-        if (activeFilter === 'cordees') return p.isCordee;
-        if (activeFilter === 'college') return p.category === 'Collège';
-        if (activeFilter === 'lycee') return p.category === 'Lycée' || p.category === 'Phoenix x OM' || p.category === 'Association';
+        if (activeFilter === 'cordees' && !p.isCordee) return false;
+        if (activeFilter === 'college' && p.category !== 'Collège') return false;
+        if (activeFilter === 'lycee' && p.category !== 'Lycée' && p.category !== 'Phoenix x OM' && p.category !== 'Association') return false;
+
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            const matchesTitle = p.title.toLowerCase().includes(q);
+            const matchesTarget = p.targetAudience?.toLowerCase().includes(q) || false;
+            const matchesLocation = p.locationName?.toLowerCase().includes(q) || false;
+            const matchesDesc = p.description?.toLowerCase().includes(q) || false;
+            const matchesCategory = p.category?.toLowerCase().includes(q) || false;
+            const matchesType = p.type?.toLowerCase().includes(q) || false;
+            return matchesTitle || matchesTarget || matchesLocation || matchesDesc || matchesCategory || matchesType;
+        }
+
         return true;
     });
 
@@ -80,7 +95,11 @@ export function Projects() {
                     </div>
 
                     <h1 className="text-3xl sm:text-5xl md:text-6xl font-display text-[#2A082D] tracking-tight mb-4 leading-[1.1] text-balance">
-                        Des Projets Concrets pour l'Égalité
+                        Des{' '}
+                        <span className="marker-highlight text-[#EC602B]">
+                            <span>Projets Concrets</span>
+                        </span>{' '}
+                        pour l'Égalité
                     </h1>
                     <p className="text-[#2A082D]/80 font-medium max-w-2xl mx-auto text-sm sm:text-base leading-relaxed mb-8 text-pretty">
                         Chaque semaine, nos bénévoles accompagnent 300 collégiens et lycéens marseillais à travers soutien scolaire, éveil culturel et aide à l'orientation.
@@ -90,12 +109,35 @@ export function Projects() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
                         <Link
                             to="/carte-des-projets"
-                            className="btn-phoenix-outline px-5 py-2.5 rounded-lg text-xs sm:text-sm font-school font-bold shadow-soft flex items-center gap-2 active:scale-95"
+                            className="btn-phoenix-outline px-6 py-3 rounded-full text-xs sm:text-sm font-school font-bold shadow-soft flex items-center gap-2 active:scale-95 touch-tactile hover:border-[#6F2B75] uppercase tracking-wider border-2 hover:bg-[#ECDDFD]/30 transition-all"
                         >
-                            <MapPin size={15} className="text-[#EC602B]" />
-                            <span>Carte interactive des implantations</span>
-                            <ArrowRight size={13} />
+                            <MapPin size={16} className="text-[#EC602B]" />
+                            <span>Carte interactive des projets</span>
+                            <ArrowRight size={14} />
                         </Link>
+                    </div>
+
+                    {/* Search Input */}
+                    <div className="relative max-w-md mx-auto mb-5">
+                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#904990] pointer-events-none" />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Rechercher un établissement, quartier (ex: Izzo, 15e, OM)..."
+                            className="w-full pl-10 pr-10 py-2.5 rounded-full bg-white border border-[#6F2B75]/20 text-xs sm:text-sm text-[#2A082D] placeholder-[#904990]/60 shadow-soft focus:outline-none focus:ring-2 focus:ring-[#EC602B]/50 focus:border-[#EC602B] transition-all"
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#904990] hover:text-[#EC602B] p-1 cursor-pointer"
+                                title="Effacer la recherche"
+                                aria-label="Effacer la recherche"
+                            >
+                                <X size={15} />
+                            </button>
+                        )}
                     </div>
 
                     {/* Filter Tabs */}
@@ -106,7 +148,7 @@ export function Projects() {
                             className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'all'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
-                                    : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
+                                    : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#6F2B75]/15'
                             }`}
                         >
                             Tous les projets (9)
@@ -117,11 +159,11 @@ export function Projects() {
                             className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all flex items-center gap-1.5 shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'cordees'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
-                                    : 'bg-white text-[#6F2B75] hover:bg-[#ECDDFD] border border-[#ECDDFD]'
+                                    : 'bg-white text-[#6F2B75] hover:bg-[#ECDDFD] border border-[#6F2B75]/15'
                             }`}
                         >
-                            <Award size={14} />
-                            <span>Cordées de la Réussite (5)</span>
+                            <Award size={14} className="text-[#EC602B]" />
+                            <span>5 Cordées de la Réussite</span>
                         </button>
                         <button
                             type="button"
@@ -129,10 +171,10 @@ export function Projects() {
                             className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'college'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
-                                    : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
+                                    : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#6F2B75]/15'
                             }`}
                         >
-                            Collèges (5)
+                            Collèges (4)
                         </button>
                         <button
                             type="button"
@@ -140,7 +182,7 @@ export function Projects() {
                             className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-school font-bold transition-all shadow-soft active:scale-95 cursor-pointer ${
                                 activeFilter === 'lycee'
                                     ? 'bg-[#6F2B75] text-white shadow-soft-lg'
-                                    : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#ECDDFD]'
+                                    : 'bg-white text-[#2A082D] hover:bg-[#ECDDFD]/60 border border-[#6F2B75]/15'
                             }`}
                         >
                             Lycées & Structures (4)
@@ -148,22 +190,36 @@ export function Projects() {
                     </div>
                 </div>
 
-                {/* Grid des Projets Épurée (Les détails complets sont sur la fiche dédiée) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
-                    {filteredProjects.map((project) => (
-                        <div
-                            key={project.id}
-                            className="h-full"
+                {/* Empty State if search matches nothing */}
+                {filteredProjects.length === 0 ? (
+                    <div className="bg-white rounded-organic-sm border border-[#6F2B75]/15 p-10 text-center max-w-lg mx-auto shadow-phoenix-colored mb-20">
+                        <Search size={36} className="mx-auto text-[#904990]/50 mb-3" />
+                        <h3 className="font-display text-xl text-[#2A082D] mb-1">Aucun projet trouvé</h3>
+                        <p className="text-slate-500 text-xs sm:text-sm mb-5">
+                            Aucun projet ne correspond à « <strong className="text-[#2A082D]">{searchQuery}</strong> ». Essayez avec un autre nom ou réinitialisez.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => { setSearchQuery(''); setActiveFilter('all'); }}
+                            className="btn-phoenix-orange btn-glow-orange px-5 py-2.5 rounded-lg text-xs uppercase tracking-wider text-white cursor-pointer touch-tactile"
                         >
-                            <Link
-                                to={`/projets/${project.id}`}
-                                className="bg-white rounded-xl border border-[#ECDDFD] shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer relative active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
-                            >
+                            Réinitialiser la recherche
+                        </button>
+                    </div>
+                ) : (
+                    /* Grid des Projets Épurée avec DA asymétrique */
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
+                        {filteredProjects.map((project) => (
+                            <div key={project.id} className="h-full">
+                                <Link
+                                    to={`/projets/${project.id}`}
+                                    className="bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer relative active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#EC602B] will-change-transform"
+                                >
                                 {/* Image Header */}
                                 <div className={`relative aspect-video w-full overflow-hidden ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]/60' : 'bg-slate-900'} flex items-center justify-center`}>
                                     <img
                                         src={project.banner || project.image}
-                                        alt={project.title}
+                                        alt={`Projet de tutorat ${project.title} - Phœnix EDC Marseille`}
                                         loading="lazy"
                                         decoding="async"
                                         className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
@@ -190,7 +246,7 @@ export function Projects() {
                                         <div className="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-white p-1 shadow-md border border-slate-200 flex items-center justify-center overflow-hidden z-10">
                                             <img
                                                 src={project.image}
-                                                alt={`${project.title} logo`}
+                                                alt={`Logo officiel du projet ${project.title}`}
                                                 className="w-full h-full object-contain rounded-full"
                                             />
                                         </div>
@@ -225,15 +281,19 @@ export function Projects() {
                         </div>
                     ))}
                 </div>
+                )}
 
                 {/* ──────────────── SECTION ENRICHIE : LES 4 AXES DE TRAVAIL ──────────────── */}
-                <div className="mb-20 bg-[#ECDDFD]/40 rounded-xl p-8 sm:p-12 border border-[#ECDDFD] shadow-soft">
+                <div className="mb-20 bg-[#ECDDFD]/40 rounded-organic p-8 sm:p-12 border border-[#6F2B75]/20 shadow-phoenix-colored">
                     <div className="text-center max-w-2xl mx-auto mb-10">
-                        <span className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] bg-white px-3.5 py-1.5 rounded border border-[#ECDDFD] shadow-soft inline-block mb-3">
+                        <span className="text-xs font-school font-bold uppercase tracking-wider text-[#6F2B75] bg-white px-3.5 py-1.5 rounded-full border border-[#6F2B75]/15 shadow-soft inline-block mb-3">
                             Méthodologie Phoenix
                         </span>
                         <h2 className="text-2xl sm:text-4xl font-display text-[#2A082D] tracking-tight mb-3">
-                            Nos 4 Axes de Travail
+                            Nos{' '}
+                            <span className="marker-highlight text-[#EC602B]">
+                                <span>4 Axes de Travail</span>
+                            </span>
                         </h2>
                         <p className="text-[#2A082D]/80 font-medium text-sm sm:text-base">
                             Chaque séance dans nos 9 projets est construite autour de 4 piliers fondamentaux pour ouvrir le champ des possibles de nos tutorés.
@@ -242,7 +302,7 @@ export function Projects() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {/* Axe 1 */}
-                        <div className="p-6 rounded-xl bg-white border border-[#ECDDFD] shadow-soft flex flex-col justify-between hover:-translate-y-1 transition-all">
+                        <div className="p-6 rounded-organic-sm bg-white border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform flex flex-col justify-between">
                             <div>
                                 <div className="w-12 h-12 rounded-xl bg-[#EC602B] text-white flex items-center justify-center font-bold text-lg mb-4 shadow-soft">
                                     <BookOpen size={22} />
@@ -260,7 +320,7 @@ export function Projects() {
                         </div>
 
                         {/* Axe 2 */}
-                        <div className="p-6 rounded-xl bg-white border border-[#ECDDFD] shadow-soft flex flex-col justify-between hover:-translate-y-1 transition-all">
+                        <div className="p-6 rounded-organic-sm bg-white border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform flex flex-col justify-between">
                             <div>
                                 <div className="w-12 h-12 rounded-xl bg-[#6F2B75] text-white flex items-center justify-center font-bold text-lg mb-4 shadow-soft">
                                     <Sparkles size={22} />
@@ -278,7 +338,7 @@ export function Projects() {
                         </div>
 
                         {/* Axe 3 */}
-                        <div className="p-6 rounded-xl bg-white border border-[#ECDDFD] shadow-soft flex flex-col justify-between hover:-translate-y-1 transition-all">
+                        <div className="p-6 rounded-organic-sm bg-white border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform flex flex-col justify-between">
                             <div>
                                 <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg mb-4 shadow-soft">
                                     <Compass size={22} />
@@ -296,7 +356,7 @@ export function Projects() {
                         </div>
 
                         {/* Axe 4 */}
-                        <div className="p-6 rounded-xl bg-white border border-[#ECDDFD] shadow-soft flex flex-col justify-between hover:-translate-y-1 transition-all">
+                        <div className="p-6 rounded-organic-sm bg-white border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform flex flex-col justify-between">
                             <div>
                                 <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg mb-4 shadow-soft">
                                     <Heart size={22} />
@@ -316,7 +376,7 @@ export function Projects() {
                 </div>
 
                 {/* ──────────────── SECTION PLANNING HEBDOMADAIRE (ACCORDÉON ÉPURÉ) ──────────────── */}
-                <div className="bg-[#ECDDFD]/50 border border-[#6F2B75]/20 rounded-xl p-6 sm:p-8 shadow-soft overflow-hidden transition-all">
+                <div className="bg-[#ECDDFD]/50 border border-[#6F2B75]/20 rounded-organic p-6 sm:p-8 shadow-phoenix-colored overflow-hidden transition-all">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3.5">
                             <div className="w-11 h-11 rounded-xl bg-[#6F2B75] text-white flex items-center justify-center shadow-soft shrink-0">

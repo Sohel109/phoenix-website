@@ -59,9 +59,9 @@ function StatItem({
     accent?: string;
 }) {
     return (
-        <div className="flex flex-col gap-1 py-6 sm:py-0 sm:px-8 first:pl-0 last:pr-0 text-left">
+        <div className="group/stat flex flex-col gap-1 py-6 sm:py-2 sm:px-8 first:pl-0 last:pr-0 text-left hover:-translate-y-1.5 transition-transform duration-300 will-change-transform">
             {/* Chiffre en Shrikhand — grand, lisible */}
-            <div className="font-display leading-none mb-1" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', color: accent }}>
+            <div className="font-display leading-none mb-1 group-hover/stat:scale-105 transition-transform duration-300 origin-left" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', color: accent }}>
                 <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
             </div>
             {/* Label court */}
@@ -80,25 +80,39 @@ export function KeyFigures() {
             <div className="pattern-watermark" aria-hidden="true" />
 
             <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
-                {/* En-tête éditorial — kicker ligne + titre (pas de badge-pill) */}
-                <div className="mb-14 md:mb-20">
-                    <div className="flex items-center gap-2.5 mb-4">
-                        <span className="w-6 h-[2px] bg-[#EC602B] shrink-0" />
-                        <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">
-                            Résultats & Impact Terrain
-                        </span>
+                {/* En-tête éditorial avec surlignage feutre & micro-tampon */}
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14 md:mb-20">
+                    <div className="max-w-xl">
+                        <div className="flex items-center gap-2.5 mb-4">
+                            <span className="w-6 h-[2px] bg-[#EC602B] shrink-0" />
+                            <span className="text-[11px] uppercase font-school font-bold tracking-widest text-[#904990]">
+                                Résultats & Impact Terrain
+                            </span>
+                        </div>
+                        <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3 text-balance">
+                            Des résultats qui ont{' '}
+                            <span className="marker-highlight text-[#6F2B75]">
+                                <span>du sens</span>
+                            </span>.
+                        </h2>
+                        <p className="text-slate-600 font-medium text-sm sm:text-base text-pretty">
+                            Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
+                        </p>
                     </div>
-                    <h2 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-normal mb-3 text-balance">
-                        Des résultats qui ont du sens.
-                    </h2>
-                    <p className="text-slate-600 font-medium text-sm sm:text-base max-w-xl text-pretty">
-                        Depuis 2011, chaque statistique représente des heures de partage, des déclics scolaires et des barrières d'autocensure qui tombent.
-                    </p>
+
+                    {/* Micro-tampon graphique circulaire artisanal */}
+                    <div className="self-start sm:self-center shrink-0">
+                        <div className="badge-stamp badge-stamp-purple rotate-2 text-[10px] shadow-phoenix-colored">
+                            <span className="text-[9px] text-[#EC602B] tracking-widest font-extrabold">MARSEILLE</span>
+                            <span className="text-xs text-[#6F2B75] font-black leading-tight">IMPACT CERTIFIÉ</span>
+                            <span className="text-[8px] text-slate-500 font-semibold tracking-tight">100% BÉNÉVOLAT</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* ── RANGÉE ÉDITORIALE 4 CHIFFRES (inspiré Article-1 / Wellesley) ── */}
                 {/* Desktop : 4 stats séparées par des lignes verticales */}
-                <div className="hidden sm:flex flex-row items-stretch divide-x divide-[#2A082D]/10 mb-16">
+                <div className="hidden sm:flex flex-row items-stretch divide-x divide-[#2A082D]/10">
                     <StatItem
                         value={300}
                         suffix="+"
@@ -144,47 +158,6 @@ export function KeyFigures() {
                             <p className="text-slate-400 text-[11px]">{stat.sub}</p>
                         </div>
                     ))}
-                </div>
-
-                {/* ── BLOC NARRATIF (remplace les 4 cartes bento) ── */}
-                {/* 2 colonnes : détail Jeunes + Cordées/Intérêt général */}
-                <div className="grid md:grid-cols-2 gap-8 pt-10 border-t border-[#2A082D]/10">
-
-                    {/* Colonne 1 : Quartiers et projets */}
-                    <div>
-                        <h3 className="text-lg font-bold text-[#2A082D] mb-2">Au cœur des quartiers de Marseille</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed mb-4 font-medium">
-                            De L'Estaque aux Quartiers Nord, nos antennes interviennent chaque semaine dans les établissements scolaires pour un suivi personnalisé, en groupe ou en individuel.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                            {["L'Estaque", "Quartiers Nord", "Saint-Gabriel", "Roy d'Espagne", "Sup d'OM", "Massa 13"].map((q) => (
-                                <span
-                                    key={q}
-                                    className="px-2.5 py-1 rounded text-[11px] font-school font-bold text-[#6F2B75] bg-[#ECDDFD]/60 border border-[#6F2B75]/15"
-                                >
-                                    {q}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Colonne 2 : Reconnaissance institutionnelle */}
-                    <div>
-                        <h3 className="text-lg font-bold text-[#2A082D] mb-2">Reconnue et labellisée</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed mb-4 font-medium">
-                            Phœnix EDC fait partie des 5 <strong className="text-[#2A082D]">Cordées de la Réussite</strong> de KEDGE BS et est reconnue Association d'Intérêt Général — un gage de sérieux et de transparence.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                            {["5 Cordées de la Réussite", "Intérêt Général", "Campus Luminy"].map((l) => (
-                                <span
-                                    key={l}
-                                    className="px-2.5 py-1 rounded text-[11px] font-school font-bold text-[#EC602B] bg-[#EC602B]/8 border border-[#EC602B]/20"
-                                >
-                                    {l}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>

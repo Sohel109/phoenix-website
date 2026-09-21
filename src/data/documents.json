@@ -1,0 +1,46 @@
+[
+  {
+    "id": "guide-2026-2027",
+    "title": "Guide du Phoenicien 2026-2027",
+    "description": "Le guide officiel complet pour tout savoir sur l'association, ses valeurs, ses 9 projets, ses événements phares et son organigramme.",
+    "filename": "Guide du phoenicien 2026-2027.pdf",
+    "url": "/documents/Guide du phoenicien 2026-2027.pdf",
+    "type": "PDF",
+    "size": "4.8 MB",
+    "category": "current",
+    "isNew": true
+  },
+  {
+    "id": "fiches-posts-2026-2027",
+    "title": "Fiches de Posts 2026-2027",
+    "description": "Présentation détaillée des rôles, missions et compétences acquises : Bureau Exécutif, Pôles et Chefs de projet.",
+    "filename": "Fiches de posts 2026-2027.pdf",
+    "url": "/documents/Fiches de posts 2026-2027.pdf",
+    "type": "PDF",
+    "size": "2.9 MB",
+    "category": "current",
+    "isNew": true
+  },
+  {
+    "id": "fiches-2-posts-2025-2026",
+    "title": "Fiches 2 Posts Phoenix EDC",
+    "description": "Ancienne édition du recueil des fiches de postes et visuels de l'association.",
+    "filename": "fiches2posts Phoenix edc.pdf",
+    "url": "/documents/fiches2posts Phoenix edc.pdf",
+    "type": "PDF",
+    "size": "2.2 MB",
+    "category": "archive",
+    "year": "2025-2026"
+  },
+  {
+    "id": "guide-2025-2026",
+    "title": "Guide du Phoenicien 2025-2026",
+    "description": "Ancienne édition du guide de l'association (Année universitaire 2025-2026).",
+    "filename": "Guide du phoenicien 2025-2026.pdf",
+    "url": "/documents/Guide du phoenicien 2025-2026.pdf",
+    "type": "PDF",
+    "size": "1.5 MB",
+    "category": "archive",
+    "year": "2025-2026"
+  }
+]
