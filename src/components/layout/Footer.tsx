@@ -35,7 +35,7 @@ export function Footer() {
                         <div className="flex items-center gap-3">
                             <img
                                 src="/logo-badge.jpg"
-                                alt="Logo officiel Phœnix EDC"
+                                alt="Logo officiel de l'association Phœnix Égalité des Chances – KEDGE BS Marseille"
                                 className="w-11 h-11 rounded-full object-contain border border-white/20 shadow-md"
                             />
                             <div>

@@ -63,7 +63,7 @@ export function VerifyAttestation() {
                                 <div className="flex items-center gap-3">
                                     <img
                                         src="/app-icon.png"
-                                        alt="Logo Phœnix"
+                                        alt="Logo officiel Phœnix Égalité des Chances – KEDGE BS Marseille"
                                         className="w-12 h-12 rounded-xl object-contain bg-white/10 p-1"
                                     />
                                     <div>

@@ -109,7 +109,7 @@ function EventCard({
             }`}>
                 <img
                     src={event.image}
-                    alt={`Événement Phœnix : ${event.title}`}
+                    alt={`Événement jeunesse et égalité des chances à Marseille : ${event.title} – Phœnix EDC`}
                     loading={index < 3 ? "eager" : "lazy"}
                     decoding="async"
                     className={`w-full h-full transform group-hover:scale-105 transition-transform duration-500 ease-out ${

@@ -558,7 +558,7 @@ export function Association() {
                                             {member.photo ? (
                                                 <img
                                                     src={member.photo}
-                                                    alt={`${member.firstName} ${member.lastName}`}
+                                                    alt={`Portrait de ${member.firstName} ${member.lastName} – ${member.role} de l'association Phœnix Égalité des Chances KEDGE BS Marseille`}
                                                     className="w-full h-full object-cover rounded-full"
                                                 />
                                             ) : (

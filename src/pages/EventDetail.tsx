@@ -137,7 +137,7 @@ export function EventDetail() {
                     <div className={`relative h-64 md:h-[420px] w-full ${event.id === 'entretiens-excellence' ? 'bg-white' : 'bg-phoenix-dark'}`}>
                         <img
                             src={event.headerImage || event.image}
-                            alt={`Événement Phœnix : ${event.title}`}
+                            alt={`Affiche officielle de l'événement ${event.title} – Phœnix Égalité des Chances Marseille`}
                             className={`w-full h-full ${
                                 event.id === 'entretiens-excellence'
                                     ? 'object-contain p-6 md:p-12 max-h-[90%]'

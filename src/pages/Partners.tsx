@@ -105,7 +105,7 @@ export function Partners() {
                                 <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-organic-sm border border-[#6F2B75]/10 group-hover:bg-[#ECDDFD]/30 transition-colors">
                                     <img
                                         src={partner.logo}
-                                        alt={partner.name}
+                                        alt={`Logo officiel de l'entreprise partenaire ${partner.name} – Mécénat Phœnix Égalité des Chances Marseille`}
                                         className="max-h-14 max-w-[85%] object-contain filter transition-all group-hover:scale-105"
                                     />
                                 </div>
