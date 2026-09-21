@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Quote, ArrowRight, CheckCircle2, ChevronDown, MapPin } from 'lucide-react';
+import { MaskingTape } from '../common/HandDrawnElements';
 
 export function TestimonialsSection() {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -46,8 +47,10 @@ export function TestimonialsSection() {
                     </p>
                 </div>
 
-                {/* ── CARTE TÉMOIGNAGE ÉDITORIALE & ASYMÉTRIQUE ── */}
-                <div className="max-w-3xl mx-auto bg-white rounded-organic p-8 sm:p-12 border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-shadow duration-300 relative overflow-hidden">
+                {/* ── CARTE TÉMOIGNAGE ÉDITORIALE & ASYMÉTRIQUE AVEC MASKING TAPE ── */}
+                <div className="relative max-w-3xl mx-auto">
+                    <MaskingTape variant="warm" angle="left" className="-top-2.5 left-8 sm:left-12 z-20" />
+                    <div className="bg-white rounded-organic p-8 sm:p-12 border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-shadow duration-300 relative overflow-hidden">
                     {/* Micro-tampon graphique artisanal en haut à droite */}
                     <div className="absolute top-5 right-5 z-10 hidden sm:flex">
                         <div className="badge-stamp text-[9px] rotate-2 py-1 px-3 shadow-soft border-[#6F2B75]/40">
@@ -141,6 +144,7 @@ export function TestimonialsSection() {
                         </Link>
                     </div>
                 </div>
+            </div>
 
                 {/* Trust Bar — style éditorial simple */}
                 <div className="mt-10 pt-8 border-t border-[#2A082D]/8 text-center">

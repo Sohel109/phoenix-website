@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, ChevronLeft, ChevronRight, Compass, Sparkles } from 'lucide-react';
+import { MaskingTape } from '../common/HandDrawnElements';
 
 const culturalTripPhotos = [
     {
@@ -51,7 +52,7 @@ export function ConcreteActions() {
     };
 
     return (
-        <section className="relative py-20 md:py-32 overflow-hidden bg-transparent">
+        <section className="relative py-20 md:py-32 overflow-hidden bg-transparent pattern-notebook-grid">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header direct et éditorial */}
                 <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
@@ -79,8 +80,10 @@ export function ConcreteActions() {
                 <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-14">
 
                     {/* ──────────────── PILIER 1 : LE TUTORAT HEBDOMADAIRE ──────────────── */}
-                    <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform">
-                        {/* Photo terrain en salle de tutorat */}
+                    <div className="relative pt-3.5 flex flex-col h-full group/card">
+                        <MaskingTape variant="warm" angle="left" className="-top-1.5 left-1/2 -translate-x-1/2 z-30" />
+                        <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform flex-grow justify-between">
+                            {/* Photo terrain en salle de tutorat */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900">
                             <img
                                 src="/images/home/tutorat-hebdo-terrain.jpg"
@@ -131,10 +134,13 @@ export function ConcreteActions() {
                             </div>
                         </div>
                     </article>
+                </div>
 
                     {/* ──────────────── PILIER 2 : L'ÉVEIL CULTUREL (3 PHOTOS + ACSE) ──────────────── */}
-                    <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform">
-                        {/* Mini-Carrousel des 3 photos de voyage */}
+                    <div className="relative pt-3.5 flex flex-col h-full group/card">
+                        <MaskingTape variant="lilac" angle="right" className="-top-1.5 left-1/2 -translate-x-1/2 z-30" />
+                        <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform flex-grow justify-between">
+                            {/* Mini-Carrousel des 3 photos de voyage */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 select-none">
                             <AnimatePresence mode="wait">
                                 <motion.img
@@ -229,16 +235,19 @@ export function ConcreteActions() {
                                     <span>Découvrir le projet ACSE</span>
                                     <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
                                 </Link>
-                                <span className="font-script text-xl text-[#EC602B] hidden sm:inline -rotate-2 select-none">
+                                <span className="font-script text-xl text-[#2A082D] hidden sm:inline -rotate-2 select-none">
                                     Voyages & Culture ✦
                                 </span>
                             </div>
                         </div>
                     </article>
+                </div>
 
                     {/* ──────────────── PILIER 3 : ORIENTATION, AVENIR & ÉVÉNEMENTS ──────────────── */}
-                    <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform">
-                        {/* En-tête interactif avec miniatures des événements phares */}
+                    <div className="relative pt-3.5 flex flex-col h-full group/card">
+                        <MaskingTape variant="warm" angle="center" className="-top-1.5 left-1/2 -translate-x-1/2 z-30" />
+                        <article className="group flex flex-col bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden relative will-change-transform flex-grow justify-between">
+                            {/* En-tête interactif avec miniatures des événements phares */}
                         <Link to="/evenements" className="block relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 group/ev cursor-pointer">
                             <img
                                 src={eventHighlights[activeEventIdx].image}
@@ -315,6 +324,7 @@ export function ConcreteActions() {
                             </div>
                         </div>
                     </article>
+                </div>
 
                 </div>
             </div>

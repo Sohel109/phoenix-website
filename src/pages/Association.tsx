@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { usePlanning } from '../context/PlanningContext';
 import { SEO } from '../components/common/SEO';
+import { MaskingTape } from '../components/common/HandDrawnElements';
 import { 
     defaultBureauMembers, 
 
@@ -336,34 +337,52 @@ export function Association() {
                             </div>
                         </div>
 
-                        {/* Colonne Photo Chaleureuse avec DA asymétrique */}
+                        {/* Colonne Photo Chaleureuse avec DA asymétrique et Scotch d'angle */}
                         <div className="lg:col-span-5">
-                            <div className="relative rounded-organic overflow-hidden shadow-phoenix-colored-lg border-2 border-white/80 group bg-[#2A082D] photo-frame-organic">
-                                <div className="absolute top-4 right-4 z-20">
-                                    <div className="badge-stamp text-[9px] rotate-3 font-school font-bold py-1 px-3 shadow-phoenix-colored">
-                                        <span className="text-[#6F2B75] font-extrabold text-[8px]">KEDGE BS</span>
-                                        <span className="text-[#EC602B] font-black text-[10px]">100% TERRAIN</span>
+                            <div className="relative pt-2.5">
+                                <MaskingTape variant="warm" angle="left" className="-top-1 left-10 z-30" />
+                                <div className="relative rounded-organic overflow-hidden shadow-phoenix-colored-lg border-2 border-white/80 group bg-[#2A082D] photo-frame-organic">
+                                    <div className="absolute top-4 right-4 z-20">
+                                        <div className="badge-stamp text-[9px] rotate-3 font-school font-bold py-1 px-3 shadow-phoenix-colored">
+                                            <span className="text-[#6F2B75] font-extrabold text-[8px]">KEDGE BS</span>
+                                            <span className="text-[#EC602B] font-black text-[10px]">100% TERRAIN</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <img
-                                    src="/images/home/voyage-culturel-1.jpg"
-                                    alt="Étudiants de KEDGE et lycéens tutorés de l'association Phœnix en voyage culturel"
-                                    className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/85 via-[#2A082D]/20 to-transparent pointer-events-none" />
-                                <div className="absolute bottom-4 left-4 right-4 text-white">
-                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-school font-bold mb-1 shadow-soft">
-                                        <MapPin size={12} className="text-[#EC602B]" />
-                                        <span>Voyage culturel &amp; cohésion</span>
+                                    <img
+                                        src="/images/home/voyage-culturel-1.jpg"
+                                        alt="Étudiants de KEDGE et lycéens tutorés de l'association Phœnix en voyage culturel"
+                                        className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/85 via-[#2A082D]/20 to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-school font-bold mb-1 shadow-soft">
+                                            <MapPin size={12} className="text-[#EC602B]" />
+                                            <span>Voyage culturel &amp; cohésion</span>
+                                        </div>
+                                        <p className="text-xs text-[#ECDDFD] font-medium line-clamp-1">
+                                            Rencontres, découvertes et souvenirs inoubliables sur le terrain.
+                                        </p>
                                     </div>
-                                    <p className="text-xs text-[#ECDDFD] font-medium line-clamp-1">
-                                        Rencontres, découvertes et souvenirs inoubliables sur le terrain.
-                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
+
+                {/* ── MOT D'INTENTION : POST-IT GRAPHIQUE INCLINÉ ── */}
+                <div className="flex justify-center -mt-10 sm:-mt-14 mb-16 sm:mb-20 relative z-20 px-4">
+                    <div className="relative bg-[#ECDDFD] shadow-md sm:-rotate-2 rotate-0 p-5 sm:p-6 rounded-xl border border-[#6F2B75]/10 max-w-md w-full text-center group hover:rotate-0 transition-transform duration-300">
+                        {/* Scotch sur le haut du post-it */}
+                        <MaskingTape variant="warm" angle="center" className="-top-2.5 left-1/2 -translate-x-1/2 z-30 !w-16 !h-5" />
+                        
+                        <p className="font-sans font-bold text-xs sm:text-sm text-[#2A082D] leading-snug mb-1.5">
+                            « Notre engagement : <span className="text-[#6F2B75] font-extrabold">100% bénévole</span>, <span className="text-[#6F2B75] font-extrabold">100% marseillais</span>, chaque semaine sur le terrain. »
+                        </p>
+                        <span className="font-script text-lg text-[#2A082D] block -rotate-1 select-none">
+                            — L'équipe Phœnix Égalité des Chances
+                        </span>
+                    </div>
+                </div>
 
                 {/* ──────────────── 2. VALEURS VIVANTES (GRILLE AÉRÉE) ──────────────── */}
                 <section className="mb-24 sm:mb-32">
@@ -416,7 +435,7 @@ export function Association() {
 
 
                 {/* ──────────────── 3. CHRONOLOGIE FLUIDE & NARRATIVE (5 DATES CLÉS) ──────────────── */}
-                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/35 rounded-organic p-8 sm:p-12 border border-[#6F2B75]/15 shadow-phoenix-colored">
+                <section className="mb-24 sm:mb-32 bg-[#ECDDFD]/35 pattern-notebook-grid rounded-organic p-8 sm:p-12 border border-[#6F2B75]/15 shadow-phoenix-colored relative overflow-hidden">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-14">
                         <div>
                             <div className="flex items-center gap-3 mb-3">
@@ -437,10 +456,12 @@ export function Association() {
                         </p>
                     </div>
 
-                    {/* Timeline fluide : ligne continue avec jalons */}
+                    {/* Timeline fluide : habillée avec un tracé continu façon ligne de cahier d'écolier reliant les dates charnières */}
                     <div className="relative">
-                        {/* Ligne connectrice sur desktop */}
-                        <div className="hidden lg:block absolute top-4 left-6 right-6 h-0.5 bg-gradient-to-r from-[#EC602B] via-[#6F2B75] to-[#EC602B]/60 z-0" />
+                        {/* Tracé continu façon ligne réglée de cahier d'écolier */}
+                        <div className="hidden lg:block absolute top-4 left-6 right-6 z-0 pointer-events-none">
+                            <div className="w-full border-t-2 border-dashed border-[#6F2B75]/35" />
+                        </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-5 relative z-10">
                             {keyDates.map((item, idx) => (
@@ -529,78 +550,89 @@ export function Association() {
                         )}
                     </div>
 
-                    {/* Grille des Cartes Membres avec Avatars STRICTEMENT CIRCULAIRES */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-14">
-                        {bureauMembers.map((member) => (
-                            <div
-                                key={member.id}
-                                className="bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 p-6 flex flex-col justify-between text-center relative group will-change-transform"
-                            >
-                                {/* Bouton Crayon (visible uniquement en mode édition actif) */}
-                                {canEdit && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setIsAddingMember(false);
-                                            setEditingMember(member);
-                                        }}
-                                        className="absolute top-3 right-3 p-2 rounded-full bg-[#ECDDFD] hover:bg-[#D9BEF8] text-[#6F2B75] transition-colors"
-                                        title="Modifier ce membre"
-                                    >
-                                        <Pencil size={13} />
-                                    </button>
-                                )}
+                    {/* Grille des Cartes Membres style Photomaton / Polaroid décalé */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-14">
+                        {bureauMembers.map((member, idx) => {
+                            const isOdd = idx % 2 !== 0;
+                            return (
+                            <div key={member.id} className="relative pt-3">
+                                {/* Ruban adhésif Masking Tape d'angle */}
+                                <MaskingTape
+                                    variant={isOdd ? "lilac" : "warm"}
+                                    angle={isOdd ? "right" : "left"}
+                                    className="-top-0.5 left-1/2 -translate-x-1/2 z-20 !w-14 !h-4.5"
+                                />
 
-                                <div>
-                                    {/* Avatar STRICTEMENT CIRCULAIRE entouré du gradient officiel (CERCLE AVANT LE RECTANGLE) */}
-                                    <div className="w-24 h-24 rounded-full mx-auto mb-4 p-1 bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] shadow-soft">
-                                        <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center text-[#6F2B75] font-school font-bold text-xl">
+                                <div
+                                    className={`bg-white rounded-xl border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 p-5 pb-7 flex flex-col justify-between text-center relative group will-change-transform border-b-[14px] border-b-white ${
+                                        isOdd ? 'sm:-rotate-1' : 'sm:rotate-1'
+                                    } rotate-0 sm:hover:rotate-0`}
+                                >
+                                    {/* Bouton Crayon (visible uniquement en mode édition actif) */}
+                                    {canEdit && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsAddingMember(false);
+                                                setEditingMember(member);
+                                            }}
+                                            className="absolute top-3 right-3 p-2 rounded-full bg-[#ECDDFD] hover:bg-[#D9BEF8] text-[#6F2B75] transition-colors z-30"
+                                            title="Modifier ce membre"
+                                        >
+                                            <Pencil size={13} />
+                                        </button>
+                                    )}
+
+                                    <div>
+                                        {/* Cadre photo style photomaton / polaroid avec bordure nette */}
+                                        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl mx-auto mb-3.5 p-1 bg-[#FFFBF4] border-2 border-slate-200/90 shadow-2xs overflow-hidden flex items-center justify-center">
                                             {member.photo ? (
                                                 <img
                                                     src={member.photo}
                                                     alt={`Portrait de ${member.firstName} ${member.lastName} – ${member.role} de l'association Phœnix Égalité des Chances KEDGE BS Marseille`}
-                                                    className="w-full h-full object-cover rounded-full"
+                                                    className="w-full h-full object-cover object-top rounded-lg"
                                                 />
                                             ) : (
-                                                <span>
+                                                <div className="w-full h-full rounded-lg bg-[#ECDDFD]/60 flex items-center justify-center text-[#6F2B75] font-sans font-extrabold text-2xl">
                                                     {member.firstName.charAt(0)}
                                                     {member.lastName ? member.lastName.charAt(0) : ''}
-                                                </span>
+                                                </div>
                                             )}
                                         </div>
+
+                                        {/* Prénom & Nom en Montserrat gras */}
+                                        <h3 className="text-base font-sans font-bold text-[#2A082D] leading-snug tracking-tight">
+                                            {member.firstName} {member.lastName}
+                                        </h3>
+
+                                        {/* Rôle en Montserrat gras */}
+                                        <p className="text-xs font-sans font-bold text-[#6F2B75] mt-1 uppercase tracking-wider">
+                                            {member.role}
+                                        </p>
                                     </div>
 
-                                    {/* Nom & Prénom */}
-                                    <h3 className="text-base font-display text-[#2A082D] leading-snug">
-                                        {member.firstName} {member.lastName}
-                                    </h3>
-
-                                    {/* Rôle */}
-                                    <p className="text-xs font-school font-bold text-[#6F2B75] mt-1 uppercase tracking-wider">
-                                        {member.role}
-                                    </p>
-                                </div>
-
-                                {/* Pied de carte avec LinkedIn */}
-                                <div className="mt-4 pt-3 border-t border-[#6F2B75]/10 flex items-center justify-center">
-                                    {member.linkedin ? (
-                                        <a
-                                            href={member.linkedin}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-[#6F2B75] transition-colors font-school font-bold"
-                                        >
-                                            <Linkedin size={14} className="text-[#6F2B75]" />
-                                            <span>LinkedIn</span>
-                                        </a>
-                                    ) : (
-                                        <span className="text-[11px] text-slate-400 font-medium">
-                                            KEDGE Business School
-                                        </span>
-                                    )}
+                                    {/* Pied de carte avec LinkedIn */}
+                                    <div className="mt-4 pt-3 border-t border-[#6F2B75]/10 flex items-center justify-center">
+                                        {member.linkedin ? (
+                                            <a
+                                                href={member.linkedin}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-[#6F2B75] transition-colors font-sans font-bold"
+                                            >
+                                                <Linkedin size={14} className="text-[#6F2B75]" />
+                                                <span>LinkedIn</span>
+                                            </a>
+                                        ) : (
+                                            <span className="text-[11px] text-slate-400 font-sans font-semibold">
+                                                KEDGE BS Marseille
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Pôles Opérationnels sous forme d'accordéons / fiches légères */}

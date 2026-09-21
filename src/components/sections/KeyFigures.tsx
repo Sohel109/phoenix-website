@@ -1,5 +1,6 @@
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { HandDrawnCircle } from '../common/HandDrawnElements';
 
 // --- COUNTER COMPONENT ---
 function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
@@ -42,7 +43,7 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
     );
 }
 
-// --- STAT ITEM (style éditorial — inspiré Article-1 / Wellesley) ---
+// --- STAT ITEM (style éditorial & carnet de bord — inspiré Article-1 / Cop1) ---
 function StatItem({
     value,
     prefix,
@@ -50,6 +51,7 @@ function StatItem({
     label,
     sublabel,
     accent = '#6F2B75',
+    highlighted = false,
 }: {
     value: number;
     prefix?: string;
@@ -57,12 +59,16 @@ function StatItem({
     label: string;
     sublabel?: string;
     accent?: string;
+    highlighted?: boolean;
 }) {
     return (
         <div className="group/stat flex flex-col gap-1 py-6 sm:py-2 sm:px-8 first:pl-0 last:pr-0 text-left hover:-translate-y-1.5 transition-transform duration-300 will-change-transform">
             {/* Chiffre en Shrikhand — grand, lisible */}
-            <div className="font-display leading-none mb-1 group-hover/stat:scale-105 transition-transform duration-300 origin-left" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', color: accent }}>
+            <div className="relative inline-block self-start font-display leading-none mb-1 group-hover/stat:scale-105 transition-transform duration-300 origin-left" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', color: accent }}>
                 <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
+                {highlighted && (
+                    <HandDrawnCircle stroke="#EC602B" strokeWidth={2.5} className="-inset-x-4 -inset-y-2.5 w-[calc(100%+2rem)] h-[calc(100%+1.25rem)]" />
+                )}
             </div>
             {/* Label court */}
             <p className="text-[#2A082D] font-bold text-sm leading-snug">{label}</p>
@@ -126,6 +132,7 @@ export function KeyFigures() {
                         label="Étudiants tuteurs"
                         sublabel="100% bénévolat KEDGE BS"
                         accent="#EC602B"
+                        highlighted={true}
                     />
                     <StatItem
                         value={9}
@@ -145,14 +152,17 @@ export function KeyFigures() {
                 {/* Mobile : 2x2 grid */}
                 <div className="sm:hidden grid grid-cols-2 gap-px bg-[#2A082D]/10 rounded-xl overflow-hidden mb-12">
                     {[
-                        { value: 300, suffix: '+', label: 'Jeunes accompagnés', sub: 'Collégiens & lycéens', accent: '#6F2B75' },
-                        { value: 100, prefix: '+', label: 'Étudiants tuteurs', sub: '100% bénévolat', accent: '#EC602B' },
-                        { value: 9, label: 'Projets actifs', sub: 'Dans les quartiers', accent: '#2A082D' },
-                        { value: 100, suffix: '%', label: 'Taux de réussite', sub: 'Aux examens', accent: '#6F2B75' },
+                        { value: 300, suffix: '+', label: 'Jeunes accompagnés', sub: 'Collégiens & lycéens', accent: '#6F2B75', highlighted: false },
+                        { value: 100, prefix: '+', label: 'Étudiants tuteurs', sub: '100% bénévolat', accent: '#EC602B', highlighted: true },
+                        { value: 9, label: 'Projets actifs', sub: 'Dans les quartiers', accent: '#2A082D', highlighted: false },
+                        { value: 100, suffix: '%', label: 'Taux de réussite', sub: 'Aux examens', accent: '#6F2B75', highlighted: false },
                     ].map((stat, i) => (
                         <div key={i} className="bg-[#FFFBF4] p-5 flex flex-col gap-1">
-                            <div className="font-display text-4xl leading-none mb-1" style={{ color: stat.accent }}>
+                            <div className="relative inline-block self-start font-display text-4xl leading-none mb-1" style={{ color: stat.accent }}>
                                 <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
+                                {stat.highlighted && (
+                                    <HandDrawnCircle stroke="#EC602B" strokeWidth={2.5} className="-inset-x-3 -inset-y-1.5 w-[calc(100%+1.5rem)] h-[calc(100%+0.75rem)]" />
+                                )}
                             </div>
                             <p className="text-[#2A082D] font-bold text-xs leading-snug">{stat.label}</p>
                             <p className="text-slate-400 text-[11px]">{stat.sub}</p>

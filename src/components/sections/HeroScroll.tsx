@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart, GraduationCap } from 'lucide-react';
+import { MaskingTape } from '../common/HandDrawnElements';
 
 /* ─────────────────────────────────────────────────────────────
    MACARON BADGE (simplifié — 1 seul badge, plus sobre)
@@ -116,15 +117,21 @@ export function HeroScroll() {
 
                         {/* ── COLONNE DROITE : Composition asymétrique & chevauchements ── */}
                         <div className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center">
-                            {/* Grand conteneur asymétrique organique */}
-                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] rounded-organic overflow-hidden photo-frame-organic border-2 border-white/80 z-10">
-                                <img
-                                    src="/images/projects/hero-1.png"
-                                    alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
-                                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
-                                    draggable={false}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent pointer-events-none" />
+                            {/* Grand conteneur asymétrique organique avec Scotch */}
+                            <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] z-10">
+                                {/* Ruban adhésif Masking Tape posé directement sur le haut de la photo */}
+                                <MaskingTape variant="warm" angle="left" className="-top-2.5 right-8 z-30" />
+                                <MaskingTape variant="lilac" angle="right" className="top-4 -left-3 z-30 !w-16 !h-4.5" />
+
+                                <div className="w-full h-full rounded-organic overflow-hidden photo-frame-organic border-2 border-white/80 relative">
+                                    <img
+                                        src="/images/projects/hero-1.png"
+                                        alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
+                                        className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
+                                        draggable={false}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent pointer-events-none" />
+                                </div>
                             </div>
 
                             {/* Médaillon circulaire d'ambiance en déport */}
@@ -210,8 +217,10 @@ export function HeroScroll() {
                     </Link>
                 </div>
 
-                {/* Composition photo mobile asymétrique avec stickers */}
+                {/* Composition photo mobile asymétrique avec stickers & scotch */}
                 <div className="relative z-10 w-full max-w-sm mx-auto mb-4">
+                    {/* Ruban adhésif Masking Tape d'angle */}
+                    <MaskingTape variant="warm" angle="left" className="-top-2 left-6 z-30" />
                     <div className="relative w-full aspect-[4/3] rounded-organic-sm overflow-hidden photo-frame-organic border-2 border-white/80">
                         <img
                             src="/images/projects/hero-1.png"

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { SEO } from '../components/common/SEO';
+import { MaskingTape } from '../components/common/HandDrawnElements';
 
 type FilterType = 'all' | 'cordees' | 'college' | 'lycee';
 
@@ -36,6 +37,14 @@ const projectsBreadcrumbSchema = {
             "item": "https://www.phoenix-egalite-des-chances.com/projets"
         }
     ]
+};
+
+
+const projectAnnotations: Record<string, string> = {
+    'massa-13': '« Le pionnier de Phœnix depuis 2011 »',
+    'jules-ferry': '« Ateliers au cœur des quartiers »',
+    'acse': '« Projet phare Cordées & culture »',
+    'sup-d-om': '« Partenariat d exception avec l OM »'
 };
 
 export function Projects() {
@@ -207,80 +216,98 @@ export function Projects() {
                         </button>
                     </div>
                 ) : (
-                    /* Grid des Projets Épurée avec DA asymétrique */
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
-                        {filteredProjects.map((project) => (
-                            <div key={project.id} className="h-full">
-                                <Link
-                                    to={`/projets/${project.id}`}
-                                    className="bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer relative active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#EC602B] will-change-transform"
-                                >
-                                {/* Image Header */}
-                                <div className={`relative aspect-video w-full overflow-hidden ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]/60' : 'bg-slate-900'} flex items-center justify-center`}>
-                                    <img
-                                        src={project.banner || project.image}
-                                        alt={`Projet de tutorat ${project.title} - Phœnix EDC Marseille`}
-                                        loading="lazy"
-                                        decoding="async"
-                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                    /* Grille des Projets : Format Fiches de terrain / Polaroids avec Trame Cahier d'écolier */
+                    <div className="relative pattern-notebook-grid p-3 sm:p-8 rounded-3xl border border-[#6F2B75]/10 mb-20 overflow-hidden">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-8 relative z-10">
+                            {filteredProjects.map((project, idx) => (
+                                <div key={project.id} className="h-full relative group/card pt-3">
+                                    {/* Ruban adhésif Masking Tape centré avec bords dentelés */}
+                                    <MaskingTape
+                                        variant={idx % 2 === 0 ? "warm" : "lilac"}
+                                        angle={idx % 2 === 0 ? "left" : "right"}
+                                        className="-top-1.5 left-1/2 -translate-x-1/2 z-30"
                                     />
-                                    {project.id !== 'sup-d-om' && (
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/75 via-[#2A082D]/15 to-transparent pointer-events-none" />
-                                    )}
 
-                                    {/* Badges top */}
-                                    <div className="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5 z-10">
-                                        <span className="px-2.5 py-1 rounded text-xs font-school font-bold bg-white/95 backdrop-blur-md text-[#2A082D] shadow-soft border border-slate-200/80">
-                                            {project.category}
-                                        </span>
-                                        {project.isCordee && (
-                                            <span className="px-2.5 py-1 rounded text-xs font-school font-bold bg-[#6F2B75] text-white shadow-soft flex items-center gap-1">
-                                                <Award size={12} />
-                                                <span>Cordée</span>
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Round Macaron Logo Pastille bottom right */}
-                                    {project.id !== 'sup-d-om' && project.image && (
-                                        <div className="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-white p-1 shadow-md border border-slate-200 flex items-center justify-center overflow-hidden z-10">
+                                    <Link
+                                        to={`/projets/${project.id}`}
+                                        className="bg-white rounded-xl border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer relative active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#EC602B] will-change-transform sm:hover:rotate-1 border-b-[14px] border-b-white"
+                                    >
+                                        {/* Image Header */}
+                                        <div className={`relative aspect-video w-full overflow-hidden ${project.id === 'sup-d-om' ? 'bg-white border-b border-[#ECDDFD]/60' : 'bg-slate-900'} flex items-center justify-center`}>
                                             <img
-                                                src={project.image}
-                                                alt={`Logo officiel du projet ${project.title}`}
-                                                className="w-full h-full object-contain rounded-full"
+                                                src={project.banner || project.image}
+                                                alt={`Projet de tutorat ${project.title} - Phœnix EDC Marseille`}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                                             />
+                                            {project.id !== 'sup-d-om' && (
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/75 via-[#2A082D]/15 to-transparent pointer-events-none" />
+                                            )}
+
+                                            {/* Macaron du projet en haut à gauche avec liseré pointillé */}
+                                            {project.id !== 'sup-d-om' && project.image && (
+                                                <div className="absolute top-3 left-3 w-11 h-11 rounded-full bg-white/95 p-1 shadow-md border-2 border-dashed border-[#6F2B75]/40 flex items-center justify-center overflow-hidden z-20 group-hover:rotate-6 transition-transform">
+                                                    <img
+                                                        src={project.image}
+                                                        alt={`Logo officiel du projet ${project.title}`}
+                                                        className="w-full h-full object-contain rounded-full"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Badges top décalés à droite du macaron */}
+                                            <div className={`absolute top-3.5 ${project.id !== 'sup-d-om' && project.image ? 'left-16' : 'left-3.5'} flex flex-wrap gap-1.5 z-10`}>
+                                                <span className="px-2.5 py-1 rounded text-xs font-school font-bold bg-white/95 backdrop-blur-md text-[#2A082D] shadow-soft border border-slate-200/80">
+                                                    {project.category}
+                                                </span>
+                                                {project.isCordee && (
+                                                    <span className="px-2.5 py-1 rounded text-xs font-school font-bold bg-[#6F2B75] text-white shadow-soft flex items-center gap-1">
+                                                        <Award size={12} />
+                                                        <span>Cordée</span>
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
+
+                                        {/* Corps de la carte épuré */}
+                                        <div className="p-6 sm:p-7 flex flex-col flex-grow justify-between bg-white">
+                                            <div>
+                                                {/* Micro-annotation manuscrite Allura intégrée au projet de façon lisible et logique */}
+                                                {projectAnnotations[project.id] && (
+                                                    <div className="mb-1.5">
+                                                        <span className="inline-block font-script text-xl sm:text-2xl text-[#2A082D] select-none -rotate-1">
+                                                            {projectAnnotations[project.id]}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                <h3 className="text-2xl font-display text-[#2A082D] mb-2.5 group-hover:text-[#EC602B] transition-colors leading-snug tracking-tight">
+                                                    {project.title}
+                                                </h3>
+
+                                                <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 font-normal mb-6">
+                                                    {project.description}
+                                                </p>
+                                            </div>
+
+                                            {/* Footer épuré de la carte */}
+                                            <div className="pt-4 border-t border-[#ECDDFD]/60 flex items-center justify-between gap-3">
+                                                <span className="text-xs font-school font-bold text-[#6F2B75] flex items-center gap-1.5">
+                                                    <Users size={14} className="text-[#EC602B]" />
+                                                    <span>{project.tutorCount} élèves</span>
+                                                </span>
+                                                <span className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#EC602B] group-hover:translate-x-1 transition-transform">
+                                                    <span>Voir la fiche</span>
+                                                    <ArrowRight size={14} />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
                                 </div>
-
-                                {/* Corps de la carte épuré */}
-                                <div className="p-6 sm:p-7 flex flex-col flex-grow justify-between bg-white">
-                                    <div>
-                                        <h3 className="text-2xl font-display text-[#2A082D] mb-2.5 group-hover:text-[#EC602B] transition-colors leading-snug tracking-tight">
-                                            {project.title}
-                                        </h3>
-
-                                        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 font-normal mb-6">
-                                            {project.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Footer épuré de la carte */}
-                                    <div className="pt-4 border-t border-[#ECDDFD]/60 flex items-center justify-between gap-3">
-                                        <span className="text-xs font-school font-bold text-[#6F2B75] flex items-center gap-1.5">
-                                            <Users size={14} className="text-[#EC602B]" />
-                                            <span>{project.tutorCount} élèves</span>
-                                        </span>
-                                        <span className="inline-flex items-center gap-1.5 text-xs font-school font-bold text-[#EC602B] group-hover:translate-x-1 transition-transform">
-                                            <span>Voir la fiche</span>
-                                            <ArrowRight size={14} />
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
                 )}
 
                 {/* ──────────────── SECTION ENRICHIE : LES 4 AXES DE TRAVAIL ──────────────── */}
