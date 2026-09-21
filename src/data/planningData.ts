@@ -273,6 +273,28 @@ export async function syncEventAttendanceApi(attendance: EventAttendance): Promi
     }
 }
 
+export async function updateUserProjectApi(userId: string, projectIds: number[]): Promise<{ success: boolean; message: string }> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'updateUserProject', userId, projectIds }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            return { success: false, message: 'Erreur réseau avec le serveur' };
+        }
+        const data = await response.json();
+        return {
+            success: !!data.success,
+            message: data.message || (data.success ? 'Projet mis à jour avec succès' : 'Échec de la mise à jour du projet')
+        };
+    } catch (error) {
+        console.error("Error updating user project:", error);
+        return { success: false, message: "Erreur serveur lors de l'enregistrement du projet" };
+    }
+}
+
 export async function changePasswordApi(userId: string, oldPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
     try {
         const API_URL = import.meta.env.VITE_API_URL || '';

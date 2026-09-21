@@ -204,6 +204,45 @@ app.post('/api/planning/exemptions', (req, res) => {
     }
 });
 
+// ─── Affectations des Projets de Tutorat (Persistance locale) ────────────────
+
+// GET /api/planning/user-projects
+app.get('/api/planning/user-projects', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, 'src', 'data', 'userProjects.json');
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            return res.json({ success: true, userProjects: JSON.parse(data) });
+        }
+        return res.json({ success: true, userProjects: {} });
+    } catch (err) {
+        console.error('Erreur lecture userProjects:', err);
+        return res.status(500).json({ success: false, error: 'Impossible de lire les affectations de projet' });
+    }
+});
+
+// POST /api/planning/user-projects
+app.post('/api/planning/user-projects', (req, res) => {
+    try {
+        const { userId, projectIds } = req.body;
+        if (!userId) {
+            return res.status(400).json({ success: false, error: 'userId requis' });
+        }
+        const filePath = path.join(__dirname, 'src', 'data', 'userProjects.json');
+        let userProjects = {};
+        if (fs.existsSync(filePath)) {
+            userProjects = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        }
+        userProjects[userId] = Array.isArray(projectIds) ? projectIds : [projectIds];
+        fs.writeFileSync(filePath, JSON.stringify(userProjects, null, 2), 'utf-8');
+        console.log(`🎯 Affectation projet mise à jour pour ${userId}: [${userProjects[userId].join(', ')}]`);
+        return res.json({ success: true, userProjects });
+    } catch (err) {
+        console.error('Erreur sauvegarde userProjects:', err);
+        return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des affectations' });
+    }
+});
+
 // ─── Documents Officiels (Persistance locale pour Git) ───────────────────────
 
 // GET /api/documents
@@ -364,6 +403,24 @@ app.post('/api/planning', async (req, res) => {
             return res.status(response.status).json({ success: false, message: 'Erreur HTTP de Google Apps Script' });
         }
         const data = await response.json();
+
+        // Si l'action est updateUserProject, mettre également à jour userProjects.json localement
+        if (req.body && req.body.action === 'updateUserProject' && req.body.userId) {
+            try {
+                const filePath = path.join(__dirname, 'src', 'data', 'userProjects.json');
+                let userProjects = {};
+                if (fs.existsSync(filePath)) {
+                    userProjects = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+                }
+                const pIds = req.body.projectIds;
+                userProjects[req.body.userId] = Array.isArray(pIds) ? pIds : (pIds !== undefined && pIds !== null ? [Number(pIds)] : []);
+                fs.writeFileSync(filePath, JSON.stringify(userProjects, null, 2), 'utf-8');
+                console.log(`🎯 Synchronisation locale userProjects pour ${req.body.userId}:`, userProjects[req.body.userId]);
+            } catch (err) {
+                console.error('Erreur mise à jour locale userProjects.json:', err);
+            }
+        }
+
         res.status(200).json(data);
     } catch (error) {
         console.error('Erreur proxy post planning:', error);
@@ -381,6 +438,24 @@ app.get('/api/login', async (req, res) => {
             const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=listUsers`);
             if (!response.ok) return res.status(response.status).json({ success: false });
             const data = await response.json();
+            
+            // Enrichissement avec userProjects.json si besoin
+            try {
+                const filePath = path.join(__dirname, 'src', 'data', 'userProjects.json');
+                let userProjects = {};
+                if (fs.existsSync(filePath)) {
+                    userProjects = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+                }
+                if (data.users && Array.isArray(data.users)) {
+                    data.users = data.users.map(u => ({
+                        ...u,
+                        projectIds: (u.projectIds && u.projectIds.length > 0) ? u.projectIds : (userProjects[u.id] || [])
+                    }));
+                }
+            } catch (e) {
+                console.error('Erreur enrichissement listUsers:', e);
+            }
+
             return res.status(200).json(data);
         } catch (error) {
             console.error('Erreur proxy listUsers:', error);

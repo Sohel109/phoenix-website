@@ -9,6 +9,7 @@ import {
     toggleWeekUnavailableApi,
     syncEventAttendanceApi,
     changePasswordApi,
+    updateUserProjectApi,
 } from '../data/planningData';
 import type { EventAttendance } from '../data/planningData';
 
@@ -36,24 +37,31 @@ export interface QuotaExemption {
     note?: string;
 }
 
-export const DEFAULT_ASSOCIATION_MEMBERS: { id: string; name: string }[] = [
-    { id: 'bureau-1', name: 'Samy RABHI' },
-    { id: 'bureau-2', name: 'Samir BAKAA' },
-    { id: 'bureau-3', name: 'Ryan BENYELLES' },
-    { id: 'bureau-4', name: 'Elyas BOURHIS' },
-    { id: 'bureau-5', name: 'Lina EL KEDDAH' },
-    { id: 'chef-1', name: 'Kahili JUVENTIN' },
-    { id: 'chef-2', name: 'Abdollah JOUNOUDI' },
-    { id: 'chef-3', name: 'Ryadh ABDELMALEK' },
-    { id: 'chef-5', name: 'Haitam BEBBI' },
-    { id: 'chef-6', name: 'Damya AKILI' },
-    { id: 'chef-7', name: 'Amani ZAMIT' },
-    { id: 'chef-9', name: 'Donia TNANI' },
-    { id: 'chef-10', name: 'Camille JOURDIN' },
-    { id: 'chef-12', name: 'Eve SAMA' },
-    { id: 'chef-13', name: 'Nelly RANDRIAMIHAJA' },
-    { id: 'tuteur-1', name: 'Jean DUPONT' },
-    { id: 'tuteur-2', name: 'Sohel HAGGUI' },
+export interface AssociationMember {
+    id: string;
+    name: string;
+    role?: string;
+    projectIds?: number[];
+}
+
+export const DEFAULT_ASSOCIATION_MEMBERS: AssociationMember[] = [
+    { id: 'bureau-1', name: 'Samy RABHI', role: 'bureau', projectIds: [1] },
+    { id: 'bureau-2', name: 'Samir BAKAA', role: 'bureau', projectIds: [3] },
+    { id: 'bureau-3', name: 'Ryan BENYELLES', role: 'bureau', projectIds: [6] },
+    { id: 'bureau-4', name: 'Elyas BOURHIS', role: 'bureau', projectIds: [2] },
+    { id: 'bureau-5', name: 'Lina EL KEDDAH', role: 'bureau', projectIds: [9] },
+    { id: 'chef-1', name: 'Kahili JUVENTIN', role: 'chef_projet', projectIds: [4] },
+    { id: 'chef-2', name: 'Abdollah JOUNOUDI', role: 'chef_projet', projectIds: [4] },
+    { id: 'chef-3', name: 'Ryadh ABDELMALEK', role: 'chef_projet', projectIds: [2] },
+    { id: 'chef-5', name: 'Haitam BEBBI', role: 'chef_projet', projectIds: [8] },
+    { id: 'chef-6', name: 'Damya AKILI', role: 'chef_projet', projectIds: [5] },
+    { id: 'chef-7', name: 'Amani ZAMIT', role: 'chef_projet', projectIds: [5] },
+    { id: 'chef-9', name: 'Donia TNANI', role: 'chef_projet', projectIds: [6] },
+    { id: 'chef-10', name: 'Camille JOURDIN', role: 'chef_projet', projectIds: [7] },
+    { id: 'chef-12', name: 'Eve SAMA', role: 'chef_projet', projectIds: [1] },
+    { id: 'chef-13', name: 'Nelly RANDRIAMIHAJA', role: 'chef_projet', projectIds: [7] },
+    { id: 'tuteur-1', name: 'Jean DUPONT', role: 'tuteur', projectIds: [2] },
+    { id: 'tuteur-2', name: 'Sohel HAGGUI', role: 'tuteur', projectIds: [2] },
 ];
 
 // ─── Context type ─────────────────────────────────────────────────────────────
@@ -63,7 +71,9 @@ interface PlanningContextType {
     login: (loginId: string, password: string) => Promise<boolean>;
     logout: () => void;
     bookings: Booking[];
-    allUsers: { id: string; name: string }[];
+    allUsers: AssociationMember[];
+    updateUserProject: (projectId: number) => Promise<{ success: boolean; message: string }>;
+    getTutorsForProject: (projectId: number) => AssociationMember[];
     getWeekBookings: (weekKey: string, userId?: string) => Booking[];
     toggleAvailability: (slotId: string, weekKey: string) => void;
     validatePresence: (bookingId: string) => Promise<boolean>;
@@ -146,9 +156,9 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     // ── Liste complète des membres de l'association ───────────────────────────
-    const [allUsers, setAllUsers] = useState<{ id: string; name: string }[]>(() => {
+    const [allUsers, setAllUsers] = useState<AssociationMember[]>(() => {
         try {
-            const saved = localStorage.getItem('phoenix_all_users_v1');
+            const saved = localStorage.getItem('phoenix_all_users_v2');
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -163,12 +173,14 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             .then(res => res.json())
             .then(data => {
                 if (data?.success && Array.isArray(data.users) && data.users.length > 0) {
-                    const cleaned = data.users.map((u: { id: string; name: string }) => ({
+                    const cleaned: AssociationMember[] = data.users.map((u: any) => ({
                         id: u.id,
-                        name: u.name.replace(/\t/g, '').trim()
+                        name: (u.name || '').replace(/\t/g, '').trim(),
+                        role: u.role || 'tuteur',
+                        projectIds: Array.isArray(u.projectIds) ? u.projectIds : (u.projectIds ? [Number(u.projectIds)] : [])
                     }));
                     setAllUsers(cleaned);
-                    localStorage.setItem('phoenix_all_users_v1', JSON.stringify(cleaned));
+                    localStorage.setItem('phoenix_all_users_v2', JSON.stringify(cleaned));
                 }
             })
             .catch(() => {});
@@ -581,10 +593,51 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         return true;
     }, [currentUser, exemptions]);
 
+    const updateUserProject = useCallback(async (projectId: number): Promise<{ success: boolean; message: string }> => {
+        if (!currentUser) {
+            return { success: false, message: 'Non connecté' };
+        }
+
+        const newProjectIds = [projectId];
+
+        // 1. Mise à jour immédiate du currentUser en mémoire et session
+        const updatedUser: PlanningUser = {
+            ...currentUser,
+            projectIds: newProjectIds
+        };
+        setCurrentUser(updatedUser);
+        try {
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser));
+        } catch {}
+
+        // 2. Mise à jour de allUsers
+        setAllUsers(prev => {
+            const updated = prev.map(u => u.id === currentUser.id ? { ...u, projectIds: newProjectIds } : u);
+            try {
+                localStorage.setItem('phoenix_all_users_v2', JSON.stringify(updated));
+            } catch {}
+            return updated;
+        });
+
+        // 3. Appel de l'API (sync Google Sheet via proxy / GAS)
+        try {
+            const res = await updateUserProjectApi(currentUser.id, newProjectIds);
+            return res;
+        } catch (err) {
+            console.error('Erreur updateUserProject:', err);
+            return { success: false, message: 'Erreur réseau lors de la mise à jour' };
+        }
+    }, [currentUser]);
+
+    const getTutorsForProject = useCallback((projectId: number): AssociationMember[] => {
+        return allUsers.filter(u => Array.isArray(u.projectIds) && u.projectIds.includes(projectId));
+    }, [allUsers]);
+
     return (
         <PlanningContext.Provider value={{
             currentUser, login, logout,
             bookings, allUsers, getWeekBookings,
+            updateUserProject, getTutorsForProject,
             toggleAvailability, validatePresence, markAbsent, resetValidation,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,

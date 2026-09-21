@@ -13,9 +13,17 @@ function doGet(e) {
     
     for (var i = 1; i < data.length; i++) {
       if (data[i][1]) { // Si la colonne 'name' n'est pas vide
+        var rawProjects = data[i][5] ? data[i][5].toString() : "";
+        var projectIds = rawProjects
+          .split(',')
+          .map(function(item) { return parseInt(item.trim(), 10); })
+          .filter(function(num) { return !isNaN(num); });
+
         users.push({
           id: data[i][0].toString(),
-          name: data[i][1].toString()
+          name: data[i][1].toString(),
+          role: data[i][4] ? data[i][4].toString() : 'tuteur',
+          projectIds: projectIds
         });
       }
     }
@@ -233,6 +241,48 @@ function doPost(e) {
       } else {
         return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Utilisateur non trouvé." }))
           .setMimeType(ContentService.MimeType.JSON);
+      }
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  if (action === 'updateUserProject') {
+    try {
+      var userId = postData.userId ? postData.userId.toString().trim() : "";
+      var pIds = postData.projectIds;
+      var projectIdsStr = "";
+      if (Array.isArray(pIds)) {
+        projectIdsStr = pIds.filter(function(n) { return n !== null && n !== undefined && !isNaN(n); }).join(', ');
+      } else if (pIds !== undefined && pIds !== null && pIds !== "") {
+        projectIdsStr = pIds.toString().trim();
+      }
+
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+
+      for (var i = 1; i < data.length; i++) {
+        var rowId = data[i][0] ? data[i][0].toString().trim() : "";
+        if (rowId === userId) {
+          foundRow = i + 1;
+          break;
+        }
+      }
+
+      if (foundRow !== -1) {
+        sheet.getRange(foundRow, 6).setValue(projectIdsStr); // Colonne F (projectIds)
+        return ContentService.createTextOutput(JSON.stringify({ 
+          success: true, 
+          message: "Projet mis à jour avec succès !",
+          projectIds: projectIdsStr
+        })).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        return ContentService.createTextOutput(JSON.stringify({ 
+          success: false, 
+          message: "Utilisateur non trouvé." 
+        })).setMimeType(ContentService.MimeType.JSON);
       }
     } catch (err) {
       return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))

@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '../data/projects';
 import { SEO } from '../components/common/SEO';
+import { usePlanning } from '../context/PlanningContext';
 import { 
     ArrowLeft, 
     MapPin, 
@@ -13,7 +16,9 @@ import {
     Facebook, 
     Sparkles, 
     ArrowRight,
-    CheckCircle2
+    CheckCircle2,
+    ChevronDown,
+    GraduationCap
 } from 'lucide-react';
 
 const projectMapById: Record<string, string> = {
@@ -28,10 +33,37 @@ const projectMapById: Record<string, string> = {
     '9': 'roy-despagne',
 };
 
+const projectIdToNumeric: Record<string, number> = {
+    'sup-d-om': 1,
+    'acse': 2,
+    'massa-13': 3,
+    'saint-gabriel': 4,
+    'apprentis-d-auteuil': 5,
+    'izzo': 6,
+    'jules-ferry': 7,
+    'arthur-rimbaud': 8,
+    'roy-despagne': 9,
+};
+
+function getInitials(name: string): string {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+}
+
 export function ProjectDetail() {
     const { id } = useParams();
     const resolvedId = (id && projectMapById[id]) ? projectMapById[id] : id;
     const project = projects.find(p => p.id === resolvedId);
+
+    const [isTutorsOpen, setIsTutorsOpen] = useState(false);
+    const { getTutorsForProject } = usePlanning();
+
+    const numericProjectId = project ? projectIdToNumeric[project.id] : undefined;
+    const projectTutors = numericProjectId ? getTutorsForProject(numericProjectId) : [];
+    const sortedTutors = [...projectTutors].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 
     if (!project) {
         return (
@@ -274,7 +306,7 @@ export function ProjectDetail() {
                         )}
 
                         {/* Section Chefs de Projet Responsables */}
-                        <div className="mb-10 p-6 sm:p-7 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored">
+                        <div className="mb-6 p-6 sm:p-7 bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-xl bg-[#6F2B75] text-white flex items-center justify-center shadow-soft shrink-0">
@@ -298,6 +330,94 @@ export function ProjectDetail() {
                                     ))}
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Accordéon déroulant : Liste des tuteurs */}
+                        <div className="mb-10 bg-[#FFFBF4] rounded-organic-sm border border-[#6F2B75]/20 shadow-phoenix-colored overflow-hidden transition-all duration-300">
+                            <button
+                                type="button"
+                                onClick={() => setIsTutorsOpen(!isTutorsOpen)}
+                                className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left hover:bg-[#ECDDFD]/30 transition-colors cursor-pointer"
+                                aria-expanded={isTutorsOpen}
+                            >
+                                <div className="flex items-center gap-3.5 sm:gap-4">
+                                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shadow-soft shrink-0">
+                                        <GraduationCap size={22} />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                            <span className="text-base sm:text-lg font-display text-[#2A082D]">
+                                                Liste des tuteurs
+                                            </span>
+                                            <span className="px-2.5 py-0.5 rounded-full text-xs font-school font-bold bg-[#ECDDFD] text-[#6F2B75] border border-[#6F2B75]/20">
+                                                {sortedTutors.length} {sortedTutors.length > 1 ? 'tuteurs rattachés' : 'tuteur rattaché'}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-slate-600 font-normal">
+                                            Étudiants tuteurs bénévoles de KEDGE Business School engagés sur ce projet
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <span className="text-xs font-school font-bold text-[#6F2B75] hidden sm:inline">
+                                        {isTutorsOpen ? 'Masquer la liste' : 'Afficher la liste'}
+                                    </span>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-xs border transition-all duration-300 ${isTutorsOpen ? 'rotate-180 bg-[#6F2B75] text-white border-[#6F2B75]' : 'bg-white text-[#6F2B75] border-[#6F2B75]/20'}`}>
+                                        <ChevronDown size={16} />
+                                    </div>
+                                </div>
+                            </button>
+
+                            <AnimatePresence initial={false}>
+                                {isTutorsOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                        className="overflow-hidden border-t border-[#6F2B75]/15 bg-white/70"
+                                    >
+                                        <div className="p-5 sm:p-7">
+                                            {sortedTutors.length > 0 ? (
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                    {sortedTutors.map(tutor => (
+                                                        <div
+                                                            key={tutor.id}
+                                                            className="flex items-center gap-3 p-3.5 rounded-xl bg-white border border-[#6F2B75]/15 shadow-soft hover:shadow-phoenix-colored hover:border-[#EC602B]/40 transition-all duration-200"
+                                                        >
+                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-xs font-bold font-school shadow-xs shrink-0">
+                                                                {getInitials(tutor.name)}
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="text-sm font-bold text-[#2A082D] truncate">
+                                                                    {tutor.name}
+                                                                </p>
+                                                                <div className="flex items-center gap-1.5 mt-0.5">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                                                                    <span className="text-[11px] text-slate-500 font-school uppercase tracking-wider font-semibold">
+                                                                        {tutor.role === 'chef_projet' ? 'Chef de projet' : tutor.role === 'bureau' ? 'Membre Bureau' : 'Tuteur bénévole'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-6 px-4 bg-white/60 rounded-xl border border-dashed border-[#6F2B75]/25">
+                                                    <Users size={28} className="mx-auto text-[#6F2B75]/50 mb-2" />
+                                                    <p className="text-sm font-bold text-[#2A082D]">
+                                                        Aucun tuteur actuellement répertorié
+                                                    </p>
+                                                    <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                                                        Les affectations des tuteurs bénévoles pour ce projet sont en cours de synchronisation. Les tuteurs peuvent s'affecter depuis leur Espace Membre.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Call to Actions & Social Links */}

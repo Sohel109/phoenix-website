@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award, Sparkles, GraduationCap, CalendarPlus, Edit3, ExternalLink } from 'lucide-react';
+import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, Award, Sparkles, GraduationCap, CalendarPlus, Edit3, ExternalLink, BookOpen } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -72,8 +72,21 @@ function StatCard({ icon, label, value, unit, sublabel, gradient, progressBar }:
 }
 
 export function PlanningCompte() {
-    const { currentUser, bookings, changePassword, manualHours, isQuotaExempt, isEditModeActive, toggleEditMode } = usePlanning();
+    const { currentUser, bookings, changePassword, manualHours, isQuotaExempt, isEditModeActive, toggleEditMode, updateUserProject } = usePlanning();
     
+    // Project selection state
+    const currentProjectId = currentUser?.projectIds?.[0] || 2;
+    const [selectedProjectId, setSelectedProjectId] = useState<number>(currentProjectId);
+    const [isUpdatingProject, setIsUpdatingProject] = useState(false);
+    const [projectFeedback, setProjectFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    // Synchroniser si currentUser change
+    useEffect(() => {
+        if (currentUser?.projectIds?.[0]) {
+            setSelectedProjectId(currentUser.projectIds[0]);
+        }
+    }, [currentUser?.projectIds]);
+
     // Password change state
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -239,6 +252,40 @@ export function PlanningCompte() {
             setIsSubmitting(false);
         }
     };
+
+    const handleProjectChange = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setProjectFeedback(null);
+
+        if (!selectedProjectId) return;
+
+        setIsUpdatingProject(true);
+        try {
+            const res = await updateUserProject(selectedProjectId);
+            const targetProj = projectsData.find(p => p.id === selectedProjectId);
+            if (res.success) {
+                setProjectFeedback({
+                    type: 'success',
+                    text: `Votre affectation au projet « ${targetProj?.name || selectedProjectId} » a été enregistrée avec succès dans le Google Sheet !`
+                });
+            } else {
+                setProjectFeedback({
+                    type: 'error',
+                    text: res.message || "Erreur lors de l'enregistrement du projet."
+                });
+            }
+        } catch {
+            setProjectFeedback({
+                type: 'error',
+                text: "Une erreur réseau est survenue lors de l'enregistrement."
+            });
+        } finally {
+            setIsUpdatingProject(false);
+        }
+    };
+
+    const sortedProjects = [...projectsData].sort((a, b) => a.id - b.id);
+    const activeProject = projectsData.find(p => p.id === (currentUser.projectIds?.[0] || selectedProjectId));
 
     return (
         <PlanningLayout title="Mon compte">
@@ -430,6 +477,131 @@ export function PlanningCompte() {
                     )}
                 </motion.div>
             )}
+
+            {/* Mon Projet de Tutorat (Affectation Google Sheet & Page Projet) */}
+            <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-6 sm:p-7 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-8 backdrop-blur-md shadow-soft-lg relative overflow-hidden"
+            >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                    <div className="flex items-center gap-3.5">
+                        <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
+                            <BookOpen size={20} />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <h3 className="text-base font-bold text-white tracking-wide">Mon Projet de Tutorat</h3>
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-school uppercase tracking-wider bg-[#EC602B]/20 text-[#EC602B] border border-[#EC602B]/30 font-bold">
+                                    Affectation Officielle
+                                </span>
+                            </div>
+                            <p className="text-xs text-[#ECDDFD]/70">
+                                Choisissez votre projet Phœnix. Cette affectation met à jour le Google Sheet officiel et affiche votre nom dans la liste des tuteurs sur la page du projet.
+                            </p>
+                        </div>
+                    </div>
+
+                    {activeProject && (
+                        <Link
+                            to={`/projets/${activeProject.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white text-xs font-school transition-colors"
+                        >
+                            <span>Voir la page du projet</span>
+                            <ExternalLink size={13} className="text-[#EC602B]" />
+                        </Link>
+                    )}
+                </div>
+
+                {projectFeedback && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex items-start gap-2.5 p-4 rounded-2xl mb-5 text-xs font-medium border ${
+                            projectFeedback.type === 'success'
+                                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                                : 'bg-red-500/15 border-red-500/30 text-red-300'
+                        }`}
+                    >
+                        {projectFeedback.type === 'success' ? (
+                            <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-400" />
+                        ) : (
+                            <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-400" />
+                        )}
+                        <span>{projectFeedback.text}</span>
+                    </motion.div>
+                )}
+
+                <form onSubmit={handleProjectChange} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-school uppercase tracking-wider text-[#ECDDFD]/80 mb-2">
+                            Sélectionner mon projet de rattachement
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {sortedProjects.map(proj => {
+                                const isSelected = selectedProjectId === proj.id;
+                                const isCurrent = currentUser.projectIds?.includes(proj.id);
+                                return (
+                                    <button
+                                        type="button"
+                                        key={proj.id}
+                                        onClick={() => setSelectedProjectId(proj.id)}
+                                        className={`p-3.5 rounded-2xl border text-left transition-all relative cursor-pointer flex flex-col justify-between ${
+                                            isSelected
+                                                ? 'bg-gradient-to-br from-[#6F2B75]/60 to-[#EC602B]/40 border-[#EC602B] shadow-glow-orange text-white'
+                                                : 'bg-[#1F0422]/70 border-[#6F2B75]/40 hover:border-[#ECDDFD]/40 text-[#ECDDFD]/80 hover:text-white'
+                                        }`}
+                                    >
+                                        <div>
+                                            <div className="flex items-center justify-between gap-1 mb-1">
+                                                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/30 text-[#ECDDFD]/70">
+                                                    ID: {proj.id}
+                                                </span>
+                                                {isCurrent && (
+                                                    <span className="text-[10px] font-school font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                                        Actuel
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm font-bold text-white tracking-wide mt-1">
+                                                {proj.name}
+                                            </p>
+                                            <p className="text-[11px] text-[#ECDDFD]/60 line-clamp-1 mt-0.5">
+                                                {proj.fullName}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                        <span className="text-xs text-[#ECDDFD]/60">
+                            Affectation actuelle : <strong className="text-white">{myProjects.map(p => p.name).join(', ') || 'Non défini'}</strong>
+                        </span>
+                        <button
+                            type="submit"
+                            disabled={isUpdatingProject || selectedProjectId === (currentUser.projectIds?.[0])}
+                            className="btn-phoenix-gradient flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-white font-school text-xs uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-soft"
+                        >
+                            {isUpdatingProject ? (
+                                <>
+                                    <Loader2 size={15} className="animate-spin" />
+                                    <span>Enregistrement...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle2 size={15} />
+                                    <span>Enregistrer mon projet</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </motion.div>
 
             {/* Modifier mon mot de passe */}
             <motion.div
