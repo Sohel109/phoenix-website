@@ -39,7 +39,7 @@ export function VerifyAttestation() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-28 pb-20 px-4 sm:px-6">
             <SEO
-                title="Vérification Officielle d'Attestation – Phœnix Égalité des Chances"
+                title="Vérification Attestation – Authentification Bénévole – Marseille / KEDGE BS"
                 description="Service officiel d'authentification numérique des attestations d'engagement bénévole délivrées par l'association Phœnix Égalité des Chances (KEDGE BS Marseille)."
             />
 

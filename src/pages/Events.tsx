@@ -36,7 +36,7 @@ export function Events() {
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title="Événements & Concours d'Éloquence – Ouverture Culturelle Jeunesse – Marseille (13)"
+                title="Nos Événements – Éloquence & Ouverture Culturelle – Marseille / KEDGE BS"
                 description="Participez aux événements phares de Phœnix EDC : Concours d'Éloquence KEDGE, simulation diplomatique SIMONU Marseille, Journée de l'Égalité des Chances."
                 schema={eventsBreadcrumbSchema}
             />

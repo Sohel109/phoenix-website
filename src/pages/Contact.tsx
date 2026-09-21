@@ -35,7 +35,7 @@ export function Contact() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
             <SEO
-                title="Contact & Recrutement Bénévolat – Association Égalité des Chances KEDGE – Marseille (13)"
+                title="Contact & Recrutement – Devenir Tuteur Bénévole – Marseille / KEDGE BS"
                 description="Contactez l'équipe de Phœnix Égalité des Chances à KEDGE Business School Marseille pour devenir tuteur bénévole, établissement ou entreprise partenaire."
                 schema={contactBreadcrumbSchema}
             />

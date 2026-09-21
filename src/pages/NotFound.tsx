@@ -1,18 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, FolderOpen, Calendar, Mail, Compass, ArrowLeft, ArrowRight, ShieldCheck, Map } from 'lucide-react';
+
+import { SEO } from '../components/common/SEO';
 
 export function NotFound() {
     const location = useLocation();
     const navigate = useNavigate();
     const path = location.pathname.toLowerCase();
-
-    useEffect(() => {
-        document.title = 'Page introuvable (404) | Phoenix Égalité des Chances';
-        return () => {
-            document.title = 'Phoenix Égalité des Chances';
-        };
-    }, []);
 
     // Détection intelligente d'une page correspondante pour les anciens liens Wix
     const suggestedRedirect = useMemo(() => {
@@ -149,6 +144,10 @@ export function NotFound() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 pt-page-safe pb-16 bg-[#FFFBF4] bg-bird-pattern">
+            <SEO
+                title="Page Introuvable – Erreur 404 – Marseille / KEDGE BS"
+                description="La page que vous recherchez sur le site de Phœnix Égalité des Chances KEDGE BS Marseille n'existe pas ou a été déplacée."
+            />
             <div className="max-w-xl w-full text-center relative z-10">
                 {/* 404 Badge */}
                 <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">

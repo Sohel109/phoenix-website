@@ -108,7 +108,7 @@ export function ProjectDetail() {
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title={`${project.title} – Tutorat ${project.category} & Égalité des Chances – Marseille (13)`}
+                title={`${project.title} – Tutorat Scolaire & Cordées – Marseille / KEDGE BS`}
                 description={`${project.description.slice(0, 140)}... Tutorat scolaire et mentorat étudiant KEDGE BS à Marseille.`}
                 ogImage={project.banner || project.image}
                 schema={projectBreadcrumbSchema}

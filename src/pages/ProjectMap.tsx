@@ -72,7 +72,7 @@ export function ProjectMap() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-24">
             <SEO
-                title="Carte des Collèges & Lycées Partenaires – Tutorat Scolaire à Marseille – Phœnix EDC"
+                title="Carte des Antennes – Collèges & Lycées Partenaires – Marseille / KEDGE BS"
                 description="Explorez la carte interactive des 9 antennes de tutorat de Phœnix EDC réparties dans les collèges, lycées et quartiers prioritaires de Marseille."
                 schema={mapBreadcrumbSchema}
             />

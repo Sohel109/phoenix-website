@@ -50,7 +50,7 @@ export function Home() {
         <div className="flex flex-col min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             {/* Balises SEO dynamiques & Rich Snippets FAQ Schema.org */}
             <SEO
-                title="Tutorat Scolaire & Égalité des Chances – Mentorat Étudiant KEDGE BS – Marseille (13)"
+                title="Phœnix EDC – Tutorat & Égalité des Chances – Marseille / KEDGE BS"
                 description="Association étudiante de KEDGE Business School : tutorat scolaire gratuit, mentorat académique et ouverture culturelle pour 300 collégiens et lycéens à Marseille depuis 2011."
                 schema={homeFaqSchema}
             />

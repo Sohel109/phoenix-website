@@ -24,7 +24,7 @@ export function LegalMentions() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
             <SEO
-                title="Mentions Légales & RGPD – Association Phœnix Égalité des Chances Marseille"
+                title="Mentions Légales – Transparence & RGPD – Marseille / KEDGE BS"
                 description="Informations légales, hébergement Vercel et politique de confidentialité de l'association Phœnix Égalité des Chances (loi 1901, KEDGE Business School)."
                 schema={legalBreadcrumbSchema}
             />

@@ -64,7 +64,7 @@ export function Partners() {
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title="Partenaires Entreprises & Mécénat RSE – Égalité des Chances KEDGE – Marseille (13)"
+                title="Nos Partenaires – Mécénat & Réseau Partenaire – Marseille / KEDGE BS"
                 description="Devenez entreprise partenaire mécène de Phœnix EDC : soutenez l'égalité des chances à Marseille, valorisez votre démarche RSE et défiscalisez vos dons à 60%."
                 schema={partnersBreadcrumbSchema}
             />

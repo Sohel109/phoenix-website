@@ -181,7 +181,7 @@ export function Documents() {
     return (
         <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             <SEO
-                title="Guides & Fiches de Postes Associatives – Documentation Officielle Phœnix EDC Marseille"
+                title="Documentation & Guides – Ressources Associatives – Marseille / KEDGE BS"
                 description="Consultez et téléchargez les ressources officielles de Phœnix EDC : Guide du Phœnicien 2026-2027, fiches de postes du Bureau et des Pôles associatifs."
                 schema={documentsBreadcrumbSchema}
             />

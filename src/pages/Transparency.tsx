@@ -72,7 +72,7 @@ export function Transparency() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-16">
             <SEO
-                title="Dons Déductibles d'Impôts (66%) & Transparence Financière – Phœnix EDC Marseille"
+                title="Transparence & Dons – Soutien & Déduction Fiscale – Marseille / KEDGE BS"
                 description="Soutenez l'éducation à Marseille : vos dons à Phœnix EDC sont déductibles d'impôts à 66% (IR) et 60% (IS). 70% des fonds financent directement les sorties et ateliers."
                 schema={transparencyBreadcrumbSchema}
             />

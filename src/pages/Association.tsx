@@ -281,7 +281,7 @@ export function Association() {
         <div className="pt-page-safe pb-28 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
             {/* Balises SEO dynamiques */}
             <SEO
-                title="Association Égalité des Chances – Histoire, Valeurs & Tuteurs KEDGE BS – Marseille (13)"
+                title="L'Association – Histoire & Équipe de Tuteurs – Marseille / KEDGE BS"
                 description="Depuis 2011, Phœnix EDC mobilise plus de 100 étudiants tuteurs de KEDGE Business School pour l'égalité des chances et la réussite scolaire à Marseille."
                 schema={associationBreadcrumbSchema}
             />
@@ -775,7 +775,7 @@ export function Association() {
                                         {editingMember.photo ? (
                                             <img
                                                 src={editingMember.photo}
-                                                alt="Aperçu de la photo de profil du membre"
+                                                alt="Aperçu de la photo de profil du tuteur Phœnix EDC"
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (

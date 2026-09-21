@@ -78,7 +78,7 @@ export function Projects() {
         <div className="pt-page-safe pb-28 bg-[#FFFBF4] bg-bird-pattern min-h-screen">
             {/* Balises SEO dynamiques */}
             <SEO
-                title="Projets de Tutorat Scolaire – Cordées de la Réussite & Lycées – Marseille (13)"
+                title="Nos Projets – Tutorat Scolaire & Cordées – Marseille / KEDGE BS"
                 description="Découvrez les 9 projets de tutorat et soutien scolaire menés par les étudiants de KEDGE BS à Marseille : ACSE, Arthur Rimbaud, Izzo, Jules Ferry, Roy d'Espagne, Sup d'OM, Saint-Gabriel..."
                 schema={projectsBreadcrumbSchema}
             />

@@ -102,7 +102,7 @@ export function EventDetail() {
     return (
         <div className="min-h-screen bg-[#FFFBF4] bg-bird-pattern pt-page-safe pb-20">
             <SEO
-                title={`${event.title} – Événement Jeunesse & Éloquence Phœnix EDC – Marseille (13)`}
+                title={`${event.title} – Événement & Éloquence – Marseille / KEDGE BS`}
                 description={`${event.description.slice(0, 140)}... Événement organisé par l'association Phœnix EDC à Marseille.`}
                 ogImage={event.headerImage || event.image}
                 schema={eventSchema}
