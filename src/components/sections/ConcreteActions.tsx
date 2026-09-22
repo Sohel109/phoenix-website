@@ -6,7 +6,7 @@ import { MaskingTape } from '../common/HandDrawnElements';
 
 const culturalTripPhotos = [
     {
-        src: "/images/home/voyage-culturel-1.jpg",
+        src: "/images/home/voyage-culturel-1.webp",
         alt: "Voyage culturel Phoenix : groupe de jeunes et tuteurs sur la côte",
         caption: "Voyage culturel avec les lycéens face à la Méditerranée"
     },
@@ -16,7 +16,7 @@ const culturalTripPhotos = [
         caption: "Découverte du patrimoine et grands voyages de fin d'année"
     },
     {
-        src: "/images/home/voyage-culturel-3.jpg",
+        src: "/images/home/voyage-culturel-3.webp",
         alt: "Selfie dynamique des tuteurs et élèves Phoenix",
         caption: "Énergie, sourires et complicité sur le terrain"
     }
@@ -27,14 +27,14 @@ const eventHighlights = [
         id: "simonu",
         title: "SimONU EDC",
         subtitle: "Simulation ONU & Négociation",
-        image: "/images/events/simonu/simonu-speaker.jpg",
+        image: "/images/events/simonu/simonu-speaker.webp",
         objectPosition: "center center"
     },
     {
         id: "jedc",
         title: "La JEDC",
         subtitle: "Concours d'Éloquence",
-        image: "/images/home/jedc-discours.png",
+        image: "/images/home/jedc-discours.webp",
         objectPosition: "left center"
     }
 ];
@@ -86,7 +86,7 @@ export function ConcreteActions() {
                             {/* Photo terrain en salle de tutorat */}
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900">
                             <img
-                                src="/images/home/tutorat-hebdo-terrain.jpg"
+                                src="/images/home/tutorat-hebdo-terrain.webp"
                                 alt="Séance studieuse de tutorat hebdomadaire et soutien scolaire à Marseille - Phœnix EDC"
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
                                 loading="lazy"

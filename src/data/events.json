@@ -7,9 +7,9 @@
     "image": "/images/events/jedc-new.png",
     "headerImage": "/images/events/jedc-new.png",
     "gallery": [
-      "/images/home/jedc-discours.png",
-      "/images/events/jedc/affiche_2024.png",
-      "/images/events/jedc/programme_2024.png"
+      "/images/home/jedc-discours.webp",
+      "/images/events/jedc/affiche_2024.webp",
+      "/images/events/jedc/programme_2024.webp"
     ],
     "externalLinks": [
       { "label": "Edition 2015", "url": "https://www.facebook.com/events/183620991972582/" },
@@ -43,11 +43,11 @@
     "image": "/images/events/simonu-new.jpg",
     "headerImage": "/images/events/simonu-new.jpg",
     "gallery": [
-      "/images/events/simonu/simonu-group-argentine.jpg",
-      "/images/events/simonu/simonu-speaker.jpg",
-      "/images/events/simonu/img1.png",
-      "/images/events/simonu/img2.png",
-      "/images/events/simonu/img3.png"
+      "/images/events/simonu/simonu-group-argentine.webp",
+      "/images/events/simonu/simonu-speaker.webp",
+      "/images/events/simonu/img1.webp",
+      "/images/events/simonu/img2.webp",
+      "/images/events/simonu/img3.webp"
     ],
     "date": "Avril",
     "monthOrder": 4,
@@ -60,12 +60,12 @@
     "title": "Voyages de Fin d'Année",
     "description": "Moments d'évasion inoubliables et d'ouverture culturelle : séjours en Espagne, découvertes européennes et grands voyages de fin d'année pour sortir de Marseille et élargir les horizons de nos jeunes.",
     "fullDescription": "Les voyages que nous organisons permettent de réduire concrètement les inégalités socio-culturelles en offrant à nos tutorés l'opportunité de sortir de Marseille et de découvrir de nouveaux horizons.\n\nChaque projet bâtit son propre séjour : voyage de fin d'année pour les collégiens d'Izzo, séjour patrimonial à Arles pour Roy d'Espagne, découverte du littoral à Hyères pour Massa 13, ou voyage culturel pour les lycéens d'ACSE.\n\nCes séjours sont le fruit d'un remarquable engagement collectif tout au long de l'année pour leur autofinancement : campagnes de crowdfunding, opération papiers cadeaux (PPK) de Noël, ventes de goûters au foyer associatif et recherche de partenaires entreprises. Ils renforcent durablement la cohésion et ouvrent l'esprit des jeunes sur le monde.",
-    "image": "/images/home/voyage-culturel-1.jpg",
+    "image": "/images/home/voyage-culturel-1.webp",
     "headerImage": "/images/home/voyage-culturel-2.jpg",
     "gallery": [
-      "/images/home/voyage-culturel-1.jpg",
+      "/images/home/voyage-culturel-1.webp",
       "/images/home/voyage-culturel-2.jpg",
-      "/images/home/voyage-culturel-3.jpg"
+      "/images/home/voyage-culturel-3.webp"
     ],
     "date": "Mai - Juin",
     "monthOrder": 5,
@@ -78,20 +78,20 @@
     "title": "Les Olympiades Phoenix",
     "description": "Rassemblement sportif annuel de plus de 300 personnes dans un stade marseillais : 20 équipes mixtes de tuteurs et tutorés s'affrontent dans un esprit d'équipe et de fair-play.",
     "fullDescription": "Créées en 2014, les Olympiades constituent le plus grand rassemblement de fin d'année de Phoenix Égalité Des Chances. Cet événement convivial réunit jusqu'à 300 participants (collégiens, lycéens, tuteurs et anciens) dans un grand complexe sportif marseillais.\n\nLes tutorés sont répartis en une vingtaine d'équipes mixtes inter-projets et s'affrontent tout au long de la journée dans une dizaine d'épreuves sportives et ludiques (football, relais, tir à la corde, basket, parcours d'agilité, béret).\n\nEn clôture de l'événement, toutes les équipes sont récompensées selon leur classement, avec un accent tout particulier porté sur le trophée du Fair-play, illustrant les valeurs cardinales de l'association : respect, solidarité, dépassement de soi et fraternité.",
-    "image": "/images/events/olympiades-new.png",
+    "image": "/images/events/olympiades-new.webp",
     "headerImage": "/images/events/olympiades-banner-new.jpg",
     "gallery": [
-      "/images/events/olympiades/olympiades-group-2.jpg",
-      "/images/events/olympiades/olympiades-group-1.png",
-      "/images/events/olympiades/olympiades-group-3.jpg",
-      "/images/events/olympiades/img1.png",
-      "/images/events/olympiades/img2.png"
+      "/images/events/olympiades/olympiades-group-2.webp",
+      "/images/events/olympiades/olympiades-group-1.webp",
+      "/images/events/olympiades/olympiades-group-3.webp",
+      "/images/events/olympiades/img1.webp",
+      "/images/events/olympiades/img2.webp"
     ],
     "externalLinks": [
       {
         "label": "Retrouvez l'article sur les olympiades par L'Express",
         "url": "https://www.lexpress.fr/societe/education/les-grandes-ecoles-de-commerce-dans-le-grand-bain-de-l-innovation_1963416.html",
-        "logo": "/partners/lexpress.png"
+        "logo": "/partners/lexpress.webp"
       }
     ],
     "date": "Juin",

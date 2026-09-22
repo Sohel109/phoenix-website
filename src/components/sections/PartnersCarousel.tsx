@@ -3,14 +3,14 @@ import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const partnersList = [
-    { name: "Olympique de Marseille", src: "/partners/om.png", alt: "Logo officiel Olympique de Marseille" },
-    { name: "KEDGE Business School", src: "/partners/kedge.png", alt: "Logo institutionnel KEDGE Business School" },
-    { name: "Decathlon", src: "/partners/decathlon.png", alt: "Logo partenaire officiel Decathlon" },
-    { name: "Deloitte", src: "/partners/deloitte.jpg", alt: "Logo partenaire officiel Deloitte" },
-    { name: "Apprentis d'Auteuil", src: "/partners/apprentis-auteuil.png", alt: "Logo partenaire officiel Apprentis d'Auteuil" },
-    { name: "Darty", src: "/partners/darty.png", alt: "Logo partenaire officiel Darty" },
-    { name: "Lydia", src: "/partners/lydia.png", alt: "Logo partenaire digital Lydia" },
-    { name: "L'Express", src: "/partners/lexpress.png", alt: "Logo partenaire presse L'Express" },
+    { name: "Olympique de Marseille", src: "/partners/om.webp", alt: "Logo officiel Olympique de Marseille" },
+    { name: "KEDGE Business School", src: "/partners/kedge.webp", alt: "Logo institutionnel KEDGE Business School" },
+    { name: "Decathlon", src: "/partners/decathlon.webp", alt: "Logo partenaire officiel Decathlon" },
+    { name: "Deloitte", src: "/partners/deloitte.webp", alt: "Logo partenaire officiel Deloitte" },
+    { name: "Apprentis d'Auteuil", src: "/partners/apprentis-auteuil.webp", alt: "Logo partenaire officiel Apprentis d'Auteuil" },
+    { name: "Darty", src: "/partners/darty.webp", alt: "Logo partenaire officiel Darty" },
+    { name: "Lydia", src: "/partners/lydia.webp", alt: "Logo partenaire digital Lydia" },
+    { name: "L'Express", src: "/partners/lexpress.webp", alt: "Logo partenaire presse L'Express" },
 ];
 
 export function PartnersCarousel() {

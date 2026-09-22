@@ -4,7 +4,7 @@
     "firstName": "Samy",
     "lastName": "",
     "role": "Président",
-    "photo": "/images/team/samy-rabhi-1789645941754.jpg",
+    "photo": "/images/team/samy-rabhi-1789645941754.webp",
     "linkedin": "https://www.linkedin.com/in/samy-rabhi-0a77b72a2/"
   },
   {
@@ -12,7 +12,7 @@
     "firstName": "Samir",
     "lastName": "",
     "role": "Vice-Président",
-    "photo": "/images/team/samir-1789645967909.jpg",
+    "photo": "/images/team/samir-1789645967909.webp",
     "linkedin": "https://www.linkedin.com/in/samir-baaka-2a912b2b4/"
   },
   {
@@ -20,7 +20,7 @@
     "firstName": "Ryan",
     "lastName": "",
     "role": "Vice-Président & Secrétaire Général",
-    "photo": "/images/team/ryan-1789646022585.jpg",
+    "photo": "/images/team/ryan-1789646022585.webp",
     "linkedin": "https://www.linkedin.com/in/ryan-benyelles-13b5b2341/"
   },
   {
@@ -28,7 +28,7 @@
     "firstName": "Lina",
     "lastName": "",
     "role": "Trésorière",
-    "photo": "/images/team/lina-1789646076510.jpg",
+    "photo": "/images/team/lina-1789646076510.webp",
     "linkedin": "https://www.linkedin.com/in/lina-el-keddah-54a150305/"
   },
   {
@@ -36,7 +36,7 @@
     "firstName": "Elyas",
     "lastName": "",
     "role": "Trésorier Cordées de la Réussite",
-    "photo": "/images/team/elyas-1789646120940.jpg",
+    "photo": "/images/team/elyas-1789646120940.webp",
     "linkedin": "https://www.linkedin.com/in/elyas-bourhis-0038572b3/"
   }
 ]
