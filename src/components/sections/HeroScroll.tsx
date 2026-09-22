@@ -110,7 +110,7 @@ export function HeroScroll() {
                             </div>
 
                             {/* Réassurance en texte simple */}
-                            <p className="text-xs font-semibold text-slate-400 tracking-wide pt-1">
+                            <p className="text-xs font-semibold text-[#7C677E] tracking-wide pt-1">
                                 5 Cordées de la Réussite · Association Reconnue d'Intérêt Général
                             </p>
                         </div>
@@ -125,7 +125,7 @@ export function HeroScroll() {
 
                                 <div className="w-full h-full rounded-organic overflow-hidden photo-frame-organic border-2 border-white/80 relative">
                                     <img
-                                        src="/images/projects/hero-1.png"
+                                        src="/images/projects/hero-1.webp"
                                         alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
                                         className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
                                         draggable={false}
@@ -137,7 +137,7 @@ export function HeroScroll() {
                             {/* Médaillon circulaire d'ambiance en déport */}
                             <div className="absolute -top-4 -left-4 xl:-left-8 w-36 h-36 rounded-full overflow-hidden shadow-phoenix-colored border-4 border-white z-20">
                                 <img
-                                    src="/images/projects/hero-3.png"
+                                    src="/images/projects/hero-3.webp"
                                     alt="Sortie culturelle au musée avec les jeunes tutorés Phœnix"
                                     className="w-full h-full object-cover"
                                     draggable={false}
@@ -223,7 +223,7 @@ export function HeroScroll() {
                     <MaskingTape variant="warm" angle="left" className="-top-2 left-6 z-30" />
                     <div className="relative w-full aspect-[4/3] rounded-organic-sm overflow-hidden photo-frame-organic border-2 border-white/80">
                         <img
-                            src="/images/projects/hero-1.png"
+                            src="/images/projects/hero-1.webp"
                             alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
                             className="w-full h-full object-cover object-top"
                             draggable={false}

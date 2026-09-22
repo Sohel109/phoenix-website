@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { MaskingTape } from '../common/HandDrawnElements';
 
 export function Footer() {
     const location = useLocation();
@@ -22,7 +23,7 @@ export function Footer() {
     };
 
     return (
-        <footer className="relative bg-[#2A082D] text-slate-300 pt-16 pb-10 border-t border-[#6F2B75]/40 overflow-hidden">
+        <footer className="relative bg-[#2A082D] text-[#ECDDFD]/75 pt-16 pb-10 border-t border-[#6F2B75]/40 overflow-hidden">
             {/* Trame filigrane Phœnix officielle sur fond violet sombre */}
             <div className="pattern-watermark-dark" aria-hidden="true" />
 
@@ -48,7 +49,7 @@ export function Footer() {
                             </div>
                         </div>
 
-                        <ul className="space-y-3.5 text-xs sm:text-sm text-slate-300/90 font-medium">
+                        <ul className="space-y-3.5 text-xs sm:text-sm text-[#ECDDFD]/75 font-medium">
                             <li className="flex items-center gap-3 group">
                                 <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-[#EC602B] shrink-0 group-hover:bg-[#EC602B] group-hover:text-white transition-colors">
                                     <Phone size={15} />
@@ -128,7 +129,7 @@ export function Footer() {
                         <h4 className="text-base font-bold text-white tracking-wide border-b border-white/10 pb-2">
                             Navigation
                         </h4>
-                        <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300">
+                        <ul className="space-y-2.5 text-xs sm:text-sm text-[#ECDDFD]/75">
                             <li>
                                 <Link to="/" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
                                     Accueil
@@ -177,15 +178,21 @@ export function Footer() {
                         </ul>
                     </div>
 
-                    {/* Colonne 3 : Abonnez-vous (Formulaire Newsletter Action Grand Sud Style) */}
-                    <div className="md:col-span-5 space-y-4">
-                        <h4 className="text-base font-bold text-white tracking-wide border-b border-white/10 pb-2">
-                            Abonnez-vous
-                        </h4>
-                        <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed font-normal">
+                    {/* Colonne 3 : Abonnez-vous (fiche carnet scotchée, chaleureuse) */}
+                    <div className="md:col-span-5 space-y-4 relative">
+                        <MaskingTape variant="lilac" angle="right" className="hidden sm:block -top-2 right-6 z-30" />
+                        <div className="flex items-baseline gap-3 border-b border-white/10 pb-2">
+                            <h4 className="font-display text-xl text-white tracking-normal">
+                                Abonnez-vous
+                            </h4>
+                            <span className="font-script text-lg text-[#FF7E2E] -rotate-1 select-none hidden sm:inline">
+                                Restez connectés ✦
+                            </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-[#ECDDFD]/80 leading-relaxed font-normal">
                             Abonnez-vous pour être alerté de toutes les actualités et actions de terrain de Phœnix EDC.
                         </p>
-                        <p className="text-[11px] text-slate-400 font-school italic">
+                        <p className="text-[11px] text-[#ECDDFD]/55 font-school italic">
                             Tous les champs sont obligatoires.
                         </p>
 
@@ -198,7 +205,7 @@ export function Footer() {
                             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <div>
-                                        <label htmlFor="footer-nom" className="block text-[11px] font-medium text-slate-300 mb-1">
+                                        <label htmlFor="footer-nom" className="block text-[11px] font-medium text-[#ECDDFD]/70 mb-1">
                                             Nom *
                                         </label>
                                         <input
@@ -212,7 +219,7 @@ export function Footer() {
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="footer-prenom" className="block text-[11px] font-medium text-slate-300 mb-1">
+                                        <label htmlFor="footer-prenom" className="block text-[11px] font-medium text-[#ECDDFD]/70 mb-1">
                                             Prénom *
                                         </label>
                                         <input
@@ -228,7 +235,7 @@ export function Footer() {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="footer-email" className="block text-[11px] font-medium text-slate-300 mb-1">
+                                    <label htmlFor="footer-email" className="block text-[11px] font-medium text-[#ECDDFD]/70 mb-1">
                                         E-mail *
                                     </label>
                                     <input
@@ -251,14 +258,14 @@ export function Footer() {
                                         onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
                                         className="mt-0.5 rounded border-white/20 text-[#EC602B] focus:ring-[#EC602B] bg-white/10"
                                     />
-                                    <label htmlFor="footer-consent" className="text-[11px] text-slate-400 leading-snug cursor-pointer">
+                                    <label htmlFor="footer-consent" className="text-[11px] text-[#ECDDFD]/55 leading-snug cursor-pointer">
                                         J'accepte que mes informations personnelles soient utilisées uniquement dans le cadre de la lettre d'actualités de Phœnix EDC.
                                     </label>
                                 </div>
 
                                 <button
                                     type="submit"
-                                    className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#EC602B] hover:bg-[#d45322] active:scale-[0.98] text-white text-xs font-school font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                    className="w-full sm:w-auto px-6 py-2.5 btn-phoenix-orange active:scale-[0.98] text-xs shadow-md hover:shadow-lg cursor-pointer touch-tactile"
                                 >
                                     <span>Je m'abonne</span>
                                     <ArrowRight size={14} />
@@ -269,14 +276,14 @@ export function Footer() {
                 </div>
 
                 {/* Bas de page / Copyright & Mentions légales (Action Grand Sud Style) */}
-                <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+                <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#ECDDFD]/60">
                     <p>
                         © {new Date().getFullYear()} <span className="text-white font-medium">Phœnix Égalité des Chances</span> - Tous droits réservés -{' '}
                         <Link to="/mentions-legales" className="hover:text-white underline transition-colors">
                             Mentions légales
                         </Link>
                     </p>
-                    <p className="text-slate-400/80 text-[11px] sm:text-xs">
+                    <p className="text-[#ECDDFD]/50 text-[11px] sm:text-xs">
                         Association reconnue d'intérêt général (Loi 1901) · KEDGE Business School Marseille
                     </p>
                 </div>

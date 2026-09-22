@@ -165,7 +165,7 @@ export function KeyFigures() {
                                 )}
                             </div>
                             <p className="text-[#2A082D] font-bold text-xs leading-snug">{stat.label}</p>
-                            <p className="text-slate-400 text-[11px]">{stat.sub}</p>
+                            <p className="text-[#7C677E] text-[11px]">{stat.sub}</p>
                         </div>
                     ))}
                 </div>

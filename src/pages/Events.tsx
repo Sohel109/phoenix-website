@@ -158,7 +158,7 @@ function EventCard({
                 </Link>
 
                 {event.location && (
-                    <div className="text-xs text-slate-400 font-school font-bold mb-3">
+                    <div className="text-xs text-[#7C677E] font-school font-bold mb-3">
                         {event.location}
                     </div>
                 )}

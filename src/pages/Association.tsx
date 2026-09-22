@@ -349,7 +349,7 @@ export function Association() {
                                         </div>
                                     </div>
                                     <img
-                                        src="/images/home/voyage-culturel-1.jpg"
+                                        src="/images/home/voyage-culturel-1.webp"
                                         alt="Étudiants de KEDGE et lycéens tutorés de l'association Phœnix en voyage culturel"
                                         className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
                                     />
@@ -624,7 +624,7 @@ export function Association() {
                                                 <span>LinkedIn</span>
                                             </a>
                                         ) : (
-                                            <span className="text-[11px] text-slate-400 font-sans font-semibold">
+                                            <span className="text-[11px] text-[#7C677E] font-sans font-semibold">
                                                 KEDGE BS Marseille
                                             </span>
                                         )}

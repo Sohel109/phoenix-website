@@ -3,6 +3,98 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Download, Archive, Sparkles, ChevronDown, Plus, Pencil, Trash2, X } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { usePlanning } from '../context/PlanningContext';
+import { MaskingTape, HandDrawnCircle } from '../components/common/HandDrawnElements';
+import { useDrawnOnInteract } from '../hooks/useDrawnOnInteract';
+
+const DOC_ROTATIONS = ['-rotate-1', 'rotate-1'];
+
+function DocumentCard({ doc, rotation, tape, angle, canEdit, onEdit, onDelete }: {
+    doc: DocumentItem;
+    rotation: string;
+    tape: 'warm' | 'lilac';
+    angle: 'left' | 'right';
+    canEdit: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+}) {
+    const fileHref = doc.url || (doc.filename.startsWith('http') ? doc.filename : `/documents/${doc.filename}`);
+    // Seule animation : le cercle au feutre qui se dessine autour de l'icône du document (survol / tap sur la fiche).
+    const { isDrawn, interactionProps } = useDrawnOnInteract();
+
+    return (
+        <div className={`relative ${rotation}`} {...interactionProps}>
+            <MaskingTape variant={tape} angle={angle} className="-top-3 left-1/2 -translate-x-1/2 z-30" />
+            <div className="bg-white rounded-organic-sm border border-[#6F2B75]/15 card-polaroid p-8 flex flex-col justify-between relative will-change-transform h-full">
+                {/* Boutons Bureau (visibles uniquement en mode édition) */}
+                {canEdit && (
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                        <button
+                            type="button"
+                            onClick={onEdit}
+                            className="p-1.5 rounded-full bg-[#ECDDFD] hover:bg-[#6F2B75] text-[#6F2B75] hover:text-white transition-colors cursor-pointer shadow-xs"
+                            title="Modifier ce document"
+                            aria-label="Modifier ce document"
+                        >
+                            <Pencil size={12} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onDelete}
+                            className="p-1.5 rounded-full bg-red-100 hover:bg-red-600 text-red-600 hover:text-white transition-colors cursor-pointer shadow-xs"
+                            title="Supprimer ce document"
+                            aria-label="Supprimer ce document"
+                        >
+                            <Trash2 size={12} />
+                        </button>
+                    </div>
+                )}
+
+                <div>
+                    <div className="flex items-start gap-5 mb-6">
+                        <div className="relative w-12 h-12 shrink-0 flex items-center justify-center">
+                            <HandDrawnCircle stroke="#EC602B" strokeWidth={2.2} className="inset-0 w-full h-full" animated drawn={isDrawn} />
+                            <div className="w-9 h-9 rounded-full bg-white text-[#2A082D] flex items-center justify-center border border-[#2A082D]/10 shadow-soft">
+                                <FileText size={18} />
+                            </div>
+                        </div>
+                        <div className="flex-1 min-w-0 pr-8">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <h3 className="text-lg sm:text-xl font-display text-[#2A082D] leading-snug">
+                                    {doc.title}
+                                </h3>
+                                {doc.isNew && (
+                                    <span className="badge-stamp badge-stamp-purple text-[9px] rotate-2 py-0.5 px-2">
+                                        <Sparkles size={10} className="inline -mt-0.5 mr-1" />
+                                        Édition en cours
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-slate-700 leading-relaxed text-sm font-medium">
+                                {doc.description}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-5 border-t border-[#ECDDFD]/60 flex items-center justify-between mt-auto">
+                    <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-600">
+                        <span className="bg-[#ECDDFD]/50 px-2.5 py-1 rounded text-[#6F2B75]">{doc.type}</span>
+                        <span>{doc.size}</span>
+                    </div>
+                    <a
+                        href={fileHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-phoenix-orange btn-glow-orange !py-2 !px-4 !text-xs rounded-lg text-white shadow-soft flex items-center gap-1.5 touch-tactile"
+                    >
+                        <Download size={14} />
+                        <span>Télécharger</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export interface DocumentItem {
     id: string;
@@ -220,81 +312,20 @@ export function Documents() {
                     )}
                 </div>
 
-                {/* Main Documents Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-                    {currentDocuments.map((doc) => {
-                        const fileHref = doc.url || (doc.filename.startsWith('http') ? doc.filename : `/documents/${doc.filename}`);
-                        return (
-                            <div
-                                key={doc.id}
-                                className="bg-white rounded-organic-sm border border-[#6F2B75]/15 shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col justify-between group relative will-change-transform"
-                            >
-                                {/* Boutons Bureau (visibles uniquement en mode édition) */}
-                                {canEdit && (
-                                    <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-                                        <button
-                                            type="button"
-                                            onClick={() => { setIsAddingDoc(false); setEditingDoc(doc); }}
-                                            className="p-1.5 rounded-full bg-[#ECDDFD] hover:bg-[#6F2B75] text-[#6F2B75] hover:text-white transition-colors cursor-pointer shadow-xs"
-                                            title="Modifier ce document"
-                                            aria-label="Modifier ce document"
-                                        >
-                                            <Pencil size={12} />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleDeleteDoc(doc.id)}
-                                            className="p-1.5 rounded-full bg-red-100 hover:bg-red-600 text-red-600 hover:text-white transition-colors cursor-pointer shadow-xs"
-                                            title="Supprimer ce document"
-                                            aria-label="Supprimer ce document"
-                                        >
-                                            <Trash2 size={12} />
-                                        </button>
-                                    </div>
-                                )}
-
-                                <div>
-                                    <div className="flex items-start gap-5 mb-6">
-                                        <div className="w-12 h-12 rounded-lg bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center shrink-0 shadow-soft">
-                                            <FileText size={24} />
-                                        </div>
-                                        <div className="flex-1 min-w-0 pr-8">
-                                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                                                <h3 className="text-lg sm:text-xl font-display text-[#2A082D] leading-snug">
-                                                    {doc.title}
-                                                </h3>
-                                                {doc.isNew && (
-                                                    <span className="inline-flex items-center gap-1 text-[11px] font-school font-bold px-2.5 py-0.5 rounded bg-[#ECDDFD] text-[#6F2B75] shrink-0">
-                                                        <Sparkles size={11} />
-                                                        <span>Édition en cours</span>
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <p className="text-slate-700 leading-relaxed text-sm font-medium">
-                                                {doc.description}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-5 border-t border-[#ECDDFD]/60 flex items-center justify-between mt-auto">
-                                    <div className="flex items-center gap-3 text-xs font-school font-bold text-slate-600">
-                                        <span className="bg-[#ECDDFD]/50 px-2.5 py-1 rounded text-[#6F2B75]">{doc.type}</span>
-                                        <span>{doc.size}</span>
-                                    </div>
-                                    <a
-                                        href={fileHref}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn-phoenix-orange btn-glow-orange !py-2 !px-4 !text-xs rounded-lg text-white shadow-soft flex items-center gap-1.5 touch-tactile"
-                                    >
-                                        <Download size={14} />
-                                        <span>Télécharger</span>
-                                    </a>
-                                </div>
-                            </div>
-                        );
-                    })}
+                {/* Main Documents Grid — fiches de carnet légèrement désalignées, scotchées */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12 mb-20 pt-3">
+                    {currentDocuments.map((doc, i) => (
+                        <DocumentCard
+                            key={doc.id}
+                            doc={doc}
+                            rotation={DOC_ROTATIONS[i % DOC_ROTATIONS.length]}
+                            tape={i % 2 === 0 ? 'warm' : 'lilac'}
+                            angle={i % 2 === 0 ? 'left' : 'right'}
+                            canEdit={canEdit}
+                            onEdit={() => { setIsAddingDoc(false); setEditingDoc(doc); }}
+                            onDelete={() => handleDeleteDoc(doc.id)}
+                        />
+                    ))}
                 </div>
 
                 {/* Section Archives (Dépliable) */}

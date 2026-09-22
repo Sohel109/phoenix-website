@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
+import { MaskingTape } from '../../common/HandDrawnElements';
 
 interface ContactFormProps {
     category: string;
@@ -96,7 +97,8 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
             </button>
 
             {/* Form Container */}
-            <div className="bg-white border border-[#6F2B75]/15 rounded-organic p-8 sm:p-12 shadow-phoenix-colored relative overflow-hidden">
+            <div className="bg-white border border-[#6F2B75]/15 rounded-organic p-8 sm:p-12 shadow-phoenix-colored relative overflow-visible">
+                <MaskingTape variant="warm" angle="right" className="-top-3 right-10 z-30" />
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-2 mb-2">
                         <span className="h-px w-6 bg-[#EC602B]"></span>

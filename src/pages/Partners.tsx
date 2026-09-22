@@ -1,15 +1,28 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Handshake, School, GraduationCap, Building2, Gift, Sparkles } from 'lucide-react';
+import { ArrowRight, Handshake, School, GraduationCap, Building2, Gift, Sparkles, type LucideIcon } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
+import { MaskingTape, HandDrawnCircle } from '../components/common/HandDrawnElements';
+import { useDrawnOnInteract } from '../hooks/useDrawnOnInteract';
 
 const majorPartners = [
-    { name: "Olympique de Marseille", logo: "/partners/om.png", desc: "Soutien et accueil des séances OM Campus & Commanderie" },
-    { name: "KEDGE Business School", logo: "/partners/kedge.png", desc: "École de rattachement, hébergement et accompagnement" },
-    { name: "Decathlon", logo: "/partners/decathlon.png", desc: "Partenaire solidaire et opérations papiers cadeaux" },
-    { name: "Deloitte", logo: "/partners/deloitte.jpg", desc: "Mécénat et soutien aux initiatives d'égalité des chances" },
-    { name: "Apprentis d'Auteuil", logo: "/partners/apprentis-auteuil.png", desc: "Tutorat et ouverture culturelle au collège Vitagliano" },
-    { name: "Darty", logo: "/partners/darty.png", desc: "Partenaire des Terrasses du Port pour l'autofinancement" },
-    { name: "Lydia", logo: "/partners/lydia.png", desc: "Partenaire digital pour nos projets solidaires" },
+    { name: "Olympique de Marseille", logo: "/partners/om.webp", desc: "Soutien et accueil des séances OM Campus & Commanderie" },
+    { name: "KEDGE Business School", logo: "/partners/kedge.webp", desc: "École de rattachement, hébergement et accompagnement" },
+    { name: "Decathlon", logo: "/partners/decathlon.webp", desc: "Partenaire solidaire et opérations papiers cadeaux" },
+    { name: "Deloitte", logo: "/partners/deloitte.webp", desc: "Mécénat et soutien aux initiatives d'égalité des chances" },
+    { name: "Apprentis d'Auteuil", logo: "/partners/apprentis-auteuil.webp", desc: "Tutorat et ouverture culturelle au collège Vitagliano" },
+    { name: "Darty", logo: "/partners/darty.webp", desc: "Partenaire des Terrasses du Port pour l'autofinancement" },
+    { name: "Lydia", logo: "/partners/lydia.webp", desc: "Partenaire digital pour nos projets solidaires" },
+];
+
+// Rotations et rubans alternés pour casser la symétrie "mur de logos" façon SaaS
+const CARD_VARIANTS = [
+    { rotation: '-rotate-1', tape: 'warm' as const, angle: 'left' as const },
+    { rotation: 'rotate-1', tape: 'lilac' as const, angle: 'right' as const },
+    { rotation: '-rotate-[0.5deg]', tape: 'warm' as const, angle: 'center' as const },
+    { rotation: 'rotate-[1.5deg]', tape: 'lilac' as const, angle: 'left' as const },
+    { rotation: '-rotate-[1.5deg]', tape: 'warm' as const, angle: 'right' as const },
+    { rotation: 'rotate-[0.5deg]', tape: 'lilac' as const, angle: 'center' as const },
+    { rotation: '-rotate-1', tape: 'warm' as const, angle: 'left' as const },
 ];
 
 const schoolPartners = {
@@ -39,6 +52,29 @@ const otherPartners = [
     { name: "SimONU Marseille", category: "Association étudiante", icon: Handshake },
     { name: "Échanges Phocéens", category: "Association étudiante", icon: Handshake },
 ];
+
+function CultureBadge({ item }: { item: { name: string; category: string; icon: LucideIcon } }) {
+    // Seule animation : le cercle au feutre qui se dessine autour de l'icône (survol / tap).
+    const { isDrawn, interactionProps } = useDrawnOnInteract();
+
+    return (
+        <div
+            className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-4 text-center flex flex-col items-center justify-center shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform"
+            {...interactionProps}
+        >
+            <div className="relative w-11 h-11 flex items-center justify-center mb-2.5">
+                <HandDrawnCircle stroke="#EC602B" strokeWidth={2.2} className="inset-0 w-full h-full" animated drawn={isDrawn} />
+                <div className="w-8 h-8 rounded-full bg-white text-[#2A082D] flex items-center justify-center border border-[#2A082D]/10 shadow-soft">
+                    <item.icon size={17} />
+                </div>
+            </div>
+            <p className="font-display text-sm text-[#2A082D] leading-snug">{item.name}</p>
+            <span className="text-[10px] font-school font-bold text-slate-500 mt-1 uppercase tracking-wider">
+                {item.category}
+            </span>
+        </div>
+    );
+}
 
 const partnersBreadcrumbSchema = {
     "@context": "https://schema.org",
@@ -89,36 +125,42 @@ export function Partners() {
                     </p>
                 </div>
 
-                {/* Section 1: Grands Partenaires (Logo Grid) */}
-                <div className="mb-20">
-                    <h2 className="text-xl sm:text-3xl font-display text-[#2A082D] tracking-tight mb-8 flex items-center gap-3">
+                {/* Section 1: Grands Partenaires (mur de fiches façon carnet, pas une grille SaaS) */}
+                <div className="mb-24">
+                    <h2 className="text-xl sm:text-3xl font-display text-[#2A082D] tracking-tight mb-10 flex items-center gap-3">
                         <Building2 className="text-[#EC602B]" size={26} />
                         <span>Grands Partenaires & Entreprises</span>
                     </h2>
 
-                    <div className="flex flex-wrap justify-center gap-6">
-                        {majorPartners.map((partner) => (
-                            <div
-                                key={partner.name}
-                                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm bg-white border border-[#6F2B75]/15 rounded-organic-sm p-6 flex flex-col justify-between shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 group will-change-transform"
-                            >
-                                <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-organic-sm border border-[#6F2B75]/10 group-hover:bg-[#ECDDFD]/30 transition-colors">
-                                    <img
-                                        src={partner.logo}
-                                        alt={`Logo officiel de l'entreprise partenaire ${partner.name} – Mécénat Phœnix Égalité des Chances Marseille`}
-                                        className="max-h-14 max-w-[85%] object-contain filter transition-all group-hover:scale-105"
-                                    />
+                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-12 pattern-notebook-grid rounded-organic py-10 px-4 sm:px-8">
+                        {majorPartners.map((partner, i) => {
+                            const variant = CARD_VARIANTS[i % CARD_VARIANTS.length];
+                            return (
+                                <div
+                                    key={partner.name}
+                                    className={`relative group w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm ${variant.rotation} hover:rotate-0 transition-transform duration-300`}
+                                >
+                                    <MaskingTape variant={variant.tape} angle={variant.angle} className="-top-3 left-1/2 -translate-x-1/2 z-30" />
+                                    <div className="bg-white border border-[#6F2B75]/15 rounded-organic-sm card-polaroid p-6 flex flex-col justify-between will-change-transform h-full">
+                                        <div className="h-22 w-full flex items-center justify-center p-3 mb-4 bg-[#FFFBF4] rounded-organic-sm border border-[#6F2B75]/10 group-hover:bg-[#ECDDFD]/30 transition-colors">
+                                            <img
+                                                src={partner.logo}
+                                                alt={`Logo officiel de l'entreprise partenaire ${partner.name} – Mécénat Phœnix Égalité des Chances Marseille`}
+                                                className="max-h-14 max-w-[85%] object-contain filter transition-all group-hover:scale-105"
+                                            />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-display text-[#2A082D] text-base mb-1 group-hover:text-[#EC602B] transition-colors">
+                                                {partner.name}
+                                            </h3>
+                                            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                                                {partner.desc}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-display text-[#2A082D] text-base mb-1 group-hover:text-[#EC602B] transition-colors">
-                                        {partner.name}
-                                    </h3>
-                                    <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                                        {partner.desc}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -199,18 +241,7 @@ export function Partners() {
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                         {otherPartners.map((item) => (
-                            <div
-                                key={item.name}
-                                className="bg-white border border-[#6F2B75]/15 rounded-organic-sm p-4 text-center flex flex-col items-center justify-center shadow-phoenix-colored hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 will-change-transform"
-                            >
-                                <div className="w-11 h-11 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center mb-2.5 shadow-soft">
-                                    <item.icon size={20} />
-                                </div>
-                                <p className="font-display text-sm text-[#2A082D] leading-snug">{item.name}</p>
-                                <span className="text-[10px] font-school font-bold text-slate-500 mt-1 uppercase tracking-wider">
-                                    {item.category}
-                                </span>
-                            </div>
+                            <CultureBadge key={item.name} item={item} />
                         ))}
                     </div>
                 </div>

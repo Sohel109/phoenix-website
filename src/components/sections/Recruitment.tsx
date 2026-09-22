@@ -1,4 +1,6 @@
 import { ArrowRight, Users, GraduationCap, Briefcase } from 'lucide-react';
+import { MaskingTape, HandDrawnCircle } from '../common/HandDrawnElements';
+import { useDrawnOnInteract } from '../../hooks/useDrawnOnInteract';
 
 export function Recruitment() {
     return (
@@ -27,11 +29,11 @@ export function Recruitment() {
                         </p>
                     </div>
 
-                    {/* Cards Grid */}
-                    <div className="grid md:grid-cols-3 gap-6 mb-10 sm:mb-12">
-                        <Card icon={Users} title="Esprit d'Équipe" description="Intégrez une famille soudée et passionnée par l'impact social." />
-                        <Card icon={Briefcase} title="Compétences" description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante." />
-                        <Card icon={GraduationCap} title="Engagement" description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais." />
+                    {/* Cards Grid — fiches de recrutement façon carnet, légèrement désalignées */}
+                    <div className="grid md:grid-cols-3 gap-x-6 gap-y-10 mb-12 sm:mb-14 pt-3">
+                        <Card icon={Users} title="Esprit d'Équipe" description="Intégrez une famille soudée et passionnée par l'impact social." tape="warm" angle="left" rotation="-rotate-1" />
+                        <Card icon={Briefcase} title="Compétences" description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante." tape="lilac" angle="center" rotation="rotate-[0.5deg]" />
+                        <Card icon={GraduationCap} title="Engagement" description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais." tape="warm" angle="right" rotation="rotate-1" />
                     </div>
 
                     {/* CTA */}
@@ -45,9 +47,12 @@ export function Recruitment() {
                             <span>Postuler Maintenant</span>
                             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <p className="mt-4 text-xs font-school text-slate-500 uppercase tracking-widest">
-                            Prochaine session de recrutement : Octobre 2026
-                        </p>
+                        <div className="mt-5 inline-flex">
+                            <span className="badge-stamp text-[9px] -rotate-2">
+                                <span className="text-[#6F2B75] font-extrabold text-[8px]">PROCHAINE SESSION</span>
+                                <span className="text-[#EC602B] font-black text-[10px]">OCTOBRE 2026</span>
+                            </span>
+                        </div>
                     </div>
 
                 </div>
@@ -56,14 +61,23 @@ export function Recruitment() {
     );
 }
 
-function Card({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
+function Card({ icon: Icon, title, description, tape, angle, rotation }: { icon: any, title: string, description: string, tape: 'warm' | 'lilac', angle: 'left' | 'right' | 'center', rotation: string }) {
+    // Seule animation : le cercle au feutre qui se dessine autour de l'icône (survol desktop / tap mobile).
+    const { isDrawn, interactionProps } = useDrawnOnInteract();
+
     return (
-        <div className="bg-white border border-[#6F2B75]/15 p-8 rounded-organic-sm hover:shadow-phoenix-colored-lg hover:-translate-y-2 transition-all duration-300 text-center group shadow-phoenix-colored flex flex-col items-center will-change-transform">
-            <div className="w-14 h-14 mx-auto bg-[#ECDDFD]/50 text-[#6F2B75] rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#6F2B75] group-hover:text-white transition-all duration-300 border border-[#6F2B75]/15 shadow-soft">
-                <Icon size={24} strokeWidth={1.8} />
+        <div className={`relative ${rotation}`} {...interactionProps}>
+            <MaskingTape variant={tape} angle={angle} className="-top-3 left-1/2 -translate-x-1/2 z-30" />
+            <div className="bg-white border border-[#6F2B75]/15 p-8 rounded-organic-sm card-polaroid text-center flex flex-col items-center will-change-transform h-full">
+                <div className="relative w-14 h-14 mx-auto flex items-center justify-center mb-6">
+                    <HandDrawnCircle stroke="#EC602B" strokeWidth={2.2} className="inset-0 w-full h-full" animated drawn={isDrawn} />
+                    <div className="w-11 h-11 rounded-full bg-white text-[#2A082D] flex items-center justify-center border border-[#2A082D]/10 shadow-soft">
+                        <Icon size={20} strokeWidth={1.8} />
+                    </div>
+                </div>
+                <h3 className="text-base font-school font-bold text-phoenix-dark mb-2 uppercase tracking-wide">{title}</h3>
+                <p className="text-sm font-sans text-slate-600 leading-relaxed font-normal">{description}</p>
             </div>
-            <h3 className="text-base font-school font-bold text-phoenix-dark mb-2 uppercase tracking-wide">{title}</h3>
-            <p className="text-sm font-sans text-slate-600 leading-relaxed font-normal">{description}</p>
         </div>
     );
 }

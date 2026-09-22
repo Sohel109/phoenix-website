@@ -16,7 +16,7 @@ export function MaskingTape({
     const angleClass = {
         left: '-rotate-2 sm:-rotate-3',
         right: 'rotate-2 sm:rotate-3',
-        center: '-rotate-0.5'
+        center: '-rotate-[0.5deg]'
     }[angle];
 
     // IDs uniques de dégradés pour le SVG
@@ -84,6 +84,10 @@ interface HandDrawnCircleProps {
     stroke?: string;
     className?: string;
     strokeWidth?: number;
+    /** Si true, le tracé se dessine progressivement (feutre qui trace) au lieu d'être visible en permanence. */
+    animated?: boolean;
+    /** Avec animated=true : contrôle l'état dessiné (true) / non-dessiné (false) du tracé. */
+    drawn?: boolean;
 }
 
 /**
@@ -93,7 +97,9 @@ interface HandDrawnCircleProps {
 export function HandDrawnCircle({
     stroke = '#EC602B',
     strokeWidth = 2.5,
-    className = ''
+    className = '',
+    animated = false,
+    drawn = true,
 }: HandDrawnCircleProps) {
     return (
         <svg
@@ -112,8 +118,14 @@ export function HandDrawnCircle({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
+                pathLength={animated ? 100 : undefined}
                 style={{
-                    filter: 'drop-shadow(0px 1px 2px rgba(236, 96, 43, 0.25))'
+                    filter: 'drop-shadow(0px 1px 2px rgba(236, 96, 43, 0.25))',
+                    ...(animated && {
+                        strokeDasharray: 100,
+                        strokeDashoffset: drawn ? 0 : 100,
+                        transition: 'stroke-dashoffset 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
+                    }),
                 }}
             />
         </svg>
