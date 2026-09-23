@@ -738,18 +738,24 @@ export function Association() {
                                                 <h4 className="text-sm font-display text-[#2A082D] truncate">
                                                     {pole.title}
                                                 </h4>
-                                                <span className="text-xs text-[#6F2B75] font-school font-bold flex items-center gap-1.5 truncate">
-                                                    {pole.lead.photo ? (
-                                                        <img
-                                                            src={pole.lead.photo}
-                                                            alt={`Photo de ${pole.lead.name}, responsable du ${pole.title}`}
-                                                            className="w-4 h-4 rounded-full object-cover shrink-0"
-                                                        />
-                                                    ) : (
-                                                        <span className="w-4 h-4 rounded-full bg-[#ECDDFD] shrink-0" />
-                                                    )}
-                                                    <span className="truncate">{pole.lead.name}</span>
-                                                </span>
+                                                {pole.lead.name.trim() ? (
+                                                    <span className="text-xs text-[#6F2B75] font-school font-bold flex items-center gap-1.5 truncate">
+                                                        {pole.lead.photo ? (
+                                                            <img
+                                                                src={pole.lead.photo}
+                                                                alt={`Photo de ${pole.lead.name}, responsable du ${pole.title}`}
+                                                                className="w-4 h-4 rounded-full object-cover shrink-0"
+                                                            />
+                                                        ) : (
+                                                            <span className="w-4 h-4 rounded-full bg-[#ECDDFD] shrink-0" />
+                                                        )}
+                                                        <span className="truncate">{pole.lead.name}</span>
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xs text-[#6F2B75] font-school font-bold truncate">
+                                                        {pole.members.length} chargé{pole.members.length > 1 ? 's' : ''} de mission
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className="flex items-center gap-1.5 shrink-0">
                                                 {canEdit && (
@@ -782,7 +788,9 @@ export function Association() {
                                                 <div className="pt-2 border-t border-[#ECDDFD]">
                                                     <strong className="text-[#6F2B75] block mb-2.5">Équipe du pôle :</strong>
                                                     <div className="grid grid-cols-3 gap-2.5">
-                                                        <PoleMemberCard person={pole.lead} poleTitle={pole.title} isLead />
+                                                        {pole.lead.name.trim() && (
+                                                            <PoleMemberCard person={pole.lead} poleTitle={pole.title} isLead />
+                                                        )}
                                                         {pole.members.map((member) => (
                                                             <PoleMemberCard key={member.id} person={member} poleTitle={pole.title} />
                                                         ))}
@@ -1066,10 +1074,6 @@ export function Association() {
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                if (!poleLead.name.trim()) {
-                                    alert("Le nom du responsable est obligatoire.");
-                                    return;
-                                }
                                 if (poleMembersList.some(m => !m.name.trim())) {
                                     alert("Chaque membre doit avoir un nom (ou supprimez la ligne vide).");
                                     return;
@@ -1093,7 +1097,7 @@ export function Association() {
                         >
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                    Responsable de Pôle (Lead) *
+                                    Responsable de Pôle (optionnel)
                                 </label>
                                 <div className="flex items-start gap-2.5 p-2.5 rounded-lg border border-slate-200 bg-slate-50">
                                     <label className="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-slate-200 border border-slate-300 flex items-center justify-center cursor-pointer relative group">
@@ -1125,10 +1129,9 @@ export function Association() {
                                     <div className="flex-grow space-y-1.5 min-w-0">
                                         <input
                                             type="text"
-                                            required
                                             value={poleLead.name}
                                             onChange={(e) => setPoleLead({ ...poleLead, name: e.target.value })}
-                                            placeholder="Ex: Sohel (Responsable)"
+                                            placeholder="Laisser vide si pas de responsable dédié"
                                             className="w-full px-2.5 py-1.5 rounded-md border border-slate-300 text-xs font-semibold focus:border-orange-500 focus:outline-hidden"
                                         />
                                         <input
@@ -1140,7 +1143,7 @@ export function Association() {
                                         />
                                     </div>
                                 </div>
-                                <p className="text-[11px] text-slate-500 mt-1">Nom et titre affichés sur l'en-tête du pôle.</p>
+                                <p className="text-[11px] text-slate-500 mt-1">Si le pôle n'a pas de responsable dédié, laissez ce champ vide.</p>
                             </div>
 
                             <div>
