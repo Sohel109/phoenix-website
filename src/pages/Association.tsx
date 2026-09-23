@@ -35,6 +35,64 @@ import {
 
 const LOCAL_STORAGE_KEY = 'phoenix_bureau_members_v1';
 
+function getInitials(name: string): string {
+    // Retire les précisions entre parenthèses (ex: "Sohel (Responsable)" -> "Sohel")
+    const cleanName = name.split('(')[0].trim();
+    return cleanName
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0]?.toUpperCase())
+        .join('') || '?';
+}
+
+/**
+ * Carte membre d'un pôle : photo bien visible (pas une micro-pastille), nom, LinkedIn.
+ * Le responsable reçoit un liseré orange + une étiquette pour se distinguer des chargés de mission.
+ */
+function PoleMemberCard({ person, poleTitle, isLead = false }: { person: PoleMember; poleTitle: string; isLead?: boolean }) {
+    const content = (
+        <div className="flex flex-col items-center text-center gap-1.5 p-2.5 rounded-xl bg-white border border-[#6F2B75]/15 hover:border-[#EC602B]/50 hover:shadow-phoenix-colored transition-all h-full">
+            <div className={`relative w-14 h-14 rounded-full overflow-hidden shrink-0 shadow-soft ${isLead ? 'ring-2 ring-[#EC602B] ring-offset-2' : 'ring-1 ring-[#6F2B75]/10'}`}>
+                {person.photo ? (
+                    <img
+                        src={person.photo}
+                        alt={`Photo de ${person.name}, ${isLead ? 'responsable' : 'membre'} du pôle ${poleTitle}`}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center text-base font-bold">
+                        {getInitials(person.name)}
+                    </div>
+                )}
+            </div>
+            <div className="min-w-0 w-full">
+                <p className="text-xs font-bold text-[#2A082D] truncate">{person.name.split('(')[0].trim() || 'Sans nom'}</p>
+                {isLead && (
+                    <span className="text-[9px] font-school font-bold uppercase tracking-wider text-[#EC602B]">Responsable</span>
+                )}
+            </div>
+            {person.linkedin && <Linkedin size={13} className="text-[#6F2B75] shrink-0" />}
+        </div>
+    );
+
+    if (person.linkedin) {
+        return (
+            <a
+                href={person.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="block"
+            >
+                {content}
+            </a>
+        );
+    }
+
+    return content;
+}
+
 const associationBreadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -722,52 +780,13 @@ export function Association() {
                                                     {pole.description}
                                                 </p>
                                                 <div className="pt-2 border-t border-[#ECDDFD]">
-                                                    <strong className="text-[#6F2B75] block mb-2">Membres &amp; Chargés :</strong>
-                                                    {pole.members.length === 0 ? (
-                                                        <span className="text-slate-500 font-medium">Aucun membre renseigné.</span>
-                                                    ) : (
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {pole.members.map((member) => {
-                                                                const initials = member.name
-                                                                    .split(' ')
-                                                                    .filter(Boolean)
-                                                                    .slice(0, 2)
-                                                                    .map(w => w[0]?.toUpperCase())
-                                                                    .join('') || '?';
-                                                                const chip = (
-                                                                    <span className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-white border border-[#6F2B75]/15 shadow-soft">
-                                                                        {member.photo ? (
-                                                                            <img
-                                                                                src={member.photo}
-                                                                                alt={`Photo de ${member.name}, membre du pôle ${pole.title}`}
-                                                                                className="w-6 h-6 rounded-full object-cover shrink-0"
-                                                                            />
-                                                                        ) : (
-                                                                            <span className="w-6 h-6 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center text-[10px] font-bold shrink-0">
-                                                                                {initials}
-                                                                            </span>
-                                                                        )}
-                                                                        <span className="font-medium text-[#2A082D]">{member.name || 'Sans nom'}</span>
-                                                                        {member.linkedin && <Linkedin size={11} className="text-[#6F2B75] shrink-0" />}
-                                                                    </span>
-                                                                );
-                                                                return member.linkedin ? (
-                                                                    <a
-                                                                        key={member.id}
-                                                                        href={member.linkedin}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                        className="hover:opacity-80 transition-opacity"
-                                                                    >
-                                                                        {chip}
-                                                                    </a>
-                                                                ) : (
-                                                                    <span key={member.id}>{chip}</span>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    )}
+                                                    <strong className="text-[#6F2B75] block mb-2.5">Équipe du pôle :</strong>
+                                                    <div className="grid grid-cols-3 gap-2.5">
+                                                        <PoleMemberCard person={pole.lead} poleTitle={pole.title} isLead />
+                                                        {pole.members.map((member) => (
+                                                            <PoleMemberCard key={member.id} person={member} poleTitle={pole.title} />
+                                                        ))}
+                                                    </div>
                                                 </div>
                                                 {canEdit && (
                                                     <div className="pt-2 flex justify-end">
