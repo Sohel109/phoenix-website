@@ -52,8 +52,8 @@ function getInitials(name: string): string {
  */
 function PoleMemberCard({ person, poleTitle, isLead = false }: { person: PoleMember; poleTitle: string; isLead?: boolean }) {
     const content = (
-        <div className="flex flex-col items-center text-center gap-1.5 p-2.5 rounded-xl bg-white border border-[#6F2B75]/15 hover:border-[#EC602B]/50 hover:shadow-phoenix-colored transition-all h-full">
-            <div className={`relative w-14 h-14 rounded-full overflow-hidden shrink-0 shadow-soft ${isLead ? 'ring-2 ring-[#EC602B] ring-offset-2' : 'ring-1 ring-[#6F2B75]/10'}`}>
+        <div className="flex flex-col items-center text-center gap-1.5 p-2.5 rounded-xl bg-white border border-[#6F2B75]/15 hover:border-[#EC602B]/50 hover:shadow-phoenix-colored transition-all h-full overflow-hidden">
+            <div className={`w-14 h-14 rounded-full overflow-hidden shrink-0 shadow-soft ${isLead ? 'border-[3px] border-[#EC602B]' : 'border border-[#6F2B75]/10'}`}>
                 {person.photo ? (
                     <img
                         src={person.photo}
@@ -69,7 +69,7 @@ function PoleMemberCard({ person, poleTitle, isLead = false }: { person: PoleMem
             <div className="min-w-0 w-full">
                 <p className="text-xs font-bold text-[#2A082D] truncate">{person.name.split('(')[0].trim() || 'Sans nom'}</p>
                 {isLead && (
-                    <span className="text-[9px] font-school font-bold uppercase tracking-wider text-[#EC602B]">Responsable</span>
+                    <span className="text-[8px] font-school font-bold uppercase text-[#EC602B] block truncate">Responsable</span>
                 )}
             </div>
             {person.linkedin && <Linkedin size={13} className="text-[#6F2B75] shrink-0" />}
@@ -727,7 +727,7 @@ export function Association() {
                                 return (
                                     <div
                                         key={pole.id}
-                                        className="rounded-organic-sm border border-[#6F2B75]/15 bg-white shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-all flex flex-col justify-between overflow-hidden"
+                                        className="self-start rounded-organic-sm border border-[#6F2B75]/15 bg-white shadow-phoenix-colored hover:shadow-phoenix-colored-lg transition-all flex flex-col justify-between overflow-hidden"
                                     >
                                         <button
                                             type="button"
@@ -787,7 +787,7 @@ export function Association() {
                                                 </p>
                                                 <div className="pt-2 border-t border-[#ECDDFD]">
                                                     <strong className="text-[#6F2B75] block mb-2.5">Équipe du pôle :</strong>
-                                                    <div className="grid grid-cols-3 gap-2.5">
+                                                    <div className="grid grid-cols-2 gap-2.5">
                                                         {pole.lead.name.trim() && (
                                                             <PoleMemberCard person={pole.lead} poleTitle={pole.title} isLead />
                                                         )}
