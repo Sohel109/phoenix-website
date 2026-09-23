@@ -259,14 +259,43 @@ export function Association() {
             .catch(() => {});
     }, []);
 
-    const savePoles = async (updated: PoleTeam[]) => {
-        setPoles(updated);
+    // Envoie une photo en attente (base64) sur GitHub pour qu'elle devienne un vrai
+    // fichier persistant, visible par tout le monde. En local (endpoint absent) ou
+    // si l'upload échoue, on garde le base64 tel quel (server.js le gère en local).
+    const persistPhotoIfNeeded = async (person: PoleMember): Promise<PoleMember> => {
+        if (!person.photo || !person.photo.startsWith('data:image/')) return person;
         try {
-            localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(updated));
+            const res = await fetch('/api/upload-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dataUrl: person.photo, folder: 'poles', id: person.id }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data?.success && data.path) {
+                    return { ...person, photo: data.path };
+                }
+            }
+        } catch {
+            /* pas grave : on retombe sur le base64 */
+        }
+        return person;
+    };
+
+    const savePoles = async (updated: PoleTeam[]) => {
+        const resolved = await Promise.all(updated.map(async (pole) => ({
+            ...pole,
+            lead: await persistPhotoIfNeeded(pole.lead),
+            members: await Promise.all(pole.members.map(persistPhotoIfNeeded)),
+        })));
+
+        setPoles(resolved);
+        try {
+            localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(resolved));
             const res = await fetch('/api/team/poles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ poles: updated })
+                body: JSON.stringify({ poles: resolved })
             });
             if (res.ok) {
                 setToastMessage('✅ Pôle enregistré avec succès !');

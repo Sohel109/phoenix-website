@@ -42,7 +42,21 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
-  
+
+  // Stockage générique clé/valeur (JSON) pour le contenu éditable du site :
+  // pôles, membres du Bureau, documents, événements... un "key" par type de contenu.
+  if (action === 'getSiteContent') {
+    try {
+      var key = e.parameter.key;
+      var value = getSiteContentInternal(key);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, key: key, value: value }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Action inconnue" }))
       .setMimeType(ContentService.MimeType.JSON);
 }
@@ -51,7 +65,18 @@ function doGet(e) {
 function doPost(e) {
   var postData = JSON.parse(e.postData.contents);
   var action = postData.action;
-  
+
+  if (action === 'saveSiteContent') {
+    try {
+      saveSiteContentInternal(postData.key, postData.value);
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // Si c'est une action de planning
   if (action === 'syncBooking') {
     try {
@@ -474,6 +499,42 @@ function getOrCreateSheet(name, headers) {
     sheet.appendRow(headers);
   }
   return sheet;
+}
+
+// ==========================================
+// Stockage générique "SiteContent" (clé -> JSON) : pôles, membres du Bureau,
+// documents, événements... Une ligne par clé, valeur en JSON dans la colonne B.
+// ==========================================
+
+function getSiteContentInternal(key) {
+  var sheet = getOrCreateSheet("SiteContent", ["key", "value", "updatedAt"]);
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] && data[i][0].toString() === key) {
+      try {
+        return JSON.parse(data[i][1]);
+      } catch (err) {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+function saveSiteContentInternal(key, value) {
+  var sheet = getOrCreateSheet("SiteContent", ["key", "value", "updatedAt"]);
+  var data = sheet.getDataRange().getValues();
+  var json = JSON.stringify(value);
+  var now = new Date().toISOString();
+
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] && data[i][0].toString() === key) {
+      sheet.getRange(i + 1, 2).setValue(json);
+      sheet.getRange(i + 1, 3).setValue(now);
+      return;
+    }
+  }
+  sheet.appendRow([key, json, now]);
 }
 
 // Fonction interne pour lire toutes les tables de planning
