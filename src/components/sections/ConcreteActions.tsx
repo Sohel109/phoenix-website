@@ -11,7 +11,7 @@ const culturalTripPhotos = [
         caption: "Voyage culturel avec les lycéens face à la Méditerranée"
     },
     {
-        src: "/images/home/voyage-culturel-2.jpg",
+        src: "/images/home/voyage-culturel-2.webp",
         alt: "Sortie de groupe Phoenix sous les pins parasols",
         caption: "Découverte du patrimoine et grands voyages de fin d'année"
     },
