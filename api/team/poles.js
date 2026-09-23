@@ -33,20 +33,22 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
-            const { poles } = req.body;
-            if (!Array.isArray(poles)) {
-                return res.status(400).json({ success: false, error: 'Format invalide: poles doit être un tableau' });
+            const { pole } = req.body;
+            if (!pole || typeof pole !== 'object' || !pole.id) {
+                return res.status(400).json({ success: false, error: 'Format invalide: pole doit être un objet avec un id' });
             }
+            // Fusion atomique côté Apps Script (sous verrou) : évite qu'une sauvegarde
+            // n'écrase le travail fait entre-temps sur un autre pôle par quelqu'un d'autre.
             const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'saveSiteContent', key: 'poles', value: poles }),
+                body: JSON.stringify({ action: 'updateSiteContentEntry', key: 'poles', entryId: pole.id, entry: pole }),
             });
             const data = await response.json();
             if (!data.success) {
                 return res.status(500).json({ success: false, error: data.error || 'Erreur Google Apps Script' });
             }
-            return res.status(200).json({ success: true, poles });
+            return res.status(200).json({ success: true, poles: data.value || [] });
         } catch (error) {
             return res.status(500).json({ success: false, error: error.message });
         }

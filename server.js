@@ -124,9 +124,9 @@ app.get('/api/team/poles', (req, res) => {
 // POST /api/team/poles
 app.post('/api/team/poles', (req, res) => {
     try {
-        const { poles } = req.body;
-        if (!Array.isArray(poles)) {
-            return res.status(400).json({ success: false, error: 'Format invalide: poles doit être un tableau' });
+        const { pole } = req.body;
+        if (!pole || typeof pole !== 'object' || !pole.id) {
+            return res.status(400).json({ success: false, error: 'Format invalide: pole doit être un objet avec un id' });
         }
 
         const polesImagesDir = path.join(__dirname, 'public', 'images', 'poles');
@@ -155,19 +155,28 @@ app.post('/api/team/poles', (req, res) => {
             return person;
         };
 
-        const processedPoles = poles.map((pole) => {
-            const lead = pole.lead ? processPersonPhoto(pole.lead, pole.id) : pole.lead;
-            const members = Array.isArray(pole.members)
-                ? pole.members.map((member) => processPersonPhoto(member, pole.id))
-                : pole.members;
+        const lead = pole.lead ? processPersonPhoto(pole.lead, pole.id) : pole.lead;
+        const members = Array.isArray(pole.members)
+            ? pole.members.map((member) => processPersonPhoto(member, pole.id))
+            : pole.members;
+        const processedPole = { ...pole, lead, members };
 
-            return { ...pole, lead, members };
-        });
-
+        // Fusionne ce pôle dans la liste actuelle lue depuis le disque (pas depuis ce que
+        // le navigateur avait en mémoire), pour éviter d'écraser une modif faite entre-temps.
         const dataFilePath = path.join(__dirname, 'src', 'data', 'poles.json');
-        fs.writeFileSync(dataFilePath, JSON.stringify(processedPoles, null, 2), 'utf-8');
-        console.log(`💾 ${processedPoles.length} pôles enregistrés dans src/data/poles.json`);
-        return res.json({ success: true, message: 'Pôles mis à jour avec succès', poles: processedPoles });
+        const currentPoles = fs.existsSync(dataFilePath)
+            ? JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'))
+            : [];
+        const idx = currentPoles.findIndex((p) => p.id === processedPole.id);
+        if (idx >= 0) {
+            currentPoles[idx] = processedPole;
+        } else {
+            currentPoles.push(processedPole);
+        }
+
+        fs.writeFileSync(dataFilePath, JSON.stringify(currentPoles, null, 2), 'utf-8');
+        console.log(`💾 Pôle "${processedPole.id}" enregistré dans src/data/poles.json`);
+        return res.json({ success: true, message: 'Pôle mis à jour avec succès', poles: currentPoles });
     } catch (err) {
         console.error('Erreur sauvegarde pôles:', err);
         return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des pôles' });

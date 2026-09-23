@@ -282,22 +282,37 @@ export function Association() {
         return person;
     };
 
-    const savePoles = async (updated: PoleTeam[]) => {
-        const resolved = await Promise.all(updated.map(async (pole) => ({
-            ...pole,
-            lead: await persistPhotoIfNeeded(pole.lead),
-            members: await Promise.all(pole.members.map(persistPhotoIfNeeded)),
-        })));
+    // N'enregistre QUE le pôle modifié : le serveur (Apps Script, sous verrou)
+    // le fusionne dans la liste à jour côté serveur, au lieu que le navigateur
+    // renvoie tout le tableau tel qu'il l'avait en mémoire — ce qui, si deux
+    // pôles étaient édités à quelques secondes d'intervalle, pouvait faire
+    // qu'une sauvegarde écrase le travail de la précédente.
+    const savePoles = async (updatedPole: PoleTeam) => {
+        const resolvedPole: PoleTeam = {
+            ...updatedPole,
+            lead: await persistPhotoIfNeeded(updatedPole.lead),
+            members: await Promise.all(updatedPole.members.map(persistPhotoIfNeeded)),
+        };
 
-        setPoles(resolved);
+        // Mise à jour optimiste de l'affichage local
+        const optimistic = poles.map(p => (p.id === resolvedPole.id ? resolvedPole : p));
+        setPoles(optimistic);
+        localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(optimistic));
+
         try {
-            localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(resolved));
             const res = await fetch('/api/team/poles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ poles: resolved })
+                body: JSON.stringify({ pole: resolvedPole })
             });
             if (res.ok) {
+                const data = await res.json().catch(() => null);
+                // Le serveur renvoie la liste à jour après fusion : on s'y aligne
+                // pour rester synchronisé avec ce que les autres ont sauvegardé.
+                if (data?.success && Array.isArray(data.poles) && data.poles.length > 0) {
+                    setPoles(data.poles);
+                    localStorage.setItem(POLES_STORAGE_KEY, JSON.stringify(data.poles));
+                }
                 setToastMessage('✅ Pôle enregistré avec succès !');
             } else {
                 setToastMessage('Pôle enregistré dans le navigateur');
@@ -1108,18 +1123,14 @@ export function Association() {
                                     return;
                                 }
 
-                                const updatedPoles = poles.map(p =>
-                                    p.id === editingPole.id
-                                        ? {
-                                              ...p,
-                                              lead: { ...poleLead, name: poleLead.name.trim() },
-                                              members: poleMembersList.map(m => ({ ...m, name: m.name.trim() })),
-                                              description: poleDesc.trim() || p.description
-                                          }
-                                        : p
-                                );
+                                const updatedPole: PoleTeam = {
+                                    ...editingPole,
+                                    lead: { ...poleLead, name: poleLead.name.trim() },
+                                    members: poleMembersList.map(m => ({ ...m, name: m.name.trim() })),
+                                    description: poleDesc.trim() || editingPole.description
+                                };
 
-                                savePoles(updatedPoles);
+                                savePoles(updatedPole);
                                 setEditingPole(null);
                             }}
                             className="space-y-4 max-h-[70vh] overflow-y-auto pr-1"

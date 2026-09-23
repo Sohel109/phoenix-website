@@ -67,13 +67,35 @@ function doPost(e) {
   var action = postData.action;
 
   if (action === 'saveSiteContent') {
+    var lock1 = LockService.getScriptLock();
     try {
+      lock1.waitLock(15000);
       saveSiteContentInternal(postData.key, postData.value);
       return ContentService.createTextOutput(JSON.stringify({ success: true }))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (err) {
       return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
         .setMimeType(ContentService.MimeType.JSON);
+    } finally {
+      lock1.releaseLock();
+    }
+  }
+
+  // Met à jour UN SEUL élément (ex: un pôle) au sein du tableau stocké sous "key",
+  // en le lisant/fusionnant/écrivant sous verrou pour éviter qu'une sauvegarde
+  // n'écrase le travail d'une autre personne en train d'éditer autre chose en même temps.
+  if (action === 'updateSiteContentEntry') {
+    var lock2 = LockService.getScriptLock();
+    try {
+      lock2.waitLock(15000);
+      var updatedList = updateSiteContentEntryInternal(postData.key, postData.entryId, postData.entry);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, value: updatedList }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } finally {
+      lock2.releaseLock();
     }
   }
 
@@ -535,6 +557,27 @@ function saveSiteContentInternal(key, value) {
     }
   }
   sheet.appendRow([key, json, now]);
+}
+
+// Lit la liste actuelle sous "key", remplace (ou ajoute) l'élément dont l'id
+// correspond à entryId, puis réécrit la liste complète. Doit être appelé sous
+// verrou (voir action "updateSiteContentEntry" dans doPost) pour être atomique.
+function updateSiteContentEntryInternal(key, entryId, entry) {
+  var list = getSiteContentInternal(key);
+  if (!Array.isArray(list)) list = [];
+
+  var found = false;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] && list[i].id === entryId) {
+      list[i] = entry;
+      found = true;
+      break;
+    }
+  }
+  if (!found) list.push(entry);
+
+  saveSiteContentInternal(key, list);
+  return list;
 }
 
 // Fonction interne pour lire toutes les tables de planning
