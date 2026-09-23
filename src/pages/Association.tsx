@@ -25,11 +25,12 @@ import { usePlanning } from '../context/PlanningContext';
 import { SEO } from '../components/common/SEO';
 import { MaskingTape } from '../components/common/HandDrawnElements';
 import { 
-    defaultBureauMembers, 
+    defaultBureauMembers,
 
-    defaultPoles, 
+    defaultPoles,
     type BureauMember,
-    type PoleTeam
+    type PoleTeam,
+    type PoleMember
 } from '../data/teamData';
 
 const LOCAL_STORAGE_KEY = 'phoenix_bureau_members_v1';
@@ -161,16 +162,32 @@ export function Association() {
             const saved = localStorage.getItem(POLES_STORAGE_KEY);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                // Garde-fou de migration : un ancien cache "members: string[]" / "lead: string" ne doit pas être réutilisé
+                const isUpToDate = Array.isArray(parsed) && parsed.length > 0 && parsed.every(
+                    (p: PoleTeam) =>
+                        Array.isArray(p.members) && (p.members.length === 0 || typeof p.members[0] === 'object') &&
+                        typeof p.lead === 'object' && p.lead !== null
+                );
+                if (isUpToDate) return parsed;
             }
         } catch { /* fallback */ }
         return defaultPoles;
     });
 
     const [editingPole, setEditingPole] = useState<PoleTeam | null>(null);
-    const [poleLead, setPoleLead] = useState('');
-    const [poleMembers, setPoleMembers] = useState('');
+    const [poleLead, setPoleLead] = useState<PoleMember>({ id: '', name: '', photo: '', linkedin: '' });
+    const [poleMembersList, setPoleMembersList] = useState<PoleMember[]>([]);
     const [poleDesc, setPoleDesc] = useState('');
+
+    const addPoleMember = () => {
+        setPoleMembersList(list => [...list, { id: `membre-${Date.now()}`, name: '', photo: '', linkedin: '' }]);
+    };
+    const updatePoleMember = (id: string, patch: Partial<PoleMember>) => {
+        setPoleMembersList(list => list.map(m => (m.id === id ? { ...m, ...patch } : m)));
+    };
+    const removePoleMember = (id: string) => {
+        setPoleMembersList(list => list.filter(m => m.id !== id));
+    };
 
     useEffect(() => {
         fetch('/api/team/poles')
@@ -663,8 +680,17 @@ export function Association() {
                                                 <h4 className="text-sm font-display text-[#2A082D] truncate">
                                                     {pole.title}
                                                 </h4>
-                                                <span className="text-xs text-[#6F2B75] font-school font-bold block truncate">
-                                                    {pole.lead}
+                                                <span className="text-xs text-[#6F2B75] font-school font-bold flex items-center gap-1.5 truncate">
+                                                    {pole.lead.photo ? (
+                                                        <img
+                                                            src={pole.lead.photo}
+                                                            alt={`Photo de ${pole.lead.name}, responsable du ${pole.title}`}
+                                                            className="w-4 h-4 rounded-full object-cover shrink-0"
+                                                        />
+                                                    ) : (
+                                                        <span className="w-4 h-4 rounded-full bg-[#ECDDFD] shrink-0" />
+                                                    )}
+                                                    <span className="truncate">{pole.lead.name}</span>
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-1.5 shrink-0">
@@ -673,8 +699,8 @@ export function Association() {
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             setEditingPole(pole);
-                                                            setPoleLead(pole.lead);
-                                                            setPoleMembers(pole.members.join(', '));
+                                                            setPoleLead({ ...pole.lead });
+                                                            setPoleMembersList(pole.members.map(m => ({ ...m })));
                                                             setPoleDesc(pole.description);
                                                         }}
                                                         className="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#EC602B] transition-colors border border-orange-200 cursor-pointer"
@@ -695,8 +721,53 @@ export function Association() {
                                                 <p className="leading-relaxed font-normal">
                                                     {pole.description}
                                                 </p>
-                                                <div className="pt-2 border-t border-[#ECDDFD] font-medium text-slate-600">
-                                                    <strong className="text-[#6F2B75]">Membres &amp; Chargés :</strong> {pole.members.join(', ')}
+                                                <div className="pt-2 border-t border-[#ECDDFD]">
+                                                    <strong className="text-[#6F2B75] block mb-2">Membres &amp; Chargés :</strong>
+                                                    {pole.members.length === 0 ? (
+                                                        <span className="text-slate-500 font-medium">Aucun membre renseigné.</span>
+                                                    ) : (
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {pole.members.map((member) => {
+                                                                const initials = member.name
+                                                                    .split(' ')
+                                                                    .filter(Boolean)
+                                                                    .slice(0, 2)
+                                                                    .map(w => w[0]?.toUpperCase())
+                                                                    .join('') || '?';
+                                                                const chip = (
+                                                                    <span className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-white border border-[#6F2B75]/15 shadow-soft">
+                                                                        {member.photo ? (
+                                                                            <img
+                                                                                src={member.photo}
+                                                                                alt={`Photo de ${member.name}, membre du pôle ${pole.title}`}
+                                                                                className="w-6 h-6 rounded-full object-cover shrink-0"
+                                                                            />
+                                                                        ) : (
+                                                                            <span className="w-6 h-6 rounded-full bg-[#ECDDFD] text-[#6F2B75] flex items-center justify-center text-[10px] font-bold shrink-0">
+                                                                                {initials}
+                                                                            </span>
+                                                                        )}
+                                                                        <span className="font-medium text-[#2A082D]">{member.name || 'Sans nom'}</span>
+                                                                        {member.linkedin && <Linkedin size={11} className="text-[#6F2B75] shrink-0" />}
+                                                                    </span>
+                                                                );
+                                                                return member.linkedin ? (
+                                                                    <a
+                                                                        key={member.id}
+                                                                        href={member.linkedin}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        className="hover:opacity-80 transition-opacity"
+                                                                    >
+                                                                        {chip}
+                                                                    </a>
+                                                                ) : (
+                                                                    <span key={member.id}>{chip}</span>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 {canEdit && (
                                                     <div className="pt-2 flex justify-end">
@@ -704,8 +775,8 @@ export function Association() {
                                                             type="button"
                                                             onClick={() => {
                                                                 setEditingPole(pole);
-                                                                setPoleLead(pole.lead);
-                                                                setPoleMembers(pole.members.join(', '));
+                                                                setPoleLead({ ...pole.lead });
+                                                                setPoleMembersList(pole.members.map(m => ({ ...m })));
                                                                 setPoleDesc(pole.description);
                                                             }}
                                                             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#EC602B]/10 hover:bg-[#EC602B]/20 text-[#EC602B] font-school text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
@@ -976,22 +1047,21 @@ export function Association() {
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                if (!poleLead.trim()) {
+                                if (!poleLead.name.trim()) {
                                     alert("Le nom du responsable est obligatoire.");
                                     return;
                                 }
-
-                                const parsedMembers = poleMembers
-                                    .split(',')
-                                    .map(m => m.trim())
-                                    .filter(Boolean);
+                                if (poleMembersList.some(m => !m.name.trim())) {
+                                    alert("Chaque membre doit avoir un nom (ou supprimez la ligne vide).");
+                                    return;
+                                }
 
                                 const updatedPoles = poles.map(p =>
                                     p.id === editingPole.id
                                         ? {
                                               ...p,
-                                              lead: poleLead.trim(),
-                                              members: parsedMembers,
+                                              lead: { ...poleLead, name: poleLead.name.trim() },
+                                              members: poleMembersList.map(m => ({ ...m, name: m.name.trim() })),
                                               description: poleDesc.trim() || p.description
                                           }
                                         : p
@@ -1000,35 +1070,139 @@ export function Association() {
                                 savePoles(updatedPoles);
                                 setEditingPole(null);
                             }}
-                            className="space-y-4"
+                            className="space-y-4 max-h-[70vh] overflow-y-auto pr-1"
                         >
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                                     Responsable de Pôle (Lead) *
                                 </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={poleLead}
-                                    onChange={(e) => setPoleLead(e.target.value)}
-                                    placeholder="Ex: Sohel (Responsable)"
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-orange-500 focus:outline-hidden"
-                                />
+                                <div className="flex items-start gap-2.5 p-2.5 rounded-lg border border-slate-200 bg-slate-50">
+                                    <label className="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-slate-200 border border-slate-300 flex items-center justify-center cursor-pointer relative group">
+                                        {poleLead.photo ? (
+                                            <img src={poleLead.photo} alt={`Photo de ${poleLead.name || 'responsable du pôle'}`} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <Camera size={16} className="text-slate-400" />
+                                        )}
+                                        <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                            <Upload size={12} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (event) => {
+                                                        setPoleLead({ ...poleLead, photo: event.target?.result as string });
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                        />
+                                    </label>
+
+                                    <div className="flex-grow space-y-1.5 min-w-0">
+                                        <input
+                                            type="text"
+                                            required
+                                            value={poleLead.name}
+                                            onChange={(e) => setPoleLead({ ...poleLead, name: e.target.value })}
+                                            placeholder="Ex: Sohel (Responsable)"
+                                            className="w-full px-2.5 py-1.5 rounded-md border border-slate-300 text-xs font-semibold focus:border-orange-500 focus:outline-hidden"
+                                        />
+                                        <input
+                                            type="url"
+                                            value={poleLead.linkedin || ''}
+                                            onChange={(e) => setPoleLead({ ...poleLead, linkedin: e.target.value })}
+                                            placeholder="https://www.linkedin.com/in/... (optionnel)"
+                                            className="w-full px-2.5 py-1.5 rounded-md border border-slate-300 text-xs focus:border-orange-500 focus:outline-hidden"
+                                        />
+                                    </div>
+                                </div>
                                 <p className="text-[11px] text-slate-500 mt-1">Nom et titre affichés sur l'en-tête du pôle.</p>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                    Chargés de Mission & Membres
-                                </label>
-                                <input
-                                    type="text"
-                                    value={poleMembers}
-                                    onChange={(e) => setPoleMembers(e.target.value)}
-                                    placeholder="Ex: Maxime, Samy, Sarah"
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-orange-500 focus:outline-hidden"
-                                />
-                                <p className="text-[11px] text-slate-500 mt-1">Séparez les différents prénoms/noms par des virgules.</p>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                                        Chargés de Mission & Membres
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={addPoleMember}
+                                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#EC602B] hover:text-[#C44B1D] cursor-pointer"
+                                    >
+                                        <Plus size={13} />
+                                        <span>Ajouter un membre</span>
+                                    </button>
+                                </div>
+
+                                {poleMembersList.length === 0 && (
+                                    <p className="text-[11px] text-slate-500 italic mb-2">Aucun membre pour l'instant.</p>
+                                )}
+
+                                <div className="space-y-2.5">
+                                    {poleMembersList.map((member) => (
+                                        <div key={member.id} className="flex items-start gap-2.5 p-2.5 rounded-lg border border-slate-200 bg-slate-50">
+                                            {/* Avatar / upload photo */}
+                                            <label className="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-slate-200 border border-slate-300 flex items-center justify-center cursor-pointer relative group">
+                                                {member.photo ? (
+                                                    <img src={member.photo} alt={`Photo de ${member.name || 'membre du pôle'}`} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Camera size={16} className="text-slate-400" />
+                                                )}
+                                                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                                    <Upload size={12} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                </span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onload = (event) => {
+                                                                updatePoleMember(member.id, { photo: event.target?.result as string });
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+
+                                            <div className="flex-grow space-y-1.5 min-w-0">
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={member.name}
+                                                    onChange={(e) => updatePoleMember(member.id, { name: e.target.value })}
+                                                    placeholder="Prénom Nom"
+                                                    className="w-full px-2.5 py-1.5 rounded-md border border-slate-300 text-xs font-semibold focus:border-orange-500 focus:outline-hidden"
+                                                />
+                                                <input
+                                                    type="url"
+                                                    value={member.linkedin || ''}
+                                                    onChange={(e) => updatePoleMember(member.id, { linkedin: e.target.value })}
+                                                    placeholder="https://www.linkedin.com/in/... (optionnel)"
+                                                    className="w-full px-2.5 py-1.5 rounded-md border border-slate-300 text-xs focus:border-orange-500 focus:outline-hidden"
+                                                />
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => removePoleMember(member.id)}
+                                                className="shrink-0 p-1.5 rounded-md text-rose-500 hover:bg-rose-50 cursor-pointer mt-0.5"
+                                                title="Retirer ce membre"
+                                                aria-label="Retirer ce membre"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             <div>

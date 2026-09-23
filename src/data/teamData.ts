@@ -10,11 +10,18 @@ export interface BureauMember {
     linkedin?: string;
 }
 
+export interface PoleMember {
+    id: string;
+    name: string;
+    photo?: string;
+    linkedin?: string;
+}
+
 export interface PoleTeam {
     id: string;
     title: string;
-    lead: string;
-    members: string[];
+    lead: PoleMember;
+    members: PoleMember[];
     description: string;
 }
 

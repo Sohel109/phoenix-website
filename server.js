@@ -128,10 +128,46 @@ app.post('/api/team/poles', (req, res) => {
         if (!Array.isArray(poles)) {
             return res.status(400).json({ success: false, error: 'Format invalide: poles doit être un tableau' });
         }
+
+        const polesImagesDir = path.join(__dirname, 'public', 'images', 'poles');
+        if (!fs.existsSync(polesImagesDir)) {
+            fs.mkdirSync(polesImagesDir, { recursive: true });
+        }
+
+        // Traitement des photos (responsable + membres) de pôles si envoyées en base64
+        const processPersonPhoto = (person, poleId) => {
+            if (person && person.photo && typeof person.photo === 'string' && person.photo.startsWith('data:image/')) {
+                const match = person.photo.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+                if (match) {
+                    let ext = match[1].toLowerCase();
+                    if (ext === 'jpeg') ext = 'jpg';
+                    if (ext === 'svg+xml') ext = 'svg';
+                    const base64Data = match[2];
+                    const safeId = (person.id || 'membre').replace(/[^a-zA-Z0-9-_]/g, '');
+                    const filename = `${safeId}-${Date.now()}.${ext}`;
+                    const targetFile = path.join(polesImagesDir, filename);
+
+                    fs.writeFileSync(targetFile, Buffer.from(base64Data, 'base64'));
+                    console.log(`📸 Photo sauvegardée pour ${person.name} (pôle ${poleId}): /images/poles/${filename}`);
+                    return { ...person, photo: `/images/poles/${filename}` };
+                }
+            }
+            return person;
+        };
+
+        const processedPoles = poles.map((pole) => {
+            const lead = pole.lead ? processPersonPhoto(pole.lead, pole.id) : pole.lead;
+            const members = Array.isArray(pole.members)
+                ? pole.members.map((member) => processPersonPhoto(member, pole.id))
+                : pole.members;
+
+            return { ...pole, lead, members };
+        });
+
         const dataFilePath = path.join(__dirname, 'src', 'data', 'poles.json');
-        fs.writeFileSync(dataFilePath, JSON.stringify(poles, null, 2), 'utf-8');
-        console.log(`💾 ${poles.length} pôles enregistrés dans src/data/poles.json`);
-        return res.json({ success: true, message: 'Pôles mis à jour avec succès', poles });
+        fs.writeFileSync(dataFilePath, JSON.stringify(processedPoles, null, 2), 'utf-8');
+        console.log(`💾 ${processedPoles.length} pôles enregistrés dans src/data/poles.json`);
+        return res.json({ success: true, message: 'Pôles mis à jour avec succès', poles: processedPoles });
     } catch (err) {
         console.error('Erreur sauvegarde pôles:', err);
         return res.status(500).json({ success: false, error: 'Erreur lors de la sauvegarde des pôles' });
