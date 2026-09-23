@@ -5,6 +5,7 @@ import { MapPin, Users, ArrowLeft, Navigation, ArrowUpRight } from 'lucide-react
 import { projectsData, projectTypeColors, projectTypeLabels } from '../data/projectsData';
 import { useNavigate, Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
+import { MaskingTape } from '../components/common/HandDrawnElements';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icon in production
@@ -51,21 +52,32 @@ export function ProjectMap() {
         return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
     };
 
-    // Create custom minimalist marker icons
+    // Pin façon "épingle plantée sur la carte" (esprit carnet de terrain), avec ombre portée
     const createCustomIcon = (color: string) => {
         const svgIcon = `
-            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="12" fill="${color}" opacity="0.95"/>
-                <circle cx="16" cy="16" r="8" fill="white" opacity="0.35"/>
-                <circle cx="16" cy="16" r="5" fill="white"/>
+            <svg width="36" height="48" viewBox="0 0 36 48" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="pin-shadow" x="-60%" y="-20%" width="220%" height="180%">
+                        <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#2A082D" flood-opacity="0.38"/>
+                    </filter>
+                </defs>
+                <path
+                    filter="url(#pin-shadow)"
+                    d="M18 2C9.72 2 3 8.72 3 17c0 11.5 15 27.5 15 27.5S33 28.5 33 17c0-8.28-6.72-15-15-15z"
+                    fill="${color}"
+                    stroke="#FFFBF4"
+                    stroke-width="2.5"
+                />
+                <circle cx="18" cy="17" r="7" fill="#FFFBF4"/>
+                <circle cx="18" cy="17" r="3.2" fill="${color}"/>
             </svg>
         `;
 
         return new Icon({
             iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
-            iconSize: [32, 32],
-            iconAnchor: [16, 16],
-            popupAnchor: [0, -16],
+            iconSize: [36, 48],
+            iconAnchor: [18, 46],
+            popupAnchor: [0, -42],
         });
     };
 
@@ -122,10 +134,12 @@ export function ProjectMap() {
                 </div>
 
                 {/* Map */}
-                <div
-                    className="rounded-organic overflow-hidden border border-[#6F2B75]/20 shadow-phoenix-colored"
-                    style={{ height: '600px' }}
-                >
+                <div className="relative pt-3">
+                    <MaskingTape variant="lilac" angle="center" className="-top-0.5 left-1/2 -translate-x-1/2 z-[500]" />
+                    <div
+                        className="phoenix-map relative rounded-organic overflow-hidden border-2 border-white shadow-phoenix-colored-lg"
+                        style={{ height: '600px' }}
+                    >
                     <MapContainer
                         center={marseilleCenter}
                         zoom={12}
@@ -144,17 +158,21 @@ export function ProjectMap() {
                                 icon={createCustomIcon(projectTypeColors[project.type])}
                             >
                                 <Popup className="custom-popup">
-                                    <div className="p-3 max-w-xs font-sans">
-                                        <h3 className="font-school font-bold text-lg text-phoenix-dark mb-1">
+                                    <div className="max-w-xs font-sans">
+                                        {/* Bandeau coloré selon le type de projet */}
+                                        <div className="h-1.5 w-full" style={{ backgroundColor: projectTypeColors[project.type] }} />
+
+                                        <div className="p-4">
+                                        <h3 className="font-display text-xl text-phoenix-dark mb-1.5 leading-tight">
                                             {project.name}
                                         </h3>
 
-                                        <div className="flex items-center gap-2 mb-3">
+                                        <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-full" style={{ backgroundColor: `${projectTypeColors[project.type]}18` }}>
                                             <div
-                                                className="w-3 h-3 rounded-full"
+                                                className="w-2 h-2 rounded-full shrink-0"
                                                 style={{ backgroundColor: projectTypeColors[project.type] }}
                                             />
-                                            <span className="text-xs font-school uppercase tracking-wide text-slate-600">
+                                            <span className="text-[10px] font-school font-bold uppercase tracking-wide" style={{ color: projectTypeColors[project.type] }}>
                                                 {projectTypeLabels[project.type]}
                                             </span>
                                         </div>
@@ -197,11 +215,13 @@ export function ProjectMap() {
                                                 <span>Itinéraire</span>
                                             </a>
                                         </div>
+                                        </div>
                                     </div>
                                 </Popup>
                             </Marker>
                         ))}
                     </MapContainer>
+                    </div>
                 </div>
 
                 {/* Stats */}
