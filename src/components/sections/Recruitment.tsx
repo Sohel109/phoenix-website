@@ -1,4 +1,4 @@
-import { ArrowRight, Users, GraduationCap, Briefcase } from 'lucide-react';
+import { ArrowRight, Users, GraduationCap, Briefcase, Facebook } from 'lucide-react';
 import { MaskingTape, HandDrawnCircle } from '../common/HandDrawnElements';
 import { useDrawnOnInteract } from '../../hooks/useDrawnOnInteract';
 
@@ -27,26 +27,41 @@ export function Recruitment() {
                             Vous êtes étudiant à KEDGE Business School et vous souhaitez vous engager concrètement pour l'égalité des chances ?
                             Phœnix recrute ses nouveaux tuteurs et membres actifs !
                         </p>
+                        <p className="mt-3 inline-flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm font-school font-bold text-[#6F2B75] bg-[#ECDDFD]/60 px-4 py-2 rounded-full">
+                            <GraduationCap size={16} className="text-[#EC602B]" />
+                            Phœnix fait partie des rares associations reconnues pour valider votre Pro Act (50h)
+                        </p>
                     </div>
 
                     {/* Cards Grid — fiches de recrutement façon carnet, légèrement désalignées */}
                     <div className="grid md:grid-cols-3 gap-x-6 gap-y-10 mb-12 sm:mb-14 pt-3">
-                        <Card icon={Users} title="Esprit d'Équipe" description="Intégrez une famille soudée et passionnée par l'impact social." tape="warm" angle="left" rotation="-rotate-1" />
-                        <Card icon={Briefcase} title="Compétences" description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante." tape="lilac" angle="center" rotation="rotate-[0.5deg]" />
-                        <Card icon={GraduationCap} title="Engagement" description="Participez concrètement à la réussite scolaire et culturelle de jeunes marseillais." tape="warm" angle="right" rotation="rotate-1" />
+                        <Card icon={GraduationCap} title="Pro Act Validé" description="Vos 50h d'engagement obligatoires validées en une seule association, sans jongler entre plusieurs structures." tape="warm" angle="left" rotation="-rotate-1" />
+                        <Card icon={Users} title="Esprit d'Équipe" description="Intégrez une famille soudée et passionnée par l'impact social." tape="lilac" angle="center" rotation="rotate-[0.5deg]" />
+                        <Card icon={Briefcase} title="Compétences" description="Développez des soft skills, le sens des responsabilités et une expérience humaine valorisante." tape="warm" angle="right" rotation="rotate-1" />
                     </div>
 
                     {/* CTA */}
                     <div className="text-center">
-                        <a
-                            href="https://m.facebook.com/groups/1045459488302373/?ref=share"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group inline-flex items-center gap-3 px-8 py-3.5 btn-phoenix-orange btn-glow-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-glow-orange hover:-translate-y-0.5 active:scale-95 transition-all duration-200 touch-tactile"
-                        >
-                            <span>Postuler Maintenant</span>
-                            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </a>
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                            <a
+                                href="https://mykedgeasso.fr/association/phoenix-edc"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-center gap-3 px-8 py-3.5 btn-phoenix-orange btn-glow-orange text-white rounded-lg font-school uppercase tracking-wider text-xs shadow-glow-orange hover:-translate-y-0.5 active:scale-95 transition-all duration-200 touch-tactile"
+                            >
+                                <span>Postuler Maintenant</span>
+                                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                            </a>
+                            <a
+                                href="https://m.facebook.com/groups/1045459488302373/?ref=share"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-center gap-3 px-8 py-3.5 btn-phoenix-outline rounded-lg font-school uppercase tracking-wider text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200 touch-tactile"
+                            >
+                                <Facebook size={16} />
+                                <span>Groupe Facebook</span>
+                            </a>
+                        </div>
                         <div className="mt-5 inline-flex">
                             <span className="badge-stamp text-[9px] -rotate-2">
                                 <span className="text-[#6F2B75] font-extrabold text-[8px]">PROCHAINE SESSION</span>

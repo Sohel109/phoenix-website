@@ -8,7 +8,16 @@ interface ContactFormProps {
     onBack: () => void;
 }
 
+// Les catégories sont transmises par leur id technique (query param / sélection) ;
+// on affiche un libellé lisible plutôt que le slug brut dans le titre du formulaire.
+const CATEGORY_LABELS: Record<string, string> = {
+    recrutement: 'Devenir Tuteur',
+    information: 'Information',
+    partenariat: 'Partenariat',
+};
+
 export function ContactForm({ category, onBack }: ContactFormProps) {
+    const categoryLabel = CATEGORY_LABELS[category] ?? category;
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -65,7 +74,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                 <div className="w-12 h-1 bg-[#EC602B] mx-auto mb-6 rounded-full" />
 
                 <p className="text-slate-600 font-sans mb-8 leading-relaxed text-sm sm:text-base">
-                    Merci pour votre message concernant <span className="font-bold text-phoenix-purple">{category}</span>.<br />
+                    Merci pour votre message concernant <span className="font-bold text-phoenix-purple">{categoryLabel}</span>.<br />
                     Notre équipe vous répondra dans les plus brefs délais.
                 </p>
 
@@ -106,7 +115,7 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                         <span className="h-px w-6 bg-[#EC602B]"></span>
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-display text-phoenix-dark">
-                        {category}
+                        {categoryLabel}
                     </h2>
                 </div>
 
@@ -157,7 +166,9 @@ export function ContactForm({ category, onBack }: ContactFormProps) {
                             value={formData.message}
                             onChange={e => setFormData({ ...formData, message: e.target.value })}
                             className="w-full bg-phoenix-cream/40 rounded-lg border border-phoenix-lilac/80 px-4 py-3 text-phoenix-dark font-sans focus:outline-none focus:border-phoenix-purple focus:ring-2 focus:ring-phoenix-purple/20 transition-all resize-none placeholder-slate-400 text-sm"
-                            placeholder="Expliquez-nous votre projet ou votre demande..."
+                            placeholder={category === 'recrutement'
+                                ? "Votre année d'étude, vos disponibilités et pourquoi vous voulez rejoindre Phœnix..."
+                                : "Expliquez-nous votre projet ou votre demande..."}
                         />
                     </div>
 

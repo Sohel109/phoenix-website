@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Info, Handshake } from 'lucide-react';
+import { Info, Handshake, GraduationCap } from 'lucide-react';
 import { MaskingTape, HandDrawnCircle } from '../../common/HandDrawnElements';
 
 // Durée du tracé du cercle au feutre avant l'ouverture de la page (cf. transition CSS de HandDrawnCircle)
@@ -11,12 +11,24 @@ interface SelectionViewProps {
 
 const categories = [
     {
-        id: 'information',
-        label: 'Information',
-        icon: Info,
+        id: 'recrutement',
+        label: 'Devenir Tuteur',
+        icon: GraduationCap,
         tape: 'warm' as const,
         angle: 'left' as const,
         rotation: '-rotate-[1.5deg]',
+        description: 'Étudiant KEDGE ? Valide ton Pro Act (50h) avec nous',
+        note: 'Étudiant KEDGE ?',
+        // Candidature gérée par l'école : on ouvre directement la fiche MyKedge Asso plutôt que le formulaire interne.
+        externalUrl: 'https://mykedgeasso.fr/association/phoenix-edc',
+    },
+    {
+        id: 'information',
+        label: 'Information',
+        icon: Info,
+        tape: 'lilac' as const,
+        angle: 'center' as const,
+        rotation: 'rotate-[0.5deg]',
         description: 'Découvrir nos actions et projets',
         note: 'Curieux ?',
     },
@@ -24,7 +36,7 @@ const categories = [
         id: 'partenariat',
         label: 'Partenariat',
         icon: Handshake,
-        tape: 'lilac' as const,
+        tape: 'warm' as const,
         angle: 'right' as const,
         rotation: 'rotate-[1.5deg]',
         description: 'Soutenir notre engagement',
@@ -40,7 +52,7 @@ export function SelectionView({ onSelect }: SelectionViewProps) {
                 Choisis ta voie ✦
             </p>
 
-            <div className="flex flex-col md:flex-row items-stretch justify-center gap-8 md:gap-10 w-full max-w-3xl mx-auto px-4 pattern-notebook-grid rounded-organic py-8 md:py-10">
+            <div className="flex flex-col md:flex-row items-stretch justify-center gap-8 md:gap-8 w-full max-w-4xl mx-auto px-4 pattern-notebook-grid rounded-organic py-8 md:py-10">
                 {categories.map((cat) => (
                     <Card key={cat.id} category={cat} onSelect={onSelect} />
                 ))}
@@ -56,14 +68,18 @@ function Card({ category, onSelect }: { category: any, onSelect: (id: string) =>
     const navigateTimeout = useRef<number | null>(null);
 
     const activate = () => {
+        const proceed = category.externalUrl
+            ? () => window.open(category.externalUrl, '_blank', 'noopener,noreferrer')
+            : () => onSelect(category.id);
+
         const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         if (prefersReducedMotion) {
-            onSelect(category.id);
+            proceed();
             return;
         }
         setIsDrawn(true);
         if (navigateTimeout.current) window.clearTimeout(navigateTimeout.current);
-        navigateTimeout.current = window.setTimeout(() => onSelect(category.id), DRAW_DURATION_MS);
+        navigateTimeout.current = window.setTimeout(proceed, DRAW_DURATION_MS);
     };
 
     return (
@@ -80,7 +96,7 @@ function Card({ category, onSelect }: { category: any, onSelect: (id: string) =>
             onMouseEnter={() => setIsDrawn(true)}
             onMouseLeave={() => setIsDrawn(false)}
             className={`flex-1 cursor-pointer relative focus-visible:ring-2 focus-visible:ring-[#EC602B] rounded-organic-sm outline-none ${category.rotation}`}
-            aria-label={`Sélectionner la catégorie ${category.label} : ${category.description}`}
+            aria-label={`Sélectionner la catégorie ${category.label} : ${category.description}${category.externalUrl ? ' (ouvre un nouvel onglet)' : ''}`}
         >
             {/* Ruban adhésif posé à la main sur la fiche */}
             <MaskingTape variant={category.tape} angle={category.angle} className="-top-3 left-1/2 -translate-x-1/2 z-30" />
