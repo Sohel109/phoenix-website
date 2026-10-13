@@ -24,6 +24,7 @@ import { Documents } from './pages/Documents';
 import { LegalMentions } from './pages/LegalMentions';
 import { Transparency } from './pages/Transparency';
 import { Contact } from './pages/Contact';
+import { SoutienScolaire } from './pages/SoutienScolaire';
 import { NotFound } from './pages/NotFound';
 
 // Pages lourdes en lazy (code-splitting)
@@ -68,7 +69,7 @@ function App() {
     <PlanningProvider>
       <Router>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen font-sans bg-[#FFFBF4] bg-bird-pattern">
+        <div className="flex flex-col min-h-screen font-sans bg-[#FFFBF4] bg-bird-pattern texture-grain">
           <AuroraBackground />
           <Header />
           <GuideFloatingTab />
@@ -91,6 +92,7 @@ function App() {
                   <Route path="/mentions-legales" element={<LegalMentions />} />
                   <Route path="/transparence" element={<Transparency />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/soutien-scolaire-marseille" element={<SoutienScolaire />} />
                   <Route path="/verifier" element={<VerifyAttestation />} />
                   <Route path="/attestation/verifier" element={<VerifyAttestation />} />
                   {/* Alias / Redirections Association */}

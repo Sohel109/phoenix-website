@@ -146,6 +146,11 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link to="/soutien-scolaire-marseille" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
+                                    Soutien scolaire à Marseille
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/evenements" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
                                     Nos Événements (SimONU &amp; JEDC)
                                 </Link>
