@@ -310,6 +310,13 @@ h1, h2, h3, .font-display {
   opacity: 0.6;
 }
 
+/* ── Traitement photo réchauffé (même logique que .phoenix-map) : réconcilie les
+   photos couleur standard avec la charte crème/violette au lieu de couleurs vives
+   non maîtrisées. À poser directement sur la balise <img>. ── */
+.phoenix-photo {
+  filter: grayscale(15%) sepia(12%) saturate(88%) brightness(1.02) hue-rotate(-4deg);
+}
+
 /* ── Séparateur éditorial horizontal (inspiré Article-1 / Wellesley) ── */
 .section-rule {
   width: 3rem;
@@ -732,4 +739,22 @@ h1, h2, h3, .font-display {
 
 .notebook-dashed-line {
   border-top: 2px dashed rgba(111, 43, 117, 0.30);
+}
+
+/* ── Hero desktop sur écrans larges mais peu hauts (portables) ───────
+   Le header est fixe : l'espace du haut doit le dépasser, sinon le médaillon, le tampon
+   et le surtitre passent dessous. On compacte l'espacement pour garder les boutons visibles. */
+@media (min-width: 1024px) and (max-height: 700px) {
+  .hero-desktop-grid {
+    padding-top: 7rem;
+    padding-bottom: 2rem;
+  }
+  .hero-desktop-copy {
+    gap: 1rem;
+  }
+}
+@media (min-width: 1280px) and (max-height: 700px) {
+  .hero-desktop-title {
+    font-size: 3rem;
+  }
 }

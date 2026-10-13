@@ -1,8 +1,31 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, FolderOpen, Calendar, Mail, Compass, ArrowLeft, ArrowRight, ShieldCheck, Map } from 'lucide-react';
 
 import { SEO } from '../components/common/SEO';
+import { HandDrawnCircle, MaskingTape } from '../components/common/HandDrawnElements';
+import { useDrawnOnInteract } from '../hooks/useDrawnOnInteract';
+
+// Carte de navigation avec le même cercle tracé au feutre que Documents/Partenaires/Recrutement
+// (motif d'interaction unifié du site) plutôt que le survol générique bordure+ombre.
+function NotFoundNavCard({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
+    const { isDrawn, interactionProps } = useDrawnOnInteract();
+    return (
+        <Link
+            to={to}
+            {...interactionProps}
+            className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75]/40 hover:shadow-soft-lg text-[#2A082D] transition-all shadow-soft"
+        >
+            <div className="relative w-10 h-10 flex items-center justify-center">
+                <HandDrawnCircle stroke="#EC602B" strokeWidth={2.2} className="inset-0 w-full h-full" animated drawn={isDrawn} />
+                <div className="w-8 h-8 rounded-full bg-white text-[#2A082D] flex items-center justify-center border border-[#2A082D]/10">
+                    {icon}
+                </div>
+            </div>
+            <span className="text-xs font-school font-bold">{label}</span>
+        </Link>
+    );
+}
 
 export function NotFound() {
     const location = useLocation();
@@ -149,13 +172,29 @@ export function NotFound() {
                 description="La page que vous recherchez sur le site de Phœnix Égalité des Chances KEDGE BS Marseille n'existe pas ou a été déplacée."
             />
             <div className="max-w-xl w-full text-center relative z-10">
+                {/* Grand numéro "404" façon carnet de bord, avec cercle feutre autour du 0 central */}
+                <div className="relative inline-block mb-3">
+                    <MaskingTape variant="warm" angle="left" className="-top-3 left-1/2 -translate-x-1/2 z-20" />
+                    <span className="relative font-display text-6xl sm:text-7xl text-[#2A082D] leading-none tracking-tight">
+                        4
+                        <span className="relative inline-block px-1">
+                            0
+                            <HandDrawnCircle stroke="#EC602B" strokeWidth={3} className="-inset-x-1.5 -inset-y-1 w-[calc(100%+0.75rem)] h-[calc(100%+0.5rem)]" />
+                        </span>
+                        4
+                    </span>
+                </div>
+
                 {/* 404 Badge */}
                 <span className="text-xs sm:text-sm font-school font-bold uppercase tracking-widest text-[#6F2B75] mb-2 block">
                     Erreur 404 · Page introuvable
                 </span>
 
                 <h1 className="text-3xl sm:text-5xl font-display text-[#2A082D] tracking-tight mb-4">
-                    Oups, cette page n'existe plus !
+                    Oups, cette page{' '}
+                    <span className="marker-highlight text-[#EC602B]">
+                        <span>n'existe plus</span>
+                    </span>{' '}!
                 </h1>
 
                 <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto font-normal">
@@ -187,34 +226,10 @@ export function NotFound() {
 
                 {/* Navigation Links */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-                    <Link
-                        to="/"
-                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
-                    >
-                        <Home size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-school font-bold">Accueil</span>
-                    </Link>
-                    <Link
-                        to="/projets"
-                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
-                    >
-                        <FolderOpen size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-school font-bold">Projets</span>
-                    </Link>
-                    <Link
-                        to="/evenements"
-                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
-                    >
-                        <Calendar size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-school font-bold">Événements</span>
-                    </Link>
-                    <Link
-                        to="/contact"
-                        className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-[#ECDDFD] hover:border-[#6F2B75] hover:shadow-soft-lg text-[#2A082D] hover:text-[#6F2B75] transition-all group shadow-soft"
-                    >
-                        <Mail size={20} className="text-[#EC602B] group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-school font-bold">Contact</span>
-                    </Link>
+                    <NotFoundNavCard to="/" icon={<Home size={16} />} label="Accueil" />
+                    <NotFoundNavCard to="/projets" icon={<FolderOpen size={16} />} label="Projets" />
+                    <NotFoundNavCard to="/evenements" icon={<Calendar size={16} />} label="Événements" />
+                    <NotFoundNavCard to="/contact" icon={<Mail size={16} />} label="Contact" />
                 </div>
 
                 {/* Return Button */}
@@ -229,7 +244,7 @@ export function NotFound() {
                     </button>
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold transition-all shadow-md active:scale-95"
+                        className="btn-phoenix-orange !py-2 !px-5 !text-xs rounded-xl inline-flex items-center gap-2"
                     >
                         Retour à l'accueil
                     </Link>

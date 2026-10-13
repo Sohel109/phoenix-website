@@ -33,7 +33,7 @@ export function DonationSection() {
     const [selectedAmount, setSelectedAmount] = useState<number>(50);
 
     return (
-        <section className="relative py-20 md:py-28 overflow-hidden bg-[#ECDDFD]/35">
+        <section className="relative py-16 md:py-24 overflow-hidden bg-[#ECDDFD]/35">
             {/* Trame filigrane Phœnix officielle */}
             <div className="pattern-watermark" aria-hidden="true" />
 

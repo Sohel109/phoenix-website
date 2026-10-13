@@ -52,7 +52,7 @@ export function ConcreteActions() {
     };
 
     return (
-        <section className="relative py-20 md:py-32 overflow-hidden bg-transparent pattern-notebook-grid">
+        <section className="relative pt-10 pb-10 md:pt-14 md:pb-14 overflow-hidden bg-transparent pattern-notebook-grid">
             <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
                 {/* Header direct et éditorial */}
                 <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
@@ -88,7 +88,7 @@ export function ConcreteActions() {
                             <img
                                 src="/images/home/tutorat-hebdo-terrain.webp"
                                 alt="Séance studieuse de tutorat hebdomadaire et soutien scolaire à Marseille - Phœnix EDC"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
+                                className="phoenix-photo w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/80 via-transparent to-transparent" />
@@ -151,7 +151,7 @@ export function ConcreteActions() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.4 }}
-                                    className="w-full h-full object-cover"
+                                    className="phoenix-photo w-full h-full object-cover"
                                     loading="lazy"
                                 />
                             </AnimatePresence>
@@ -253,7 +253,7 @@ export function ConcreteActions() {
                                 src={eventHighlights[activeEventIdx].image}
                                 alt={`${eventHighlights[activeEventIdx].title} – Événement égalité des chances et éloquence Phœnix EDC Marseille`}
                                 style={{ objectPosition: eventHighlights[activeEventIdx].objectPosition }}
-                                className="w-full h-full object-cover group-hover/ev:scale-105 transition-transform duration-500 ease-out will-change-transform"
+                                className="phoenix-photo w-full h-full object-cover group-hover/ev:scale-105 transition-transform duration-500 ease-out will-change-transform"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/80 via-transparent to-transparent" />

@@ -23,7 +23,7 @@ export function TestimonialsSection() {
     };
 
     return (
-        <section className="relative py-20 md:py-32 bg-transparent overflow-hidden">
+        <section className="relative pt-10 pb-20 md:pt-14 md:pb-28 bg-transparent overflow-hidden">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl relative z-10">
                 {/* En-tête éditorial */}
                 <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">

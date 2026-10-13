@@ -51,10 +51,10 @@ export function HeroScroll() {
 
                 {/* ── GRILLE PRINCIPALE ── */}
                 <div className="relative z-10 container mx-auto px-6 lg:px-10 xl:px-16 max-w-7xl h-full min-h-[92vh] flex items-center">
-                    <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full py-24 lg:py-16">
+                    <div className="hero-desktop-grid grid lg:grid-cols-12 gap-12 xl:gap-16 items-center w-full pt-page-safe pb-16 lg:pb-12">
 
                         {/* ── COLONNE GAUCHE : Message éditorial ── */}
-                        <div className="lg:col-span-7 flex flex-col gap-6 items-start text-left">
+                        <div className="hero-desktop-copy lg:col-span-7 flex flex-col gap-6 items-start text-left">
 
                             {/* Kicker éditorial sobre — ligne + texte uppercase (inspiré GenAct / Article-1) */}
                             <div className="flex items-center gap-2.5">
@@ -65,7 +65,7 @@ export function HeroScroll() {
                             </div>
 
                             {/* Titre Shrikhand signature de la Charte */}
-                            <h1 className="text-4xl xl:text-6xl font-display leading-[1.14] text-[#2A082D]">
+                            <h1 className="hero-desktop-title text-4xl xl:text-6xl font-display leading-[1.14] text-[#2A082D]">
                                 Faire briller <br />
                                 <span className="marker-highlight text-[#EC602B]">
                                     <span>tous les talents</span>
@@ -116,7 +116,7 @@ export function HeroScroll() {
                         </div>
 
                         {/* ── COLONNE DROITE : Composition asymétrique & chevauchements ── */}
-                        <div className="lg:col-span-5 relative h-[500px] xl:h-[560px] flex items-center justify-center">
+                        <div className="lg:col-span-5 relative h-[500px] xl:h-[520px] flex items-center justify-center">
                             {/* Grand conteneur asymétrique organique avec Scotch */}
                             <div className="relative w-[340px] xl:w-[400px] aspect-[4/5] z-10">
                                 {/* Ruban adhésif Masking Tape posé directement sur le haut de la photo */}
@@ -127,7 +127,7 @@ export function HeroScroll() {
                                     <img
                                         src="/images/projects/hero-1.webp"
                                         alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
-                                        className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
+                                        className="phoenix-photo w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
                                         draggable={false}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent pointer-events-none" />
@@ -139,7 +139,7 @@ export function HeroScroll() {
                                 <img
                                     src="/images/projects/hero-3.webp"
                                     alt="Sortie culturelle au musée avec les jeunes tutorés Phœnix"
-                                    className="w-full h-full object-cover"
+                                    className="phoenix-photo w-full h-full object-cover"
                                     draggable={false}
                                 />
                             </div>
@@ -225,7 +225,7 @@ export function HeroScroll() {
                         <img
                             src="/images/projects/hero-1.webp"
                             alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
-                            className="w-full h-full object-cover object-top"
+                            className="phoenix-photo w-full h-full object-cover object-top"
                             draggable={false}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#2A082D]/40 via-transparent to-transparent" />

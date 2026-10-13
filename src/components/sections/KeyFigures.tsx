@@ -81,7 +81,7 @@ function StatItem({
 // --- MAIN SECTION ---
 export function KeyFigures() {
     return (
-        <section className="relative py-20 md:py-28 bg-[#FFFBF4] overflow-hidden">
+        <section className="relative pt-20 pb-10 md:pt-28 md:pb-14 bg-[#FFFBF4] overflow-hidden">
             {/* Trame filigrane Phœnix officielle */}
             <div className="pattern-watermark" aria-hidden="true" />
 
