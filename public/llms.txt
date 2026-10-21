@@ -1,0 +1,19 @@
+# Phœnix Égalité des Chances
+
+> Association d'étudiants de KEDGE Business School (campus de Marseille). Depuis 2011, elle accompagne gratuitement environ 300 collégiens et lycéens de quartiers prioritaires de Marseille : aide aux devoirs, orientation, débats d'actualité, sorties et voyages culturels, dans 9 projets de terrain.
+
+Les tuteurs sont exclusivement des étudiants bénévoles de KEDGE Business School. Chaque projet s'adresse à un public précis (collège, lycée ou centre social partenaire) : il n'y a pas d'inscription libre pour les familles.
+
+## Pages principales
+
+- [Soutien scolaire et ouverture culturelle à Marseille](https://www.phoenix-egalite-des-chances.com/soutien-scolaire-marseille): qui est accompagné, les 9 projets, comment devenir tuteur, questions fréquentes
+- [Nos projets](https://www.phoenix-egalite-des-chances.com/projets): niveau, lieu et rythme de chacun des 9 projets
+- [Événements](https://www.phoenix-egalite-des-chances.com/evenements): journée de l'égalité des chances, simulation de l'ONU SimONU, olympiades
+- [L'association](https://www.phoenix-egalite-des-chances.com/association): histoire et équipe
+- [Transparence et dons](https://www.phoenix-egalite-des-chances.com/transparence): dons déductibles à 66 % pour les particuliers et 60 % pour les entreprises
+- [Partenaires](https://www.phoenix-egalite-des-chances.com/partenaires): entreprises et institutions partenaires
+- [Contact](https://www.phoenix-egalite-des-chances.com/contact): écrire à l'association, candidature des étudiants KEDGE
+
+## Optional
+
+- [Plan du site](https://www.phoenix-egalite-des-chances.com/sitemap.xml)
