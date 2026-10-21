@@ -83,10 +83,12 @@
   }
   </script>
 
-  <!-- Google Fonts: Shrikhand (Titres officiels), Montserrat (Corps), Allura (Script manuscrit), Outfit (Typo scolaire Blockletter) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Montserrat:ital,wght@0,300..900;1,300..900&family=Outfit:wght@400..900&family=Shrikhand&display=swap" rel="stylesheet">
+  <!-- Polices hébergées (déclarées dans src/index.css) : Shrikhand (titres), Montserrat (corps), Allura (script), Outfit (labels).
+       On précharge celles du premier écran ; le motif de fond est le plus grand élément affiché au chargement. -->
+  <link rel="preload" href="/fonts/shrikhand-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/montserrat-latin-300-900.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/allura-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/phoenix-pattern.webp" as="image" type="image/webp">
 
   <script>
     try {

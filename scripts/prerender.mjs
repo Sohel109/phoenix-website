@@ -87,6 +87,10 @@ function render(template, page) {
         html = html.replace('</head>', () => `  <script type="application/ld+json" id="dynamic-page-schema">${json}</script>\n</head>`);
     }
 
+    if (page.head) {
+        html = html.replace('</head>', () => `  ${page.head}\n</head>`);
+    }
+
     return html.replace('<div id="root"></div>', () => `<div id="root">${shell(page.body, page.path)}</div>`);
 }
 
@@ -128,6 +132,8 @@ async function main() {
         title: 'Phœnix EDC – Tutorat & Égalité des Chances – Marseille / KEDGE BS',
         description:
             "Association étudiante de KEDGE Business School : tutorat scolaire gratuit, mentorat académique et ouverture culturelle pour 300 collégiens et lycéens à Marseille depuis 2011.",
+        // L'image du hero (élément LCP) n'est découverte qu'après l'exécution de React : on la précharge dès le HTML.
+        head: '<link rel="preload" as="image" href="/images/projects/hero-1.webp" type="image/webp" fetchpriority="high">',
         body: `<h1>Faire briller tous les talents de Marseille</h1>
 ${p("Chaque semaine, plus de 100 étudiants de KEDGE Business School accompagnent 300 collégiens et lycéens des quartiers prioritaires de Marseille. Association reconnue d'intérêt général, Phœnix Égalité des Chances agit depuis 2011 : tutorat, ouverture culturelle et orientation.")}
 <h2>Nos ${projects.length} projets de terrain</h2>

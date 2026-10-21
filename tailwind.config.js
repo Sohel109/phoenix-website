@@ -45,8 +45,8 @@ export default {
                 }
             },
             fontFamily: {
-                sans: ['"Montserrat"', 'system-ui', '-apple-system', 'sans-serif'],
-                display: ['"Shrikhand"', 'cursive'],
+                sans: ['"Montserrat"', '"Montserrat Fallback"', 'system-ui', '-apple-system', 'sans-serif'],
+                display: ['"Shrikhand"', '"Shrikhand Fallback"', 'cursive'],
                 script: ['"Allura"', 'cursive'],
                 school: ['"Outfit"', 'sans-serif'],
             },

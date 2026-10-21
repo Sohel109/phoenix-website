@@ -126,6 +126,7 @@ export function HeroScroll() {
                                 <div className="w-full h-full rounded-organic overflow-hidden photo-frame-organic border-2 border-white/80 relative">
                                     <img
                                         src="/images/projects/hero-1.webp"
+                                        fetchPriority="high"
                                         alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
                                         className="phoenix-photo w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out will-change-transform"
                                         draggable={false}
@@ -224,6 +225,7 @@ export function HeroScroll() {
                     <div className="relative w-full aspect-[4/3] rounded-organic-sm overflow-hidden photo-frame-organic border-2 border-white/80">
                         <img
                             src="/images/projects/hero-1.webp"
+                                        fetchPriority="high"
                             alt="Étudiants de KEDGE en séance de tutorat avec des lycéens marseillais"
                             className="phoenix-photo w-full h-full object-cover object-top"
                             draggable={false}

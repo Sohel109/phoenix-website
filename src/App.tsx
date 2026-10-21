@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 
 import { ScrollToTop } from './components/layout/ScrollToTop';
 import { Header } from './components/layout/Header';
@@ -14,20 +14,20 @@ import { GuideFloatingTab } from './components/features/GuideFloatingTab';
 
 // Pages publiques chargées immédiatement pour navigation 100% instantanée (sans flash blanc ni spinner)
 import { Home } from './pages/Home';
-import { Association } from './pages/Association';
-import { Projects } from './pages/Projects';
-import { ProjectDetail } from './pages/ProjectDetail';
-import { Events } from './pages/Events';
-import { EventDetail } from './pages/EventDetail';
-import { Partners } from './pages/Partners';
-import { Documents } from './pages/Documents';
-import { LegalMentions } from './pages/LegalMentions';
-import { Transparency } from './pages/Transparency';
-import { Contact } from './pages/Contact';
-import { SoutienScolaire } from './pages/SoutienScolaire';
 import { NotFound } from './pages/NotFound';
 
-// Pages lourdes en lazy (code-splitting)
+// Pages en lazy (code-splitting) : seul l'accueil est dans le premier chargement, le reste est préchargé à l'inactivité
+const Association = lazy(() => import('./pages/Association').then(m => ({ default: m.Association })));
+const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.Projects })));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
+const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
+const EventDetail = lazy(() => import('./pages/EventDetail').then(m => ({ default: m.EventDetail })));
+const Partners = lazy(() => import('./pages/Partners').then(m => ({ default: m.Partners })));
+const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
+const LegalMentions = lazy(() => import('./pages/LegalMentions').then(m => ({ default: m.LegalMentions })));
+const Transparency = lazy(() => import('./pages/Transparency').then(m => ({ default: m.Transparency })));
+const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
+const SoutienScolaire = lazy(() => import('./pages/SoutienScolaire').then(m => ({ default: m.SoutienScolaire })));
 const ProjectMap = lazy(() => import('./pages/ProjectMap').then(m => ({ default: m.ProjectMap })));
 const VerifyAttestation = lazy(() => import('./pages/VerifyAttestation').then(m => ({ default: m.VerifyAttestation })));
 
@@ -43,6 +43,35 @@ const PlanningRecap = lazy(() => import('./pages/planning/PlanningRecap').then(m
 const PlanningEventValidation = lazy(() => import('./pages/planning/PlanningEventValidation').then(m => ({ default: m.PlanningEventValidation })));
 const PlanningMesEvenements = lazy(() => import('./pages/planning/PlanningMesEvenements').then(m => ({ default: m.PlanningMesEvenements })));
 const PlanningNotifications = lazy(() => import('./pages/planning/PlanningNotifications').then(m => ({ default: m.PlanningNotifications })));
+
+// Précharge les pages publiques une fois le chargement terminé et le navigateur inactif :
+// la navigation reste instantanée sans alourdir le premier affichage de l'accueil.
+function usePrefetchPublicPages() {
+  useEffect(() => {
+    const prefetch = () => {
+      void import('./pages/Association');
+      void import('./pages/Projects');
+      void import('./pages/ProjectDetail');
+      void import('./pages/Events');
+      void import('./pages/EventDetail');
+      void import('./pages/Partners');
+      void import('./pages/Documents');
+      void import('./pages/Transparency');
+      void import('./pages/Contact');
+      void import('./pages/SoutienScolaire');
+      void import('./pages/LegalMentions');
+    };
+    const whenIdle = () => {
+      // Safari ne fournit pas requestIdleCallback
+      const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+      if (idle) idle(prefetch);
+      else window.setTimeout(prefetch, 1500);
+    };
+    if (document.readyState === 'complete') whenIdle();
+    else window.addEventListener('load', whenIdle, { once: true });
+    return () => window.removeEventListener('load', whenIdle);
+  }, []);
+}
 
 // Loader minimaliste pendant le chargement d'une page
 function PageLoader() {
@@ -64,6 +93,7 @@ function PlanningGuard({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  usePrefetchPublicPages();
   return (
     <ThemeProvider>
     <PlanningProvider>

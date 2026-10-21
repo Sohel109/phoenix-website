@@ -4,19 +4,27 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, ChevronLeft, ChevronRight, Compass, Sparkles } from 'lucide-react';
 import { MaskingTape } from '../common/HandDrawnElements';
 
+// Variantes générées en -480 et -800 (voir public/images) : le navigateur choisit la plus proche de la taille affichée.
+const responsiveSrcSet = (src: string, originalWidth: number) =>
+    `${src.replace('.webp', '-480.webp')} 480w, ${src.replace('.webp', '-800.webp')} 800w, ${src} ${originalWidth}w`;
+const CARD_IMAGE_SIZES = '(min-width: 768px) 33vw, 100vw';
+
 const culturalTripPhotos = [
     {
         src: "/images/home/voyage-culturel-1.webp",
+        width: 1000,
         alt: "Voyage culturel Phoenix : groupe de jeunes et tuteurs sur la côte",
         caption: "Voyage culturel avec les lycéens face à la Méditerranée"
     },
     {
         src: "/images/home/voyage-culturel-2.webp",
+        width: 1024,
         alt: "Sortie de groupe Phoenix sous les pins parasols",
         caption: "Découverte du patrimoine et grands voyages de fin d'année"
     },
     {
         src: "/images/home/voyage-culturel-3.webp",
+        width: 1000,
         alt: "Selfie dynamique des tuteurs et élèves Phoenix",
         caption: "Énergie, sourires et complicité sur le terrain"
     }
@@ -28,6 +36,7 @@ const eventHighlights = [
         title: "SimONU EDC",
         subtitle: "Simulation ONU & Négociation",
         image: "/images/events/simonu/simonu-speaker.webp",
+        srcSet: responsiveSrcSet("/images/events/simonu/simonu-speaker.webp", 900),
         objectPosition: "center center"
     },
     {
@@ -87,6 +96,8 @@ export function ConcreteActions() {
                         <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900">
                             <img
                                 src="/images/home/tutorat-hebdo-terrain.webp"
+                                srcSet={responsiveSrcSet('/images/home/tutorat-hebdo-terrain.webp', 960)}
+                                sizes={CARD_IMAGE_SIZES}
                                 alt="Séance studieuse de tutorat hebdomadaire et soutien scolaire à Marseille - Phœnix EDC"
                                 className="phoenix-photo w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
                                 loading="lazy"
@@ -146,6 +157,8 @@ export function ConcreteActions() {
                                 <motion.img
                                     key={currentPhotoIdx}
                                     src={culturalTripPhotos[currentPhotoIdx].src}
+                                    srcSet={responsiveSrcSet(culturalTripPhotos[currentPhotoIdx].src, culturalTripPhotos[currentPhotoIdx].width)}
+                                    sizes={CARD_IMAGE_SIZES}
                                     alt={culturalTripPhotos[currentPhotoIdx].alt}
                                     initial={{ opacity: 0, scale: 1.05 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -202,11 +215,15 @@ export function ConcreteActions() {
                                             key={idx}
                                             type="button"
                                             onClick={() => setCurrentPhotoIdx(idx)}
-                                            className={`h-1.5 rounded-full transition-all ${
-                                                currentPhotoIdx === idx ? 'w-5 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'
-                                            }`}
+                                            className="group/dot h-6 min-w-6 px-0.5 flex items-center justify-center"
                                             aria-label={`Afficher photo ${idx + 1}`}
-                                        />
+                                        >
+                                            <span
+                                                className={`block h-1.5 rounded-full transition-all ${
+                                                    currentPhotoIdx === idx ? 'w-5 bg-white' : 'w-1.5 bg-white/50 group-hover/dot:bg-white/80'
+                                                }`}
+                                            />
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -251,6 +268,8 @@ export function ConcreteActions() {
                         <Link to="/evenements" className="block relative h-64 sm:h-72 w-full overflow-hidden bg-slate-900 group/ev cursor-pointer">
                             <img
                                 src={eventHighlights[activeEventIdx].image}
+                                srcSet={eventHighlights[activeEventIdx].srcSet}
+                                sizes={CARD_IMAGE_SIZES}
                                 alt={`${eventHighlights[activeEventIdx].title} – Événement égalité des chances et éloquence Phœnix EDC Marseille`}
                                 style={{ objectPosition: eventHighlights[activeEventIdx].objectPosition }}
                                 className="phoenix-photo w-full h-full object-cover group-hover/ev:scale-105 transition-transform duration-500 ease-out will-change-transform"
