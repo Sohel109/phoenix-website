@@ -377,7 +377,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                             : "bg-amber-100 text-amber-800 border-amber-300"
                                     }`}>
                                         {isExempt
-                                            ? `Validée · Quota N-1 acquis (+${totalHours}h en ${academicYear})`
+                                            ? `Validée · Quota 2A acquis (+${totalHours}h en ${academicYear})`
                                             : isValidated
                                             ? `Validée · ${totalHours}h effectuées (Seuil 50h atteint)`
                                             : `En cours · ${totalHours}h / ${ATTESTATION_THRESHOLD}h requises`}
@@ -439,10 +439,10 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                             <tr className="bg-purple-50/50">
                                                 <td className="py-2 px-3 font-semibold text-purple-950">
                                                     Validation Statutaire Antérieure (Mandat {previousAcademicYear})
-                                                    <span className="block text-[9.5px] text-purple-700 font-normal">Quota de 50h requis certifié au titre de l'année N-1</span>
+                                                    <span className="block text-[9.5px] text-purple-700 font-normal">Quota de 50h requis certifié au titre de l'année 2A</span>
                                                 </td>
                                                 <td className="py-2 px-3 text-center text-purple-800 font-medium text-[10px]">
-                                                    Acquis (Renouvelant N-1)
+                                                    Acquis (Renouvelant 2A)
                                                 </td>
                                                 <td className="py-2 px-3 text-right font-bold text-purple-900 tabular-nums">
                                                     50 h
@@ -497,7 +497,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
                                                 {isExempt ? `Total Heures ${academicYear} (Année en cours)` : "Total d'Heures Consolidé"}
                                             </td>
                                             <td className="py-2.5 px-3 text-center text-[10.5px] font-mono text-zinc-500 tabular-nums">
-                                                {isExempt ? "Quota 50h acquis N-1" : isValidated ? "Seuil officiel 50h atteint" : `Reste à accomplir : ${remainingHours}h`}
+                                                {isExempt ? "Quota 50h acquis 2A" : isValidated ? "Seuil officiel 50h atteint" : `Reste à accomplir : ${remainingHours}h`}
                                             </td>
                                             <td className={`py-2.5 px-3 text-right text-sm font-black tabular-nums ${isValidated ? 'text-emerald-600' : 'text-[#EC602B]'}`}>
                                                 {totalHours % 1 === 0 ? totalHours : totalHours.toFixed(1)} h

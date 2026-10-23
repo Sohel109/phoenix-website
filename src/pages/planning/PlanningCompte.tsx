@@ -336,7 +336,7 @@ export function PlanningCompte() {
                         <Award size={16} className={isAttestationEligible ? 'text-emerald-200' : ''} />
                         <span>
                             {isExempt
-                                ? `Attestation validée (Quota N-1 · ${totalConsolide}h)`
+                                ? `Attestation validée (Quota 2A · ${totalConsolide}h)`
                                 : isAttestationEligible
                                     ? `Attestation validée (${totalConsolide}h)`
                                     : `Attestation (${totalConsolide}h / ${ATTESTATION_THRESHOLD}h)`}
@@ -372,7 +372,7 @@ export function PlanningCompte() {
                         <div>
                             <div className="flex items-center gap-2 flex-wrap">
                                 <h3 className="text-sm font-bold text-white tracking-wide">
-                                    Membre Renouvelant · Quota 50h Statutaire Certifié (Année N-1)
+                                    Membre Renouvelant · Quota 50h Statutaire Certifié (Année 2A)
                                 </h3>
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-school uppercase tracking-wider bg-emerald-500/25 text-emerald-300 border border-emerald-400/40">
                                     Statut Officiel
@@ -741,7 +741,7 @@ export function PlanningCompte() {
                     unit="h"
                     sublabel={
                         isExempt
-                            ? `Quota 50h statutaire validé (N-1)${totalManualHours > 0 ? ` · dont ${totalManualHours}h Bureau` : ''}`
+                            ? `Quota 50h statutaire validé (2A)${totalManualHours > 0 ? ` · dont ${totalManualHours}h Bureau` : ''}`
                             : totalManualHours > 0 ? `(dont ${totalManualHours}h Bureau)` : undefined
                     }
                     gradient={isExempt ? "from-emerald-600 to-teal-500" : "from-[#6F2B75] to-[#EC602B]"}
@@ -749,7 +749,7 @@ export function PlanningCompte() {
                         current: isExempt ? ATTESTATION_THRESHOLD : totalConsolide,
                         max: ATTESTATION_THRESHOLD,
                         isEligible: isAttestationEligible,
-                        customLabel: isExempt ? `50h validées (N-1) + ${totalConsolide}h en ${academicYear}` : undefined,
+                        customLabel: isExempt ? `50h validées (2A) + ${totalConsolide}h en ${academicYear}` : undefined,
                     }}
                 />
                 <StatCard

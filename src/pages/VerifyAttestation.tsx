@@ -103,7 +103,7 @@ export function VerifyAttestation() {
                                         <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider font-school ${
                                             isValid ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'
                                         }`}>
-                                            {isRenouvelant ? 'Statut Renouvelant (Quota N-1 Acquis)' : isValid ? 'Validée (50h+)' : 'En Cours'}
+                                            {isRenouvelant ? 'Statut Renouvelant (Quota 2A Acquis)' : isValid ? 'Validée (50h+)' : 'En Cours'}
                                         </span>
                                     </div>
                                     <p className="mt-2 text-xs sm:text-sm text-zinc-700 leading-relaxed">
@@ -139,7 +139,7 @@ export function VerifyAttestation() {
                                     </div>
                                     <p className="text-base font-black text-zinc-900">{hours} heure{Number(hours) > 1 ? 's' : ''}</p>
                                     <p className="text-xs text-zinc-500 mt-0.5">
-                                        {isRenouvelant ? 'Quota 50h statutaire acquis N-1' : isValid ? 'Seuil statutaire 50h atteint' : 'Seuil statutaire requis : 50h'}
+                                        {isRenouvelant ? 'Quota 50h statutaire acquis 2A' : isValid ? 'Seuil statutaire 50h atteint' : 'Seuil statutaire requis : 50h'}
                                     </p>
                                 </div>
 

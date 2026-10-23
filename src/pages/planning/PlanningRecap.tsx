@@ -271,11 +271,11 @@ export function PlanningRecap() {
     // Export CSV consolidé compatible KEDGE (colonnes : Nom, Prénom, Heures Terrain, Heures Valorisées, Total, Statut)
     const handleExportCSV = () => {
         const BOM = '\uFEFF'; // BOM UTF-8 pour Excel
-        const headers = ['Nom', 'Prénom', 'Heures terrain', 'Heures valorisées (Bureau)', 'Total heures', 'Statut attestation', 'Quota N-1 validé'];
+        const headers = ['Nom', 'Prénom', 'Heures terrain', 'Heures valorisées (Bureau)', 'Total heures', 'Statut attestation', 'Quota 2A validé'];
         const rows = displayedMembers.map(u => {
             const isExempt = isQuotaExempt(u.id);
             const statusLabel = isExempt
-                ? 'Quota N-1 Validé'
+                ? 'Quota 2A Validé'
                 : u.totalHours >= 50
                     ? 'Attestation validée (≥50h)'
                     : `En cours (${u.totalHours}/50h)`;
@@ -606,7 +606,7 @@ export function PlanningRecap() {
                 </div>
 
                 <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
-                    <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Attestations validées (≥ 50h ou N-1)</p>
+                    <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Attestations validées (≥ 50h ou 2A)</p>
                     <p className="text-3xl font-display text-emerald-400 mt-1 tabular-nums">
                         {recapData.filter(u => u.totalHours >= 50 || isQuotaExempt(u.id)).length}
                         <span className="text-xs font-school text-[#ECDDFD]/60 ml-2 font-normal">/ {recapData.length}</span>
@@ -628,7 +628,7 @@ export function PlanningRecap() {
                         </span>
                     </div>
                     <span className="text-[11px] text-[#ECDDFD]/50 font-mono hidden sm:inline">
-                        Seuil d'attestation : 50 heures (ou Quota N-1 validé)
+                        Seuil d'attestation : 50 heures (ou Quota 2A validé)
                     </span>
                 </div>
 
@@ -745,7 +745,7 @@ export function PlanningRecap() {
                                                 {isExempt ? (
                                                     <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-school uppercase tracking-wider font-bold flex items-center gap-1">
                                                         <GraduationCap size={12} />
-                                                        <span>Quota N-1 Validé · Renouvelant</span>
+                                                        <span>Quota 2A Validé · Renouvelant</span>
                                                     </span>
                                                 ) : (
                                                     <span className={`text-[10px] font-school uppercase tracking-wider font-bold ${
@@ -776,7 +776,7 @@ export function PlanningRecap() {
                                                         const newStatus = !isExempt;
                                                         const confirmMsg = newStatus
                                                             ? `Confirmer que ${u.name} a déjà validé son quota de 50h l'année dernière (Membre renouvelant) ?`
-                                                            : `Retirer le statut renouvelant (quota N-1) de ${u.name} ?`;
+                                                            : `Retirer le statut renouvelant (quota 2A) de ${u.name} ?`;
                                                         if (window.confirm(confirmMsg)) {
                                                             await toggleQuotaExemption(u.id, u.name, newStatus);
                                                         }
@@ -786,10 +786,10 @@ export function PlanningRecap() {
                                                             ? 'bg-purple-500/20 text-purple-300 border-purple-500/40 hover:bg-purple-500/30'
                                                             : 'bg-white/5 text-[#ECDDFD]/60 border-white/10 hover:border-purple-400/50 hover:text-purple-300'
                                                     }`}
-                                                    title={isExempt ? "Cliquer pour retirer la validation N-1" : "Valider le quota 50h acquis l'an dernier"}
+                                                    title={isExempt ? "Cliquer pour retirer la validation 2A" : "Valider le quota 50h acquis l'an dernier"}
                                                 >
                                                     <GraduationCap size={13} />
-                                                    <span>{isExempt ? 'Quota N-1 Acquis' : 'Valider N-1'}</span>
+                                                    <span>{isExempt ? 'Quota 2A Acquis' : 'Valider 2A'}</span>
                                                 </button>
 
                                                 <button
