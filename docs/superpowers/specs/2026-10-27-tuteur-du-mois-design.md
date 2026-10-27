@@ -21,7 +21,7 @@ Ajouter dans l'espace membre (`/planning`) un vote mensuel pour élire le « tut
 - Pas d'historique consultable par les membres, ni de page dédiée aux anciens gagnants.
 - Pas de notifications ni d'e-mails de rappel.
 - Pas de vote anonyme cryptographique : le Sheet reste lisible par l'administrateur du Google Sheet.
-- Aucune modification de la connexion ni de la gestion des mots de passe.
+- Aucune modification de la gestion des mots de passe. La connexion ne change que par un ajout : elle remet un jeton de session (voir « Authentification des actions de vote »).
 
 ## Architecture
 
@@ -76,3 +76,14 @@ Le calcul de la fenêtre existe à la fois dans le script (autorité) et dans le
 
 1. Le front se déploie via Vercel comme d'habitude, après confirmation de l'utilisateur avant le `push`.
 2. L'utilisateur doit recopier `google-apps-script.js` dans l'éditeur Apps Script et créer un nouveau déploiement. Avant cette étape, la page Vote du mois affiche une erreur côté production.
+
+## Authentification des actions de vote (ajout après la revue finale)
+
+Problème : le script prenait l'identifiant annoncé dans la requête (`requesterId`, `voterId`) pour argent comptant. Ces identifiants sont lisibles sans connexion (`listUsers`), donc quelqu'un pouvait voter à la place d'un autre, lire son vote ou se faire passer pour le Bureau.
+
+Solution :
+- À la connexion, le script ajoute `token` à l'objet `user` renvoyé. Le jeton est `<expiration en ms>.<HMAC-SHA256 de "<id>.<expiration>">`, valable 12 heures. Le secret de signature (`SESSION_SECRET`) est créé automatiquement au premier usage dans les propriétés du script.
+- Si la création du jeton échoue, la connexion réussit quand même, sans jeton.
+- Les quatre actions de vote refusent (`code: unauthenticated`) toute requête dont le jeton n'est pas valide pour l'identifiant annoncé (`voterId` pour `castVote`, `requesterId` sinon). Le contrôle a lieu avant toute lecture ou écriture.
+- Le front garde le jeton dans la session (il fait déjà partie de l'objet utilisateur) et l'envoie avec chaque action de vote. Une session ouverte avant la mise en place des jetons n'en a pas : la page propose « Se reconnecter ».
+- Limite restante : les autres actions du planning (réservations, présences) ne sont pas protégées par ce jeton. Seul le vote l'est.

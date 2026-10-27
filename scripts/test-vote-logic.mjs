@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { loadScript } from './lib/apps-script-harness.mjs';
 
 const USERS = [
-    { id: 'a1', name: 'Alice', role: 'tuteur' },
-    { id: 'b2', name: 'Bob', role: 'tuteur' },
-    { id: 'c3', name: 'Chloé', role: 'chef_projet' },
-    { id: 'd4', name: 'Dan', role: 'bureau' },
+    { id: 'a1', name: 'Alice', role: 'tuteur', login: 'alice', password: 'pw-a' },
+    { id: 'b2', name: 'Bob', role: 'tuteur', login: 'bob', password: 'pw-b' },
+    { id: 'c3', name: 'Chloé', role: 'chef_projet', login: 'chloe', password: 'pw-c' },
+    { id: 'd4', name: 'Dan', role: 'bureau', login: 'dan', password: 'pw-d' },
 ];
 const OPEN = '2026-10-27';
 const plain = (x) => JSON.parse(JSON.stringify(x));
@@ -214,4 +214,73 @@ test('un gagnant publié puis exclu par le Bureau n\'est plus affiché comme tut
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner, null);
     h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: false });
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner.userId, 'b2');
+});
+
+// ─── Authentification des actions de vote (jeton de session signé) ───────────
+
+test('la connexion renvoie un jeton, et ce jeton permet de voter', () => {
+    const h = fresh();
+    const login = h.login('alice', 'pw-a');
+    assert.equal(login.success, true);
+    assert.equal(login.user.id, 'a1');
+    assert.equal(typeof login.user.token, 'string');
+    assert.equal(h.raw('castVote', { voterId: 'a1', candidateId: 'b2', token: login.user.token }).success, true);
+});
+
+test('sans jeton, avec un jeton vide ou altéré : refus unauthenticated et aucune écriture', () => {
+    const h = fresh();
+    const token = h.login('alice', 'pw-a').user.token;
+    const tampered = token.slice(0, -1) + (token.slice(-1) === '0' ? '1' : '0');
+    for (const body of [
+        { voterId: 'a1', candidateId: 'b2' },
+        { voterId: 'a1', candidateId: 'b2', token: '' },
+        { voterId: 'a1', candidateId: 'b2', token: 'n-importe-quoi' },
+        { voterId: 'a1', candidateId: 'b2', token: tampered },
+    ]) {
+        const r = h.raw('castVote', body);
+        assert.deepEqual([r.success, r.code], [false, 'unauthenticated']);
+    }
+    const rows = h.sheet('Votes');
+    assert.ok(rows === null || rows.length === 1, 'aucun vote écrit'); // onglet absent ou en-tête seul
+});
+
+test('le jeton d\'Alice ne permet pas de voter ou de lire au nom de Bob', () => {
+    const h = fresh();
+    const aliceToken = h.login('alice', 'pw-a').user.token;
+    assert.equal(h.raw('castVote', { voterId: 'b2', candidateId: 'c3', token: aliceToken }).code, 'unauthenticated');
+    assert.equal(h.raw('getVoteData', { requesterId: 'b2', token: aliceToken }).code, 'unauthenticated');
+});
+
+test('un tuteur qui se fait passer pour le Bureau avec son propre jeton est refusé et ne reçoit pas le décompte', () => {
+    const h = fresh();
+    const aliceToken = h.login('alice', 'pw-a').user.token;
+    for (const [action, body] of [
+        ['getVoteData', { requesterId: 'd4' }],
+        ['setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true }],
+        ['publishWinner', { requesterId: 'd4', userId: 'b2' }],
+    ]) {
+        const r = h.raw(action, { ...body, token: aliceToken });
+        assert.deepEqual([r.success, r.code], [false, 'unauthenticated'], action);
+        assert.equal('bureau' in r, false);
+    }
+});
+
+test('un jeton expire après 12 heures', () => {
+    const h = fresh();
+    const token = h.login('alice', 'pw-a').user.token;
+    h.advanceMs(11 * 3600 * 1000);
+    assert.equal(h.raw('getVoteData', { requesterId: 'a1', token }).success, true);
+    h.advanceMs(2 * 3600 * 1000);
+    assert.equal(h.raw('getVoteData', { requesterId: 'a1', token }).code, 'unauthenticated');
+});
+
+test('si les propriétés du script sont indisponibles, la connexion réussit quand même (sans jeton)', () => {
+    const h = fresh({ propertiesBroken: true });
+    const login = h.login('alice', 'pw-a');
+    assert.equal(login.success, true);
+    assert.equal('token' in login.user, false);
+});
+
+test('la connexion avec un mauvais mot de passe échoue toujours', () => {
+    assert.equal(fresh().login('alice', 'mauvais').success, false);
 });

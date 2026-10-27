@@ -505,6 +505,11 @@ function doPost(e) {
         role: data[i][4].toString(),
         projectIds: projectIds
       };
+      try {
+        user.token = createSessionToken(user.id);
+      } catch (tokenErr) {
+        // Sans jeton, la connexion reste possible : seules les actions de vote demanderont de se reconnecter.
+      }
       return ContentService.createTextOutput(JSON.stringify({ success: true, user: user }))
         .setMimeType(ContentService.MimeType.JSON);
     }
@@ -661,6 +666,55 @@ function getPlanningDataInternal() {
 // Le rôle d'un demandeur est toujours relu dans la première feuille du Sheet, jamais pris dans la requête.
 // ==========================================
 
+// ----- Jeton de session -----
+// À la connexion, le script remet un jeton signé (HMAC-SHA256) lié à l'identifiant, valable 12 heures.
+// Les actions de vote exigent ce jeton : connaître un identifiant ne suffit plus pour agir à sa place.
+// Le secret de signature est créé automatiquement au premier usage et gardé dans les propriétés du script.
+var SESSION_TOKEN_TTL_MS = 12 * 60 * 60 * 1000;
+
+function nowMs() {
+  return new Date().getTime();
+}
+
+function getSessionSecret() {
+  var props = PropertiesService.getScriptProperties();
+  var secret = props.getProperty('SESSION_SECRET');
+  if (!secret) {
+    secret = Utilities.getUuid() + Utilities.getUuid();
+    props.setProperty('SESSION_SECRET', secret);
+  }
+  return secret;
+}
+
+function hmacHex(value) {
+  var bytes = Utilities.computeHmacSha256Signature(value, getSessionSecret());
+  var hex = '';
+  for (var i = 0; i < bytes.length; i++) {
+    var b = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+    hex += (b < 16 ? '0' : '') + b.toString(16);
+  }
+  return hex;
+}
+
+function createSessionToken(userId) {
+  var expiresAt = String(nowMs() + SESSION_TOKEN_TTL_MS);
+  return expiresAt + '.' + hmacHex(String(userId) + '.' + expiresAt);
+}
+
+function verifySessionToken(userId, token) {
+  if (typeof token !== 'string' || userId === null || userId === undefined) return false;
+  var dot = token.indexOf('.');
+  if (dot < 1) return false;
+  var expiresAt = token.substr(0, dot);
+  if (!/^[0-9]+$/.test(expiresAt) || parseInt(expiresAt, 10) < nowMs()) return false;
+  var expected = hmacHex(String(userId) + '.' + expiresAt);
+  var given = token.substr(dot + 1);
+  if (given.length !== expected.length) return false;
+  var diff = 0;
+  for (var i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ given.charCodeAt(i);
+  return diff === 0;
+}
+
 var VOTE_SHEETS = {
   votes: { name: 'Votes', headers: ['monthKey', 'voterId', 'candidateId', 'updatedAt'] },
   exclusions: { name: 'VoteExclusions', headers: ['monthKey', 'userId'] },
@@ -770,6 +824,16 @@ function voteFail(code, message) {
 function handleVoteAction(action, postData) {
   if (action !== 'getVoteData' && action !== 'castVote' && action !== 'setVoteExclusion' && action !== 'publishWinner') {
     return null;
+  }
+  var claimedId = action === 'castVote' ? postData.voterId : postData.requesterId;
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(claimedId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) {
+    return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
   }
   var isWrite = action !== 'getVoteData';
   var lock = isWrite ? LockService.getScriptLock() : null;

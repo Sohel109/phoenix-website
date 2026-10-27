@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Award, CheckCircle, Lock, RefreshCw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
@@ -22,20 +23,32 @@ function formatMonth(monthKey: string): string {
 }
 
 export function PlanningVote() {
-    const { currentUser } = usePlanning();
-    const { data, loading, error, reload } = useVoteData();
+    const { currentUser, logout } = usePlanning();
+    const navigate = useNavigate();
+    const { data, loading, error, errorCode, reload } = useVoteData();
     const [pendingId, setPendingId] = useState<string | null>(null);
     const [actionError, setActionError] = useState<string | null>(null);
+    const [actionCode, setActionCode] = useState<string | null>(null);
 
     if (!currentUser) return null;
 
     const handleVote = async (candidateId: string) => {
         setPendingId(candidateId);
         setActionError(null);
-        const result = await castVoteApi(currentUser.id, candidateId);
-        if (!result.success) setActionError(result.message);
+        setActionCode(null);
+        const result = await castVoteApi(currentUser.id, candidateId, currentUser.token ?? '');
+        if (!result.success) {
+            setActionError(result.message);
+            setActionCode(result.code ?? null);
+        }
         await reload();
         setPendingId(null);
+    };
+
+    const needsLogin = errorCode === 'unauthenticated' || actionCode === 'unauthenticated';
+    const handleReconnect = () => {
+        logout();
+        navigate('/planning/login');
     };
 
     const candidates = data ? data.candidates.filter((c) => c.id !== currentUser.id) : [];
@@ -60,7 +73,20 @@ export function PlanningVote() {
 
             {loading && !data && <p className="text-[#ECDDFD]/70 text-sm">Chargement du vote...</p>}
 
-            {error && (
+            {needsLogin && (
+                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <p className="text-sm text-[#ECDDFD]/85">Votre session doit être renouvelée pour voter. Reconnectez-vous, cela ne prend que quelques secondes.</p>
+                    <button
+                        type="button"
+                        onClick={handleReconnect}
+                        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider btn-phoenix-gradient text-white"
+                    >
+                        Se reconnecter
+                    </button>
+                </div>
+            )}
+
+            {error && !needsLogin && (
                 <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">{error}</p>
                     <button
@@ -127,10 +153,10 @@ export function PlanningVote() {
                     {candidates.length === 0 && (
                         <p className="text-[#ECDDFD]/70 text-sm">Aucun candidat disponible ce mois-ci.</p>
                     )}
-                    {actionError && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
+                    {actionError && !needsLogin && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
                 </div>
             )}
-            {data?.bureau && <VoteBureauPanel data={data} requesterId={currentUser.id} onChanged={reload} disabled={pendingId !== null || loading} />}
+            {data?.bureau && <VoteBureauPanel data={data} requesterId={currentUser.id} token={currentUser.token ?? ''} onChanged={reload} disabled={pendingId !== null || loading} />}
         </PlanningLayout>
     );
 }

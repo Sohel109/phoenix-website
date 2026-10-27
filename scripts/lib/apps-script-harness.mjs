@@ -3,6 +3,7 @@
 import vm from 'node:vm';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const SCRIPT_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'google-apps-script.js');
@@ -63,7 +64,7 @@ class FakeSpreadsheet {
         this.options = options;
         this.users = new FakeSheet('Utilisateurs', this);
         this.users.appendRow(['id', 'name', 'login', 'password', 'role', 'projects']);
-        for (const u of options.users) this.users.appendRow([u.id, u.name, '', '', u.role ?? '', '']);
+        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', '']);
         this.sheets = new Map();
     }
     getSheets() { return [this.users, ...this.sheets.values()]; }
@@ -76,10 +77,11 @@ class FakeSpreadsheet {
 }
 
 /**
- * @param {{ users: {id: string, name: string, role?: string}[], now?: string, dateifyMonthKeys?: boolean, numericIds?: boolean }} options
+ * @param {{ users: {id: string, name: string, role?: string, login?: string, password?: string}[], now?: string, dateifyMonthKeys?: boolean, numericIds?: boolean, propertiesBroken?: boolean }} options
  */
 export function loadScript(options) {
-    const state = { now: options.now ?? '2026-10-27' };
+    const state = { now: options.now ?? '2026-10-27', nowMs: Date.now() };
+    const properties = new Map();
     const ss = new FakeSpreadsheet(options);
     const sandbox = {
         console,
@@ -90,19 +92,42 @@ export function loadScript(options) {
             createTextOutput(text) { return { text, setMimeType() { return this; } }; },
         },
         LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
-        Utilities: { formatDate: (date, _tz, fmt) => formatParis(date, fmt) },
+        Utilities: {
+            formatDate: (date, _tz, fmt) => formatParis(date, fmt),
+            getUuid: () => crypto.randomUUID(),
+            // Comme Apps Script : tableau d'octets signés.
+            computeHmacSha256Signature: (value, key) => Array.from(crypto.createHmac('sha256', key).update(value).digest()).map((b) => (b > 127 ? b - 256 : b)),
+        },
+        PropertiesService: {
+            getScriptProperties: () => {
+                if (options.propertiesBroken) throw new Error('PropertiesService indisponible');
+                return { getProperty: (k) => properties.get(k) ?? null, setProperty: (k, v) => properties.set(k, v) };
+            },
+        },
     };
     const ctx = vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(SCRIPT_PATH, 'utf-8'), ctx, { filename: 'google-apps-script.js' });
     // Fixe "aujourd'hui" quand le script expose todayKeyParis().
     if (typeof ctx.todayKeyParis === 'function') ctx.todayKeyParis = () => state.now;
+    if (typeof ctx.nowMs === 'function') ctx.nowMs = () => state.nowMs;
 
     return {
         ctx,
         setNow(key) { state.now = key; },
+        advanceMs(ms) { state.nowMs += ms; },
+        /** Appel authentifié : ajoute un jeton valide pour l'identité annoncée, sauf si `body.token` est fourni. */
         call(action, body = {}) {
+            const identity = body.voterId ?? body.requesterId;
+            const withToken = 'token' in body || identity === undefined ? body : { ...body, token: ctx.createSessionToken(String(identity)) };
+            return this.raw(action, withToken);
+        },
+        /** Appel tel quel, sans jeton ajouté. */
+        raw(action, body = {}) {
             const out = ctx.doPost({ postData: { contents: JSON.stringify({ action, ...body }) } });
             return JSON.parse(out.text);
+        },
+        login(login, password) {
+            return this.raw(undefined, { login, password });
         },
         sheet(name) {
             const sheet = ss.getSheetByName(name);
