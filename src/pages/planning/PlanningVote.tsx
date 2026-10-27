@@ -60,15 +60,16 @@ export function PlanningVote() {
 
             {loading && !data && <p className="text-[#ECDDFD]/70 text-sm">Chargement du vote...</p>}
 
-            {error && !data && (
-                <div className="p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {error && (
+                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">{error}</p>
                     <button
                         type="button"
                         onClick={() => void reload()}
-                        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider bg-[#1F0422]/70 text-[#ECDDFD]/80 hover:bg-[#6F2B75]/40 hover:text-white border border-[#6F2B75]/40 transition-all"
+                        disabled={loading}
+                        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider bg-[#1F0422]/70 text-[#ECDDFD]/80 hover:bg-[#6F2B75]/40 hover:text-white border border-[#6F2B75]/40 transition-all disabled:opacity-60"
                     >
-                        <RefreshCw size={14} />
+                        <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
                         Réessayer
                     </button>
                 </div>
@@ -104,7 +105,7 @@ export function PlanningVote() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: Math.min(index, 12) * 0.03 }}
-                                disabled={pendingId !== null}
+                                disabled={pendingId !== null || loading}
                                 onClick={() => void handleVote(candidate.id)}
                                 aria-pressed={isMine}
                                 className={`w-full flex items-center justify-between gap-4 px-5 py-4 rounded-xl text-left border transition-all backdrop-blur-md disabled:opacity-60 ${
@@ -129,7 +130,7 @@ export function PlanningVote() {
                     {actionError && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
                 </div>
             )}
-            {data?.bureau && <VoteBureauPanel data={data} requesterId={currentUser.id} onChanged={reload} />}
+            {data?.bureau && <VoteBureauPanel data={data} requesterId={currentUser.id} onChanged={reload} disabled={pendingId !== null || loading} />}
         </PlanningLayout>
     );
 }

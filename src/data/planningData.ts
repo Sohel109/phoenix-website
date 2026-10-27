@@ -1,4 +1,5 @@
 import { projectsData } from './projectsData';
+import { parseVoteData } from './voteResponse';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -387,6 +388,8 @@ export interface VoteData {
     };
 }
 
+const VOTE_UNAVAILABLE = "Le vote n'est pas disponible pour le moment.";
+
 async function postVoteAction(body: Record<string, unknown>): Promise<{ success: boolean; message: string; data?: Record<string, unknown> }> {
     try {
         const API_URL = import.meta.env.VITE_API_URL || '';
@@ -401,8 +404,9 @@ async function postVoteAction(body: Record<string, unknown>): Promise<{ success:
         const data = await response.json();
         return {
             success: !!data.success,
-            // Un script Google pas encore redéployé répond "Action inconnue" aux actions de vote.
-            message: data.success ? (data.message || '') : (!data.message || data.message === 'Action inconnue' ? "Le vote n'est pas disponible pour le moment." : data.message),
+            // Un script Google pas encore redéployé traite les actions de vote comme une connexion et répond
+            // "Identifiants incorrects" : on n'affiche jamais ce texte pour le vote.
+            message: data.success ? (data.message || '') : (!data.message || data.message === 'Action inconnue' || data.message === 'Identifiants incorrects' ? VOTE_UNAVAILABLE : data.message),
             data
         };
     } catch (error) {
@@ -413,8 +417,9 @@ async function postVoteAction(body: Record<string, unknown>): Promise<{ success:
 
 export async function fetchVoteData(requesterId: string): Promise<{ ok: true; data: VoteData } | { ok: false; message: string }> {
     const result = await postVoteAction({ action: 'getVoteData', requesterId });
-    if (!result.success || !result.data) return { ok: false, message: result.message };
-    return { ok: true, data: result.data as unknown as VoteData };
+    if (!result.success) return { ok: false, message: result.message };
+    const data = parseVoteData(result.data);
+    return data ? { ok: true, data } : { ok: false, message: VOTE_UNAVAILABLE };
 }
 
 export async function castVoteApi(voterId: string, candidateId: string): Promise<{ success: boolean; message: string }> {

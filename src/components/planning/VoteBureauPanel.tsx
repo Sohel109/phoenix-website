@@ -7,14 +7,17 @@ interface VoteBureauPanelProps {
     data: VoteData;
     requesterId: string;
     onChanged: () => void | Promise<void>;
+    /** Vrai quand la page est déjà en train d'envoyer ou de recharger : évite deux actions simultanées. */
+    disabled?: boolean;
 }
 
 const cardClass = 'p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg';
 const buttonClass =
     'px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider transition-all border disabled:opacity-60';
 
-export function VoteBureauPanel({ data, requesterId, onChanged }: VoteBureauPanelProps) {
-    const [busy, setBusy] = useState(false);
+export function VoteBureauPanel({ data, requesterId, onChanged, disabled = false }: VoteBureauPanelProps) {
+    const [working, setWorking] = useState(false);
+    const busy = working || disabled;
     const [error, setError] = useState<string | null>(null);
     const [choice, setChoice] = useState('');
 
@@ -24,12 +27,12 @@ export function VoteBureauPanel({ data, requesterId, onChanged }: VoteBureauPane
     const selectedWinner = choice || data.winner?.userId || counts[0]?.userId || '';
 
     const run = async (action: () => Promise<{ success: boolean; message: string }>) => {
-        setBusy(true);
+        setWorking(true);
         setError(null);
         const result = await action();
         if (!result.success) setError(result.message);
         await onChanged();
-        setBusy(false);
+        setWorking(false);
     };
 
     return (

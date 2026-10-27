@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "test:vote": "node --test scripts/test-vote-logic.mjs"
+    "test:vote": "node --experimental-strip-types --no-warnings --test scripts/test-vote-logic.mjs scripts/test-vote-client.mjs"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.21",
