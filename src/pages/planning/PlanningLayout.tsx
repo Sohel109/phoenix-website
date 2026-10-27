@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, ChevronLeft, CalendarCheck, Bell, Calendar, Clock, UserCheck, Globe } from 'lucide-react';
+import { LogOut, ChevronLeft, CalendarCheck, Bell, Calendar, Clock, UserCheck, Globe, Award } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
 import { PlanningNotificationsDrawer } from '../../components/planning/PlanningNotificationsDrawer';
@@ -29,6 +29,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
         { label: 'Mes disponibilités', path: '/planning/disponibilites', icon: Calendar },
         { label: 'Horaire', path: '/planning/horaire', icon: Clock },
         { label: 'Mon compte', path: '/planning/compte', icon: UserCheck },
+        { label: 'Vote du mois', path: '/planning/vote', icon: Award },
     ];
 
     return (

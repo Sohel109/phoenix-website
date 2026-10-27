@@ -401,7 +401,8 @@ async function postVoteAction(body: Record<string, unknown>): Promise<{ success:
         const data = await response.json();
         return {
             success: !!data.success,
-            message: data.message || (data.success ? '' : "Le vote n'est pas disponible pour le moment."),
+            // Un script Google pas encore redéployé répond "Action inconnue" aux actions de vote.
+            message: data.success ? (data.message || '') : (!data.message || data.message === 'Action inconnue' ? "Le vote n'est pas disponible pour le moment." : data.message),
             data
         };
     } catch (error) {
