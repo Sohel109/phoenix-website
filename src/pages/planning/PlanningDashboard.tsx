@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
+import { useVoteData } from '../../hooks/useVoteData';
 import { projectsData } from '../../data/projectsData';
 
 interface DashCard {
@@ -47,6 +48,13 @@ const cards: DashCard[] = [
         gradient: 'from-[#EC602B] to-[#F29C38]',
     },
     {
+        icon: <Award size={26} />,
+        label: 'Vote du mois',
+        description: 'Votez pour le tuteur du mois',
+        to: '/planning/vote',
+        gradient: 'from-[#83338A] to-[#EC602B]',
+    },
+    {
         icon: <User size={26} />,
         label: 'Mon compte',
         description: 'Vos heures, absences et statistiques',
@@ -82,6 +90,7 @@ const cards: DashCard[] = [
 export function PlanningDashboard() {
     const { currentUser } = usePlanning();
     const { unreadCount } = usePlanningNotifications();
+    const { data: voteData } = useVoteData();
     const isChef = currentUser?.role === 'chef_projet';
     const isBureau = currentUser?.role === 'bureau';
 
@@ -143,6 +152,23 @@ export function PlanningDashboard() {
                     </div>
                 )}
             </div>
+
+            {/* Tuteur du mois : visible seulement quand le Bureau a publié le gagnant */}
+            {voteData?.winner && (
+                <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-8 p-5 rounded-xl bg-gradient-to-r from-[#6F2B75]/30 via-[#EC602B]/20 to-[#2A082D]/60 border border-[#EC602B]/40 flex items-center gap-3.5 backdrop-blur-md shadow-soft"
+                >
+                    <div className="w-11 h-11 rounded-lg bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
+                        <Award size={20} />
+                    </div>
+                    <div>
+                        <p className="text-xs font-school uppercase tracking-widest text-[#ECDDFD]/70">Tuteur du mois</p>
+                        <p className="text-base font-bold text-white tracking-wide">{voteData.winner.name}</p>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Notification alert banner if unread */}
             {unreadCount > 0 && (
