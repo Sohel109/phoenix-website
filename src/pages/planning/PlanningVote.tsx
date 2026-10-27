@@ -5,6 +5,7 @@ import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { useVoteData } from '../../hooks/useVoteData';
 import { castVoteApi } from '../../data/planningData';
+import { VoteBureauPanel } from '../../components/planning/VoteBureauPanel';
 
 function parseDay(key: string): Date {
     const [y, m, d] = key.split('-').map(Number);
@@ -128,6 +129,7 @@ export function PlanningVote() {
                     {actionError && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
                 </div>
             )}
+            {data?.bureau && <VoteBureauPanel data={data} requesterId={currentUser.id} onChanged={reload} />}
         </PlanningLayout>
     );
 }

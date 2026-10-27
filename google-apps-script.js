@@ -843,7 +843,8 @@ function voteGetData(ctx, postData) {
   for (var w = 0; w < winnerRows.length; w++) {
     if (normalizeMonthKey(winnerRows[w].cells[0]) === ctx.win.monthKey) {
       var winnerUser = findVoteUser(ctx.users, winnerRows[w].cells[1]);
-      if (winnerUser) winner = { userId: winnerUser.id, name: winnerUser.name };
+      // Un gagnant exclu depuis sa publication n'est plus affiché.
+      if (winnerUser && ctx.eligibleIds.indexOf(winnerUser.id) !== -1) winner = { userId: winnerUser.id, name: winnerUser.name };
     }
   }
 

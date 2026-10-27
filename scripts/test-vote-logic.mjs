@@ -206,3 +206,12 @@ test('getVoteData refuse un demandeur inconnu et handleVoteAction ignore les aut
     assert.equal(h.call('getVoteData', { requesterId: 'zz' }).success, false);
     assert.equal(h.ctx.handleVoteAction('syncBooking', {}), null);
 });
+
+test('un gagnant publié puis exclu par le Bureau n\'est plus affiché comme tuteur du mois', () => {
+    const h = fresh();
+    h.call('publishWinner', { requesterId: 'd4', userId: 'b2' });
+    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner, null);
+    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: false });
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner.userId, 'b2');
+});
