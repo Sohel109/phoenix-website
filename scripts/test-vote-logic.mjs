@@ -10,50 +10,133 @@ const USERS = [
 ];
 const OPEN = '2026-10-27';
 const plain = (x) => JSON.parse(JSON.stringify(x));
-const fresh = (opts = {}) => loadScript({ users: USERS, now: OPEN, ...opts });
+
+// Par défaut personne n'est candidat : le Bureau (d4) choisit. `select` = les candidats choisis au départ.
+const fresh = ({ select = USERS.map((u) => u.id), users = USERS, ...opts } = {}) => {
+    const h = loadScript({ users, now: OPEN, ...opts });
+    for (const id of select) h.call('setVoteCandidate', { requesterId: 'd4', userId: id, selected: true });
+    return h;
+};
+const windowFor = (key) => plain(loadScript({ users: USERS }).ctx.voteWindowFor(key));
 
 // ─── Fenêtre de vote ──────────────────────────────────────────────────────────
 
-test('voteWindowFor : la veille de l\'ouverture, le mois de référence est le précédent et le vote est fermé', () => {
-    const w = plain(fresh().ctx.voteWindowFor('2026-10-24'));
+test('voteWindowFor : la veille de l\'ouverture, le mois de référence est le précédent, et la sélection porte sur le vote à venir', () => {
+    const w = windowFor('2026-10-24');
     assert.equal(w.monthKey, '2026-09');
     assert.equal(w.isOpen, false);
     assert.equal(w.nextOpensOn, '2026-10-25');
+    assert.equal(w.selectionMonthKey, '2026-10');
 });
 
 test('voteWindowFor : le 25 octobre le vote s\'ouvre pour octobre jusqu\'au 31', () => {
-    const w = plain(fresh().ctx.voteWindowFor('2026-10-25'));
-    assert.deepEqual(w, { monthKey: '2026-10', isOpen: true, opensOn: '2026-10-25', closesOn: '2026-10-31', nextOpensOn: '2026-11-24' });
+    assert.deepEqual(windowFor('2026-10-25'), {
+        monthKey: '2026-10', selectionMonthKey: '2026-10', isOpen: true,
+        opensOn: '2026-10-25', closesOn: '2026-10-31', nextOpensOn: '2026-11-24',
+    });
 });
 
-test('voteWindowFor : le 3 novembre le vote d\'octobre est fermé et la prochaine ouverture est le 24 novembre', () => {
-    const w = plain(fresh().ctx.voteWindowFor('2026-11-03'));
+test('voteWindowFor : le 3 novembre le vote d\'octobre est fermé, la prochaine ouverture est le 24 novembre et la sélection porte sur novembre', () => {
+    const w = windowFor('2026-11-03');
     assert.equal(w.monthKey, '2026-10');
     assert.equal(w.isOpen, false);
     assert.equal(w.opensOn, '2026-10-25');
     assert.equal(w.closesOn, '2026-10-31');
     assert.equal(w.nextOpensOn, '2026-11-24');
+    assert.equal(w.selectionMonthKey, '2026-11');
 });
 
 test('voteWindowFor : novembre (30 jours) ouvre le 24', () => {
-    const w = plain(fresh().ctx.voteWindowFor('2026-11-24'));
+    const w = windowFor('2026-11-24');
     assert.deepEqual([w.monthKey, w.isOpen, w.closesOn], ['2026-11', true, '2026-11-30']);
 });
 
 test('voteWindowFor : février non bissextile ouvre le 22 et se ferme le 28', () => {
-    const open = plain(fresh().ctx.voteWindowFor('2027-02-22'));
+    const open = windowFor('2027-02-22');
     assert.deepEqual([open.isOpen, open.opensOn, open.closesOn], [true, '2027-02-22', '2027-02-28']);
-    assert.equal(plain(fresh().ctx.voteWindowFor('2027-02-21')).isOpen, false);
+    assert.equal(windowFor('2027-02-21').isOpen, false);
 });
 
 test('voteWindowFor : février bissextile ouvre le 23 et se ferme le 29', () => {
-    const w = plain(fresh().ctx.voteWindowFor('2028-02-23'));
+    const w = windowFor('2028-02-23');
     assert.deepEqual([w.isOpen, w.opensOn, w.closesOn], [true, '2028-02-23', '2028-02-29']);
 });
 
-test('voteWindowFor : le 1er janvier le mois de référence est décembre de l\'année précédente', () => {
-    const w = plain(fresh().ctx.voteWindowFor('2027-01-01'));
-    assert.deepEqual([w.monthKey, w.isOpen, w.nextOpensOn], ['2026-12', false, '2027-01-25']);
+test('voteWindowFor : le 1er janvier le mois de référence est décembre, la sélection porte sur janvier', () => {
+    const w = windowFor('2027-01-01');
+    assert.deepEqual([w.monthKey, w.isOpen, w.nextOpensOn, w.selectionMonthKey], ['2026-12', false, '2027-01-25', '2027-01']);
+});
+
+// ─── Candidats choisis par le Bureau ──────────────────────────────────────────
+
+test('par défaut personne n\'est candidat : aucune liste et le vote est refusé', () => {
+    const h = fresh({ select: [] });
+    const data = h.call('getVoteData', { requesterId: 'a1' });
+    assert.deepEqual(plain(data.candidates), []);
+    const r = h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
+    assert.deepEqual([r.success, r.code], [false, 'not_eligible']);
+});
+
+test('le Bureau choisit ses candidats : seuls ceux-là apparaissent et peuvent recevoir un vote', () => {
+    const h = fresh({ select: ['b2', 'c3'] });
+    const data = h.call('getVoteData', { requesterId: 'a1' });
+    assert.deepEqual(plain(data.candidates.map((c) => c.id)), ['b2', 'c3']);
+    assert.equal(h.call('castVote', { voterId: 'a1', candidateId: 'b2' }).success, true);
+    assert.equal(h.call('castVote', { voterId: 'b2', candidateId: 'd4' }).code, 'not_eligible');
+});
+
+test('aucun plafond : le Bureau peut choisir moins ou plus de 5 candidats (5 est seulement l\'usage)', () => {
+    const many = ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7'].map((id) => ({ id, name: id.toUpperCase(), role: 'tuteur' }));
+    const users = [...many, { id: 'd4', name: 'Dan', role: 'bureau' }];
+    const h = fresh({ users, select: ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7'] });
+    const data = h.call('getVoteData', { requesterId: 'd4' });
+    assert.equal(data.bureau.members.filter((m) => m.selected).length, 7);
+    assert.equal('maxCandidates' in data.bureau, false);
+    const two = fresh({ select: ['a1', 'b2'] });
+    assert.equal(two.call('getVoteData', { requesterId: 'c3' }).candidates.length, 2);
+});
+
+test('choisir deux fois le même candidat ne crée pas de doublon et ne compte pas deux places', () => {
+    const h = fresh({ select: ['a1'] });
+    assert.equal(h.call('setVoteCandidate', { requesterId: 'd4', userId: 'a1', selected: true }).success, true);
+    assert.equal(h.sheet('VoteCandidats').length, 2); // en-tête + 1 ligne
+});
+
+test('setVoteCandidate exige un booléen pour selected', () => {
+    const h = fresh({ select: [] });
+    for (const selected of ['true', 1, undefined, null]) {
+        const r = h.call('setVoteCandidate', { requesterId: 'd4', userId: 'a1', selected });
+        assert.deepEqual([r.success, r.code], [false, 'bad_request'], String(selected));
+    }
+    assert.equal(h.sheet('VoteCandidats').length, 1);
+});
+
+test('avant l\'ouverture, le Bureau prépare le vote suivant sans toucher au décompte du vote précédent', () => {
+    const h = fresh({ select: ['a1', 'b2'] });
+    h.call('castVote', { voterId: 'c3', candidateId: 'a1' });
+    h.setNow('2026-11-03'); // vote d'octobre clos, novembre pas encore ouvert
+    assert.equal(h.call('setVoteCandidate', { requesterId: 'd4', userId: 'c3', selected: true }).success, true);
+    const bureau = h.call('getVoteData', { requesterId: 'd4' });
+    assert.equal(bureau.monthKey, '2026-10');
+    assert.equal(bureau.bureau.selectionMonthKey, '2026-11');
+    assert.deepEqual(plain(bureau.bureau.counts.map((c) => [c.userId, c.count])), [['a1', 1], ['b2', 0]]); // octobre intact
+    assert.deepEqual(plain(bureau.bureau.members.filter((m) => m.selected).map((m) => m.id)), ['c3']); // novembre = seulement c3
+    h.setNow('2026-11-24'); // ouverture de novembre
+    assert.deepEqual(plain(h.call('getVoteData', { requesterId: 'a1' }).candidates.map((c) => c.id)), ['c3']);
+});
+
+test('un non-Bureau ne peut pas choisir les candidats', () => {
+    const h = fresh({ select: [] });
+    for (const requesterId of ['a1', 'c3']) {
+        const r = h.call('setVoteCandidate', { requesterId, userId: 'a1', selected: true });
+        assert.deepEqual([r.success, r.code], [false, 'forbidden'], requesterId);
+    }
+    assert.equal(h.sheet('VoteCandidats').length, 1);
+});
+
+test('setVoteCandidate refuse un compte inconnu', () => {
+    const r = fresh({ select: [] }).call('setVoteCandidate', { requesterId: 'd4', userId: 'zz', selected: true });
+    assert.deepEqual([r.success, r.code], [false, 'unknown_user']);
 });
 
 // ─── castVote ─────────────────────────────────────────────────────────────────
@@ -72,13 +155,13 @@ test('castVote : un second vote du même électeur remplace le premier (une seul
     const h = fresh();
     h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
     h.call('castVote', { voterId: 'a1', candidateId: 'c3' });
-    const rows = h.sheet('Votes');
-    assert.equal(rows.length, 2); // en-tête + 1 vote
+    assert.equal(h.sheet('Votes').length, 2); // en-tête + 1 vote
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, 'c3');
 });
 
 test('castVote refuse hors fenêtre avec le code closed', () => {
-    const h = fresh({ now: '2026-11-03' });
+    const h = fresh();
+    h.setNow('2026-11-03');
     const r = h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
     assert.deepEqual([r.success, r.code], [false, 'closed']);
 });
@@ -93,11 +176,15 @@ test('castVote refuse un électeur inconnu avec le code unknown_voter', () => {
     assert.deepEqual([r.success, r.code], [false, 'unknown_voter']);
 });
 
-test('castVote refuse un candidat exclu avec le code not_eligible', () => {
-    const h = fresh();
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
+test('castVote refuse un membre qui n\'est pas candidat avec le code not_eligible', () => {
+    const h = fresh({ select: ['c3'] });
     const r = h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
     assert.deepEqual([r.success, r.code], [false, 'not_eligible']);
+});
+
+test('un membre qui n\'est pas candidat peut quand même voter', () => {
+    const h = fresh({ select: ['c3'] });
+    assert.equal(h.call('castVote', { voterId: 'a1', candidateId: 'c3' }).success, true);
 });
 
 // ─── Review Focus ─────────────────────────────────────────────────────────────
@@ -112,9 +199,9 @@ test('Google Sheets convertit "2026-10" en Date : le vote existant est retrouvé
     assert.deepEqual(plain(data.bureau.counts.filter((c) => c.count > 0)), [{ userId: 'c3', name: 'Chloé', count: 1 }]);
 });
 
-test('Google Sheets convertit aussi les exclusions et le gagnant publié (clés mois en Date)', () => {
+test('Google Sheets convertit aussi les candidats et le gagnant publié (clés mois en Date)', () => {
     const h = fresh({ dateifyMonthKeys: true });
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: false });
     h.call('publishWinner', { requesterId: 'd4', userId: 'c3' });
     const data = h.call('getVoteData', { requesterId: 'a1' });
     assert.equal(data.candidates.some((c) => c.id === 'b2'), false);
@@ -128,6 +215,7 @@ test('ids numériques relus comme nombres : myVote et décompte restent corrects
         { id: '14', name: 'Dan', role: 'bureau' },
     ];
     const h = loadScript({ users, now: OPEN, numericIds: true });
+    for (const id of ['13', '14']) h.call('setVoteCandidate', { requesterId: '14', userId: id, selected: true });
     h.call('castVote', { voterId: '12', candidateId: '13' });
     h.call('castVote', { voterId: '12', candidateId: '14' });
     assert.equal(h.sheet('Votes').length, 2);
@@ -136,38 +224,39 @@ test('ids numériques relus comme nombres : myVote et décompte restent corrects
     assert.equal(counts.find((c) => c.userId === '14').count, 1);
 });
 
-test('candidat exclu après avoir reçu des voix : il sort du décompte et l\'électeur peut revoter', () => {
+test('candidat retiré après avoir reçu des voix : il sort du décompte et l\'électeur peut revoter', () => {
     const h = fresh();
     h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: false });
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, null);
     const counts = h.call('getVoteData', { requesterId: 'd4' }).bureau.counts;
     assert.equal(counts.some((c) => c.userId === 'b2'), false);
     assert.equal(h.call('castVote', { voterId: 'a1', candidateId: 'c3' }).success, true);
 });
 
-test('un non-Bureau ne peut ni exclure, ni publier, et ne reçoit ni décompte ni exclusions', () => {
+test('un non-Bureau ne peut ni modifier les candidats, ni publier, et ne reçoit ni décompte ni liste des membres', () => {
     const h = fresh();
     h.call('castVote', { voterId: 'c3', candidateId: 'b2' });
+    const candidateRows = h.sheet('VoteCandidats').length;
     for (const [action, body] of [
-        ['setVoteExclusion', { requesterId: 'a1', userId: 'b2', excluded: true }],
+        ['setVoteCandidate', { requesterId: 'a1', userId: 'b2', selected: false }],
         ['publishWinner', { requesterId: 'a1', userId: 'b2' }],
-        ['setVoteExclusion', { requesterId: 'c3', userId: 'b2', excluded: true }],
+        ['setVoteCandidate', { requesterId: 'c3', userId: 'b2', selected: false }],
         ['publishWinner', { requesterId: 'c3', userId: 'b2' }],
     ]) {
         const r = h.call(action, body);
         assert.deepEqual([r.success, r.code], [false, 'forbidden'], action);
     }
-    assert.equal(h.sheet('VoteExclusions').length, 1); // en-tête seul
+    assert.equal(h.sheet('VoteCandidats').length, candidateRows);
     assert.equal(h.sheet('TuteurDuMois').length, 1);
     const data = h.call('getVoteData', { requesterId: 'a1' });
     assert.equal('bureau' in data, false);
 });
 
-test('publishWinner refuse un compte inconnu ou exclu, remplace une publication existante et null dépublie', () => {
+test('publishWinner refuse un compte inconnu ou non candidat, remplace une publication existante et null dépublie', () => {
     const h = fresh();
     assert.equal(h.call('publishWinner', { requesterId: 'd4', userId: 'zz' }).success, false);
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: false });
     assert.equal(h.call('publishWinner', { requesterId: 'd4', userId: 'b2' }).success, false);
 
     assert.equal(h.call('publishWinner', { requesterId: 'd4', userId: 'a1' }).success, true);
@@ -193,11 +282,11 @@ test('le Bureau lit le décompte du mois clos début novembre et peut publier le
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner.name, 'Bob');
 });
 
-test('setVoteExclusion réintègre un membre quand excluded vaut false', () => {
+test('setVoteCandidate selected:false retire un candidat puis selected:true le remet', () => {
     const h = fresh();
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: false });
-    assert.equal(h.sheet('VoteExclusions').length, 1);
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: false });
+    assert.equal(h.call('castVote', { voterId: 'a1', candidateId: 'b2' }).code, 'not_eligible');
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: true });
     assert.equal(h.call('castVote', { voterId: 'a1', candidateId: 'b2' }).success, true);
 });
 
@@ -207,12 +296,12 @@ test('getVoteData refuse un demandeur inconnu et handleVoteAction ignore les aut
     assert.equal(h.ctx.handleVoteAction('syncBooking', {}), null);
 });
 
-test('un gagnant publié puis exclu par le Bureau n\'est plus affiché comme tuteur du mois', () => {
+test('un gagnant publié puis retiré des candidats n\'est plus affiché comme tuteur du mois', () => {
     const h = fresh();
     h.call('publishWinner', { requesterId: 'd4', userId: 'b2' });
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true });
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: false });
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner, null);
-    h.call('setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: false });
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: true });
     assert.equal(h.call('getVoteData', { requesterId: 'a1' }).winner.userId, 'b2');
 });
 
@@ -240,8 +329,7 @@ test('sans jeton, avec un jeton vide ou altéré : refus unauthenticated et aucu
         const r = h.raw('castVote', body);
         assert.deepEqual([r.success, r.code], [false, 'unauthenticated']);
     }
-    const rows = h.sheet('Votes');
-    assert.ok(rows === null || rows.length === 1, 'aucun vote écrit'); // onglet absent ou en-tête seul
+    assert.equal(h.sheet('Votes').length, 1); // en-tête seul
 });
 
 test('le jeton d\'Alice ne permet pas de voter ou de lire au nom de Bob', () => {
@@ -256,7 +344,7 @@ test('un tuteur qui se fait passer pour le Bureau avec son propre jeton est refu
     const aliceToken = h.login('alice', 'pw-a').user.token;
     for (const [action, body] of [
         ['getVoteData', { requesterId: 'd4' }],
-        ['setVoteExclusion', { requesterId: 'd4', userId: 'b2', excluded: true }],
+        ['setVoteCandidate', { requesterId: 'd4', userId: 'b2', selected: false }],
         ['publishWinner', { requesterId: 'd4', userId: 'b2' }],
     ]) {
         const r = h.raw(action, { ...body, token: aliceToken });
@@ -275,7 +363,7 @@ test('un jeton expire après 12 heures', () => {
 });
 
 test('si les propriétés du script sont indisponibles, la connexion réussit quand même (sans jeton)', () => {
-    const h = fresh({ propertiesBroken: true });
+    const h = loadScript({ users: USERS, propertiesBroken: true });
     const login = h.login('alice', 'pw-a');
     assert.equal(login.success, true);
     assert.equal('token' in login.user, false);

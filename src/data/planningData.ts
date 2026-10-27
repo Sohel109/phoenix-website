@@ -386,7 +386,9 @@ export interface VoteData {
     /** Présent uniquement pour le Bureau. */
     bureau?: {
         counts: { userId: string; name: string; count: number }[];
-        members: { id: string; name: string; excluded: boolean }[];
+        /** Mois du vote que le Bureau prépare : le vote en cours s'il est ouvert, sinon le prochain. */
+        selectionMonthKey: string;
+        members: { id: string; name: string; selected: boolean }[];
     };
 }
 
@@ -435,8 +437,8 @@ export async function withdrawVoteApi(voterId: string, token: string): Promise<{
     return { success, message, code };
 }
 
-export async function setVoteExclusionApi(requesterId: string, userId: string, excluded: boolean, token: string): Promise<{ success: boolean; message: string; code?: string }> {
-    const { success, message, code } = await postVoteAction({ action: 'setVoteExclusion', requesterId, userId, excluded, token });
+export async function setVoteCandidateApi(requesterId: string, userId: string, selected: boolean, token: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postVoteAction({ action: 'setVoteCandidate', requesterId, userId, selected, token });
     return { success, message, code };
 }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Award, EyeOff } from 'lucide-react';
-import { publishWinnerApi, setVoteExclusionApi } from '../../data/planningData';
+import { publishWinnerApi, setVoteCandidateApi } from '../../data/planningData';
 import type { VoteData } from '../../data/planningData';
 
 interface VoteBureauPanelProps {
@@ -10,6 +10,11 @@ interface VoteBureauPanelProps {
     onChanged: () => void | Promise<void>;
     /** Vrai quand la page est déjà en train d'envoyer ou de recharger : évite deux actions simultanées. */
     disabled?: boolean;
+}
+
+function formatMonthLabel(monthKey: string): string {
+    const [y, m] = monthKey.split('-').map(Number);
+    return new Date(y, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 }
 
 const cardClass = 'p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg';
@@ -25,6 +30,7 @@ export function VoteBureauPanel({ data, requesterId, token, onChanged, disabled 
     if (!data.bureau) return null;
     const { counts, members } = data.bureau;
     const totalVotes = counts.reduce((sum, c) => sum + c.count, 0);
+    const selectedCount = members.filter((m) => m.selected).length;
     const selectedWinner = choice || data.winner?.userId || counts[0]?.userId || '';
 
     const run = async (action: () => Promise<{ success: boolean; message: string }>) => {
@@ -48,7 +54,7 @@ export function VoteBureauPanel({ data, requesterId, token, onChanged, disabled 
             <div className={cardClass}>
                 <h3 className="text-white font-bold tracking-wide mb-1">Décompte</h3>
                 <p className="text-[#ECDDFD]/70 text-xs mb-4">
-                    {totalVotes} vote{totalVotes > 1 ? 's' : ''} pour le mois de référence ({data.monthKey}).
+                    {totalVotes} vote{totalVotes > 1 ? 's' : ''} pour le vote ({formatMonthLabel(data.monthKey)}).
                 </p>
                 <ul className="divide-y divide-[#6F2B75]/30">
                     {counts.map((c) => (
@@ -63,19 +69,27 @@ export function VoteBureauPanel({ data, requesterId, token, onChanged, disabled 
             </div>
 
             <div className={cardClass}>
-                <h3 className="text-white font-bold tracking-wide mb-1">Candidats du mois</h3>
-                <p className="text-[#ECDDFD]/70 text-xs mb-4">
-                    Tout le monde est candidat par défaut. Décochez un membre pour le retirer de la liste de ce mois.
+                <h3 className="text-white font-bold tracking-wide mb-1">Candidats du vote ({formatMonthLabel(data.bureau.selectionMonthKey)})</h3>
+                <p className="text-[#ECDDFD]/70 text-xs mb-1">
+                    Cochez les membres proposés au vote. En général 5, mais il n'y a pas de limite. Personne n'est candidat tant que vous n'avez rien coché.
                 </p>
+                <p className="text-[#ECDDFD]/90 text-xs mb-4 font-bold">
+                    {selectedCount} candidat{selectedCount > 1 ? 's' : ''} choisi{selectedCount > 1 ? 's' : ''}
+                </p>
+                {data.isOpen && selectedCount === 0 && (
+                    <p role="alert" className="text-sm text-amber-300 mb-4">
+                        Le vote est ouvert mais aucun candidat n'est choisi : les membres ne peuvent pas encore voter.
+                    </p>
+                )}
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
                     {members.map((m) => (
                         <li key={m.id}>
                             <label className="flex items-center gap-3 py-1.5 text-sm text-white cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={!m.excluded}
+                                    checked={m.selected}
                                     disabled={busy}
-                                    onChange={() => void run(() => setVoteExclusionApi(requesterId, m.id, !m.excluded, token))}
+                                    onChange={() => void run(() => setVoteCandidateApi(requesterId, m.id, !m.selected, token))}
                                     className="accent-[#EC602B] w-4 h-4"
                                 />
                                 {m.name}

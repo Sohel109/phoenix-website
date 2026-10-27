@@ -72,7 +72,7 @@ export function PlanningVote() {
                     <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">Tuteur du mois</h1>
                     {data?.isOpen && (
                         <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
-                            Du {formatDay(data.opensOn)} au {formatDay(data.closesOn)}, choisissez le tuteur qui vous a le plus marqué ce mois-ci.
+                            Du {formatDay(data.opensOn)} au {formatDay(data.closesOn)}, choisissez parmi les candidats celui qui vous a le plus marqué ce mois-ci.
                             Votre vote reste secret. Vous pouvez le modifier ou le retirer jusqu'à la fermeture.
                         </p>
                     )}
@@ -172,7 +172,7 @@ export function PlanningVote() {
                         </div>
                     )}
                     {candidates.length === 0 && (
-                        <p className="text-[#ECDDFD]/70 text-sm">Aucun candidat disponible ce mois-ci.</p>
+                        <p className="text-[#ECDDFD]/70 text-sm">Les candidats de ce vote ne sont pas encore connus. Revenez bientôt.</p>
                     )}
                     {actionError && !needsLogin && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
                 </div>

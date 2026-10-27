@@ -659,7 +659,8 @@ function getPlanningDataInternal() {
 
 // ==========================================
 // VOTE DU TUTEUR DU MOIS
-// Onglets : Votes, VoteExclusions, TuteurDuMois (créés automatiquement).
+// Onglets : Votes, VoteCandidats, TuteurDuMois (créés automatiquement).
+// Les candidats sont choisis par le Bureau pour chaque vote (en général 5, sans plafond imposé). Par défaut personne n'est candidat.
 // Le vote est ouvert les 7 derniers jours du mois (heure de Paris). Le "mois de référence" est le mois en
 // cours à partir de l'ouverture, puis le mois précédent jusqu'à l'ouverture suivante : le Bureau peut ainsi
 // lire le décompte et publier le gagnant début du mois suivant.
@@ -717,7 +718,7 @@ function verifySessionToken(userId, token) {
 
 var VOTE_SHEETS = {
   votes: { name: 'Votes', headers: ['monthKey', 'voterId', 'candidateId', 'updatedAt'] },
-  exclusions: { name: 'VoteExclusions', headers: ['monthKey', 'userId'] },
+  candidates: { name: 'VoteCandidats', headers: ['monthKey', 'userId'] },
   winners: { name: 'TuteurDuMois', headers: ['monthKey', 'userId', 'publishedAt'] }
 };
 
@@ -749,6 +750,7 @@ function voteWindowFor(todayKey) {
     var nm = m === 12 ? 1 : m + 1;
     return {
       monthKey: y + '-' + pad2(m),
+      selectionMonthKey: y + '-' + pad2(m),
       isOpen: true,
       opensOn: dateKey(y, m, opensDay),
       closesOn: dateKey(y, m, last),
@@ -758,8 +760,11 @@ function voteWindowFor(todayKey) {
   var py = m === 1 ? y - 1 : y;
   var pm = m === 1 ? 12 : m - 1;
   var plast = daysInMonth(py, pm);
+  // Vote fermé : le Bureau prépare déjà le prochain (le mois en cours), alors que le décompte et la
+  // publication portent encore sur le mois précédent.
   return {
     monthKey: py + '-' + pad2(pm),
+    selectionMonthKey: y + '-' + pad2(m),
     isOpen: false,
     opensOn: dateKey(py, pm, plast - 6),
     closesOn: dateKey(py, pm, plast),
@@ -822,7 +827,7 @@ function voteFail(code, message) {
 }
 
 function handleVoteAction(action, postData) {
-  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'withdrawVote' && action !== 'setVoteExclusion' && action !== 'publishWinner') {
+  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'withdrawVote' && action !== 'setVoteCandidate' && action !== 'publishWinner') {
     return null;
   }
   var claimedId = (action === 'castVote' || action === 'withdrawVote') ? postData.voterId : postData.requesterId;
@@ -841,22 +846,22 @@ function handleVoteAction(action, postData) {
     if (lock) lock.waitLock(15000);
     var sheets = {
       votes: getVoteSheet(VOTE_SHEETS.votes),
-      exclusions: getVoteSheet(VOTE_SHEETS.exclusions),
+      candidates: getVoteSheet(VOTE_SHEETS.candidates),
       winners: getVoteSheet(VOTE_SHEETS.winners)
     };
     var users = readVoteUsers();
     var win = voteWindowFor(todayKeyParis());
-    var excludedIds = readExcludedIds(sheets.exclusions, win.monthKey);
-    var eligibleIds = [];
-    for (var i = 0; i < users.length; i++) {
-      if (excludedIds.indexOf(users[i].id) === -1) eligibleIds.push(users[i].id);
-    }
-    var ctx = { users: users, win: win, sheets: sheets, excludedIds: excludedIds, eligibleIds: eligibleIds };
+    var candidateRows = readVoteRows(sheets.candidates);
+    // eligibleIds : candidats du vote de référence (votes, décompte, gagnant).
+    // selectionIds : candidats du vote que le Bureau prépare (le même quand le vote est ouvert).
+    var eligibleIds = readCandidateIds(candidateRows, win.monthKey, users);
+    var selectionIds = readCandidateIds(candidateRows, win.selectionMonthKey, users);
+    var ctx = { users: users, win: win, sheets: sheets, eligibleIds: eligibleIds, selectionIds: selectionIds };
 
     if (action === 'getVoteData') return voteGetData(ctx, postData);
     if (action === 'castVote') return voteCast(ctx, postData);
     if (action === 'withdrawVote') return voteWithdraw(ctx, postData);
-    if (action === 'setVoteExclusion') return voteSetExclusion(ctx, postData);
+    if (action === 'setVoteCandidate') return voteSetCandidate(ctx, postData);
     return votePublishWinner(ctx, postData);
   } catch (err) {
     return voteFail('error', err.toString());
@@ -865,11 +870,15 @@ function handleVoteAction(action, postData) {
   }
 }
 
-function readExcludedIds(sheet, monthKey) {
-  var ids = [];
-  var rows = readVoteRows(sheet);
+// Identifiants des candidats d'un mois, dans l'ordre de la feuille des utilisateurs (comptes inconnus ignorés).
+function readCandidateIds(rows, monthKey, users) {
+  var chosen = {};
   for (var i = 0; i < rows.length; i++) {
-    if (normalizeMonthKey(rows[i].cells[0]) === monthKey) ids.push(String(rows[i].cells[1]));
+    if (normalizeMonthKey(rows[i].cells[0]) === monthKey) chosen[String(rows[i].cells[1])] = true;
+  }
+  var ids = [];
+  for (var u = 0; u < users.length; u++) {
+    if (chosen[users[u].id]) ids.push(users[u].id);
   }
   return ids;
 }
@@ -908,7 +917,7 @@ function voteGetData(ctx, postData) {
   for (var w = 0; w < winnerRows.length; w++) {
     if (normalizeMonthKey(winnerRows[w].cells[0]) === ctx.win.monthKey) {
       var winnerUser = findVoteUser(ctx.users, winnerRows[w].cells[1]);
-      // Un gagnant exclu depuis sa publication n'est plus affiché.
+      // Un gagnant retiré des candidats depuis sa publication n'est plus affiché.
       if (winnerUser && ctx.eligibleIds.indexOf(winnerUser.id) !== -1) winner = { userId: winnerUser.id, name: winnerUser.name };
     }
   }
@@ -935,8 +944,9 @@ function voteGetData(ctx, postData) {
     });
     result.bureau = {
       counts: countList,
+      selectionMonthKey: ctx.win.selectionMonthKey,
       members: ctx.users.map(function(u) {
-        return { id: u.id, name: u.name, excluded: ctx.excludedIds.indexOf(u.id) !== -1 };
+        return { id: u.id, name: u.name, selected: ctx.selectionIds.indexOf(u.id) !== -1 };
       })
     };
   }
@@ -987,20 +997,26 @@ function voteWithdraw(ctx, postData) {
   return { success: true };
 }
 
-function voteSetExclusion(ctx, postData) {
+// Ajoute ou retire un candidat pour le vote en préparation (selectionMonthKey). Aucun plafond : 5 est l'usage, pas une règle.
+function voteSetCandidate(ctx, postData) {
   if (!voteIsBureau(ctx, postData.requesterId)) return voteFail('forbidden', 'Action réservée au Bureau.');
+  if (postData.selected !== true && postData.selected !== false) {
+    return voteFail('bad_request', 'Requête invalide.');
+  }
   var target = findVoteUser(ctx.users, postData.userId);
   if (!target) return voteFail('unknown_user', 'Compte introuvable.');
 
-  var sheet = ctx.sheets.exclusions;
+  var sheet = ctx.sheets.candidates;
   var rows = readVoteRows(sheet);
-  for (var i = 0; i < rows.length; i++) {
-    if (normalizeMonthKey(rows[i].cells[0]) === ctx.win.monthKey && String(rows[i].cells[1]) === target.id) {
-      if (!postData.excluded) sheet.deleteRow(rows[i].sheetRow);
-      return { success: true };
+  var alreadyThere = false;
+  // De bas en haut : supprimer une ligne décale les suivantes. Couvre aussi d'éventuels doublons saisis à la main.
+  for (var i = rows.length - 1; i >= 0; i--) {
+    if (normalizeMonthKey(rows[i].cells[0]) === ctx.win.selectionMonthKey && String(rows[i].cells[1]) === target.id) {
+      alreadyThere = true;
+      if (!postData.selected) sheet.deleteRow(rows[i].sheetRow);
     }
   }
-  if (postData.excluded) sheet.appendRow([ctx.win.monthKey, target.id]);
+  if (postData.selected && !alreadyThere) sheet.appendRow([ctx.win.selectionMonthKey, target.id]);
   return { success: true };
 }
 
