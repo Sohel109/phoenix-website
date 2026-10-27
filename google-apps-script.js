@@ -66,6 +66,12 @@ function doPost(e) {
   var postData = JSON.parse(e.postData.contents);
   var action = postData.action;
 
+  var voteResult = handleVoteAction(action, postData);
+  if (voteResult) {
+    return ContentService.createTextOutput(JSON.stringify(voteResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'saveSiteContent') {
     var lock1 = LockService.getScriptLock();
     try {
@@ -644,6 +650,302 @@ function getPlanningDataInternal() {
     unavailableWeeks: unavailableWeeks,
     eventAttendance: eventAttendance
   };
+}
+
+// ==========================================
+// VOTE DU TUTEUR DU MOIS
+// Onglets : Votes, VoteExclusions, TuteurDuMois (créés automatiquement).
+// Le vote est ouvert les 7 derniers jours du mois (heure de Paris). Le "mois de référence" est le mois en
+// cours à partir de l'ouverture, puis le mois précédent jusqu'à l'ouverture suivante : le Bureau peut ainsi
+// lire le décompte et publier le gagnant début du mois suivant.
+// Le rôle d'un demandeur est toujours relu dans la première feuille du Sheet, jamais pris dans la requête.
+// ==========================================
+
+var VOTE_SHEETS = {
+  votes: { name: 'Votes', headers: ['monthKey', 'voterId', 'candidateId', 'updatedAt'] },
+  exclusions: { name: 'VoteExclusions', headers: ['monthKey', 'userId'] },
+  winners: { name: 'TuteurDuMois', headers: ['monthKey', 'userId', 'publishedAt'] }
+};
+
+function todayKeyParis() {
+  return Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd');
+}
+
+function pad2(n) {
+  return (n < 10 ? '0' : '') + n;
+}
+
+// month : 1 à 12
+function daysInMonth(year, month) {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+function dateKey(year, month, day) {
+  return year + '-' + pad2(month) + '-' + pad2(day);
+}
+
+function voteWindowFor(todayKey) {
+  var y = parseInt(todayKey.substr(0, 4), 10);
+  var m = parseInt(todayKey.substr(5, 2), 10);
+  var d = parseInt(todayKey.substr(8, 2), 10);
+  var last = daysInMonth(y, m);
+  var opensDay = last - 6;
+  if (d >= opensDay) {
+    var ny = m === 12 ? y + 1 : y;
+    var nm = m === 12 ? 1 : m + 1;
+    return {
+      monthKey: y + '-' + pad2(m),
+      isOpen: true,
+      opensOn: dateKey(y, m, opensDay),
+      closesOn: dateKey(y, m, last),
+      nextOpensOn: dateKey(ny, nm, daysInMonth(ny, nm) - 6)
+    };
+  }
+  var py = m === 1 ? y - 1 : y;
+  var pm = m === 1 ? 12 : m - 1;
+  var plast = daysInMonth(py, pm);
+  return {
+    monthKey: py + '-' + pad2(pm),
+    isOpen: false,
+    opensOn: dateKey(py, pm, plast - 6),
+    closesOn: dateKey(py, pm, plast),
+    nextOpensOn: dateKey(y, m, opensDay)
+  };
+}
+
+// Google Sheets peut convertir "2026-10" en date : on accepte les deux formes.
+function normalizeMonthKey(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    return Utilities.formatDate(value, 'Europe/Paris', 'yyyy-MM');
+  }
+  return String(value);
+}
+
+function getVoteSheet(def) {
+  var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name) !== null;
+  var sheet = getOrCreateSheet(def.name, def.headers);
+  if (!existed) sheet.getRange('A:A').setNumberFormat('@');
+  return sheet;
+}
+
+// Renvoie les lignes de données (sans l'en-tête) avec leur numéro de ligne dans la feuille.
+function readVoteRows(sheet) {
+  var values = sheet.getDataRange().getValues();
+  var rows = [];
+  for (var i = 1; i < values.length; i++) {
+    if (values[i][0] === '' || values[i][0] === null) continue;
+    rows.push({ sheetRow: i + 1, cells: values[i] });
+  }
+  return rows;
+}
+
+function readVoteUsers() {
+  var data = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0].getDataRange().getValues();
+  var users = [];
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] !== '' && data[i][0] !== null && data[i][1]) {
+      users.push({
+        id: data[i][0].toString(),
+        name: data[i][1].toString(),
+        role: data[i][4] ? data[i][4].toString() : 'tuteur'
+      });
+    }
+  }
+  return users;
+}
+
+function findVoteUser(users, id) {
+  if (id === null || id === undefined) return null;
+  var wanted = String(id);
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].id === wanted) return users[i];
+  }
+  return null;
+}
+
+function voteFail(code, message) {
+  return { success: false, code: code, message: message };
+}
+
+function handleVoteAction(action, postData) {
+  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'setVoteExclusion' && action !== 'publishWinner') {
+    return null;
+  }
+  var isWrite = action !== 'getVoteData';
+  var lock = isWrite ? LockService.getScriptLock() : null;
+  try {
+    if (lock) lock.waitLock(15000);
+    var sheets = {
+      votes: getVoteSheet(VOTE_SHEETS.votes),
+      exclusions: getVoteSheet(VOTE_SHEETS.exclusions),
+      winners: getVoteSheet(VOTE_SHEETS.winners)
+    };
+    var users = readVoteUsers();
+    var win = voteWindowFor(todayKeyParis());
+    var excludedIds = readExcludedIds(sheets.exclusions, win.monthKey);
+    var eligibleIds = [];
+    for (var i = 0; i < users.length; i++) {
+      if (excludedIds.indexOf(users[i].id) === -1) eligibleIds.push(users[i].id);
+    }
+    var ctx = { users: users, win: win, sheets: sheets, excludedIds: excludedIds, eligibleIds: eligibleIds };
+
+    if (action === 'getVoteData') return voteGetData(ctx, postData);
+    if (action === 'castVote') return voteCast(ctx, postData);
+    if (action === 'setVoteExclusion') return voteSetExclusion(ctx, postData);
+    return votePublishWinner(ctx, postData);
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    if (lock) lock.releaseLock();
+  }
+}
+
+function readExcludedIds(sheet, monthKey) {
+  var ids = [];
+  var rows = readVoteRows(sheet);
+  for (var i = 0; i < rows.length; i++) {
+    if (normalizeMonthKey(rows[i].cells[0]) === monthKey) ids.push(String(rows[i].cells[1]));
+  }
+  return ids;
+}
+
+function voteIsBureau(ctx, requesterId) {
+  var requester = findVoteUser(ctx.users, requesterId);
+  return !!requester && requester.role === 'bureau';
+}
+
+function voteGetData(ctx, postData) {
+  var requester = findVoteUser(ctx.users, postData.requesterId);
+  if (!requester) return voteFail('unknown_user', 'Compte introuvable.');
+
+  var candidates = [];
+  for (var i = 0; i < ctx.users.length; i++) {
+    if (ctx.eligibleIds.indexOf(ctx.users[i].id) !== -1) {
+      candidates.push({ id: ctx.users[i].id, name: ctx.users[i].name });
+    }
+  }
+
+  var counts = {};
+  var myVote = null;
+  var voteRows = readVoteRows(ctx.sheets.votes);
+  for (var v = 0; v < voteRows.length; v++) {
+    var cells = voteRows[v].cells;
+    if (normalizeMonthKey(cells[0]) !== ctx.win.monthKey) continue;
+    var voterId = String(cells[1]);
+    var candidateId = String(cells[2]);
+    if (ctx.eligibleIds.indexOf(candidateId) === -1) continue;
+    counts[candidateId] = (counts[candidateId] || 0) + 1;
+    if (voterId === requester.id) myVote = candidateId;
+  }
+
+  var winner = null;
+  var winnerRows = readVoteRows(ctx.sheets.winners);
+  for (var w = 0; w < winnerRows.length; w++) {
+    if (normalizeMonthKey(winnerRows[w].cells[0]) === ctx.win.monthKey) {
+      var winnerUser = findVoteUser(ctx.users, winnerRows[w].cells[1]);
+      if (winnerUser) winner = { userId: winnerUser.id, name: winnerUser.name };
+    }
+  }
+
+  var result = {
+    success: true,
+    monthKey: ctx.win.monthKey,
+    isOpen: ctx.win.isOpen,
+    opensOn: ctx.win.opensOn,
+    closesOn: ctx.win.closesOn,
+    nextOpensOn: ctx.win.nextOpensOn,
+    candidates: candidates,
+    myVote: myVote,
+    winner: winner
+  };
+
+  if (requester.role === 'bureau') {
+    var countList = candidates.map(function(c) {
+      return { userId: c.id, name: c.name, count: counts[c.id] || 0 };
+    });
+    countList.sort(function(a, b) {
+      if (b.count !== a.count) return b.count - a.count;
+      return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+    });
+    result.bureau = {
+      counts: countList,
+      members: ctx.users.map(function(u) {
+        return { id: u.id, name: u.name, excluded: ctx.excludedIds.indexOf(u.id) !== -1 };
+      })
+    };
+  }
+  return result;
+}
+
+function voteCast(ctx, postData) {
+  var voter = findVoteUser(ctx.users, postData.voterId);
+  if (!voter) return voteFail('unknown_voter', 'Compte introuvable.');
+  if (!ctx.win.isOpen) {
+    return voteFail('closed', 'Le vote est fermé. Prochaine ouverture le ' + ctx.win.nextOpensOn + '.');
+  }
+  var candidateId = String(postData.candidateId);
+  if (candidateId === voter.id) return voteFail('self', 'Vous ne pouvez pas voter pour vous-même.');
+  if (ctx.eligibleIds.indexOf(candidateId) === -1) {
+    return voteFail('not_eligible', "Ce membre n'est pas candidat ce mois-ci.");
+  }
+
+  var sheet = ctx.sheets.votes;
+  var rows = readVoteRows(sheet);
+  var now = new Date().toISOString();
+  for (var i = 0; i < rows.length; i++) {
+    if (normalizeMonthKey(rows[i].cells[0]) === ctx.win.monthKey && String(rows[i].cells[1]) === voter.id) {
+      sheet.getRange(rows[i].sheetRow, 3).setValue(candidateId);
+      sheet.getRange(rows[i].sheetRow, 4).setValue(now);
+      return { success: true };
+    }
+  }
+  sheet.appendRow([ctx.win.monthKey, voter.id, candidateId, now]);
+  return { success: true };
+}
+
+function voteSetExclusion(ctx, postData) {
+  if (!voteIsBureau(ctx, postData.requesterId)) return voteFail('forbidden', 'Action réservée au Bureau.');
+  var target = findVoteUser(ctx.users, postData.userId);
+  if (!target) return voteFail('unknown_user', 'Compte introuvable.');
+
+  var sheet = ctx.sheets.exclusions;
+  var rows = readVoteRows(sheet);
+  for (var i = 0; i < rows.length; i++) {
+    if (normalizeMonthKey(rows[i].cells[0]) === ctx.win.monthKey && String(rows[i].cells[1]) === target.id) {
+      if (!postData.excluded) sheet.deleteRow(rows[i].sheetRow);
+      return { success: true };
+    }
+  }
+  if (postData.excluded) sheet.appendRow([ctx.win.monthKey, target.id]);
+  return { success: true };
+}
+
+function votePublishWinner(ctx, postData) {
+  if (!voteIsBureau(ctx, postData.requesterId)) return voteFail('forbidden', 'Action réservée au Bureau.');
+  var sheet = ctx.sheets.winners;
+  var rows = readVoteRows(sheet);
+  var existingRow = -1;
+  for (var i = 0; i < rows.length; i++) {
+    if (normalizeMonthKey(rows[i].cells[0]) === ctx.win.monthKey) existingRow = rows[i].sheetRow;
+  }
+
+  if (postData.userId === null || postData.userId === undefined) {
+    if (existingRow !== -1) sheet.deleteRow(existingRow);
+    return { success: true };
+  }
+  var target = findVoteUser(ctx.users, postData.userId);
+  if (!target) return voteFail('unknown_user', 'Compte introuvable.');
+  if (ctx.eligibleIds.indexOf(target.id) === -1) {
+    return voteFail('not_eligible', "Ce membre n'est pas candidat ce mois-ci.");
+  }
+  var publishedAt = new Date().toISOString();
+  if (existingRow !== -1) {
+    sheet.getRange(existingRow, 2).setValue(target.id);
+    sheet.getRange(existingRow, 3).setValue(publishedAt);
+  } else {
+    sheet.appendRow([ctx.win.monthKey, target.id, publishedAt]);
+  }
+  return { success: true };
 }
 
 // ==========================================
