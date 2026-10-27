@@ -1020,7 +1020,30 @@ function votePublishWinner(ctx, postData) {
 // (Déclenchée uniquement par le déclencheur installable 'envoyerMailConnexion')
 // ==========================================
 
+// Point d'entrée du déclencheur « lors d'une modification ». Si deux déclencheurs existent (par exemple un par
+// compte Google), la même case déclenche deux exécutions presque simultanées : sans protection, le membre reçoit
+// deux fois ses accès. Le verrou fait attendre la seconde exécution, puis la mémoire courte la fait s'arrêter.
+var MAIL_ACCES_ANTI_DOUBLON_SECONDES = 60;
+
 function envoyerMailConnexion(e) {
+  // Mêmes conditions que dans envoyerMailAcces (colonne H cochée, hors en-tête) : on évite de verrouiller pour toute autre modification.
+  if (!e || !e.range || e.range.getColumn() !== 8 || e.range.getRow() <= 1 || e.range.getValue() !== true) return;
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var cache = CacheService.getScriptCache();
+    var cle = 'mail-acces-ligne-' + e.range.getRow();
+    if (cache.get(cle)) return; // déjà envoyé il y a moins d'une minute : doublon
+    if (envoyerMailAcces(e) === true) {
+      cache.put(cle, '1', MAIL_ACCES_ANTI_DOUBLON_SECONDES);
+    }
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function envoyerMailAcces(e) {
   if (!e || !e.source || !e.range) return;
 
   var sheet = e.source.getActiveSheet();
@@ -1137,6 +1160,7 @@ function envoyerMailConnexion(e) {
         replyTo: "phoenixedc.asso@gmail.com"
       });
       sheet.getRange(row, COLONNE_CASE_A_COCHER + 1).setValue("Envoyé le " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy à HH:mm"));
+      return true;
     } catch (error) {
       // 2. Fallback avec MailApp si le quota ou les permissions GmailApp diffèrent
       try {
@@ -1149,6 +1173,7 @@ function envoyerMailConnexion(e) {
           replyTo: "phoenixedc.asso@gmail.com"
         });
         sheet.getRange(row, COLONNE_CASE_A_COCHER + 1).setValue("Envoyé le " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy à HH:mm"));
+        return true;
       } catch (errFallback) {
         Logger.log("Erreur lors de l'envoi de l'email : " + errFallback.toString());
         SpreadsheetApp.getUi().alert("❌ Impossible d'envoyer l'e-mail à la ligne " + row + " : " + errFallback.toString());

@@ -17,12 +17,13 @@ function parisMidnight(monthKey) {
 
 function formatParis(date, fmt) {
     const parts = Object.fromEntries(
-        new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' })
+        new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
             .formatToParts(date)
             .map((p) => [p.type, p.value])
     );
     if (fmt === 'yyyy-MM') return `${parts.year}-${parts.month}`;
     if (fmt === 'yyyy-MM-dd') return `${parts.year}-${parts.month}-${parts.day}`;
+    if (fmt === 'dd/MM/yyyy à HH:mm') return `${parts.day}/${parts.month}/${parts.year} à ${parts.hour}:${parts.minute}`;
     throw new Error(`Format non géré par le harness : ${fmt}`);
 }
 
@@ -32,6 +33,7 @@ class FakeSheet {
         this.owner = owner;
         this.rows = [];
     }
+    getName() { return this.name; }
     appendRow(row) { this.rows.push([...row]); }
     getLastRow() { return this.rows.length; }
     deleteRow(r) { this.rows.splice(r - 1, 1); }
@@ -39,7 +41,11 @@ class FakeSheet {
         const sheet = this;
         if (typeof r === 'string') return { setNumberFormat() {} };
         return {
-            setValue(v) { sheet.rows[r - 1][c - 1] = v; },
+            getValue() { return sheet.rows[r - 1]?.[c - 1] ?? ''; },
+            setValue(v) {
+                while (sheet.rows.length < r) sheet.rows.push([]);
+                sheet.rows[r - 1][c - 1] = v;
+            },
             setNumberFormat() {},
         };
     }
@@ -64,10 +70,11 @@ class FakeSpreadsheet {
         this.options = options;
         this.users = new FakeSheet('Utilisateurs', this);
         this.users.appendRow(['id', 'name', 'login', 'password', 'role', 'projects']);
-        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', '']);
+        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', '', u.email ?? '', '', '']);
         this.sheets = new Map();
     }
     getSheets() { return [this.users, ...this.sheets.values()]; }
+    getActiveSheet() { return this.users; }
     getSheetByName(name) { return this.sheets.get(name) ?? null; }
     insertSheet(name) {
         const sheet = new FakeSheet(name, this);
@@ -82,11 +89,24 @@ class FakeSpreadsheet {
 export function loadScript(options) {
     const state = { now: options.now ?? '2026-10-27', nowMs: Date.now() };
     const properties = new Map();
+    const cache = new Map();
+    const mailbox = [];
+    const alerts = [];
     const ss = new FakeSpreadsheet(options);
     const sandbox = {
         console,
         JSON,
-        SpreadsheetApp: { getActiveSpreadsheet: () => ss },
+        SpreadsheetApp: { getActiveSpreadsheet: () => ss, getUi: () => ({ alert: (m) => alerts.push(m) }) },
+        Session: { getScriptTimeZone: () => 'Europe/Paris' },
+        GmailApp: { sendEmail: (to, subject) => { mailbox.push({ to, subject }); }, getAliases: () => [] },
+        MailApp: { sendEmail: (m) => { mailbox.push({ to: m.to, subject: m.subject }); }, getRemainingDailyQuota: () => 100 },
+        // Cache de script : les valeurs expirent selon l'horloge simulée (state.nowMs).
+        CacheService: {
+            getScriptCache: () => ({
+                get: (k) => { const e = cache.get(k); return e && e.expiresAt > state.nowMs ? e.value : null; },
+                put: (k, v, seconds = 600) => { cache.set(k, { value: v, expiresAt: state.nowMs + seconds * 1000 }); },
+            }),
+        },
         ContentService: {
             MimeType: { JSON: 'json' },
             createTextOutput(text) { return { text, setMimeType() { return this; } }; },
@@ -115,6 +135,21 @@ export function loadScript(options) {
         ctx,
         setNow(key) { state.now = key; },
         advanceMs(ms) { state.nowMs += ms; },
+        mailbox,
+        alerts,
+        /** Simule le déclencheur « lors d'une modification » après avoir coché la case d'envoi (colonne H) d'une ligne. */
+        tickMailCheckbox(row) {
+            ss.users.getRange(row, 8).setValue(true);
+            const range = {
+                getRow: () => row,
+                getColumn: () => 8,
+                getValue: () => ss.users.getRange(row, 8).getValue(),
+                setValue: (v) => ss.users.getRange(row, 8).setValue(v),
+            };
+            ctx.envoyerMailConnexion({ source: ss, range });
+        },
+        usersCell(row, col) { return ss.users.getRange(row, col).getValue(); },
+        setUsersCell(row, col, value) { ss.users.getRange(row, col).setValue(value); },
         /** Appel authentifié : ajoute un jeton valide pour l'identité annoncée, sauf si `body.token` est fourni. */
         call(action, body = {}) {
             const identity = body.voterId ?? body.requesterId;
