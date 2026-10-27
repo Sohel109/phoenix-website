@@ -12,6 +12,7 @@ Ajouter dans l'espace membre (`/planning`) un vote mensuel pour élire le « tut
 - **Candidats par défaut :** tous les comptes, Bureau compris. Le Bureau peut, pour un mois donné, exclure un membre, puis le réintégrer.
 - **Un vote par mois et par électeur.** Il est modifiable tant que le vote est ouvert. On ne peut pas voter pour soi-même.
 - **Fenêtre de vote :** les 7 derniers jours du mois civil, heure de Paris. Pour un mois de 31 jours, du 25 au 31 inclus. Pour un mois de 30 jours, du 24 au 30. Pour février, du 22 au 28 (29 en année bissextile : du 23 au 29).
+- **Mois de référence :** le mois sur lequel portent les votes, les exclusions, le décompte et la publication. Du premier jour de la fenêtre (ex. 25 octobre) jusqu'à la fin du mois, c'est le mois en cours. Ensuite, jusqu'à l'ouverture de la fenêtre suivante (ex. du 1er au 24 novembre), c'est encore le mois précédent. Le Bureau peut ainsi lire les résultats d'octobre et publier le gagnant début novembre, et le bandeau « Tuteur du mois » reste affiché jusqu'au vote suivant.
 - **Résultats :** le décompte n'est visible que du Bureau. Les électeurs ne voient que leur propre vote.
 - **Publication :** le Bureau peut publier le gagnant sur le site. Il choisit lui-même le nom, ce qui règle les égalités. Il peut aussi dépublier. Sans publication, l'annonce se fait hors site (réunion, réseaux sociaux).
 
@@ -40,9 +41,9 @@ Le backend du planning est un Google Apps Script ([google-apps-script.js](../../
 
 Toutes ces actions reçoivent `requesterId`. Le script retrouve le rôle de la personne dans la feuille des utilisateurs, il ne fait pas confiance au rôle envoyé par le navigateur.
 
-- `getVoteData` : renvoie le mois courant, l'état de la fenêtre (ouverte ou non, dates d'ouverture et de fermeture), la liste des candidats éligibles (id et nom), le vote de `requesterId` et le gagnant publié. Si le demandeur est Bureau, renvoie en plus le décompte par candidat et la liste des exclusions.
+- `getVoteData` : renvoie le mois de référence, l'état de la fenêtre (ouverte ou non, dates d'ouverture et de fermeture, prochaine ouverture), la liste des candidats éligibles (id et nom), le vote de `requesterId` et le gagnant publié. Si le demandeur est Bureau, renvoie en plus le décompte par candidat et la liste des exclusions.
 - `castVote` : `{ voterId, candidateId }`. Refus si la fenêtre est fermée, si `voterId == candidateId`, si le candidat n'est pas éligible, ou si le votant est inconnu.
-- `setVoteExclusion` (Bureau seulement) : `{ userId, excluded }` ajoute ou supprime la ligne d'exclusion du mois courant.
+- `setVoteExclusion` (Bureau seulement) : `{ userId, excluded }` ajoute ou supprime la ligne d'exclusion du mois de référence.
 - `publishWinner` (Bureau seulement) : `{ userId }` publie, `{ userId: null }` dépublie.
 
 Un candidat exclu qui avait déjà reçu des voix ne compte plus dans le décompte (le décompte ne retient que les candidats éligibles).
@@ -56,7 +57,7 @@ Un candidat exclu qui avait déjà reçu des voix ne compte plus dans le décomp
 - `src/data/planningData.ts` : fonctions `fetchVoteData`, `castVoteApi`, `setVoteExclusionApi`, `publishWinnerApi`, sur le modèle de `syncEventAttendanceApi`.
 - `src/pages/planning/PlanningVote.tsx` : la page. Trois états pour un membre (fenêtre fermée avec date d'ouverture, vote ouvert avec liste de candidats, vote enregistré avec possibilité de changer). Une section supplémentaire pour le Bureau (décompte, éligibilité, publication).
 - Route `/planning/vote` dans `App.tsx`, entrée dans le menu de `PlanningLayout.tsx`, nouvelle case dans `PlanningDashboard.tsx`.
-- Bandeau « Tuteur du mois » sur le tableau de bord quand un gagnant est publié pour le mois courant (ou pour le dernier mois fermé, tant qu'il n'est pas remplacé).
+- Bandeau « Tuteur du mois » sur le tableau de bord quand un gagnant est publié pour le mois de référence.
 
 Le calcul de la fenêtre existe à la fois dans le script (autorité) et dans le front (affichage). Le front affiche ce que renvoie `getVoteData`, il ne recalcule pas.
 
