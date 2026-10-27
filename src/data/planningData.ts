@@ -363,3 +363,70 @@ export async function confirmResetPasswordApi(loginId: string, code: string, new
 }
 
 
+
+// ─── Vote du tuteur du mois ───────────────────────────────────────────────────
+
+export interface VoteCandidate {
+    id: string;
+    name: string;
+}
+
+export interface VoteData {
+    monthKey: string;
+    isOpen: boolean;
+    opensOn: string;
+    closesOn: string;
+    nextOpensOn: string;
+    candidates: VoteCandidate[];
+    myVote: string | null;
+    winner: { userId: string; name: string } | null;
+    /** Présent uniquement pour le Bureau. */
+    bureau?: {
+        counts: { userId: string; name: string; count: number }[];
+        members: { id: string; name: string; excluded: boolean }[];
+    };
+}
+
+async function postVoteAction(body: Record<string, unknown>): Promise<{ success: boolean; message: string; data?: Record<string, unknown> }> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning`, {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            return { success: false, message: 'Erreur réseau avec le serveur' };
+        }
+        const data = await response.json();
+        return {
+            success: !!data.success,
+            message: data.message || (data.success ? '' : "Le vote n'est pas disponible pour le moment."),
+            data
+        };
+    } catch (error) {
+        console.error('Error calling vote API:', error);
+        return { success: false, message: 'Erreur réseau avec le serveur' };
+    }
+}
+
+export async function fetchVoteData(requesterId: string): Promise<{ ok: true; data: VoteData } | { ok: false; message: string }> {
+    const result = await postVoteAction({ action: 'getVoteData', requesterId });
+    if (!result.success || !result.data) return { ok: false, message: result.message };
+    return { ok: true, data: result.data as unknown as VoteData };
+}
+
+export async function castVoteApi(voterId: string, candidateId: string): Promise<{ success: boolean; message: string }> {
+    const { success, message } = await postVoteAction({ action: 'castVote', voterId, candidateId });
+    return { success, message };
+}
+
+export async function setVoteExclusionApi(requesterId: string, userId: string, excluded: boolean): Promise<{ success: boolean; message: string }> {
+    const { success, message } = await postVoteAction({ action: 'setVoteExclusion', requesterId, userId, excluded });
+    return { success, message };
+}
+
+export async function publishWinnerApi(requesterId: string, userId: string | null): Promise<{ success: boolean; message: string }> {
+    const { success, message } = await postVoteAction({ action: 'publishWinner', requesterId, userId });
+    return { success, message };
+}
