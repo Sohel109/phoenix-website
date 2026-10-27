@@ -284,3 +284,64 @@ test('si les propriétés du script sont indisponibles, la connexion réussit qu
 test('la connexion avec un mauvais mot de passe échoue toujours', () => {
     assert.equal(fresh().login('alice', 'mauvais').success, false);
 });
+
+// ─── Retrait du vote ──────────────────────────────────────────────────────────
+
+test('withdrawVote supprime le vote : myVote revient à null, le décompte baisse, plus aucune ligne', () => {
+    const h = fresh();
+    h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
+    assert.equal(h.call('withdrawVote', { voterId: 'a1' }).success, true);
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, null);
+    const counts = h.call('getVoteData', { requesterId: 'd4' }).bureau.counts;
+    assert.equal(counts.find((c) => c.userId === 'b2').count, 0);
+    assert.equal(h.sheet('Votes').length, 1); // en-tête seul
+});
+
+test('après un retrait on peut revoter, et les votes des autres ne sont pas touchés', () => {
+    const h = fresh();
+    h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
+    h.call('castVote', { voterId: 'c3', candidateId: 'b2' });
+    h.call('withdrawVote', { voterId: 'a1' });
+    assert.equal(h.call('getVoteData', { requesterId: 'c3' }).myVote, 'b2');
+    assert.equal(h.call('castVote', { voterId: 'a1', candidateId: 'c3' }).success, true);
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, 'c3');
+});
+
+test('retirer un vote qu\'on n\'a pas fait réussit sans rien changer', () => {
+    const h = fresh();
+    h.call('castVote', { voterId: 'c3', candidateId: 'b2' });
+    const r = h.call('withdrawVote', { voterId: 'a1' });
+    assert.equal(r.success, true);
+    assert.equal(h.sheet('Votes').length, 2); // en-tête + le vote de Chloé
+});
+
+test('withdrawVote refuse hors fenêtre (closed) et le vote reste en place', () => {
+    const h = fresh();
+    h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
+    h.setNow('2026-11-03');
+    const r = h.call('withdrawVote', { voterId: 'a1' });
+    assert.deepEqual([r.success, r.code], [false, 'closed']);
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, 'b2');
+});
+
+test('withdrawVote exige le jeton de l\'électeur : sans jeton ou avec celui d\'un autre, le vote reste', () => {
+    const h = fresh();
+    h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
+    const bobToken = h.login('bob', 'pw-b').user.token;
+    assert.equal(h.raw('withdrawVote', { voterId: 'a1' }).code, 'unauthenticated');
+    assert.equal(h.raw('withdrawVote', { voterId: 'a1', token: bobToken }).code, 'unauthenticated');
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, 'b2');
+});
+
+test('withdrawVote refuse un électeur inconnu', () => {
+    const r = fresh().call('withdrawVote', { voterId: 'zz' });
+    assert.deepEqual([r.success, r.code], [false, 'unknown_voter']);
+});
+
+test('withdrawVote fonctionne aussi quand Sheets a converti la clé du mois en date', () => {
+    const h = fresh({ dateifyMonthKeys: true });
+    h.call('castVote', { voterId: 'a1', candidateId: 'b2' });
+    assert.equal(h.call('withdrawVote', { voterId: 'a1' }).success, true);
+    assert.equal(h.call('getVoteData', { requesterId: 'a1' }).myVote, null);
+    assert.equal(h.sheet('Votes').length, 1);
+});

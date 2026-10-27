@@ -430,6 +430,11 @@ export async function castVoteApi(voterId: string, candidateId: string, token: s
     return { success, message, code };
 }
 
+export async function withdrawVoteApi(voterId: string, token: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postVoteAction({ action: 'withdrawVote', voterId, token });
+    return { success, message, code };
+}
+
 export async function setVoteExclusionApi(requesterId: string, userId: string, excluded: boolean, token: string): Promise<{ success: boolean; message: string; code?: string }> {
     const { success, message, code } = await postVoteAction({ action: 'setVoteExclusion', requesterId, userId, excluded, token });
     return { success, message, code };

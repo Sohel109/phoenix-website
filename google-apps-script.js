@@ -822,10 +822,10 @@ function voteFail(code, message) {
 }
 
 function handleVoteAction(action, postData) {
-  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'setVoteExclusion' && action !== 'publishWinner') {
+  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'withdrawVote' && action !== 'setVoteExclusion' && action !== 'publishWinner') {
     return null;
   }
-  var claimedId = action === 'castVote' ? postData.voterId : postData.requesterId;
+  var claimedId = (action === 'castVote' || action === 'withdrawVote') ? postData.voterId : postData.requesterId;
   var authenticated = false;
   try {
     authenticated = verifySessionToken(claimedId, postData.token);
@@ -855,6 +855,7 @@ function handleVoteAction(action, postData) {
 
     if (action === 'getVoteData') return voteGetData(ctx, postData);
     if (action === 'castVote') return voteCast(ctx, postData);
+    if (action === 'withdrawVote') return voteWithdraw(ctx, postData);
     if (action === 'setVoteExclusion') return voteSetExclusion(ctx, postData);
     return votePublishWinner(ctx, postData);
   } catch (err) {
@@ -965,6 +966,24 @@ function voteCast(ctx, postData) {
     }
   }
   sheet.appendRow([ctx.win.monthKey, voter.id, candidateId, now]);
+  return { success: true };
+}
+
+// Retire le vote de l'électeur pour le mois de référence. Réussit aussi quand il n'avait pas voté.
+function voteWithdraw(ctx, postData) {
+  var voter = findVoteUser(ctx.users, postData.voterId);
+  if (!voter) return voteFail('unknown_voter', 'Compte introuvable.');
+  if (!ctx.win.isOpen) {
+    return voteFail('closed', 'Le vote est fermé. Prochaine ouverture le ' + ctx.win.nextOpensOn + '.');
+  }
+  var sheet = ctx.sheets.votes;
+  var rows = readVoteRows(sheet);
+  // De bas en haut : supprimer une ligne décale les suivantes. Couvre aussi d'éventuels doublons saisis à la main.
+  for (var i = rows.length - 1; i >= 0; i--) {
+    if (normalizeMonthKey(rows[i].cells[0]) === ctx.win.monthKey && String(rows[i].cells[1]) === voter.id) {
+      sheet.deleteRow(rows[i].sheetRow);
+    }
+  }
   return { success: true };
 }
 

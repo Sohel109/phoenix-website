@@ -5,7 +5,7 @@ import { Award, CheckCircle, Lock, RefreshCw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { useVoteData } from '../../hooks/useVoteData';
-import { castVoteApi } from '../../data/planningData';
+import { castVoteApi, withdrawVoteApi } from '../../data/planningData';
 import { VoteBureauPanel } from '../../components/planning/VoteBureauPanel';
 
 function parseDay(key: string): Date {
@@ -32,11 +32,11 @@ export function PlanningVote() {
 
     if (!currentUser) return null;
 
-    const handleVote = async (candidateId: string) => {
-        setPendingId(candidateId);
+    const submit = async (pendingKey: string, action: () => Promise<{ success: boolean; message: string; code?: string }>) => {
+        setPendingId(pendingKey);
         setActionError(null);
         setActionCode(null);
-        const result = await castVoteApi(currentUser.id, candidateId, currentUser.token ?? '');
+        const result = await action();
         if (!result.success) {
             setActionError(result.message);
             setActionCode(result.code ?? null);
@@ -44,6 +44,14 @@ export function PlanningVote() {
         await reload();
         setPendingId(null);
     };
+
+    const token = currentUser.token ?? '';
+    // Un second clic sur son choix actuel retire le vote.
+    const handleVote = (candidateId: string) =>
+        submit(candidateId, () =>
+            data?.myVote === candidateId ? withdrawVoteApi(currentUser.id, token) : castVoteApi(currentUser.id, candidateId, token)
+        );
+    const handleWithdraw = () => submit('withdraw', () => withdrawVoteApi(currentUser.id, token));
 
     const needsLogin = errorCode === 'unauthenticated' || actionCode === 'unauthenticated';
     const handleReconnect = () => {
@@ -65,7 +73,7 @@ export function PlanningVote() {
                     {data?.isOpen && (
                         <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
                             Du {formatDay(data.opensOn)} au {formatDay(data.closesOn)}, choisissez le tuteur qui vous a le plus marqué ce mois-ci.
-                            Votre vote reste secret et vous pouvez le modifier jusqu'à la fermeture.
+                            Votre vote reste secret. Vous pouvez le modifier ou le retirer jusqu'à la fermeture.
                         </p>
                     )}
                 </motion.div>
@@ -150,6 +158,19 @@ export function PlanningVote() {
                             </motion.button>
                         );
                     })}
+                    {data.myVote && (
+                        <div className="pt-2">
+                            <button
+                                type="button"
+                                disabled={pendingId !== null || loading}
+                                onClick={() => void handleWithdraw()}
+                                className="px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider bg-[#1F0422]/70 text-[#ECDDFD]/80 hover:bg-[#6F2B75]/40 hover:text-white border border-[#6F2B75]/40 transition-all disabled:opacity-60"
+                            >
+                                Retirer mon vote
+                            </button>
+                            <p className="text-[#ECDDFD]/60 text-xs mt-2">Vous pouvez aussi cliquer de nouveau sur votre choix pour le retirer.</p>
+                        </div>
+                    )}
                     {candidates.length === 0 && (
                         <p className="text-[#ECDDFD]/70 text-sm">Aucun candidat disponible ce mois-ci.</p>
                     )}
