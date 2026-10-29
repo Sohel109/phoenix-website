@@ -5,8 +5,8 @@ import { ClipboardCheck, RefreshCw, ShieldCheck } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { useChildrenData } from '../../hooks/useChildrenData';
-import { isStaleChildrenData, todayKeyParis } from '../../data/childrenResponse';
-import { addChildrenApi, removeChildApi, saveChildAttendanceApi } from '../../data/planningData';
+import { isStaleChildrenData } from '../../data/childrenResponse';
+import { addChildrenApi, getWeekKey, isSlotActiveThisWeek, navigateWeek, removeChildApi, saveChildAttendanceApi, timeSlots } from '../../data/planningData';
 import { projectsData } from '../../data/projectsData';
 import { ChildrenAttendanceCard } from '../../components/planning/ChildrenAttendanceCard';
 import { ChildrenRosterCard } from '../../components/planning/ChildrenRosterCard';
@@ -19,8 +19,9 @@ export function PlanningPresenceEnfants() {
     const { currentUser, logout } = usePlanning();
     const navigate = useNavigate();
     const [selectedProject, setSelectedProject] = useState<number | null>(null);
-    const [date, setDate] = useState(todayKeyParis);
-    const { data, loading, error, errorCode, reload } = useChildrenData(selectedProject, date);
+    const [weekKey, setWeekKey] = useState(() => getWeekKey(new Date()));
+    const [slotId, setSlotId] = useState<string | null>(null);
+    const { data, loading, error, errorCode, reload } = useChildrenData(selectedProject, weekKey, slotId);
     const [busy, setBusy] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
     const [actionCode, setActionCode] = useState<string | null>(null);
@@ -43,11 +44,12 @@ export function PlanningPresenceEnfants() {
     const needsLogin = errorCode === 'unauthenticated' || actionCode === 'unauthenticated';
     // Le projet de la réponse fait foi : c'est celui dont l'appel et la liste sont affichés.
     const projectId = data?.projectId ?? null;
-    // Après un échec de chargement, `data` peut être celui d'une autre date ou d'un autre projet : on ne l'affiche plus,
+    // Après un échec de chargement, `data` peut être celui d'une autre semaine, séance ou projet : on ne l'affiche plus,
     // pour ne jamais enregistrer un appel sur autre chose que ce que l'écran annonce.
-    const stale = isStaleChildrenData(data, selectedProject, date);
+    const stale = isStaleChildrenData(data, selectedProject, weekKey, slotId);
     const showCards = data !== null && projectId !== null && (!stale || loading);
     const locked = busy || loading || stale;
+    const projectSlots = projectId === null ? [] : timeSlots.filter((slot) => slot.projectId === projectId && isSlotActiveThisWeek(slot.id, weekKey));
 
     const run = async (action: () => Promise<{ success: boolean; message: string; code?: string }>): Promise<boolean> => {
         setBusy(true);
@@ -117,7 +119,10 @@ export function PlanningPresenceEnfants() {
                                 id="children-project"
                                 value={projectId}
                                 disabled={locked}
-                                onChange={(e) => setSelectedProject(Number(e.target.value))}
+                                onChange={(e) => {
+                                    setSelectedProject(Number(e.target.value));
+                                    setSlotId(null);
+                                }}
                                 className="px-4 py-2.5 rounded-full bg-[#1F0422]/70 text-white border border-[#6F2B75]/40 text-sm"
                             >
                                 {data.projects.map((id) => (
@@ -129,13 +134,20 @@ export function PlanningPresenceEnfants() {
                     {data.projects.length === 1 && <p className="text-white font-bold tracking-wide">{projectName(projectId)}</p>}
 
                     <ChildrenAttendanceCard
-                        key={`${projectId}|${data.date}|${data.attendance ? data.attendance.presentIds.join(',') : 'none'}|${data.children.length}`}
+                        key={`${projectId}|${data.weekKey}|${data.slotId ?? 'none'}|${data.attendance ? data.attendance.presentIds.join(',') : 'none'}|${data.children.length}`}
                         data={data}
-                        date={date}
+                        weekKey={weekKey}
+                        slotId={slotId}
+                        slots={projectSlots}
                         disabled={locked}
-                        onDateChange={setDate}
+                        onWeekChange={(direction) => {
+                            setWeekKey(navigateWeek(weekKey, direction));
+                            setSlotId(null);
+                        }}
+                        onSlotChange={setSlotId}
                         onSave={async (presentIds) => {
-                            await run(() => saveChildAttendanceApi(currentUser.id, token, projectId, data.date, presentIds));
+                            if (data.slotId === null) return;
+                            await run(() => saveChildAttendanceApi(currentUser.id, token, projectId, data.slotId as string, data.weekKey, presentIds));
                         }}
                     />
                     <ChildrenRosterCard

@@ -63,9 +63,6 @@ class FakeSheet {
                 if (dateifyMonthKeys && col === 0 && MONTH_KEY_SHEETS.includes(this.name) && /^\d{4}-\d{2}$/.test(cell)) {
                     return parisMidnight(cell);
                 }
-                if (dateifyMonthKeys && col === 1 && this.name === 'PresencesEnfants' && /^\d{4}-\d{2}-\d{2}$/.test(cell)) {
-                    return parisMidnight(cell);
-                }
                 if (numericIds && /^\d+$/.test(cell)) return Number(cell);
                 return cell;
             })

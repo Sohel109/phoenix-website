@@ -1144,13 +1144,15 @@ function votePublishWinner(ctx, postData) {
 // PRÉSENCE DES ENFANTS PAR PROJET
 // ==========================================
 // Les chefs de projet tiennent la liste des enfants de leur projet et font l'appel ; le Bureau voit tous les projets.
+// Une séance est un créneau du planning (slotId, par exemple « slot-4-jeu ») pour une semaine (weekKey, « 2026-W44 »),
+// comme pour les réservations des tuteurs : l'appel est rattaché à la séance, pas au projet seul.
 // Seuls le prénom et l'initiale du nom sont enregistrés. Le rôle et les projets de l'appelant sont lus dans la première
 // feuille du Sheet, jamais dans la requête, et le jeton de session est exigé comme pour le vote.
 var CHILDREN_PROJECT_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 var CHILDREN_NAME_MAX = 40;
 var CHILDREN_SHEETS = {
   children: { name: 'Enfants', headers: ['id', 'projectId', 'name', 'active', 'createdAt'] },
-  attendance: { name: 'PresencesEnfants', headers: ['projectId', 'date', 'childId', 'present', 'markedBy', 'markedAt'] }
+  attendance: { name: 'PresencesSeances', headers: ['projectId', 'slotId', 'weekKey', 'childId', 'present', 'markedBy', 'markedAt'] }
 };
 
 // Comptes de la première feuille avec les projets dont ils peuvent voir les enfants. Ces projets sont lus dans la colonne J
@@ -1217,20 +1219,46 @@ function readActiveChildren(sheet, projectId) {
   return activeChildrenFromRows(readVoteRows(sheet), projectId);
 }
 
-// La date d'un appel est écrite en texte, mais Sheets peut la relire comme une date : on normalise toujours.
-function normalizeDateKey(value) {
-  if (Object.prototype.toString.call(value) === '[object Date]') {
-    return Utilities.formatDate(value, 'Europe/Paris', 'yyyy-MM-dd');
-  }
-  return String(value);
+var SLOT_DAY_INDEX = { lun: 0, mar: 1, mer: 2, jeu: 3, ven: 4, sam: 5 };
+
+// « slot-4-jeu » : projet 4, jeudi. Renvoie null pour tout autre format.
+function parseSlotId(slotId) {
+  var m = /^slot-(\d{1,2})-(lun|mar|mer|jeu|ven|sam)$/.exec(String(slotId));
+  return m ? { projectId: parseInt(m[1], 10), dayIndex: SLOT_DAY_INDEX[m[2]] } : null;
 }
 
-function isRealDateKey(value) {
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  var d = new Date(Date.UTC(parseInt(value.substr(0, 4), 10), parseInt(value.substr(5, 2), 10) - 1, parseInt(value.substr(8, 2), 10)));
-  return d.getUTCFullYear() === parseInt(value.substr(0, 4), 10) &&
-    d.getUTCMonth() === parseInt(value.substr(5, 2), 10) - 1 &&
-    d.getUTCDate() === parseInt(value.substr(8, 2), 10);
+function formatUtcDateKey(d) {
+  return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth() + 1) + '-' + pad2(d.getUTCDate());
+}
+
+// Semaine ISO d'un jour (même calcul que getWeekKey côté site) : "2026-W44".
+function isoWeekKeyOfUtcDate(date) {
+  var day = date.getUTCDay() || 7;
+  var thursday = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  thursday.setUTCDate(thursday.getUTCDate() + 4 - day);
+  var yearStart = Date.UTC(thursday.getUTCFullYear(), 0, 1);
+  var weekNo = Math.ceil(((thursday.getTime() - yearStart) / 86400000 + 1) / 7);
+  return thursday.getUTCFullYear() + '-W' + pad2(weekNo);
+}
+
+// Lundi de la semaine, ou null si la clé n'est pas une vraie semaine (« 2025-W53 », « 2026-W54 »...).
+function weekMondayUtc(weekKey) {
+  var m = /^(\d{4})-W(\d{2})$/.exec(String(weekKey));
+  if (!m) return null;
+  var week = parseInt(m[2], 10);
+  if (week < 1 || week > 53) return null;
+  var jan4 = new Date(Date.UTC(parseInt(m[1], 10), 0, 4));
+  var jan4Day = jan4.getUTCDay() || 7;
+  var monday = new Date(jan4.getTime() + (-(jan4Day - 1) + (week - 1) * 7) * 86400000);
+  return isoWeekKeyOfUtcDate(monday) === m[1] + '-W' + m[2] ? monday : null;
+}
+
+// Jour (yyyy-MM-dd) où a lieu la séance, ou null si la semaine ou le créneau est invalide.
+function sessionDateKey(weekKey, slotId) {
+  var monday = weekMondayUtc(weekKey);
+  var slot = parseSlotId(slotId);
+  if (!monday || !slot) return null;
+  return formatUtcDateKey(new Date(monday.getTime() + slot.dayIndex * 86400000));
 }
 
 // Année scolaire (1er septembre au 31 août) qui contient le jour donné.
@@ -1252,36 +1280,41 @@ function getAttendanceSheet() {
   if (!existed) {
     sheet.getRange('B:B').setNumberFormat('@');
     sheet.getRange('C:C').setNumberFormat('@');
+    sheet.getRange('D:D').setNumberFormat('@');
   }
   return sheet;
 }
 
-// Lignes d'appel normalisées. `rows` est la sortie de readVoteRows.
+// Lignes d'appel normalisées. `date` est le jour de la séance (vide si la ligne est invalide : elle n'est alors jamais comptée).
 function readAttendanceRows(sheet) {
   return readVoteRows(sheet).map(function(r) {
+    var slotId = String(r.cells[1]);
+    var weekKey = String(r.cells[2]);
     return {
       sheetRow: r.sheetRow,
       projectId: String(r.cells[0]),
-      date: normalizeDateKey(r.cells[1]),
-      childId: String(r.cells[2]),
-      present: isTrueCell(r.cells[3])
+      slotId: slotId,
+      weekKey: weekKey,
+      date: sessionDateKey(weekKey, slotId) || '',
+      childId: String(r.cells[3]),
+      present: isTrueCell(r.cells[4])
     };
   });
 }
 
 // Séances comptées et taux d'un projet sur l'année scolaire, enfants retirés compris.
 function projectAttendanceStats(attendanceRows, projectId, year) {
-  var dates = {};
+  var sessions = {};
   var present = 0;
   var total = 0;
   for (var i = 0; i < attendanceRows.length; i++) {
     var r = attendanceRows[i];
-    if (r.projectId !== String(projectId) || r.date < year.start || r.date > year.end) continue;
-    dates[r.date] = true;
+    if (r.projectId !== String(projectId) || r.date === '' || r.date < year.start || r.date > year.end) continue;
+    sessions[r.slotId + '|' + r.weekKey] = true;
     total++;
     if (r.present) present++;
   }
-  return { sessionCount: Object.keys(dates).length, rate: percentOrNull(present, total) };
+  return { sessionCount: Object.keys(sessions).length, rate: percentOrNull(present, total) };
 }
 
 function handleChildrenAction(action, postData) {
@@ -1340,8 +1373,14 @@ function handleChildrenAction(action, postData) {
 
 function childrenGetData(ctx, postData) {
   var today = todayKeyParis();
-  var date = postData.date ? String(postData.date) : today;
-  if (!isRealDateKey(date)) return voteFail('invalid', 'Date invalide.');
+  var weekKey = postData.weekKey ? String(postData.weekKey) : isoWeekKeyOfUtcDate(new Date(today + 'T00:00:00Z'));
+  if (!weekMondayUtc(weekKey)) return voteFail('invalid', 'Semaine invalide.');
+  var hasSlot = postData.slotId !== undefined && postData.slotId !== null && postData.slotId !== '';
+  var slotId = hasSlot ? String(postData.slotId) : null;
+  if (hasSlot) {
+    var slot = parseSlotId(slotId);
+    if (!slot || (ctx.projectId !== null && slot.projectId !== ctx.projectId)) return voteFail('invalid', 'Séance inconnue pour ce projet.');
+  }
   var year = schoolYearFor(today);
   var childRows = readVoteRows(ctx.sheets.children);
   var attendanceRows = readAttendanceRows(ctx.sheets.attendance);
@@ -1349,23 +1388,26 @@ function childrenGetData(ctx, postData) {
 
   var children = [];
   var attendance = null;
+  var doneSlots = [];
   var summary = null;
   if (ctx.projectId !== null) {
     var active = activeChildrenFromRows(childRows, ctx.projectId);
     children = active.map(function(c) { return { id: c.id, name: c.name }; });
     var ofProject = attendanceRows.filter(function(r) { return r.projectId === String(ctx.projectId); });
-    var ofDay = ofProject.filter(function(r) { return r.date === date; });
-    if (ofDay.length > 0) {
+    var ofWeek = ofProject.filter(function(r) { return r.weekKey === weekKey; });
+    ofWeek.forEach(function(r) { if (doneSlots.indexOf(r.slotId) === -1) doneSlots.push(r.slotId); });
+    if (slotId !== null && doneSlots.indexOf(slotId) !== -1) {
       var activeIds = {};
       active.forEach(function(c) { activeIds[c.id] = true; });
       attendance = {
-        date: date,
-        presentIds: ofDay.filter(function(r) { return r.present && activeIds[r.childId]; }).map(function(r) { return r.childId; })
+        slotId: slotId,
+        weekKey: weekKey,
+        presentIds: ofWeek.filter(function(r) { return r.slotId === slotId && r.present && activeIds[r.childId]; }).map(function(r) { return r.childId; })
       };
     }
     var stats = projectAttendanceStats(attendanceRows, ctx.projectId, year);
     var perChild = active.map(function(c) {
-      var mine = ofProject.filter(function(r) { return r.childId === c.id && r.date >= year.start && r.date <= year.end; });
+      var mine = ofProject.filter(function(r) { return r.childId === c.id && r.date !== '' && r.date >= year.start && r.date <= year.end; });
       var presentCount = mine.filter(function(r) { return r.present; }).length;
       return { id: c.id, name: c.name, sessions: mine.length, present: presentCount, rate: percentOrNull(presentCount, mine.length) };
     });
@@ -1385,9 +1427,11 @@ function childrenGetData(ctx, postData) {
     isBureau: isBureau,
     projects: ctx.accessible,
     projectId: ctx.projectId,
-    date: date,
+    weekKey: weekKey,
+    slotId: slotId,
     children: children,
     attendance: attendance,
+    doneSlots: doneSlots,
     summary: summary,
     overview: overview
   };
@@ -1415,24 +1459,28 @@ function childrenAdd(ctx, postData) {
 }
 
 function childrenSaveAttendance(ctx, postData) {
-  var date = postData.date;
-  if (!isRealDateKey(date)) return voteFail('invalid', 'Date invalide.');
-  if (date > todayKeyParis()) return voteFail('invalid', "L'appel ne peut pas être fait pour une date à venir.");
+  var slotId = String(postData.slotId);
+  var weekKey = String(postData.weekKey);
+  var slot = parseSlotId(slotId);
+  if (!slot || slot.projectId !== ctx.projectId) return voteFail('invalid', 'Séance inconnue pour ce projet.');
+  var date = sessionDateKey(weekKey, slotId);
+  if (date === null) return voteFail('invalid', 'Semaine invalide.');
+  if (date > todayKeyParis()) return voteFail('invalid', "L'appel ne peut pas être fait pour une séance à venir.");
   var children = readActiveChildren(ctx.sheets.children, ctx.projectId);
   if (children.length === 0) return voteFail('invalid', "Aucun enfant dans la liste de ce projet.");
   var presentIds = {};
   (Array.isArray(postData.presentIds) ? postData.presentIds : []).forEach(function(id) { presentIds[String(id)] = true; });
 
-  // Remplace l'appel du jour : on supprime les anciennes lignes en partant du bas pour garder les numéros valides.
+  // Remplace l'appel de la séance : on supprime les anciennes lignes en partant du bas pour garder les numéros valides.
   var existing = readAttendanceRows(ctx.sheets.attendance)
-    .filter(function(r) { return r.projectId === String(ctx.projectId) && r.date === date; })
+    .filter(function(r) { return r.projectId === String(ctx.projectId) && r.slotId === slotId && r.weekKey === weekKey; })
     .map(function(r) { return r.sheetRow; })
     .sort(function(a, b) { return b - a; });
   for (var i = 0; i < existing.length; i++) ctx.sheets.attendance.deleteRow(existing[i]);
 
   var markedAt = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy à HH:mm');
   for (var j = 0; j < children.length; j++) {
-    ctx.sheets.attendance.appendRow([ctx.projectId, date, children[j].id, presentIds[children[j].id] === true, ctx.user.id, markedAt]);
+    ctx.sheets.attendance.appendRow([ctx.projectId, slotId, weekKey, children[j].id, presentIds[children[j].id] === true, ctx.user.id, markedAt]);
   }
   return { success: true, saved: children.length };
 }

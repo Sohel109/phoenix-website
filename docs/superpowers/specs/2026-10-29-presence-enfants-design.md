@@ -14,12 +14,12 @@ Demande d'origine : un message de Brault, relayé par l'utilisateur. Le CDP écr
 - **CDP :** voit et modifie la liste, fait l'appel et voit les bilans, uniquement pour les projets de la colonne J « Projets enfants » du Sheet. Cette colonne est remplie par le Bureau : la colonne F (projet de rattachement) ne donne aucun accès, car chaque membre peut la changer lui-même depuis « Mon compte ».
 - **CDP sans projet** dans son compte : ne voit aucun projet (contrairement à la page de validation des tuteurs, qui lui montre tout). Les données d'enfants ne s'ouvrent jamais par défaut.
 - **Bureau :** voit tous les projets, ajoute et retire des enfants, fait ou corrige l'appel de n'importe quel projet, et voit le bilan de tous les projets.
-- **Séance :** repérée par le projet et la date (`YYYY-MM-DD`, heure de Paris). Au plus un appel par projet et par jour. La date par défaut est aujourd'hui, une date future est refusée. Les créneaux du planning ne servent pas : Jules Ferry et Massa 13 n'en ont plus depuis la suppression du mercredi, leurs CDP doivent quand même pouvoir faire l'appel.
+- **Séance :** un créneau du planning (`slotId`, par exemple `slot-4-jeu`) pour une semaine (`weekKey`, par exemple `2026-W44`), comme pour les réservations des tuteurs. L'appel est rattaché à la séance, pas au projet seul. Le créneau doit appartenir au projet (le numéro du projet est dans l'identifiant du créneau). Le jour de la séance se déduit de la semaine et du jour du créneau ; une séance à venir est refusée, celle d'aujourd'hui est acceptée. Au plus un appel par séance : réenregistrer la remplace. Les séances exceptionnelles qui ne sont pas dans le planning ne sont pas gérées.
 - **Données sur les enfants :** prénom et initiale du nom seulement (par exemple « Inès B. »). L'interface l'indique. Le serveur coupe le nom à 40 caractères et refuse un nom vide.
 - **Retirer un enfant** le désactive, il n'est pas effacé : ses présences passées restent dans les bilans. Un enfant désactivé n'apparaît plus dans les appels futurs ni dans la liste active.
 - **Ajouter un enfant :** un seul champ où l'on colle une ou plusieurs lignes (un nom par ligne). Les doublons dans le même projet (même nom, sans tenir compte de la casse) sont ignorés.
-- **Appel :** une case par enfant actif. Enregistrer écrit une ligne par enfant actif ce jour-là, présent ou absent. On distingue ainsi un appel fait où tout le monde est absent d'un appel pas fait. Enregistrer de nouveau le même jour remplace l'appel (correction). Un enfant ajouté après un appel n'est pas compté sur cet appel.
-- **Bilan :** sur l'année scolaire en cours (du 1er septembre au 31 août, heure de Paris). Par enfant : séances comptées, présences, taux. Par projet : nombre d'enfants actifs, nombre de séances avec appel, taux moyen. Un enfant n'est compté que sur les appels où il figure.
+- **Appel :** une case par enfant actif. Enregistrer écrit une ligne par enfant actif pour cette séance, présent ou absent. On distingue ainsi un appel fait où tout le monde est absent d'un appel pas fait. Enregistrer de nouveau la même séance remplace l'appel (correction). Un enfant ajouté après un appel n'est pas compté sur cet appel.
+- **Bilan :** sur l'année scolaire en cours (du 1er septembre au 31 août, heure de Paris). Par enfant : séances comptées, présences, taux. Par projet : nombre d'enfants actifs, nombre de séances avec appel (créneaux distincts par semaine), taux moyen. Un enfant n'est compté que sur les appels où il figure.
 
 ## Hors périmètre (YAGNI)
 
@@ -39,9 +39,9 @@ Même schéma que le vote. Le backend est le script Google Apps Script ([google-
 | Onglet | Colonnes | Rôle |
 |---|---|---|
 | `Enfants` | `id`, `projectId`, `name`, `active`, `createdAt` | Un enfant par ligne. `active` vaut `true` ou `false`. `id` est un identifiant généré commençant par une lettre (par exemple `k3fa91c2`), pour que Sheets ne le lise jamais comme un nombre. Un nom commençant par `=`, `+`, `-` ou `@` est nettoyé de ces caractères (sinon Sheets le lirait comme une formule). |
-| `PresencesEnfants` | `projectId`, `date`, `childId`, `present`, `markedBy`, `markedAt` | Une ligne par enfant et par appel. Remplacée en bloc quand l'appel est réenregistré. |
+| `PresencesSeances` | `projectId`, `slotId`, `weekKey`, `childId`, `present`, `markedBy`, `markedAt` | Une ligne par enfant et par séance. Remplacée en bloc quand l'appel est réenregistré. |
 
-Google Sheets convertit les cellules qui ressemblent à une date en objets `Date`. La lecture normalise `date` (comme `normalizeMonthKey` pour le vote) et compare les identifiants comme des chaînes.
+Les colonnes `slotId`, `weekKey` et `childId` sont créées au format texte, et les identifiants sont comparés comme des chaînes.
 
 ### Authentification et droits
 
@@ -58,10 +58,10 @@ Un CDP ne reçoit jamais les enfants, les présences ni les taux d'un autre proj
 
 | Action | Paramètres | Effet |
 |---|---|---|
-| `getChildrenData` | `requesterId`, `token`, `projectId` (facultatif), `date` (facultatif) | Renvoie les projets accessibles, les enfants actifs du projet demandé, l'appel de la date demandée (présents, ou `null` si pas fait) et le bilan de l'année scolaire. Le Bureau reçoit en plus le résumé de tous les projets. Sans `projectId`, le premier projet accessible est utilisé. |
+| `getChildrenData` | `requesterId`, `token`, `projectId` (facultatif), `weekKey` (facultatif, semaine en cours par défaut), `slotId` (facultatif) | Renvoie les projets accessibles, les enfants actifs du projet demandé, les créneaux dont l'appel est déjà fait cette semaine (`doneSlots`), l'appel de la séance demandée (présents, ou `null` si pas fait) et le bilan de l'année scolaire. Le Bureau reçoit en plus le résumé de tous les projets. Sans `projectId`, le premier projet accessible est utilisé. |
 | `addChildren` | `requesterId`, `token`, `projectId`, `names` (liste) | Ajoute les enfants, ignore les noms vides et les doublons. |
 | `removeChild` | `requesterId`, `token`, `projectId`, `childId` | Passe l'enfant à inactif. |
-| `saveChildAttendance` | `requesterId`, `token`, `projectId`, `date`, `presentIds` (liste) | Remplace l'appel du jour : une ligne par enfant actif, présent s'il figure dans `presentIds`. Refuse une date future ou mal formée, ignore les identifiants qui ne sont pas des enfants actifs du projet. |
+| `saveChildAttendance` | `requesterId`, `token`, `projectId`, `slotId`, `weekKey`, `presentIds` (liste) | Remplace l'appel de la séance : une ligne par enfant actif, présent s'il figure dans `presentIds`. Refuse un créneau qui n'est pas du projet, une semaine invalide ou une séance à venir, ignore les identifiants qui ne sont pas des enfants actifs du projet. |
 
 Les écritures prennent le verrou de script (`LockService`), comme le vote. Les réponses d'erreur ont la forme `{ success: false, code, message }`, avec les codes `unauthenticated`, `forbidden`, `invalid` et `error`.
 
@@ -69,7 +69,7 @@ Les écritures prennent le verrou de script (`LockService`), comme le vote. Les 
 
 - Route `/planning/presences-enfants` dans `App.tsx`, carte « Présence enfants » sur le tableau de bord (`PlanningDashboard.tsx`), visible seulement pour `chef_projet` et `bureau`. Pas de lien dans la barre du haut : elle n'est pas visible sur téléphone, et les autres pages de CDP n'y figurent pas non plus. La page refuse aussi l'accès aux autres rôles, comme `PlanningValidation`.
 - `src/pages/planning/PlanningPresenceEnfants.tsx` avec trois blocs :
-  - **Appel :** sélecteur de projet (si plusieurs), sélecteur de date, une case par enfant, bouton Enregistrer. Si un appel existe déjà pour cette date, il est pré-rempli et le bouton devient « Enregistrer les corrections ».
+  - **Appel :** navigation par semaine, séances du projet de cette semaine (créneaux du planning, avec la règle une semaine sur deux de Jules Ferry), badge « Appel fait », puis une case par enfant et un bouton Enregistrer. Si l'appel de la séance existe déjà, il est pré-rempli et le bouton devient « Enregistrer les corrections ». Les séances à venir ne sont pas sélectionnables.
   - **Liste :** champ de saisie multi-lignes avec le rappel « prénom et initiale du nom seulement », liste des enfants actifs, bouton Retirer.
   - **Bilan :** taux par enfant et pour le projet. Le Bureau voit en plus le tableau de tous les projets.
 - `src/hooks/useChildrenData.ts` et `src/data/childrenResponse.ts` (validation de la réponse du script), sur le modèle de `useVoteData.ts` et `voteResponse.ts`. Les appels réseau sont ajoutés à `src/data/planningData.ts` à côté de ceux du vote.
@@ -78,12 +78,12 @@ Les écritures prennent le verrou de script (`LockService`), comme le vote. Les 
 ## Gestion des erreurs
 
 - Après chaque action, le front relit `getChildrenData` : aucun état local incohérent.
-- Date future, nom vide ou enfant inconnu : message clair, rien n'est écrit.
+- Séance à venir, semaine ou créneau invalide, nom vide ou enfant inconnu : message clair, rien n'est écrit.
 - Réseau ou script indisponible : message et bouton Réessayer. Avant le redéploiement du script, la page affiche une erreur côté production.
 
 ## Tests et vérification
 
-- Logique du script avec le faux Google Sheet en Node (`scripts/lib/apps-script-harness.mjs`) : droits (tuteur refusé, CDP limité à ses projets, Bureau partout, jeton invalide), ajout et doublons, retrait, appel enregistré puis corrigé, date future refusée, enfant ajouté après un appel, taux et année scolaire (frontière du 1er septembre), absence de fuite des noms vers un autre projet, dates converties par Sheets.
+- Logique du script avec le faux Google Sheet en Node (`scripts/lib/apps-script-harness.mjs`) : droits (tuteur refusé, CDP limité à ses projets, Bureau partout, jeton invalide), ajout et doublons, retrait, appel enregistré puis corrigé, date future refusée, enfant ajouté après un appel, taux et année scolaire (frontière du 1er septembre), absence de fuite des noms vers un autre projet.
 - Validation de la réponse côté client (`parseChildrenData`), sur le modèle des tests du vote.
 - Ces tests rejoignent `npm run test:vote`.
 - Vérification de l'interface dans le navigateur avec le faux serveur de démonstration (enfants fictifs), `tsc` et lint avant tout commit.

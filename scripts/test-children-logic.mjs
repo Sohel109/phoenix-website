@@ -129,11 +129,13 @@ test('le Bureau peut ajouter et retirer dans n\'importe quel projet', () => {
     assert.equal(plain(h.call('removeChild', { requesterId: 'b1', projectId: 9, childId: id })).success, true);
 });
 
-// ─── Appel, correction et bilans ──────────────────────────────────────────────
+// ─── Appel par séance (créneau + semaine), correction et bilans ───────────────
+// Aujourd'hui = jeudi 29 octobre 2026 = semaine 2026-W44 (lundi 26 octobre au dimanche 1er novembre).
 
-const save = (h, requesterId, projectId, date, presentIds) =>
-    plain(h.call('saveChildAttendance', { requesterId, projectId, date, presentIds }));
-const attendanceRows = (h) => (h.sheet('PresencesEnfants') ?? []).slice(1);
+const WEEK = '2026-W44';
+const save = (h, requesterId, projectId, slotId, weekKey, presentIds) =>
+    plain(h.call('saveChildAttendance', { requesterId, projectId, slotId, weekKey, presentIds }));
+const attendanceRows = (h) => (h.sheet('PresencesSeances') ?? []).slice(1);
 
 /** Projet 4 avec trois enfants ; renvoie leurs identifiants. */
 function withKids(h) {
@@ -142,34 +144,74 @@ function withKids(h) {
     return { ines, karim, lina };
 }
 
-test('appel enregistré : une ligne par enfant, présents et absents, avec qui a validé', () => {
+test('appel enregistré pour une séance : une ligne par enfant, présents et absents, avec qui a validé', () => {
     const h = fresh();
     const { ines, karim, lina } = withKids(h);
-    const out = save(h, 'c4', 4, TODAY, [ines, karim]);
+    const out = save(h, 'c4', 4, 'slot-4-jeu', WEEK, [ines, karim]);
     assert.equal(out.success, true);
     assert.equal(out.saved, 3);
-    const rows = attendanceRows(h).map((r) => [String(r[0]), r[1], r[2], r[3], r[4]]);
-    assert.deepEqual(rows, [['4', TODAY, ines, true, 'c4'], ['4', TODAY, karim, true, 'c4'], ['4', TODAY, lina, false, 'c4']]);
-    assert.deepEqual(get(h, 'c4', { date: TODAY }).attendance, { date: TODAY, presentIds: [ines, karim] });
-    assert.equal(get(h, 'c4', { date: '2026-10-28' }).attendance, null);
+    const rows = attendanceRows(h).map((r) => [String(r[0]), r[1], r[2], r[3], r[4], r[5]]);
+    assert.deepEqual(rows, [
+        ['4', 'slot-4-jeu', WEEK, ines, true, 'c4'],
+        ['4', 'slot-4-jeu', WEEK, karim, true, 'c4'],
+        ['4', 'slot-4-jeu', WEEK, lina, false, 'c4'],
+    ]);
+    const data = get(h, 'c4', { weekKey: WEEK, slotId: 'slot-4-jeu' });
+    assert.deepEqual(data.attendance, { slotId: 'slot-4-jeu', weekKey: WEEK, presentIds: [ines, karim] });
+    assert.deepEqual(data.doneSlots, ['slot-4-jeu']);
+    assert.equal(get(h, 'c4', { weekKey: WEEK, slotId: 'slot-4-mar' }).attendance, null);
+    assert.deepEqual(get(h, 'c4', { weekKey: '2026-W43' }).doneSlots, []);
 });
 
-test('correction : réenregistrer le même jour remplace l\'appel', () => {
+test('deux séances de la même semaine sont indépendantes', () => {
+    const h = fresh();
+    const { ines, karim } = withKids(h);
+    save(h, 'c4', 4, 'slot-4-lun', WEEK, [ines]);
+    save(h, 'c4', 4, 'slot-4-mar', WEEK, [karim]);
+    save(h, 'c4', 4, 'slot-4-mar', WEEK, []);
+    assert.equal(attendanceRows(h).length, 6);
+    assert.deepEqual(get(h, 'c4', { weekKey: WEEK, slotId: 'slot-4-lun' }).attendance.presentIds, [ines]);
+    assert.deepEqual(get(h, 'c4', { weekKey: WEEK }).doneSlots.sort(), ['slot-4-lun', 'slot-4-mar']);
+});
+
+test('correction : réenregistrer la même séance remplace l\'appel', () => {
     const h = fresh();
     const { ines, karim, lina } = withKids(h);
-    save(h, 'c4', 4, TODAY, [ines, karim]);
-    save(h, 'c4', 4, TODAY, [lina]);
+    save(h, 'c4', 4, 'slot-4-jeu', WEEK, [ines, karim]);
+    save(h, 'c4', 4, 'slot-4-jeu', WEEK, [lina]);
     assert.equal(attendanceRows(h).length, 3);
-    assert.deepEqual(get(h, 'c4', { date: TODAY }).attendance.presentIds, [lina]);
+    assert.deepEqual(get(h, 'c4', { weekKey: WEEK, slotId: 'slot-4-jeu' }).attendance.presentIds, [lina]);
 });
 
-test('une date future ou invalide est refusée et n\'écrit rien', () => {
+test('une séance qui n\'existe pas ou qui est d\'un autre projet est refusée et n\'écrit rien', () => {
     const h = fresh();
     const { ines } = withKids(h);
-    for (const date of ['2026-10-30', '2026-02-30', '29/10/2026', '', undefined]) {
-        assert.equal(save(h, 'c4', 4, date, [ines]).code, 'invalid', String(date));
+    for (const slotId of ['slot-7-mer', 'slot-4-xyz', 'nope', '', undefined, 'slot-44-lun']) {
+        assert.equal(save(h, 'c4', 4, slotId, WEEK, [ines]).code, 'invalid', String(slotId));
+    }
+    for (const weekKey of ['2026-44', '2026-W54', '2026-W00', '2025-W53', '29/10/2026', '', undefined]) {
+        assert.equal(save(h, 'c4', 4, 'slot-4-jeu', weekKey, [ines]).code, 'invalid', String(weekKey));
     }
     assert.equal(attendanceRows(h).length, 0);
+});
+
+test('une séance à venir est refusée, celle d\'aujourd\'hui est acceptée', () => {
+    const h = fresh();
+    const { ines } = withKids(h);
+    assert.equal(save(h, 'c4', 4, 'slot-4-ven', WEEK, [ines]).code, 'invalid'); // vendredi 30 octobre
+    assert.equal(save(h, 'c4', 4, 'slot-4-lun', '2026-W45', [ines]).code, 'invalid');
+    assert.equal(attendanceRows(h).length, 0);
+    assert.equal(save(h, 'c4', 4, 'slot-4-jeu', WEEK, [ines]).success, true); // jeudi 29 octobre
+});
+
+test('la date d\'une séance se déduit de la semaine et du jour du créneau, y compris aux frontières d\'année', () => {
+    const h = fresh();
+    const date = (week, slot) => h.ctx.sessionDateKey(week, slot);
+    assert.equal(date(WEEK, 'slot-4-jeu'), '2026-10-29');
+    assert.equal(date(WEEK, 'slot-2-sam'), '2026-10-31');
+    assert.equal(date('2026-W01', 'slot-4-lun'), '2025-12-29');
+    assert.equal(date('2026-W53', 'slot-4-ven'), '2027-01-01');
+    assert.equal(date('2025-W53', 'slot-4-lun'), null);
 });
 
 test('un identifiant d\'enfant d\'un autre projet dans presentIds est ignoré', () => {
@@ -177,30 +219,39 @@ test('un identifiant d\'enfant d\'un autre projet dans presentIds est ignoré', 
     const { ines } = withKids(h);
     add(h, 'c47', 7, ['Secret S.']);
     const secret = get(h, 'c47', { projectId: 7 }).children[0].id;
-    save(h, 'c4', 4, TODAY, [ines, secret, 'nope']);
+    save(h, 'c4', 4, 'slot-4-jeu', WEEK, [ines, secret, 'nope']);
     const rows = attendanceRows(h);
     assert.equal(rows.length, 3);
-    assert.ok(rows.every((r) => r[2] !== secret));
-    assert.deepEqual(get(h, 'c4', { date: TODAY }).attendance.presentIds, [ines]);
+    assert.ok(rows.every((r) => r[3] !== secret));
+    assert.deepEqual(get(h, 'c4', { weekKey: WEEK, slotId: 'slot-4-jeu' }).attendance.presentIds, [ines]);
 });
 
 test('un appel pour un projet sans enfant actif est invalide', () => {
     const h = fresh();
-    assert.equal(save(h, 'c47', 7, TODAY, []).code, 'invalid');
+    assert.equal(save(h, 'c47', 7, 'slot-7-mer', '2026-W43', []).code, 'invalid');
 });
 
 test('un CDP ne peut pas faire l\'appel d\'un autre projet', () => {
     const h = fresh();
     withKids(h);
-    assert.equal(save(h, 'c47', 4, TODAY, []).success, true); // c47 a le projet 4
-    assert.equal(save(h, 'c4', 7, TODAY, []).code, 'forbidden');
+    assert.equal(save(h, 'c47', 4, 'slot-4-jeu', WEEK, []).success, true); // c47 a le projet 4
+    assert.equal(save(h, 'c4', 7, 'slot-7-mer', WEEK, []).code, 'forbidden');
+});
+
+test('lecture : la semaine par défaut est la semaine en cours, une semaine ou une séance invalide est refusée', () => {
+    const h = fresh();
+    withKids(h);
+    assert.equal(get(h, 'c4').weekKey, WEEK);
+    assert.equal(get(h, 'c4', { weekKey: '2026-W99' }).code, 'invalid');
+    assert.equal(get(h, 'c4', { weekKey: WEEK, slotId: 'slot-7-mer' }).code, 'invalid');
+    assert.equal(get(h, 'c4').slotId, null);
 });
 
 test('bilan : taux par enfant et pour le projet, séances comptées', () => {
     const h = fresh();
     const { ines, karim } = withKids(h);
-    save(h, 'c4', 4, '2026-10-28', [ines]);
-    save(h, 'c4', 4, TODAY, [ines, karim]);
+    save(h, 'c4', 4, 'slot-4-lun', WEEK, [ines]);
+    save(h, 'c4', 4, 'slot-4-jeu', WEEK, [ines, karim]);
     const { summary } = get(h, 'c4');
     assert.equal(summary.schoolYear, '2026-2027');
     assert.equal(summary.sessionCount, 2);
@@ -215,7 +266,7 @@ test('bilan : taux par enfant et pour le projet, séances comptées', () => {
 test('un enfant ajouté après un appel n\'est pas compté sur cet appel', () => {
     const h = fresh();
     const { ines } = withKids(h);
-    save(h, 'c4', 4, '2026-10-28', [ines]);
+    save(h, 'c4', 4, 'slot-4-lun', WEEK, [ines]);
     add(h, 'c4', 4, ['Zoé T.']);
     const zoe = get(h, 'c4').summary.children.find((c) => c.name === 'Zoé T.');
     assert.deepEqual([zoe.sessions, zoe.present, zoe.rate], [0, 0, null]);
@@ -228,7 +279,7 @@ test('année scolaire : le 31 août appartient à l\'année précédente', () =>
     assert.equal(plain(h.ctx.schoolYearFor('2026-09-01')).label, '2026-2027');
     assert.equal(plain(h.ctx.schoolYearFor('2027-08-31')).end, '2027-08-31');
     const { ines } = withKids(h);
-    save(h, 'c4', 4, '2026-08-31', [ines]);
+    save(h, 'c4', 4, 'slot-4-lun', '2026-W35', [ines]); // lundi 24 août 2026, année 2025-2026
     const { summary } = get(h, 'c4');
     assert.equal(summary.sessionCount, 0);
     assert.equal(summary.rate, null);
@@ -237,10 +288,10 @@ test('année scolaire : le 31 août appartient à l\'année précédente', () =>
 test('un enfant retiré garde son poids dans le taux du projet mais quitte les listes', () => {
     const h = fresh();
     const { ines, karim } = withKids(h);
-    save(h, 'c4', 4, TODAY, [ines, karim]);
+    save(h, 'c4', 4, 'slot-4-jeu', WEEK, [ines, karim]);
     const before = get(h, 'c4').summary;
     h.call('removeChild', { requesterId: 'c4', projectId: 4, childId: ines });
-    const after = get(h, 'c4');
+    const after = get(h, 'c4', { weekKey: WEEK, slotId: 'slot-4-jeu' });
     assert.equal(after.summary.rate, before.rate);
     assert.equal(after.summary.sessionCount, before.sessionCount);
     assert.equal(after.summary.childCount, 2);
@@ -259,27 +310,15 @@ test('un projet sans appel a un taux null et zéro séance', () => {
 test('Bureau : vue d\'ensemble de tous les projets, appel possible ; un CDP n\'a pas la vue d\'ensemble', () => {
     const h = fresh();
     const { ines } = withKids(h);
-    save(h, 'c4', 4, '2026-10-28', [ines]);
+    save(h, 'c4', 4, 'slot-4-lun', WEEK, [ines]);
     assert.equal(get(h, 'c4').overview, null);
     const overview = get(h, 'b1').overview;
     assert.equal(overview.length, 9);
     assert.deepEqual(overview.map((o) => o.projectId), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
     const four = overview.find((o) => o.projectId === 4);
     assert.deepEqual([four.childCount, four.sessionCount, four.rate], [3, 1, 33]);
-    assert.equal(save(h, 'b1', 4, TODAY, [ines]).success, true);
-    assert.equal(attendanceRows(h).at(-1)[4], 'b1');
-});
-
-test('dates converties en Date par Sheets : appels et bilans restent corrects, sans doublon', () => {
-    const h = fresh({ dateifyMonthKeys: true });
-    const { ines, karim } = withKids(h);
-    save(h, 'c4', 4, TODAY, [ines]);
-    assert.deepEqual(get(h, 'c4', { date: TODAY }).attendance.presentIds, [ines]);
-    save(h, 'c4', 4, TODAY, [ines, karim]);
-    assert.equal(attendanceRows(h).length, 3);
-    const { summary } = get(h, 'c4');
-    assert.equal(summary.sessionCount, 1);
-    assert.equal(summary.rate, 67);
+    assert.equal(save(h, 'b1', 4, 'slot-4-jeu', WEEK, [ines]).success, true);
+    assert.equal(attendanceRows(h).at(-1)[5], 'b1');
 });
 
 // ─── Corrections de la relecture finale ───────────────────────────────────────
@@ -320,13 +359,14 @@ test('C2 : un nom qui commence par = + - @ ne devient jamais une formule', () =>
     assert.equal(add(h, 'c4', 4, ['===', '+', '@@']).code, 'invalid');
 });
 
-test('C2 et I1 : les colonnes de noms, d\'identifiants et de dates sont créées au format texte', () => {
+test('C2 et I1 : les colonnes de noms, d\'identifiants, de séances et de semaines sont créées au format texte', () => {
     const h = fresh();
     add(h, 'c4', 4, ['Inès B.']);
     const kids = h.formats('Enfants').filter(([, f]) => f === '@').map(([range]) => range);
     assert.ok(kids.includes('A:A') && kids.includes('C:C'), JSON.stringify(kids));
-    const days = h.formats('PresencesEnfants').filter(([, f]) => f === '@').map(([range]) => range);
-    assert.ok(days.includes('B:B') && days.includes('C:C'), JSON.stringify(days));
+    save(h, 'c4', 4, 'slot-4-jeu', WEEK, []);
+    const sessions = h.formats('PresencesSeances').filter(([, f]) => f === '@').map(([range]) => range);
+    for (const column of ['B:B', 'C:C', 'D:D']) assert.ok(sessions.includes(column), JSON.stringify(sessions));
 });
 
 test('I1 : un identifiant d\'enfant ne peut jamais être lu comme un nombre par Sheets', () => {

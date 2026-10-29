@@ -406,10 +406,15 @@ export interface ChildrenData {
     /** Projets auxquels le compte a accès (le Bureau les voit tous). */
     projects: number[];
     projectId: number | null;
-    date: string;
+    /** Semaine affichée, au format 2026-W44. */
+    weekKey: string;
+    /** Séance (créneau) demandée, ou null tant qu'aucune n'est choisie. */
+    slotId: string | null;
     children: { id: string; name: string }[];
-    /** Appel déjà fait pour `date`, ou null s'il n'a pas eu lieu. */
-    attendance: { date: string; presentIds: string[] } | null;
+    /** Appel déjà fait pour la séance `slotId` de la semaine `weekKey`, ou null s'il n'a pas eu lieu. */
+    attendance: { slotId: string; weekKey: string; presentIds: string[] } | null;
+    /** Créneaux du projet dont l'appel est déjà fait cette semaine. */
+    doneSlots: string[];
     summary: {
         schoolYear: string;
         childCount: number;
@@ -486,9 +491,10 @@ export async function fetchChildrenData(
     requesterId: string,
     token: string,
     projectId: number | null,
-    date: string
+    weekKey: string,
+    slotId: string | null
 ): Promise<{ ok: true; data: ChildrenData } | { ok: false; message: string; code?: string }> {
-    const result = await postChildrenAction({ action: 'getChildrenData', requesterId, token, projectId, date });
+    const result = await postChildrenAction({ action: 'getChildrenData', requesterId, token, projectId, weekKey, slotId });
     if (!result.success) return { ok: false, message: result.message, code: result.code };
     const data = parseChildrenData(result.data);
     return data ? { ok: true, data } : { ok: false, message: CHILDREN_UNAVAILABLE };
@@ -504,7 +510,7 @@ export async function removeChildApi(requesterId: string, token: string, project
     return { success, message, code };
 }
 
-export async function saveChildAttendanceApi(requesterId: string, token: string, projectId: number, date: string, presentIds: string[]): Promise<{ success: boolean; message: string; code?: string }> {
-    const { success, message, code } = await postChildrenAction({ action: 'saveChildAttendance', requesterId, token, projectId, date, presentIds });
+export async function saveChildAttendanceApi(requesterId: string, token: string, projectId: number, slotId: string, weekKey: string, presentIds: string[]): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postChildrenAction({ action: 'saveChildAttendance', requesterId, token, projectId, slotId, weekKey, presentIds });
     return { success, message, code };
 }
