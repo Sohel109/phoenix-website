@@ -1,5 +1,6 @@
 import { projectsData } from './projectsData';
 import { parseVoteData } from './voteResponse';
+import { parseChildrenData } from './childrenResponse';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -387,9 +388,38 @@ export interface VoteData {
     };
 }
 
+export interface ChildrenSummaryChild {
+    id: string;
+    name: string;
+    sessions: number;
+    present: number;
+    rate: number | null;
+}
+
+export interface ChildrenData {
+    success: true;
+    isBureau: boolean;
+    /** Projets auxquels le compte a accès (le Bureau les voit tous). */
+    projects: number[];
+    projectId: number | null;
+    date: string;
+    children: { id: string; name: string }[];
+    /** Appel déjà fait pour `date`, ou null s'il n'a pas eu lieu. */
+    attendance: { date: string; presentIds: string[] } | null;
+    summary: {
+        schoolYear: string;
+        childCount: number;
+        sessionCount: number;
+        rate: number | null;
+        children: ChildrenSummaryChild[];
+    } | null;
+    /** Vue d'ensemble de tous les projets, réservée au Bureau. */
+    overview: { projectId: number; childCount: number; sessionCount: number; rate: number | null }[] | null;
+}
+
 const VOTE_UNAVAILABLE = "Le vote n'est pas disponible pour le moment.";
 
-async function postVoteAction(body: Record<string, unknown>): Promise<{ success: boolean; message: string; code?: string; data?: Record<string, unknown> }> {
+async function postPlanningAction(body: Record<string, unknown>, unavailableMessage: string): Promise<{ success: boolean; message: string; code?: string; data?: Record<string, unknown> }> {
     try {
         const API_URL = import.meta.env.VITE_API_URL || '';
         const response = await fetch(`${API_URL}/api/planning`, {
@@ -404,16 +434,18 @@ async function postVoteAction(body: Record<string, unknown>): Promise<{ success:
         return {
             success: !!data.success,
             code: typeof data.code === 'string' ? data.code : undefined,
-            // Un script Google pas encore redéployé traite les actions de vote comme une connexion et répond
-            // "Identifiants incorrects" : on n'affiche jamais ce texte pour le vote.
-            message: data.success ? (data.message || '') : (!data.message || data.message === 'Action inconnue' || data.message === 'Identifiants incorrects' ? VOTE_UNAVAILABLE : data.message),
+            // Un script Google pas encore redéployé traite ces actions comme une connexion et répond
+            // "Identifiants incorrects" : on n'affiche jamais ce texte.
+            message: data.success ? (data.message || '') : (!data.message || data.message === 'Action inconnue' || data.message === 'Identifiants incorrects' ? unavailableMessage : data.message),
             data
         };
     } catch (error) {
-        console.error('Error calling vote API:', error);
+        console.error('Error calling planning API:', error);
         return { success: false, message: 'Erreur réseau avec le serveur' };
     }
 }
+
+const postVoteAction = (body: Record<string, unknown>) => postPlanningAction(body, VOTE_UNAVAILABLE);
 
 export async function fetchVoteData(requesterId: string, token: string): Promise<{ ok: true; data: VoteData } | { ok: false; message: string; code?: string }> {
     const result = await postVoteAction({ action: 'getVoteData', requesterId, token });
@@ -439,5 +471,36 @@ export async function setVoteCandidateApi(requesterId: string, userId: string, s
 
 export async function publishWinnerApi(requesterId: string, userId: string | null, token: string): Promise<{ success: boolean; message: string; code?: string }> {
     const { success, message, code } = await postVoteAction({ action: 'publishWinner', requesterId, userId, token });
+    return { success, message, code };
+}
+
+const CHILDREN_UNAVAILABLE = "La présence des enfants n'est pas disponible pour le moment.";
+
+const postChildrenAction = (body: Record<string, unknown>) => postPlanningAction(body, CHILDREN_UNAVAILABLE);
+
+export async function fetchChildrenData(
+    requesterId: string,
+    token: string,
+    projectId: number | null,
+    date: string
+): Promise<{ ok: true; data: ChildrenData } | { ok: false; message: string; code?: string }> {
+    const result = await postChildrenAction({ action: 'getChildrenData', requesterId, token, projectId, date });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const data = parseChildrenData(result.data);
+    return data ? { ok: true, data } : { ok: false, message: CHILDREN_UNAVAILABLE };
+}
+
+export async function addChildrenApi(requesterId: string, token: string, projectId: number, names: string[]): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postChildrenAction({ action: 'addChildren', requesterId, token, projectId, names });
+    return { success, message, code };
+}
+
+export async function removeChildApi(requesterId: string, token: string, projectId: number, childId: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postChildrenAction({ action: 'removeChild', requesterId, token, projectId, childId });
+    return { success, message, code };
+}
+
+export async function saveChildAttendanceApi(requesterId: string, token: string, projectId: number, date: string, presentIds: string[]): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postChildrenAction({ action: 'saveChildAttendance', requesterId, token, projectId, date, presentIds });
     return { success, message, code };
 }
