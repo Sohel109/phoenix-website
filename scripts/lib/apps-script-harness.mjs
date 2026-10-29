@@ -9,10 +9,15 @@ import { fileURLToPath } from 'node:url';
 const SCRIPT_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'google-apps-script.js');
 const MONTH_KEY_SHEETS = ['Votes', 'VoteExclusions', 'TuteurDuMois'];
 
-function parisMidnight(monthKey) {
-    const [y, m] = monthKey.split('-').map(Number);
-    const offset = m >= 4 && m <= 10 ? '+02:00' : '+01:00';
-    return new Date(`${y}-${String(m).padStart(2, '0')}-01T00:00:00${offset}`);
+// Minuit à Paris d'une clé `YYYY-MM` (1er du mois) ou `YYYY-MM-DD`, comme la convertit Google Sheets.
+function parisMidnight(key) {
+    const [y, m, d = 1] = key.split('-').map(Number);
+    const day = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    for (const offset of ['+01:00', '+02:00']) {
+        const date = new Date(`${day}T00:00:00${offset}`);
+        if (formatParis(date, 'yyyy-MM-dd') === day) return date;
+    }
+    throw new Error(`Date non convertible : ${key}`);
 }
 
 function formatParis(date, fmt) {
@@ -55,6 +60,9 @@ class FakeSheet {
             row.map((cell, col) => {
                 if (i === 0 || typeof cell !== 'string') return cell;
                 if (dateifyMonthKeys && col === 0 && MONTH_KEY_SHEETS.includes(this.name) && /^\d{4}-\d{2}$/.test(cell)) {
+                    return parisMidnight(cell);
+                }
+                if (dateifyMonthKeys && col === 1 && this.name === 'PresencesEnfants' && /^\d{4}-\d{2}-\d{2}$/.test(cell)) {
                     return parisMidnight(cell);
                 }
                 if (numericIds && /^\d+$/.test(cell)) return Number(cell);

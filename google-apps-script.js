@@ -1182,9 +1182,8 @@ function isTrueCell(value) {
   return value === true || String(value).toLowerCase() === 'true';
 }
 
-// Enfants actifs d'un projet, dans l'ordre de la feuille.
-function readActiveChildren(sheet, projectId) {
-  var rows = readVoteRows(sheet);
+// Enfants actifs d'un projet, dans l'ordre de la feuille, à partir des lignes déjà lues.
+function activeChildrenFromRows(rows, projectId) {
   var children = [];
   for (var i = 0; i < rows.length; i++) {
     var cells = rows[i].cells;
@@ -1193,6 +1192,74 @@ function readActiveChildren(sheet, projectId) {
     }
   }
   return children;
+}
+
+function readActiveChildren(sheet, projectId) {
+  return activeChildrenFromRows(readVoteRows(sheet), projectId);
+}
+
+// La date d'un appel est écrite en texte, mais Sheets peut la relire comme une date : on normalise toujours.
+function normalizeDateKey(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    return Utilities.formatDate(value, 'Europe/Paris', 'yyyy-MM-dd');
+  }
+  return String(value);
+}
+
+function isRealDateKey(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  var d = new Date(Date.UTC(parseInt(value.substr(0, 4), 10), parseInt(value.substr(5, 2), 10) - 1, parseInt(value.substr(8, 2), 10)));
+  return d.getUTCFullYear() === parseInt(value.substr(0, 4), 10) &&
+    d.getUTCMonth() === parseInt(value.substr(5, 2), 10) - 1 &&
+    d.getUTCDate() === parseInt(value.substr(8, 2), 10);
+}
+
+// Année scolaire (1er septembre au 31 août) qui contient le jour donné.
+function schoolYearFor(todayKey) {
+  var year = parseInt(todayKey.substr(0, 4), 10);
+  var month = parseInt(todayKey.substr(5, 2), 10);
+  var startYear = month >= 9 ? year : year - 1;
+  return { label: startYear + '-' + (startYear + 1), start: startYear + '-09-01', end: (startYear + 1) + '-08-31' };
+}
+
+function percentOrNull(part, total) {
+  return total > 0 ? Math.round(part / total * 100) : null;
+}
+
+function getAttendanceSheet() {
+  var def = CHILDREN_SHEETS.attendance;
+  var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name) !== null;
+  var sheet = getOrCreateSheet(def.name, def.headers);
+  if (!existed) sheet.getRange('B:B').setNumberFormat('@');
+  return sheet;
+}
+
+// Lignes d'appel normalisées. `rows` est la sortie de readVoteRows.
+function readAttendanceRows(sheet) {
+  return readVoteRows(sheet).map(function(r) {
+    return {
+      sheetRow: r.sheetRow,
+      projectId: String(r.cells[0]),
+      date: normalizeDateKey(r.cells[1]),
+      childId: String(r.cells[2]),
+      present: isTrueCell(r.cells[3])
+    };
+  });
+}
+
+// Séances comptées et taux d'un projet sur l'année scolaire, enfants retirés compris.
+function projectAttendanceStats(attendanceRows, projectId, year) {
+  var dates = {};
+  var present = 0;
+  var total = 0;
+  for (var i = 0; i < attendanceRows.length; i++) {
+    var r = attendanceRows[i];
+    if (r.projectId !== String(projectId) || r.date < year.start || r.date > year.end) continue;
+    dates[r.date] = true;
+    total++;
+    if (r.present) present++;
+  }
+  return { sessionCount: Object.keys(dates).length, rate: percentOrNull(present, total) };
 }
 
 function handleChildrenAction(action, postData) {
@@ -1236,12 +1303,12 @@ function handleChildrenAction(action, postData) {
       user: user,
       accessible: accessible,
       projectId: projectId,
-      sheets: { children: getVoteSheet(CHILDREN_SHEETS.children) }
+      sheets: { children: getVoteSheet(CHILDREN_SHEETS.children), attendance: getAttendanceSheet() }
     };
     if (action === 'getChildrenData') return childrenGetData(ctx, postData);
     if (action === 'addChildren') return childrenAdd(ctx, postData);
     if (action === 'removeChild') return childrenRemove(ctx, postData);
-    return voteFail('invalid', 'Pas encore disponible');
+    return childrenSaveAttendance(ctx, postData);
   } catch (err) {
     return voteFail('error', err.toString());
   } finally {
@@ -1250,19 +1317,57 @@ function handleChildrenAction(action, postData) {
 }
 
 function childrenGetData(ctx, postData) {
-  var children = ctx.projectId === null ? [] : readActiveChildren(ctx.sheets.children, ctx.projectId).map(function(c) {
-    return { id: c.id, name: c.name };
-  });
+  var today = todayKeyParis();
+  var date = postData.date ? String(postData.date) : today;
+  if (!isRealDateKey(date)) return voteFail('invalid', 'Date invalide.');
+  var year = schoolYearFor(today);
+  var childRows = readVoteRows(ctx.sheets.children);
+  var attendanceRows = readAttendanceRows(ctx.sheets.attendance);
+  var isBureau = ctx.user.role === 'bureau';
+
+  var children = [];
+  var attendance = null;
+  var summary = null;
+  if (ctx.projectId !== null) {
+    var active = activeChildrenFromRows(childRows, ctx.projectId);
+    children = active.map(function(c) { return { id: c.id, name: c.name }; });
+    var ofProject = attendanceRows.filter(function(r) { return r.projectId === String(ctx.projectId); });
+    var ofDay = ofProject.filter(function(r) { return r.date === date; });
+    if (ofDay.length > 0) {
+      var activeIds = {};
+      active.forEach(function(c) { activeIds[c.id] = true; });
+      attendance = {
+        date: date,
+        presentIds: ofDay.filter(function(r) { return r.present && activeIds[r.childId]; }).map(function(r) { return r.childId; })
+      };
+    }
+    var stats = projectAttendanceStats(attendanceRows, ctx.projectId, year);
+    var perChild = active.map(function(c) {
+      var mine = ofProject.filter(function(r) { return r.childId === c.id && r.date >= year.start && r.date <= year.end; });
+      var presentCount = mine.filter(function(r) { return r.present; }).length;
+      return { id: c.id, name: c.name, sessions: mine.length, present: presentCount, rate: percentOrNull(presentCount, mine.length) };
+    });
+    summary = { schoolYear: year.label, childCount: active.length, sessionCount: stats.sessionCount, rate: stats.rate, children: perChild };
+  }
+
+  var overview = null;
+  if (isBureau) {
+    overview = CHILDREN_PROJECT_IDS.map(function(id) {
+      var overviewStats = projectAttendanceStats(attendanceRows, id, year);
+      return { projectId: id, childCount: activeChildrenFromRows(childRows, id).length, sessionCount: overviewStats.sessionCount, rate: overviewStats.rate };
+    });
+  }
+
   return {
     success: true,
-    isBureau: ctx.user.role === 'bureau',
+    isBureau: isBureau,
     projects: ctx.accessible,
     projectId: ctx.projectId,
-    date: postData.date ? String(postData.date) : todayKeyParis(),
+    date: date,
     children: children,
-    attendance: null,
-    summary: null,
-    overview: null
+    attendance: attendance,
+    summary: summary,
+    overview: overview
   };
 }
 
@@ -1285,6 +1390,29 @@ function childrenAdd(ctx, postData) {
     added++;
   }
   return { success: true, added: added };
+}
+
+function childrenSaveAttendance(ctx, postData) {
+  var date = postData.date;
+  if (!isRealDateKey(date)) return voteFail('invalid', 'Date invalide.');
+  if (date > todayKeyParis()) return voteFail('invalid', "L'appel ne peut pas être fait pour une date à venir.");
+  var children = readActiveChildren(ctx.sheets.children, ctx.projectId);
+  if (children.length === 0) return voteFail('invalid', "Aucun enfant dans la liste de ce projet.");
+  var presentIds = {};
+  (Array.isArray(postData.presentIds) ? postData.presentIds : []).forEach(function(id) { presentIds[String(id)] = true; });
+
+  // Remplace l'appel du jour : on supprime les anciennes lignes en partant du bas pour garder les numéros valides.
+  var existing = readAttendanceRows(ctx.sheets.attendance)
+    .filter(function(r) { return r.projectId === String(ctx.projectId) && r.date === date; })
+    .map(function(r) { return r.sheetRow; })
+    .sort(function(a, b) { return b - a; });
+  for (var i = 0; i < existing.length; i++) ctx.sheets.attendance.deleteRow(existing[i]);
+
+  var markedAt = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy à HH:mm');
+  for (var j = 0; j < children.length; j++) {
+    ctx.sheets.attendance.appendRow([ctx.projectId, date, children[j].id, presentIds[children[j].id] === true, ctx.user.id, markedAt]);
+  }
+  return { success: true, saved: children.length };
 }
 
 function childrenRemove(ctx, postData) {
