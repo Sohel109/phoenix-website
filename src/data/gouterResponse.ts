@@ -55,3 +55,10 @@ export function formatGouterDate(date: string): string {
 export function formatSlotHours(hour: number): string {
     return `${hour}h - ${hour + 1}h`;
 }
+
+/** Phrase affichée après un ajout de dates : combien ont été ajoutées, et quelles lignes ont été écartées. */
+export function describeAddedDates(added: number, ignored: string[]): string {
+    const done = added === 0 ? 'Aucune date ajoutée.' : `${added} date${added > 1 ? 's' : ''} ajoutée${added > 1 ? 's' : ''}.`;
+    if (ignored.length === 0) return done;
+    return `${done} Lignes ignorées (format invalide, date passée, déjà prise ou après le 31 août) : ${ignored.join(', ')}.`;
+}

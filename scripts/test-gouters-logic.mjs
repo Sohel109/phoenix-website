@@ -333,3 +333,46 @@ test('un goûter annulé garde ses inscriptions dans le Sheet mais ne les expose
     assert.equal(slotRows(h).length, 1);
     assert.equal(h.sheet('GouterApports').length, 2);
 });
+
+// ─── Corrections de la relecture finale ───────────────────────────────────────
+
+test('I1 : les dates écartées sont renvoyées dans l\'ordre saisi, sans compter les lignes vides', () => {
+    const h = fresh();
+    const out = addG(h, 'c4', 4, ['2026-11-14', '21/11/2026', '', '2026-10-01', '2027-09-15', '2026-11-14', '  ']);
+    assert.equal(out.success, true);
+    assert.equal(out.added, 1);
+    assert.deepEqual(out.ignored, ['21/11/2026', '2026-10-01', '2027-09-15', '2026-11-14']);
+});
+
+test('I1 : une date après la fin de l\'année scolaire est refusée, elle ne reste pas invisible dans le Sheet', () => {
+    const h = fresh();
+    const out = addG(h, 'c4', 4, ['2027-08-31', '2027-09-01', '9999-12-31']);
+    assert.equal(out.added, 1);
+    assert.deepEqual(out.ignored, ['2027-09-01', '9999-12-31']);
+    assert.deepEqual(list(h, 't1').gouters.map((g) => g.date), ['2027-08-31']);
+    assert.equal(h.sheet('Gouters').length, 2);
+    assert.equal(addG(h, 'c4', 4, ['2027-09-15']).code, 'invalid');
+});
+
+test('I1 : une date déjà prise est signalée comme ignorée', () => {
+    const h = fresh();
+    addG(h, 'c4', 4, ['2026-11-14']);
+    const again = addG(h, 'c4', 4, ['2026-11-14', '2026-11-21']);
+    assert.equal(again.added, 1);
+    assert.deepEqual(again.ignored, ['2026-11-14']);
+    const onlyDuplicate = addG(h, 'c4', 4, ['2026-11-14']);
+    assert.equal(onlyDuplicate.success, true);
+    assert.equal(onlyDuplicate.added, 0);
+    assert.deepEqual(onlyDuplicate.ignored, ['2026-11-14']);
+});
+
+test('I2 : un goûter passé ne peut plus être annulé', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    h.setNow('2026-11-15');
+    assert.equal(cancel(h, 'c4', id).code, 'invalid');
+    assert.equal(list(h, 'c4').gouters.length, 1);
+    assert.equal(h.sheet('Gouters')[1][4], true);
+    h.setNow('2026-11-14');
+    assert.equal(cancel(h, 'c4', id).success, true);
+});

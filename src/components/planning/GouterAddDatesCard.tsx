@@ -5,8 +5,8 @@ import { cardClass, primaryButtonClass } from './childrenStyles';
 interface GouterAddDatesCardProps {
     projects: number[];
     disabled: boolean;
-    /** Renvoie vrai quand les dates ont été enregistrées (le champ est alors vidé). */
-    onAdd: (projectId: number, dates: string[], note: string) => Promise<boolean>;
+    /** Renvoie les lignes que le serveur a écartées (elles restent dans le champ), ou null si l'envoi a échoué (tout reste). */
+    onAdd: (projectId: number, dates: string[], note: string) => Promise<string[] | null>;
 }
 
 const projectName = (id: number) => projectsData.find((p) => p.id === id)?.name ?? `Projet ${id}`;
@@ -18,7 +18,8 @@ export function GouterAddDatesCard({ projects, disabled, onAdd }: GouterAddDates
     const dates = text.split('\n').map((line) => line.trim()).filter(Boolean);
 
     const add = async () => {
-        if (await onAdd(projectId, dates, note.trim())) setText('');
+        const remaining = await onAdd(projectId, dates, note.trim());
+        if (remaining !== null) setText(remaining.join('\n'));
     };
 
     return (

@@ -5,7 +5,7 @@ import { Cookie, RefreshCw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { useGouters } from '../../hooks/useGouters';
-import { formatGouterDate } from '../../data/gouterResponse';
+import { describeAddedDates, formatGouterDate } from '../../data/gouterResponse';
 import { addGouterItemApi, addGoutersApi, cancelGouterApi, removeGouterItemApi, setGouterSlotApi, type Gouter } from '../../data/planningData';
 import { projectsData } from '../../data/projectsData';
 import { GouterSlotsCard } from '../../components/planning/GouterSlotsCard';
@@ -44,6 +44,7 @@ export function PlanningGouters() {
     const [confirmCancel, setConfirmCancel] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
     const [actionCode, setActionCode] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
 
     if (!currentUser) return null;
 
@@ -147,7 +148,7 @@ export function PlanningGouters() {
                                 onAdd={(item) => run(() => addGouterItemApi(currentUser.id, token, selected.id, item))}
                                 onRemove={(itemId) => void run(() => removeGouterItemApi(currentUser.id, token, itemId))}
                             />
-                            {selected.canManage && (
+                            {selected.canManage && !selected.isPast && (
                                 <div className={cardClass}>
                                     <h3 className="text-white font-bold tracking-wide mb-1">Gérer ce goûter</h3>
                                     {confirmCancel ? (
@@ -179,10 +180,23 @@ export function PlanningGouters() {
                         <GouterAddDatesCard
                             projects={data.manageableProjects}
                             disabled={locked}
-                            onAdd={(projectId, dates, note) => run(() => addGoutersApi(currentUser.id, token, projectId, dates, note))}
+                            onAdd={async (projectId, dates, note) => {
+                                setNotice(null);
+                                let remaining: string[] | null = null;
+                                await run(async () => {
+                                    const result = await addGoutersApi(currentUser.id, token, projectId, dates, note);
+                                    if (result.success) {
+                                        remaining = result.ignored;
+                                        setNotice(describeAddedDates(result.added, result.ignored));
+                                    }
+                                    return result;
+                                });
+                                return remaining;
+                            }}
                         />
                     )}
 
+                    {notice && !actionError && <p role="status" className="text-sm text-emerald-300">{notice}</p>}
                     {actionError && !needsLogin && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
                 </div>
             )}

@@ -1677,24 +1677,32 @@ function goutersAdd(ctx, postData) {
   if (isNaN(projectId) || CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return voteFail('invalid', 'Projet inconnu.');
   if (!canManageProject(ctx.user, projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
   var wanted = Array.isArray(postData.dates) ? postData.dates : [];
-  var valid = [];
-  for (var i = 0; i < wanted.length; i++) {
-    var date = typeof wanted[i] === 'string' ? wanted[i].trim() : '';
-    if (isValidDateKey(date) && date >= ctx.today && valid.indexOf(date) === -1) valid.push(date);
-  }
-  if (valid.length === 0) return voteFail('invalid', 'Aucune date valide (format AAAA-MM-JJ, à partir d\'aujourd\'hui).');
-  var note = cleanFreeText(postData.note, GOUTER_TEXT_MAX);
+  // Une date est acceptée de aujourd'hui à la fin de l'année scolaire en cours : au-delà, elle ne serait pas affichée.
+  var lastDay = schoolYearFor(ctx.today).end;
   var taken = {};
   readGouters(ctx.sheets.gouters).forEach(function(g) {
     if (g.active && g.projectId === projectId) taken[g.date] = true;
   });
-  var added = 0;
-  for (var j = 0; j < valid.length; j++) {
-    if (taken[valid[j]]) continue;
-    ctx.sheets.gouters.appendRow([newRowId('g'), projectId, valid[j], note, true, ctx.user.id, todayKeyParis()]);
-    added++;
+  var toAdd = [];
+  var ignored = [];
+  for (var i = 0; i < wanted.length; i++) {
+    var line = String(wanted[i] === null || wanted[i] === undefined ? '' : wanted[i]).trim();
+    if (line === '') continue;
+    var acceptable = isValidDateKey(line) && line >= ctx.today && line <= lastDay;
+    if (acceptable && !taken[line] && toAdd.indexOf(line) === -1) {
+      toAdd.push(line);
+    } else {
+      ignored.push(line);
+    }
   }
-  return { success: true, added: added };
+  // Rien d'acceptable (ni date valide déjà prise) : on le dit au lieu de répondre par un succès à vide.
+  var anyValid = toAdd.length > 0 || ignored.some(function(line) { return isValidDateKey(line) && line >= ctx.today && line <= lastDay; });
+  if (!anyValid) return voteFail('invalid', "Aucune date valide (format AAAA-MM-JJ, de aujourd'hui au 31 août).");
+  var note = cleanFreeText(postData.note, GOUTER_TEXT_MAX);
+  for (var j = 0; j < toAdd.length; j++) {
+    ctx.sheets.gouters.appendRow([newRowId('g'), projectId, toAdd[j], note, true, ctx.user.id, todayKeyParis()]);
+  }
+  return { success: true, added: toAdd.length, ignored: ignored };
 }
 
 function goutersCancel(ctx, postData) {
@@ -1705,6 +1713,7 @@ function goutersCancel(ctx, postData) {
   }
   if (!gouter) return voteFail('invalid', 'Goûter introuvable.');
   if (!canManageProject(ctx.user, gouter.projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
+  if (gouter.date < ctx.today) return voteFail('invalid', 'Ce goûter est passé : il ne peut plus être annulé.');
   ctx.sheets.gouters.getRange(gouter.sheetRow, 5).setValue(false);
   return { success: true };
 }

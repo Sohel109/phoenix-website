@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseGouterData } from '../src/data/gouterResponse.ts';
+import { parseGouterData, describeAddedDates } from '../src/data/gouterResponse.ts';
 
 const slots = Array.from({ length: 10 }, (_, i) => ({ hour: 9 + i, users: i === 1 ? [{ userId: 't1', name: 'Tuteur Un' }] : [] }));
 const GOUTER = {
@@ -47,4 +47,14 @@ test('parseGouterData rejette un goûter mal formé', () => {
     assert.equal(bad({ date: 20261114 }), null);
     assert.equal(bad({ isPast: 'non' }), null);
     assert.equal(bad({ canManage: undefined }), null);
+});
+
+test('describeAddedDates résume les dates ajoutées et signale celles qui ont été ignorées', () => {
+    assert.equal(describeAddedDates(2, []), '2 dates ajoutées.');
+    assert.equal(describeAddedDates(1, []), '1 date ajoutée.');
+    assert.equal(describeAddedDates(0, []), 'Aucune date ajoutée.');
+    assert.equal(
+        describeAddedDates(1, ['21/11/2026', '2026-10-01']),
+        '1 date ajoutée. Lignes ignorées (format invalide, date passée, déjà prise ou après le 31 août) : 21/11/2026, 2026-10-01.'
+    );
 });
