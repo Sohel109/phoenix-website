@@ -61,7 +61,7 @@ export function GouterAddDatesCard({ projects, disabled, onAdd }: GouterAddDates
                 maxLength={80}
                 disabled={disabled}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Note facultative (lieu, par exemple)"
+                placeholder="Note facultative"
                 className="w-full px-4 py-2.5 rounded-full bg-[#1F0422]/70 text-white border border-[#6F2B75]/40 text-sm mb-4"
             />
             <button type="button" disabled={disabled || dates.length === 0} onClick={() => void add()} className={primaryButtonClass}>
