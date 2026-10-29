@@ -72,6 +72,12 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  var childrenResult = handleChildrenAction(action, postData);
+  if (childrenResult) {
+    return ContentService.createTextOutput(JSON.stringify(childrenResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'saveSiteContent') {
     var lock1 = LockService.getScriptLock();
     try {
@@ -1132,6 +1138,164 @@ function votePublishWinner(ctx, postData) {
     sheet.appendRow([ctx.win.monthKey, target.id, publishedAt]);
   }
   return { success: true };
+}
+
+// ==========================================
+// PRÉSENCE DES ENFANTS PAR PROJET
+// ==========================================
+// Les chefs de projet tiennent la liste des enfants de leur projet et font l'appel ; le Bureau voit tous les projets.
+// Seuls le prénom et l'initiale du nom sont enregistrés. Le rôle et les projets de l'appelant sont lus dans la première
+// feuille du Sheet, jamais dans la requête, et le jeton de session est exigé comme pour le vote.
+var CHILDREN_PROJECT_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var CHILDREN_NAME_MAX = 40;
+var CHILDREN_SHEETS = {
+  children: { name: 'Enfants', headers: ['id', 'projectId', 'name', 'active', 'createdAt'] },
+  attendance: { name: 'PresencesEnfants', headers: ['projectId', 'date', 'childId', 'present', 'markedBy', 'markedAt'] }
+};
+
+// Comptes de la première feuille avec leurs projets (colonne F : "4" ou "4,7", parfois converti en nombre par Sheets).
+function readChildrenUsers() {
+  var data = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0].getDataRange().getValues();
+  var users = [];
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === '' || data[i][0] === null || !data[i][1]) continue;
+    var projectIds = String(data[i][5] === null || data[i][5] === undefined ? '' : data[i][5])
+      .split(',')
+      .map(function(item) { return parseInt(item.trim(), 10); })
+      .filter(function(num) { return !isNaN(num); });
+    users.push({
+      id: data[i][0].toString(),
+      name: data[i][1].toString(),
+      role: data[i][4] ? data[i][4].toString() : 'tuteur',
+      projectIds: projectIds
+    });
+  }
+  return users;
+}
+
+function cleanChildName(value) {
+  var name = String(value === null || value === undefined ? '' : value).replace(/\s+/g, ' ').trim();
+  return name.substring(0, CHILDREN_NAME_MAX).trim();
+}
+
+function isTrueCell(value) {
+  return value === true || String(value).toLowerCase() === 'true';
+}
+
+// Enfants actifs d'un projet, dans l'ordre de la feuille.
+function readActiveChildren(sheet, projectId) {
+  var rows = readVoteRows(sheet);
+  var children = [];
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].cells;
+    if (String(cells[1]) === String(projectId) && isTrueCell(cells[3])) {
+      children.push({ sheetRow: rows[i].sheetRow, id: String(cells[0]), name: String(cells[2]) });
+    }
+  }
+  return children;
+}
+
+function handleChildrenAction(action, postData) {
+  if (action !== 'getChildrenData' && action !== 'addChildren' && action !== 'removeChild' && action !== 'saveChildAttendance') {
+    return null;
+  }
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(postData.requesterId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) {
+    return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
+  }
+  var isWrite = action !== 'getChildrenData';
+  var lock = isWrite ? LockService.getScriptLock() : null;
+  try {
+    if (lock) lock.waitLock(15000);
+    var users = readChildrenUsers();
+    var user = findVoteUser(users, postData.requesterId);
+    if (!user || (user.role !== 'bureau' && user.role !== 'chef_projet')) {
+      return voteFail('forbidden', "Cette page est réservée aux chefs de projet et au Bureau.");
+    }
+    var accessible = [];
+    for (var p = 0; p < CHILDREN_PROJECT_IDS.length; p++) {
+      if (user.role === 'bureau' || user.projectIds.indexOf(CHILDREN_PROJECT_IDS[p]) !== -1) accessible.push(CHILDREN_PROJECT_IDS[p]);
+    }
+    var hasProject = postData.projectId !== undefined && postData.projectId !== null && postData.projectId !== '';
+    var projectId = null;
+    if (hasProject) {
+      projectId = parseInt(postData.projectId, 10);
+      if (isNaN(projectId) || CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return voteFail('invalid', 'Projet inconnu.');
+      if (accessible.indexOf(projectId) === -1) return voteFail('forbidden', "Vous n'avez pas accès à ce projet.");
+    } else if (action === 'getChildrenData') {
+      projectId = accessible.length > 0 ? accessible[0] : null;
+    } else {
+      return voteFail('invalid', 'Projet manquant.');
+    }
+    var ctx = {
+      user: user,
+      accessible: accessible,
+      projectId: projectId,
+      sheets: { children: getVoteSheet(CHILDREN_SHEETS.children) }
+    };
+    if (action === 'getChildrenData') return childrenGetData(ctx, postData);
+    if (action === 'addChildren') return childrenAdd(ctx, postData);
+    if (action === 'removeChild') return childrenRemove(ctx, postData);
+    return voteFail('invalid', 'Pas encore disponible');
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    if (lock) lock.releaseLock();
+  }
+}
+
+function childrenGetData(ctx, postData) {
+  var children = ctx.projectId === null ? [] : readActiveChildren(ctx.sheets.children, ctx.projectId).map(function(c) {
+    return { id: c.id, name: c.name };
+  });
+  return {
+    success: true,
+    isBureau: ctx.user.role === 'bureau',
+    projects: ctx.accessible,
+    projectId: ctx.projectId,
+    date: postData.date ? String(postData.date) : todayKeyParis(),
+    children: children,
+    attendance: null,
+    summary: null,
+    overview: null
+  };
+}
+
+function childrenAdd(ctx, postData) {
+  var wanted = Array.isArray(postData.names) ? postData.names : [];
+  var cleaned = [];
+  for (var i = 0; i < wanted.length; i++) {
+    var name = cleanChildName(wanted[i]);
+    if (name) cleaned.push(name);
+  }
+  if (cleaned.length === 0) return voteFail('invalid', 'Aucun nom saisi.');
+  var known = {};
+  readActiveChildren(ctx.sheets.children, ctx.projectId).forEach(function(c) { known[c.name.toLowerCase()] = true; });
+  var added = 0;
+  for (var j = 0; j < cleaned.length; j++) {
+    var key = cleaned[j].toLowerCase();
+    if (known[key]) continue;
+    known[key] = true;
+    ctx.sheets.children.appendRow([Utilities.getUuid().substring(0, 8), ctx.projectId, cleaned[j], true, todayKeyParis()]);
+    added++;
+  }
+  return { success: true, added: added };
+}
+
+function childrenRemove(ctx, postData) {
+  var children = readActiveChildren(ctx.sheets.children, ctx.projectId);
+  for (var i = 0; i < children.length; i++) {
+    if (children[i].id === String(postData.childId)) {
+      ctx.sheets.children.getRange(children[i].sheetRow, 4).setValue(false);
+      return { success: true };
+    }
+  }
+  return voteFail('invalid', 'Enfant introuvable.');
 }
 
 // ==========================================

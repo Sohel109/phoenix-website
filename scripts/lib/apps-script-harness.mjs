@@ -70,7 +70,7 @@ class FakeSpreadsheet {
         this.options = options;
         this.users = new FakeSheet('Utilisateurs', this);
         this.users.appendRow(['id', 'name', 'login', 'password', 'role', 'projects']);
-        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', '', u.email ?? '', '', '']);
+        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', u.projects ?? '', u.email ?? '', '', '']);
         this.sheets = new Map();
     }
     getSheets() { return [this.users, ...this.sheets.values()]; }

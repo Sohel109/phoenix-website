@@ -17,7 +17,7 @@ Demande d'origine : un message de Brault, relayé par l'utilisateur. Le CDP écr
 - **Séance :** repérée par le projet et la date (`YYYY-MM-DD`, heure de Paris). Au plus un appel par projet et par jour. La date par défaut est aujourd'hui, une date future est refusée. Les créneaux du planning ne servent pas : Jules Ferry et Massa 13 n'en ont plus depuis la suppression du mercredi, leurs CDP doivent quand même pouvoir faire l'appel.
 - **Données sur les enfants :** prénom et initiale du nom seulement (par exemple « Inès B. »). L'interface l'indique. Le serveur coupe le nom à 40 caractères et refuse un nom vide.
 - **Retirer un enfant** le désactive, il n'est pas effacé : ses présences passées restent dans les bilans. Un enfant désactivé n'apparaît plus dans les appels futurs ni dans la liste active.
-- **Ajouter un enfant :** un seul champ où l'on colle une ou plusieurs lignes (un nom par ligne). Les doublons exacts dans le même projet sont ignorés.
+- **Ajouter un enfant :** un seul champ où l'on colle une ou plusieurs lignes (un nom par ligne). Les doublons dans le même projet (même nom, sans tenir compte de la casse) sont ignorés.
 - **Appel :** une case par enfant actif. Enregistrer écrit une ligne par enfant actif ce jour-là, présent ou absent. On distingue ainsi un appel fait où tout le monde est absent d'un appel pas fait. Enregistrer de nouveau le même jour remplace l'appel (correction). Un enfant ajouté après un appel n'est pas compté sur cet appel.
 - **Bilan :** sur l'année scolaire en cours (du 1er septembre au 31 août, heure de Paris). Par enfant : séances comptées, présences, taux. Par projet : nombre d'enfants actifs, nombre de séances avec appel, taux moyen. Un enfant n'est compté que sur les appels où il figure.
 
