@@ -176,6 +176,8 @@ export function loadScript(options) {
         login(login, password) {
             return this.raw(undefined, { login, password });
         },
+        /** Remplace une cellule d'un onglet créé par le script (simule une conversion faite par Google Sheets). */
+        setSheetCell(name, row, col, value) { ss.getSheetByName(name).getRange(row, col).setValue(value); },
         sheet(name) {
             const sheet = ss.getSheetByName(name);
             return sheet ? sheet.rows.map((r) => [...r]) : null;

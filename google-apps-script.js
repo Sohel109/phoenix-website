@@ -78,6 +78,12 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  var goutersResult = handleGoutersAction(action, postData);
+  if (goutersResult) {
+    return ContentService.createTextOutput(JSON.stringify(goutersResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'saveSiteContent') {
     var lock1 = LockService.getScriptLock();
     try {
@@ -1177,15 +1183,24 @@ function readChildrenUsers() {
   return users;
 }
 
-// Retire aussi les caractères qui feraient lire le nom comme une formule par Google Sheets (= + - @).
-function cleanChildName(value) {
-  var name = String(value === null || value === undefined ? '' : value).replace(/\s+/g, ' ').replace(/^[=+\-@\s]+/, '').trim();
-  return name.substring(0, CHILDREN_NAME_MAX).trim();
+// Nettoie un texte saisi : espaces en trop retirés, caractères qui feraient lire le texte comme une formule par
+// Google Sheets (= + - @) retirés en tête, coupé à `max` caractères.
+function cleanFreeText(value, max) {
+  var text = String(value === null || value === undefined ? '' : value).replace(/\s+/g, ' ').replace(/^[=+\-@\s]+/, '').trim();
+  return text.substring(0, max).trim();
 }
 
-// Identifiant d'enfant : commence par une lettre pour que Sheets ne le lise jamais comme un nombre (« 01234567 », « 12e45678 »).
+function cleanChildName(value) {
+  return cleanFreeText(value, CHILDREN_NAME_MAX);
+}
+
+// Identifiant généré : commence par une lettre pour que Sheets ne le lise jamais comme un nombre (« 01234567 », « 12e45678 »).
+function newRowId(prefix) {
+  return prefix + Utilities.getUuid().replace(/-/g, '').substring(0, 7);
+}
+
 function newChildId() {
-  return 'k' + Utilities.getUuid().replace(/-/g, '').substring(0, 7);
+  return newRowId('k');
 }
 
 function getChildrenSheet() {
@@ -1494,6 +1509,202 @@ function childrenRemove(ctx, postData) {
     }
   }
   return voteFail('invalid', 'Enfant introuvable.');
+}
+
+// ==========================================
+// GOÛTERS DES PROJETS
+// ==========================================
+// Chaque projet organise des goûters (vente à 1 € le produit). Tous les membres connectés voient les goûters, s'inscrivent
+// à des créneaux d'une heure (9h à 19h, sans limite de personnes) et indiquent ce qu'ils apportent. Les chefs de projet
+// (projets de la colonne J) et le Bureau ajoutent les dates, annulent un goûter et retirent l'inscription ou l'apport
+// de quelqu'un. Les heures de goûter ne comptent pas pour l'attestation.
+var GOUTER_TEXT_MAX = 80;
+var GOUTER_HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+var GOUTER_SHEETS = {
+  gouters: { name: 'Gouters', headers: ['id', 'projectId', 'date', 'note', 'active', 'createdBy', 'createdAt'], textColumns: ['A', 'C', 'D'] },
+  slots: { name: 'GouterCreneaux', headers: ['gouterId', 'hour', 'userId', 'createdAt'], textColumns: ['A', 'C'] },
+  items: { name: 'GouterApports', headers: ['id', 'gouterId', 'userId', 'item', 'createdAt'], textColumns: ['A', 'B', 'C', 'D'] }
+};
+
+function getGouterSheet(def) {
+  var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name) !== null;
+  var sheet = getOrCreateSheet(def.name, def.headers);
+  if (!existed) {
+    for (var i = 0; i < def.textColumns.length; i++) {
+      sheet.getRange(def.textColumns[i] + ':' + def.textColumns[i]).setNumberFormat('@');
+    }
+  }
+  return sheet;
+}
+
+function getGouterSheets() {
+  return {
+    gouters: getGouterSheet(GOUTER_SHEETS.gouters),
+    slots: getGouterSheet(GOUTER_SHEETS.slots),
+    items: getGouterSheet(GOUTER_SHEETS.items)
+  };
+}
+
+// La date d'un goûter est écrite en texte, mais Sheets peut la relire comme une date : on normalise toujours.
+function gouterDateKey(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    return Utilities.formatDate(value, 'Europe/Paris', 'yyyy-MM-dd');
+  }
+  return String(value);
+}
+
+function isValidDateKey(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  var y = parseInt(value.substr(0, 4), 10);
+  var m = parseInt(value.substr(5, 2), 10);
+  var d = parseInt(value.substr(8, 2), 10);
+  var date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+}
+
+function canManageProject(user, projectId) {
+  return user.role === 'bureau' || (user.role === 'chef_projet' && user.projectIds.indexOf(projectId) !== -1);
+}
+
+function manageableProjectsOf(user) {
+  return CHILDREN_PROJECT_IDS.filter(function(id) { return canManageProject(user, id); });
+}
+
+function gouterUserName(users, userId) {
+  var user = findVoteUser(users, userId);
+  return user ? user.name : 'Ancien membre';
+}
+
+// Goûters (actifs ou non) lus dans l'onglet, avec le numéro de ligne.
+function readGouters(sheet) {
+  return readVoteRows(sheet).map(function(r) {
+    return {
+      sheetRow: r.sheetRow,
+      id: String(r.cells[0]),
+      projectId: parseInt(r.cells[1], 10),
+      date: gouterDateKey(r.cells[2]),
+      note: r.cells[3] === null || r.cells[3] === undefined ? '' : String(r.cells[3]),
+      active: isTrueCell(r.cells[4])
+    };
+  });
+}
+
+function handleGoutersAction(action, postData) {
+  if (action !== 'getGouters' && action !== 'addGouters' && action !== 'cancelGouter' &&
+      action !== 'setGouterSlot' && action !== 'addGouterItem' && action !== 'removeGouterItem') {
+    return null;
+  }
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(postData.requesterId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) {
+    return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
+  }
+  var isWrite = action !== 'getGouters';
+  var lock = isWrite ? LockService.getScriptLock() : null;
+  try {
+    if (lock) lock.waitLock(15000);
+    var users = readChildrenUsers();
+    var user = findVoteUser(users, postData.requesterId);
+    if (!user) return voteFail('forbidden', 'Compte introuvable.');
+    var ctx = { user: user, users: users, sheets: getGouterSheets(), today: todayKeyParis() };
+    if (action === 'getGouters') return goutersGet(ctx);
+    if (action === 'addGouters') return goutersAdd(ctx, postData);
+    if (action === 'cancelGouter') return goutersCancel(ctx, postData);
+    return voteFail('invalid', 'Pas encore disponible');
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    if (lock) lock.releaseLock();
+  }
+}
+
+function goutersGet(ctx) {
+  var year = schoolYearFor(ctx.today);
+  var gouters = readGouters(ctx.sheets.gouters).filter(function(g) {
+    return g.active && g.date >= year.start && g.date <= year.end;
+  });
+  gouters.sort(function(a, b) {
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    return a.projectId - b.projectId;
+  });
+
+  var slotRows = readVoteRows(ctx.sheets.slots);
+  var itemRows = readVoteRows(ctx.sheets.items);
+  var result = gouters.map(function(g) {
+    var canManage = canManageProject(ctx.user, g.projectId);
+    var slots = GOUTER_HOURS.map(function(hour) {
+      var users = [];
+      for (var i = 0; i < slotRows.length; i++) {
+        var cells = slotRows[i].cells;
+        if (String(cells[0]) === g.id && parseInt(cells[1], 10) === hour) {
+          users.push({ userId: String(cells[2]), name: gouterUserName(ctx.users, cells[2]) });
+        }
+      }
+      return { hour: hour, users: users };
+    });
+    var items = [];
+    for (var j = 0; j < itemRows.length; j++) {
+      var c = itemRows[j].cells;
+      if (String(c[1]) !== g.id) continue;
+      items.push({
+        id: String(c[0]),
+        item: String(c[3]),
+        userId: String(c[2]),
+        name: gouterUserName(ctx.users, c[2]),
+        canRemove: String(c[2]) === ctx.user.id || canManage
+      });
+    }
+    return { id: g.id, projectId: g.projectId, date: g.date, note: g.note, isPast: g.date < ctx.today, canManage: canManage, slots: slots, items: items };
+  });
+
+  return {
+    success: true,
+    isBureau: ctx.user.role === 'bureau',
+    schoolYear: year.label,
+    manageableProjects: manageableProjectsOf(ctx.user),
+    gouters: result
+  };
+}
+
+function goutersAdd(ctx, postData) {
+  var projectId = parseInt(postData.projectId, 10);
+  if (isNaN(projectId) || CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return voteFail('invalid', 'Projet inconnu.');
+  if (!canManageProject(ctx.user, projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
+  var wanted = Array.isArray(postData.dates) ? postData.dates : [];
+  var valid = [];
+  for (var i = 0; i < wanted.length; i++) {
+    var date = typeof wanted[i] === 'string' ? wanted[i].trim() : '';
+    if (isValidDateKey(date) && date >= ctx.today && valid.indexOf(date) === -1) valid.push(date);
+  }
+  if (valid.length === 0) return voteFail('invalid', 'Aucune date valide (format AAAA-MM-JJ, à partir d\'aujourd\'hui).');
+  var note = cleanFreeText(postData.note, GOUTER_TEXT_MAX);
+  var taken = {};
+  readGouters(ctx.sheets.gouters).forEach(function(g) {
+    if (g.active && g.projectId === projectId) taken[g.date] = true;
+  });
+  var added = 0;
+  for (var j = 0; j < valid.length; j++) {
+    if (taken[valid[j]]) continue;
+    ctx.sheets.gouters.appendRow([newRowId('g'), projectId, valid[j], note, true, ctx.user.id, todayKeyParis()]);
+    added++;
+  }
+  return { success: true, added: added };
+}
+
+function goutersCancel(ctx, postData) {
+  var gouter = null;
+  var all = readGouters(ctx.sheets.gouters);
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].active && all[i].id === String(postData.gouterId)) gouter = all[i];
+  }
+  if (!gouter) return voteFail('invalid', 'Goûter introuvable.');
+  if (!canManageProject(ctx.user, gouter.projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
+  ctx.sheets.gouters.getRange(gouter.sheetRow, 5).setValue(false);
+  return { success: true };
 }
 
 // ==========================================
