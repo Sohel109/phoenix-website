@@ -32,3 +32,9 @@ export function parseChildrenData(raw: unknown): ChildrenData | null {
 export function todayKeyParis(): string {
     return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 }
+
+/** Vrai quand `data` ne correspond plus au projet ou à la date affichés (par exemple après un échec de chargement). */
+export function isStaleChildrenData(data: ChildrenData | null, selectedProject: number | null, date: string): boolean {
+    if (!data) return false;
+    return data.date !== date || (selectedProject !== null && data.projectId !== selectedProject);
+}

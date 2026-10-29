@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Accès : rôles `chef_projet` et `bureau` seulement. Un CDP n'accède qu'aux projets de la colonne F de son compte (liste d'entiers séparés par des virgules, éventuellement un nombre seul). Un CDP sans projet ne voit rien. Le Bureau accède aux projets 1 à 9 (`CHILDREN_PROJECT_IDS`).
+- Accès : rôles `chef_projet` et `bureau` seulement. Un CDP n'accède qu'aux projets de la colonne J « Projets enfants » de son compte (liste d'entiers séparés par des virgules, éventuellement un nombre seul), remplie par le Bureau. La colonne F ne donne aucun accès. Un CDP sans projet ne voit rien. Le Bureau accède aux projets 1 à 9 (`CHILDREN_PROJECT_IDS`).
 - Le rôle et les projets viennent toujours de la première feuille du Sheet, jamais de la requête. Jeton vérifié avant toute lecture ou écriture (`code: unauthenticated`), puis rôle (`forbidden`), puis projet (`forbidden`).
 - Données sur les enfants : prénom et initiale du nom. Nom nettoyé (espaces en trop retirés), coupé à 40 caractères, refusé s'il est vide. Doublon (même nom, casse ignorée, dans le même projet parmi les enfants actifs) ignoré.
 - Séance = (projet, date `YYYY-MM-DD` heure de Paris). Date future ou mal formée refusée (`code: invalid`). Au plus un appel par projet et par jour : réenregistrer remplace.

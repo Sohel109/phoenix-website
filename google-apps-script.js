@@ -1153,13 +1153,15 @@ var CHILDREN_SHEETS = {
   attendance: { name: 'PresencesEnfants', headers: ['projectId', 'date', 'childId', 'present', 'markedBy', 'markedAt'] }
 };
 
-// Comptes de la première feuille avec leurs projets (colonne F : "4" ou "4,7", parfois converti en nombre par Sheets).
+// Comptes de la première feuille avec les projets dont ils peuvent voir les enfants. Ces projets sont lus dans la colonne J
+// (« Projets enfants », "4" ou "4,7", parfois converti en nombre par Sheets), que seul le Bureau remplit. On n'utilise
+// volontairement pas la colonne F : chaque membre peut y changer son propre projet depuis « Mon compte ».
 function readChildrenUsers() {
   var data = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0].getDataRange().getValues();
   var users = [];
   for (var i = 1; i < data.length; i++) {
     if (data[i][0] === '' || data[i][0] === null || !data[i][1]) continue;
-    var projectIds = String(data[i][5] === null || data[i][5] === undefined ? '' : data[i][5])
+    var projectIds = String(data[i][9] === null || data[i][9] === undefined ? '' : data[i][9])
       .split(',')
       .map(function(item) { return parseInt(item.trim(), 10); })
       .filter(function(num) { return !isNaN(num); });
@@ -1173,9 +1175,26 @@ function readChildrenUsers() {
   return users;
 }
 
+// Retire aussi les caractères qui feraient lire le nom comme une formule par Google Sheets (= + - @).
 function cleanChildName(value) {
-  var name = String(value === null || value === undefined ? '' : value).replace(/\s+/g, ' ').trim();
+  var name = String(value === null || value === undefined ? '' : value).replace(/\s+/g, ' ').replace(/^[=+\-@\s]+/, '').trim();
   return name.substring(0, CHILDREN_NAME_MAX).trim();
+}
+
+// Identifiant d'enfant : commence par une lettre pour que Sheets ne le lise jamais comme un nombre (« 01234567 », « 12e45678 »).
+function newChildId() {
+  return 'k' + Utilities.getUuid().replace(/-/g, '').substring(0, 7);
+}
+
+function getChildrenSheet() {
+  var def = CHILDREN_SHEETS.children;
+  var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name) !== null;
+  var sheet = getOrCreateSheet(def.name, def.headers);
+  if (!existed) {
+    sheet.getRange('A:A').setNumberFormat('@');
+    sheet.getRange('C:C').setNumberFormat('@');
+  }
+  return sheet;
 }
 
 function isTrueCell(value) {
@@ -1230,7 +1249,10 @@ function getAttendanceSheet() {
   var def = CHILDREN_SHEETS.attendance;
   var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name) !== null;
   var sheet = getOrCreateSheet(def.name, def.headers);
-  if (!existed) sheet.getRange('B:B').setNumberFormat('@');
+  if (!existed) {
+    sheet.getRange('B:B').setNumberFormat('@');
+    sheet.getRange('C:C').setNumberFormat('@');
+  }
   return sheet;
 }
 
@@ -1303,7 +1325,7 @@ function handleChildrenAction(action, postData) {
       user: user,
       accessible: accessible,
       projectId: projectId,
-      sheets: { children: getVoteSheet(CHILDREN_SHEETS.children), attendance: getAttendanceSheet() }
+      sheets: { children: getChildrenSheet(), attendance: getAttendanceSheet() }
     };
     if (action === 'getChildrenData') return childrenGetData(ctx, postData);
     if (action === 'addChildren') return childrenAdd(ctx, postData);
@@ -1386,7 +1408,7 @@ function childrenAdd(ctx, postData) {
     var key = cleaned[j].toLowerCase();
     if (known[key]) continue;
     known[key] = true;
-    ctx.sheets.children.appendRow([Utilities.getUuid().substring(0, 8), ctx.projectId, cleaned[j], true, todayKeyParis()]);
+    ctx.sheets.children.appendRow([newChildId(), ctx.projectId, cleaned[j], true, todayKeyParis()]);
     added++;
   }
   return { success: true, added: added };
@@ -1637,6 +1659,32 @@ function protegerTousLesMotsDePasse() {
     }
   }
   var message = "✅ " + proteges + " mot(s) de passe protégé(s). " + enAttente + " ligne(s) restent en clair car leur mail d'accès n'est pas encore parti : elles seront protégées automatiquement à l'envoi.";
+  try {
+    SpreadsheetApp.getUi().alert(message);
+  } catch (err) {
+    Logger.log(message);
+  }
+}
+
+/**
+ * À exécuter UNE FOIS dans l'éditeur Apps Script : crée la colonne J « Projets enfants » et y recopie, pour les chefs de
+ * projet qui n'ont encore rien, les projets de la colonne F. Les valeurs déjà remplies ne sont pas touchées.
+ * Vérifiez ensuite la colonne J : c'est elle seule qui donne accès aux enfants (le Bureau y voit tous les projets).
+ */
+function initialiserProjetsEnfants() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  var data = sheet.getDataRange().getValues();
+  sheet.getRange(1, 10).setValue('Projets enfants');
+  var copies = 0;
+  for (var i = 1; i < data.length; i++) {
+    var role = data[i][4] ? data[i][4].toString() : '';
+    var deja = data[i][9] === '' || data[i][9] === null || data[i][9] === undefined ? '' : String(data[i][9]);
+    if (role === 'chef_projet' && deja === '' && data[i][5] !== '' && data[i][5] !== null) {
+      sheet.getRange(i + 1, 10).setValue(String(data[i][5]));
+      copies++;
+    }
+  }
+  var message = "✅ Colonne J « Projets enfants » prête : " + copies + " chef(s) de projet renseigné(s). Vérifiez-la : elle seule donne accès aux enfants.";
   try {
     SpreadsheetApp.getUi().alert(message);
   } catch (err) {

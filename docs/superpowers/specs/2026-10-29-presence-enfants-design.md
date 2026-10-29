@@ -11,7 +11,7 @@ Demande d'origine : un message de Brault, relayé par l'utilisateur. Le CDP écr
 ## Règles validées
 
 - **Accès :** rôles `chef_projet` et `bureau` seulement. Les tuteurs n'ont ni l'onglet ni l'accès côté serveur.
-- **CDP :** voit et modifie la liste, fait l'appel et voit les bilans, uniquement pour les projets de son compte (colonne des projets du Sheet).
+- **CDP :** voit et modifie la liste, fait l'appel et voit les bilans, uniquement pour les projets de la colonne J « Projets enfants » du Sheet. Cette colonne est remplie par le Bureau : la colonne F (projet de rattachement) ne donne aucun accès, car chaque membre peut la changer lui-même depuis « Mon compte ».
 - **CDP sans projet** dans son compte : ne voit aucun projet (contrairement à la page de validation des tuteurs, qui lui montre tout). Les données d'enfants ne s'ouvrent jamais par défaut.
 - **Bureau :** voit tous les projets, ajoute et retire des enfants, fait ou corrige l'appel de n'importe quel projet, et voit le bilan de tous les projets.
 - **Séance :** repérée par le projet et la date (`YYYY-MM-DD`, heure de Paris). Au plus un appel par projet et par jour. La date par défaut est aujourd'hui, une date future est refusée. Les créneaux du planning ne servent pas : Jules Ferry et Massa 13 n'en ont plus depuis la suppression du mercredi, leurs CDP doivent quand même pouvoir faire l'appel.
@@ -38,14 +38,14 @@ Même schéma que le vote. Le backend est le script Google Apps Script ([google-
 
 | Onglet | Colonnes | Rôle |
 |---|---|---|
-| `Enfants` | `id`, `projectId`, `name`, `active`, `createdAt` | Un enfant par ligne. `active` vaut `true` ou `false`. `id` est un identifiant généré (UUID court). |
+| `Enfants` | `id`, `projectId`, `name`, `active`, `createdAt` | Un enfant par ligne. `active` vaut `true` ou `false`. `id` est un identifiant généré commençant par une lettre (par exemple `k3fa91c2`), pour que Sheets ne le lise jamais comme un nombre. Un nom commençant par `=`, `+`, `-` ou `@` est nettoyé de ces caractères (sinon Sheets le lirait comme une formule). |
 | `PresencesEnfants` | `projectId`, `date`, `childId`, `present`, `markedBy`, `markedAt` | Une ligne par enfant et par appel. Remplacée en bloc quand l'appel est réenregistré. |
 
 Google Sheets convertit les cellules qui ressemblent à une date en objets `Date`. La lecture normalise `date` (comme `normalizeMonthKey` pour le vote) et compare les identifiants comme des chaînes.
 
 ### Authentification et droits
 
-Toutes les actions exigent le jeton de session du vote (`verifySessionToken`, `code: unauthenticated` sinon), vérifié avant toute lecture ou écriture. Le rôle et les projets de l'appelant sont lus dans la feuille des utilisateurs, jamais dans la requête. La lecture des utilisateurs du vote ne donne pas les projets : on ajoute `projectIds` (colonne F, liste séparée par des virgules) à ce qu'elle renvoie, sans changer ce que le vote en fait.
+Toutes les actions exigent le jeton de session du vote (`verifySessionToken`, `code: unauthenticated` sinon), vérifié avant toute lecture ou écriture. Le rôle et les projets de l'appelant sont lus dans la feuille des utilisateurs, jamais dans la requête. La lecture des utilisateurs du vote ne donne pas les projets : on ajoute `projectIds` (colonne J « Projets enfants », liste séparée par des virgules) à ce qu'elle renvoie, sans changer ce que le vote en fait.
 
 Contrôles côté serveur, dans cet ordre :
 1. jeton valide pour `requesterId` ;
@@ -92,4 +92,5 @@ Les écritures prennent le verrou de script (`LockService`), comme le vote. Les 
 
 1. Le front se déploie via Vercel après confirmation de l'utilisateur avant le `push`.
 2. L'utilisateur doit recopier `google-apps-script.js` dans l'éditeur Apps Script et le redéployer (Nouvelle version).
-3. Chaque CDP saisit ensuite les enfants de son projet.
+3. Lancer une fois `initialiserProjetsEnfants` dans l'éditeur Apps Script (crée la colonne J et y recopie les projets des CDP), puis vérifier la colonne J.
+4. Chaque CDP saisit ensuite les enfants de son projet.

@@ -5,7 +5,7 @@ import { ClipboardCheck, RefreshCw, ShieldCheck } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { useChildrenData } from '../../hooks/useChildrenData';
-import { todayKeyParis } from '../../data/childrenResponse';
+import { isStaleChildrenData, todayKeyParis } from '../../data/childrenResponse';
 import { addChildrenApi, removeChildApi, saveChildAttendanceApi } from '../../data/planningData';
 import { projectsData } from '../../data/projectsData';
 import { ChildrenAttendanceCard } from '../../components/planning/ChildrenAttendanceCard';
@@ -43,7 +43,11 @@ export function PlanningPresenceEnfants() {
     const needsLogin = errorCode === 'unauthenticated' || actionCode === 'unauthenticated';
     // Le projet de la réponse fait foi : c'est celui dont l'appel et la liste sont affichés.
     const projectId = data?.projectId ?? null;
-    const locked = busy || loading;
+    // Après un échec de chargement, `data` peut être celui d'une autre date ou d'un autre projet : on ne l'affiche plus,
+    // pour ne jamais enregistrer un appel sur autre chose que ce que l'écran annonce.
+    const stale = isStaleChildrenData(data, selectedProject, date);
+    const showCards = data !== null && projectId !== null && (!stale || loading);
+    const locked = busy || loading || stale;
 
     const run = async (action: () => Promise<{ success: boolean; message: string; code?: string }>): Promise<boolean> => {
         setBusy(true);
@@ -104,7 +108,7 @@ export function PlanningPresenceEnfants() {
                 <p className="text-sm text-[#ECDDFD]/70">Aucun projet n'est rattaché à votre compte. Contactez le Bureau.</p>
             )}
 
-            {data && projectId !== null && (
+            {data && showCards && projectId !== null && (
                 <div className="space-y-5">
                     {data.projects.length > 1 && (
                         <div>

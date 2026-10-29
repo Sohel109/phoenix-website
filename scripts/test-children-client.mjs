@@ -46,3 +46,12 @@ test('parseChildrenData rejette "Identifiants incorrects", null et les types ina
 test('todayKeyParis renvoie une date AAAA-MM-JJ', () => {
     assert.match(todayKeyParis(), /^\d{4}-\d{2}-\d{2}$/);
 });
+
+test('I2 : les données sont périmées quand le projet ou la date affichés ne sont plus ceux demandés', async () => {
+    const { isStaleChildrenData } = await import('../src/data/childrenResponse.ts');
+    assert.equal(isStaleChildrenData(null, null, '2026-10-29'), false);
+    assert.equal(isStaleChildrenData(VALID, null, '2026-10-29'), false);
+    assert.equal(isStaleChildrenData(VALID, 4, '2026-10-29'), false);
+    assert.equal(isStaleChildrenData(VALID, null, '2026-10-28'), true);
+    assert.equal(isStaleChildrenData(VALID, 7, '2026-10-29'), true);
+});

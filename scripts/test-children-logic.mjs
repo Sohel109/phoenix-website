@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { loadScript } from './lib/apps-script-harness.mjs';
 
 const USERS = [
-    { id: 'b1', name: 'Bureau', role: 'bureau', login: 'b1', password: 'x', projects: '2' },
-    { id: 'c4', name: 'Chef Quatre', role: 'chef_projet', login: 'c4', password: 'x', projects: '4' },
-    { id: 'c47', name: 'Chef Quatre Sept', role: 'chef_projet', login: 'c47', password: 'x', projects: '4,7' },
-    { id: 'c0', name: 'Chef Sans Projet', role: 'chef_projet', login: 'c0', password: 'x', projects: '' },
-    { id: 't4', name: 'Tuteur', role: 'tuteur', login: 't4', password: 'x', projects: '4' },
+    { id: 'b1', name: 'Bureau', role: 'bureau', login: 'b1', password: 'x', childProjects: '2' },
+    { id: 'c4', name: 'Chef Quatre', role: 'chef_projet', login: 'c4', password: 'x', childProjects: '4' },
+    { id: 'c47', name: 'Chef Quatre Sept', role: 'chef_projet', login: 'c47', password: 'x', childProjects: '4,7' },
+    { id: 'c0', name: 'Chef Sans Projet', role: 'chef_projet', login: 'c0', password: 'x', childProjects: '' },
+    { id: 't4', name: 'Tuteur', role: 'tuteur', login: 't4', password: 'x', childProjects: '4' },
 ];
 const TODAY = '2026-10-29';
 const fresh = (opts = {}) => loadScript({ users: USERS, now: TODAY, ...opts });
@@ -280,4 +280,62 @@ test('dates converties en Date par Sheets : appels et bilans restent corrects, s
     const { summary } = get(h, 'c4');
     assert.equal(summary.sessionCount, 1);
     assert.equal(summary.rate, 67);
+});
+
+// ─── Corrections de la relecture finale ───────────────────────────────────────
+
+test('C1 : la colonne projets que chacun peut changer lui-même (F) ne donne aucun accès aux enfants', () => {
+    const h = fresh({ users: [
+        { id: 'c9', name: 'Chef Neuf', role: 'chef_projet', login: 'c9', password: 'x', projects: '1,2,3,4,5,6,7,8,9' },
+    ] });
+    const out = get(h, 'c9');
+    assert.deepEqual(out.projects, []);
+    assert.equal(get(h, 'c9', { projectId: 4 }).code, 'forbidden');
+});
+
+test('C1 : initialiserProjetsEnfants recopie les projets des CDP seulement, sans écraser ce que le Bureau a rempli', () => {
+    const h = fresh({ users: [
+        { id: 'c4', name: 'Chef Quatre', role: 'chef_projet', login: 'c4', password: 'x', projects: '4' },
+        { id: 'c7', name: 'Chef Sept', role: 'chef_projet', login: 'c7', password: 'x', projects: '7', childProjects: '8' },
+        { id: 't4', name: 'Tuteur', role: 'tuteur', login: 't4', password: 'x', projects: '4' },
+        { id: 'b1', name: 'Bureau', role: 'bureau', login: 'b1', password: 'x', projects: '2' },
+    ] });
+    h.ctx.initialiserProjetsEnfants();
+    assert.equal(String(h.usersCell(2, 10)), '4');
+    assert.equal(String(h.usersCell(3, 10)), '8');
+    assert.equal(String(h.usersCell(4, 10)), '');
+    assert.equal(String(h.usersCell(5, 10)), '');
+    assert.equal(h.usersCell(1, 10), 'Projets enfants');
+    assert.deepEqual(get(h, 'c4').projects, [4]);
+});
+
+test('C2 : un nom qui commence par = + - @ ne devient jamais une formule', () => {
+    const h = fresh();
+    const out = add(h, 'c4', 4, ['=TEXTJOIN(",",1,Enfants!C:C)', '+33 1', '-x', '@SUM(1)', '=== ', 'Inès B.']);
+    assert.equal(out.success, true);
+    const stored = h.sheet('Enfants').slice(1).map((r) => r[2]);
+    assert.ok(stored.every((n) => !/^[=+\-@]/.test(n)), JSON.stringify(stored));
+    assert.ok(stored.includes('Inès B.'));
+    assert.equal(stored.length, 5);
+    assert.equal(add(h, 'c4', 4, ['===', '+', '@@']).code, 'invalid');
+});
+
+test('C2 et I1 : les colonnes de noms, d\'identifiants et de dates sont créées au format texte', () => {
+    const h = fresh();
+    add(h, 'c4', 4, ['Inès B.']);
+    const kids = h.formats('Enfants').filter(([, f]) => f === '@').map(([range]) => range);
+    assert.ok(kids.includes('A:A') && kids.includes('C:C'), JSON.stringify(kids));
+    const days = h.formats('PresencesEnfants').filter(([, f]) => f === '@').map(([range]) => range);
+    assert.ok(days.includes('B:B') && days.includes('C:C'), JSON.stringify(days));
+});
+
+test('I1 : un identifiant d\'enfant ne peut jamais être lu comme un nombre par Sheets', () => {
+    const h = fresh();
+    add(h, 'c4', 4, Array.from({ length: 60 }, (_, i) => `Enfant ${i} X.`));
+    const ids = get(h, 'c4').children.map((c) => c.id);
+    assert.equal(new Set(ids).size, 60);
+    for (const id of ids) {
+        assert.match(id, /^k[0-9a-f]{7}$/);
+        assert.ok(Number.isNaN(Number(id)), id);
+    }
 });

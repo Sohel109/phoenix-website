@@ -37,6 +37,7 @@ class FakeSheet {
         this.name = name;
         this.owner = owner;
         this.rows = [];
+        this.formats = [];
     }
     getName() { return this.name; }
     appendRow(row) { this.rows.push([...row]); }
@@ -44,7 +45,7 @@ class FakeSheet {
     deleteRow(r) { this.rows.splice(r - 1, 1); }
     getRange(r, c) {
         const sheet = this;
-        if (typeof r === 'string') return { setNumberFormat() {} };
+        if (typeof r === 'string') return { setNumberFormat(format) { sheet.formats.push([r, format]); } };
         return {
             getValue() { return sheet.rows[r - 1]?.[c - 1] ?? ''; },
             setValue(v) {
@@ -78,7 +79,7 @@ class FakeSpreadsheet {
         this.options = options;
         this.users = new FakeSheet('Utilisateurs', this);
         this.users.appendRow(['id', 'name', 'login', 'password', 'role', 'projects']);
-        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', u.projects ?? '', u.email ?? '', '', '']);
+        for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', u.projects ?? '', u.email ?? '', '', '', u.childProjects ?? '']);
         this.sheets = new Map();
     }
     getSheets() { return [this.users, ...this.sheets.values()]; }
@@ -160,6 +161,8 @@ export function loadScript(options) {
         },
         /** Valeur du cache de script (ex. code de réinitialisation du mot de passe). */
         cacheValue(key) { return sandbox.CacheService.getScriptCache().get(key); },
+        /** Formats numériques demandés sur des colonnes entières (ex. ['A:A', '@']) pour un onglet. */
+        formats(name) { return ss.getSheetByName(name)?.formats ?? []; },
         usersCell(row, col) { return ss.users.getRange(row, col).getValue(); },
         setUsersCell(row, col, value) { ss.users.getRange(row, col).setValue(value); },
         /** Appel authentifié : ajoute un jeton valide pour l'identité annoncée, sauf si `body.token` est fourni. */
