@@ -72,15 +72,15 @@ export function Projects() {
     });
 
     const weeklySchedules = [
-        { name: "ACSE", isCordee: true, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: true, saturdayFilled: true },
-        { name: "APPRENTIS D'AUTEUIL", isCordee: false, monday: false, tuesday: true, wednesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
-        { name: "ARTHUR RIMBAUD", isCordee: true, monday: false, tuesday: false, wednesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
-        { name: "IZZO", isCordee: true, monday: false, tuesday: false, wednesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
-        { name: "JULES FERRY", isCordee: true, monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, saturdayFilled: false },
-        { name: "MASSA 13", isCordee: false, monday: false, tuesday: false, wednesday: true, thursday: false, friday: false, saturday: false, saturdayFilled: false },
-        { name: "ROY D'ESPAGNE", isCordee: true, monday: false, tuesday: false, wednesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
-        { name: "SAINT GABRIEL", isCordee: false, monday: true, tuesday: true, wednesday: false, thursday: true, friday: true, saturday: false, saturdayFilled: false },
-        { name: "SUP D'OM", isCordee: false, monday: false, tuesday: true, wednesday: true, thursday: true, friday: false, saturday: true, saturdayFilled: true },
+        { name: "ACSE", isCordee: true, monday: false, tuesday: false, thursday: false, friday: false, saturday: true, saturdayFilled: true },
+        { name: "APPRENTIS D'AUTEUIL", isCordee: false, monday: false, tuesday: true, thursday: true, friday: false, saturday: false, saturdayFilled: false },
+        { name: "ARTHUR RIMBAUD", isCordee: true, monday: false, tuesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
+        { name: "IZZO", isCordee: true, monday: false, tuesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
+        { name: "JULES FERRY", isCordee: true, monday: false, tuesday: false, thursday: false, friday: false, saturday: false, saturdayFilled: false },
+        { name: "MASSA 13", isCordee: false, monday: false, tuesday: false, thursday: false, friday: false, saturday: false, saturdayFilled: false },
+        { name: "ROY D'ESPAGNE", isCordee: true, monday: false, tuesday: false, thursday: true, friday: false, saturday: false, saturdayFilled: false },
+        { name: "SAINT GABRIEL", isCordee: false, monday: true, tuesday: true, thursday: true, friday: true, saturday: false, saturdayFilled: false },
+        { name: "SUP D'OM", isCordee: false, monday: false, tuesday: true, thursday: true, friday: false, saturday: true, saturdayFilled: true },
     ];
 
     return (
@@ -443,7 +443,6 @@ export function Projects() {
                                             <th className="py-4 px-5 border-r border-[#D6C4EC]/70">PROJET</th>
                                             <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">LUNDI</th>
                                             <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">MARDI</th>
-                                            <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">MERCREDI</th>
                                             <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">JEUDI</th>
                                             <th className="py-4 px-3 text-center border-r border-[#D6C4EC]/70">VENDREDI</th>
                                             <th className="py-4 px-3 text-center">SAMEDI</th>
@@ -467,11 +466,6 @@ export function Projects() {
                                                 </td>
                                                 <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
                                                     {item.tuesday && (
-                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
-                                                    )}
-                                                </td>
-                                                <td className="py-3.5 px-3 text-center border-r border-[#E5D7F2]">
-                                                    {item.wednesday && (
                                                         <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-[#FAF5FE] text-[#6F2B75] border border-[#ECDDFD] font-bold text-xs select-none shadow-2xs">✕</span>
                                                     )}
                                                 </td>

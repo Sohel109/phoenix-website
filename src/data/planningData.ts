@@ -16,7 +16,7 @@ export interface PlanningUser {
     token?: string;
 }
 
-export type DayOfWeek = 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi';
+export type DayOfWeek = 'Lundi' | 'Mardi' | 'Jeudi' | 'Vendredi' | 'Samedi';
 
 export interface TimeSlot {
     id: string;
@@ -133,7 +133,7 @@ export function getSlotDuration(slot: TimeSlot): number {
     return (eh * 60 + em - sh * 60 - sm) / 60;
 }
 
-export const DAY_ORDER: DayOfWeek[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+export const DAY_ORDER: DayOfWeek[] = ['Lundi', 'Mardi', 'Jeudi', 'Vendredi', 'Samedi'];
 
 
 // ─── Week utilities ───────────────────────────────────────────────────────────
