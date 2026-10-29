@@ -1,6 +1,10 @@
 import { FileDown } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export function GuideFloatingTab() {
+    const { pathname } = useLocation();
+    if (pathname.startsWith('/planning')) return null;
+
     return (
         <aside
             aria-label="Téléchargement rapide de documentation"
