@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award, ClipboardCheck } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award, ClipboardCheck, Cookie } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
@@ -53,6 +53,13 @@ const cards: DashCard[] = [
         description: 'Votez pour le tuteur du mois',
         to: '/planning/vote',
         gradient: 'from-[#83338A] to-[#EC602B]',
+    },
+    {
+        icon: <Cookie size={26} />,
+        label: 'Goûters',
+        description: "Inscrivez-vous aux créneaux et indiquez ce que vous apportez",
+        to: '/planning/gouters',
+        gradient: 'from-[#EC602B] to-[#F29C38]',
     },
     {
         icon: <User size={26} />,

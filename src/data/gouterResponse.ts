@@ -44,3 +44,14 @@ export function parseGouterData(raw: unknown): GouterData | null {
     }
     return raw as unknown as GouterData;
 }
+
+/** « samedi 14 novembre » pour une date AAAA-MM-JJ. */
+export function formatGouterDate(date: string): string {
+    const [y, m, d] = date.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+/** « 9h - 10h » pour le créneau qui commence à `hour`. */
+export function formatSlotHours(hour: number): string {
+    return `${hour}h - ${hour + 1}h`;
+}
