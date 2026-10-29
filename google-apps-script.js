@@ -1614,7 +1614,9 @@ function handleGoutersAction(action, postData) {
     if (action === 'getGouters') return goutersGet(ctx);
     if (action === 'addGouters') return goutersAdd(ctx, postData);
     if (action === 'cancelGouter') return goutersCancel(ctx, postData);
-    return voteFail('invalid', 'Pas encore disponible');
+    if (action === 'setGouterSlot') return goutersSetSlot(ctx, postData);
+    if (action === 'addGouterItem') return goutersAddItem(ctx, postData);
+    return goutersRemoveItem(ctx, postData);
   } catch (err) {
     return voteFail('error', err.toString());
   } finally {
@@ -1704,6 +1706,75 @@ function goutersCancel(ctx, postData) {
   if (!gouter) return voteFail('invalid', 'Goûter introuvable.');
   if (!canManageProject(ctx.user, gouter.projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
   ctx.sheets.gouters.getRange(gouter.sheetRow, 5).setValue(false);
+  return { success: true };
+}
+
+// Goûter actif et pas encore passé (date aujourd'hui ou à venir), sinon une réponse d'erreur.
+function gouterOpenFor(ctx, gouterId) {
+  var all = readGouters(ctx.sheets.gouters);
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].active && all[i].id === String(gouterId)) {
+      if (all[i].date < ctx.today) return { error: voteFail('invalid', 'Ce goûter est passé : il ne peut plus être modifié.') };
+      return { gouter: all[i] };
+    }
+  }
+  return { error: voteFail('invalid', 'Goûter introuvable.') };
+}
+
+function goutersSetSlot(ctx, postData) {
+  var found = gouterOpenFor(ctx, postData.gouterId);
+  if (found.error) return found.error;
+  var gouter = found.gouter;
+
+  var rawHour = postData.hour;
+  var hour = typeof rawHour === 'number' ? rawHour : (typeof rawHour === 'string' && /^\d+$/.test(rawHour) ? parseInt(rawHour, 10) : NaN);
+  if (GOUTER_HOURS.indexOf(hour) === -1) return voteFail('invalid', 'Créneau invalide : de 9h à 19h.');
+  if (postData.joined !== true && postData.joined !== false) return voteFail('invalid', 'Requête invalide.');
+
+  var hasTarget = postData.userId !== undefined && postData.userId !== null && postData.userId !== '';
+  var targetId = hasTarget ? String(postData.userId) : ctx.user.id;
+  if (targetId !== ctx.user.id && (postData.joined !== false || !canManageProject(ctx.user, gouter.projectId))) {
+    return voteFail('forbidden', "Vous ne pouvez pas modifier l'inscription d'un autre membre.");
+  }
+
+  var rows = readVoteRows(ctx.sheets.slots);
+  var already = false;
+  // De bas en haut : supprimer une ligne décale les suivantes. Couvre aussi d'éventuels doublons saisis à la main.
+  for (var i = rows.length - 1; i >= 0; i--) {
+    var cells = rows[i].cells;
+    if (String(cells[0]) === gouter.id && parseInt(cells[1], 10) === hour && String(cells[2]) === targetId) {
+      already = true;
+      if (!postData.joined) ctx.sheets.slots.deleteRow(rows[i].sheetRow);
+    }
+  }
+  if (postData.joined && !already) ctx.sheets.slots.appendRow([gouter.id, hour, targetId, new Date().toISOString()]);
+  return { success: true };
+}
+
+function goutersAddItem(ctx, postData) {
+  var found = gouterOpenFor(ctx, postData.gouterId);
+  if (found.error) return found.error;
+  var text = cleanFreeText(postData.item, GOUTER_TEXT_MAX);
+  if (!text) return voteFail('invalid', 'Indiquez ce que vous apportez.');
+  var id = newRowId('a');
+  ctx.sheets.items.appendRow([id, found.gouter.id, ctx.user.id, text, new Date().toISOString()]);
+  return { success: true, id: id };
+}
+
+function goutersRemoveItem(ctx, postData) {
+  var rows = readVoteRows(ctx.sheets.items);
+  var target = null;
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].cells[0]) === String(postData.itemId)) target = rows[i];
+  }
+  if (!target) return voteFail('invalid', 'Apport introuvable.');
+  var found = gouterOpenFor(ctx, target.cells[1]);
+  if (found.error) return found.error;
+  var isAuthor = String(target.cells[2]) === ctx.user.id;
+  if (!isAuthor && !canManageProject(ctx.user, found.gouter.projectId)) {
+    return voteFail('forbidden', "Vous ne pouvez retirer que vos propres apports.");
+  }
+  ctx.sheets.items.deleteRow(target.sheetRow);
   return { success: true };
 }
 
