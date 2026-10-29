@@ -44,6 +44,7 @@ const PlanningEventValidation = lazy(() => import('./pages/planning/PlanningEven
 const PlanningMesEvenements = lazy(() => import('./pages/planning/PlanningMesEvenements').then(m => ({ default: m.PlanningMesEvenements })));
 const PlanningNotifications = lazy(() => import('./pages/planning/PlanningNotifications').then(m => ({ default: m.PlanningNotifications })));
 const PlanningVote = lazy(() => import('./pages/planning/PlanningVote').then(m => ({ default: m.PlanningVote })));
+const PlanningPresenceEnfants = lazy(() => import('./pages/planning/PlanningPresenceEnfants').then(m => ({ default: m.PlanningPresenceEnfants })));
 
 // Précharge les pages publiques une fois le chargement terminé et le navigateur inactif :
 // la navigation reste instantanée sans alourdir le premier affichage de l'accueil.
@@ -179,6 +180,7 @@ function App() {
                   <Route path="/planning/mes-evenements" element={<PlanningGuard><PlanningMesEvenements /></PlanningGuard>} />
                   <Route path="/planning/notifications" element={<PlanningGuard><PlanningNotifications /></PlanningGuard>} />
                   <Route path="/planning/vote" element={<PlanningGuard><PlanningVote /></PlanningGuard>} />
+                  <Route path="/planning/presences-enfants" element={<PlanningGuard><PlanningPresenceEnfants /></PlanningGuard>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>

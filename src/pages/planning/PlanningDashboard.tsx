@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award, ClipboardCheck } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
@@ -67,6 +67,14 @@ const cards: DashCard[] = [
         description: 'Confirmez les présences de vos tuteurs',
         to: '/planning/validation',
         gradient: 'from-[#2E7D32] to-[#4CAF50]',
+        chefOnly: true,
+    },
+    {
+        icon: <ClipboardCheck size={26} />,
+        label: 'Présence enfants',
+        description: "Faites l'appel des enfants de votre projet",
+        to: '/planning/presences-enfants',
+        gradient: 'from-[#6F2B75] to-[#EC602B]',
         chefOnly: true,
     },
     {

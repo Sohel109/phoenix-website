@@ -67,7 +67,7 @@ Les écritures prennent le verrou de script (`LockService`), comme le vote. Les 
 
 ### Front
 
-- Route `/planning/presences-enfants` dans `App.tsx`, entrée « Présence enfants » dans le menu de `PlanningLayout.tsx`, visible seulement pour `chef_projet` et `bureau`. La page refuse aussi l'accès aux autres rôles, comme `PlanningValidation`.
+- Route `/planning/presences-enfants` dans `App.tsx`, carte « Présence enfants » sur le tableau de bord (`PlanningDashboard.tsx`), visible seulement pour `chef_projet` et `bureau`. Pas de lien dans la barre du haut : elle n'est pas visible sur téléphone, et les autres pages de CDP n'y figurent pas non plus. La page refuse aussi l'accès aux autres rôles, comme `PlanningValidation`.
 - `src/pages/planning/PlanningPresenceEnfants.tsx` avec trois blocs :
   - **Appel :** sélecteur de projet (si plusieurs), sélecteur de date, une case par enfant, bouton Enregistrer. Si un appel existe déjà pour cette date, il est pré-rempli et le bouton devient « Enregistrer les corrections ».
   - **Liste :** champ de saisie multi-lignes avec le rappel « prénom et initiale du nom seulement », liste des enfants actifs, bouton Retirer.
