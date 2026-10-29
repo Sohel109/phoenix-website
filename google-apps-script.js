@@ -278,7 +278,7 @@ function doPost(e) {
         var rowPass = data[i][3] ? data[i][3].toString().trim() : "";
 
         if (rowId === userId) {
-          if (rowPass !== oldPassword) {
+          if (!passwordMatches(rowId, rowPass, oldPassword)) {
             return ContentService.createTextOutput(JSON.stringify({ success: false, message: "L'ancien mot de passe est incorrect." }))
               .setMimeType(ContentService.MimeType.JSON);
           }
@@ -288,7 +288,14 @@ function doPost(e) {
       }
 
       if (foundRow !== -1) {
-        sheet.getRange(foundRow, 4).setValue(newPassword); // Colonne D (mot de passe)
+        var newHash;
+        try {
+          newHash = hashPassword(userId, newPassword);
+        } catch (hashErr) {
+          return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Service momentanément indisponible, réessayez dans quelques minutes." }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+        sheet.getRange(foundRow, 4).setValue(newHash); // Colonne D (empreinte du mot de passe)
         return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Votre mot de passe a été modifié avec succès !" }))
           .setMimeType(ContentService.MimeType.JSON);
       } else {
@@ -464,7 +471,14 @@ function doPost(e) {
       }
 
       if (foundRow !== -1) {
-        sheet.getRange(foundRow, 4).setValue(newPassword); // Colonne D (mot de passe)
+        var resetHash;
+        try {
+          resetHash = hashPassword(data[foundRow - 1][0].toString().trim(), newPassword);
+        } catch (hashErr) {
+          return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Service momentanément indisponible, réessayez dans quelques minutes." }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+        sheet.getRange(foundRow, 4).setValue(resetHash); // Colonne D (empreinte du mot de passe)
         cache.remove("reset_code_" + loginInput); // Suppression du code une fois utilisé
         return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Votre mot de passe a été réinitialisé avec succès !" }))
           .setMimeType(ContentService.MimeType.JSON);
@@ -491,7 +505,8 @@ function doPost(e) {
     var sheetLogin = data[i][2] ? data[i][2].toString().trim() : "";
     var sheetPass = data[i][3] ? data[i][3].toString().trim() : "";
     
-    if (sheetLogin === login && sheetPass === password) {
+    if (sheetLogin === login && passwordMatches(data[i][0], sheetPass, password)) {
+      if (!isHashedPassword(sheetPass)) protegerMotDePasseLigne(sheet, i + 1);
       var rawProjects = data[i][5] ? data[i][5].toString() : "";
       var projectIds = rawProjects
         .split(',')
@@ -688,13 +703,7 @@ function getSessionSecret() {
 }
 
 function hmacHex(value) {
-  var bytes = Utilities.computeHmacSha256Signature(value, getSessionSecret());
-  var hex = '';
-  for (var i = 0; i < bytes.length; i++) {
-    var b = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
-    hex += (b < 16 ? '0' : '') + b.toString(16);
-  }
-  return hex;
+  return bytesToHex(Utilities.computeHmacSha256Signature(value, getSessionSecret()));
 }
 
 function createSessionToken(userId) {
@@ -714,6 +723,83 @@ function verifySessionToken(userId, token) {
   var diff = 0;
   for (var i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ given.charCodeAt(i);
   return diff === 0;
+}
+
+// ==========================================
+// MOTS DE PASSE : STOCKÉS SOUS FORME D'EMPREINTE
+// ==========================================
+// La colonne D du Sheet ne contient plus le mot de passe mais une empreinte « h1$ + 64 caractères », calculée avec
+// l'identifiant du membre et un secret gardé dans les propriétés du script (jamais dans le Sheet). Toute personne qui
+// ouvre le fichier ne peut donc plus lire les mots de passe. Un mot de passe encore en clair reste accepté, puis est
+// remplacé par son empreinte dès la première connexion réussie ou dès l'envoi du mail d'accès.
+// Si la propriété PASSWORD_PEPPER est supprimée, toutes les empreintes deviennent inutilisables : il faut alors
+// réinitialiser les mots de passe (case « Envoyé » + nouveau mot de passe temporaire en colonne D).
+var PASSWORD_HASH_PATTERN = /^h1\$[0-9a-f]{64}$/;
+
+function bytesToHex(bytes) {
+  var hex = '';
+  for (var i = 0; i < bytes.length; i++) {
+    var b = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+    hex += (b < 16 ? '0' : '') + b.toString(16);
+  }
+  return hex;
+}
+
+function getPasswordPepper() {
+  var props = PropertiesService.getScriptProperties();
+  var pepper = props.getProperty('PASSWORD_PEPPER');
+  if (!pepper) {
+    pepper = Utilities.getUuid() + Utilities.getUuid();
+    props.setProperty('PASSWORD_PEPPER', pepper);
+  }
+  return pepper;
+}
+
+function isHashedPassword(stored) {
+  return PASSWORD_HASH_PATTERN.test(String(stored));
+}
+
+function hashPassword(userId, password) {
+  var signature = Utilities.computeHmacSha256Signature(String(userId) + ':' + String(password), getPasswordPepper());
+  return 'h1$' + bytesToHex(signature);
+}
+
+function safeEquals(a, b) {
+  a = String(a);
+  b = String(b);
+  if (a.length !== b.length) return false;
+  var diff = 0;
+  for (var i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+// Vrai si `given` est le mot de passe du membre `userId` dont la cellule contient `stored` (empreinte ou clair).
+function passwordMatches(userId, stored, given) {
+  if (!given) return false;
+  stored = String(stored);
+  if (isHashedPassword(stored)) {
+    try {
+      return safeEquals(stored, hashPassword(userId, given));
+    } catch (err) {
+      return false;
+    }
+  }
+  return stored !== '' && safeEquals(stored, given);
+}
+
+// Remplace le mot de passe en clair de la ligne par son empreinte. Ne fait rien si c'est déjà une empreinte
+// et ne lève jamais d'erreur : au pire le mot de passe reste en clair jusqu'à la prochaine tentative.
+function protegerMotDePasseLigne(sheet, row) {
+  try {
+    var id = sheet.getRange(row, 1).getValue();
+    var mdp = sheet.getRange(row, 4).getValue();
+    if (mdp === '' || mdp === null || isHashedPassword(mdp)) return false;
+    sheet.getRange(row, 4).setValue(hashPassword(id, String(mdp).trim()));
+    return true;
+  } catch (err) {
+    Logger.log('Impossible de protéger le mot de passe de la ligne ' + row + ' : ' + err.toString());
+    return false;
+  }
 }
 
 var VOTE_SHEETS = {
@@ -1113,6 +1199,12 @@ function envoyerMailAcces(e) {
       range.setValue(false);
       return;
     }
+
+    if (isHashedPassword(mdp)) {
+      SpreadsheetApp.getUi().alert("ℹ️ Le mot de passe de " + (nom || "la ligne " + row) + " est protégé : personne ne peut le relire. Pour renvoyer un accès, écrivez un nouveau mot de passe temporaire dans la colonne D, puis cochez de nouveau la case.");
+      range.setValue(false);
+      return;
+    }
     
     var sujet = "Phoenix EDC - Vos accès à votre espace planning";
     var siteUrl = "https://www.phoenix-egalite-des-chances.com/planning";
@@ -1195,6 +1287,7 @@ function envoyerMailAcces(e) {
         replyTo: "phoenixedc.asso@gmail.com"
       });
       sheet.getRange(row, COLONNE_CASE_A_COCHER + 1).setValue("Envoyé le " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy à HH:mm"));
+      protegerMotDePasseLigne(sheet, row);
       return true;
     } catch (error) {
       // 2. Fallback avec MailApp si le quota ou les permissions GmailApp diffèrent
@@ -1208,6 +1301,7 @@ function envoyerMailAcces(e) {
           replyTo: "phoenixedc.asso@gmail.com"
         });
         sheet.getRange(row, COLONNE_CASE_A_COCHER + 1).setValue("Envoyé le " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy à HH:mm"));
+        protegerMotDePasseLigne(sheet, row);
         return true;
       } catch (errFallback) {
         Logger.log("Erreur lors de l'envoi de l'email : " + errFallback.toString());
@@ -1228,4 +1322,32 @@ function validerAutorisationsMail() {
     GmailApp.getAliases();
   } catch (e) {}
   SpreadsheetApp.getUi().alert("✅ Autorisations validées ! Quota d'e-mails disponible : " + quota + ". Vous pouvez désormais cocher les cases dans le Sheet pour envoyer les accès.");
+}
+
+/**
+ * À exécuter UNE FOIS dans l'éditeur Apps Script (menu déroulant en haut, puis « Exécuter ») : remplace les mots de
+ * passe en clair par leur empreinte pour tous les membres dont le mail d'accès est déjà parti (case « Envoyé » cochée).
+ * Les autres lignes restent en clair jusqu'à l'envoi de leur mail, qui les protège ensuite automatiquement.
+ * Peut être relancée sans risque.
+ */
+function protegerTousLesMotsDePasse() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  var data = sheet.getDataRange().getValues();
+  var proteges = 0;
+  var enAttente = 0;
+  for (var i = 1; i < data.length; i++) {
+    var mdp = data[i][3];
+    if (mdp === '' || mdp === null || isHashedPassword(mdp)) continue;
+    if (data[i][7] === true) {
+      if (protegerMotDePasseLigne(sheet, i + 1)) proteges++;
+    } else {
+      enAttente++;
+    }
+  }
+  var message = "✅ " + proteges + " mot(s) de passe protégé(s). " + enAttente + " ligne(s) restent en clair car leur mail d'accès n'est pas encore parti : elles seront protégées automatiquement à l'envoi.";
+  try {
+    SpreadsheetApp.getUi().alert(message);
+  } catch (err) {
+    Logger.log(message);
+  }
 }

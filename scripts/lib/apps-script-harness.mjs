@@ -96,6 +96,7 @@ export function loadScript(options) {
     const sandbox = {
         console,
         JSON,
+        Logger: { log() {} },
         SpreadsheetApp: { getActiveSpreadsheet: () => ss, getUi: () => ({ alert: (m) => alerts.push(m) }) },
         Session: { getScriptTimeZone: () => 'Europe/Paris' },
         GmailApp: { sendEmail: (to, subject) => { mailbox.push({ to, subject }); }, getAliases: () => [] },
@@ -105,6 +106,7 @@ export function loadScript(options) {
             getScriptCache: () => ({
                 get: (k) => { const e = cache.get(k); return e && e.expiresAt > state.nowMs ? e.value : null; },
                 put: (k, v, seconds = 600) => { cache.set(k, { value: v, expiresAt: state.nowMs + seconds * 1000 }); },
+                remove: (k) => { cache.delete(k); },
             }),
         },
         ContentService: {
@@ -148,6 +150,8 @@ export function loadScript(options) {
             };
             ctx.envoyerMailConnexion({ source: ss, range });
         },
+        /** Valeur du cache de script (ex. code de réinitialisation du mot de passe). */
+        cacheValue(key) { return sandbox.CacheService.getScriptCache().get(key); },
         usersCell(row, col) { return ss.users.getRange(row, col).getValue(); },
         setUsersCell(row, col, value) { ss.users.getRange(row, col).setValue(value); },
         /** Appel authentifié : ajoute un jeton valide pour l'identité annoncée, sauf si `body.token` est fourni. */

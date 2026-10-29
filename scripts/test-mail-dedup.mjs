@@ -37,6 +37,7 @@ test('on peut renvoyer volontairement l\'accès au bout d\'une minute', () => {
     const h = fresh();
     h.tickMailCheckbox(2);
     h.advanceMs(61 * 1000);
+    h.setUsersCell(2, 4, 'nouveau-temporaire'); // le mot de passe est protégé après l'envoi : on en écrit un nouveau
     h.tickMailCheckbox(2);
     assert.equal(h.mailbox.length, 2);
 });
