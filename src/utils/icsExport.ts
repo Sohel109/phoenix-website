@@ -4,6 +4,7 @@ import type { Project } from '../data/projectsData';
 const DAY_INDEX_MAP: Record<string, number> = {
     'Lundi': 1,
     'Mardi': 2,
+    'Mercredi': 3,
     'Jeudi': 4,
     'Vendredi': 5,
     'Samedi': 6,

@@ -64,7 +64,7 @@ export const projectsData: Project[] = [
         address: "2 Bd Ledru Rollin, 13015 Marseille",
         coordinates: [43.3580, 5.3620],
         chefs: ["Nelly RANDRIAMIHAJA"],
-        description: "PROJET HYBRIDE. Mélange de soutien scolaire et d'ouverture culturelle."
+        description: "PROJET HYBRIDE. Mélange de soutien scolaire et d'ouverture culturelle, les mercredis après-midi."
     },
     {
         id: 3,
@@ -75,7 +75,7 @@ export const projectsData: Project[] = [
         address: "129 Chem. du Merlan À la Rose, 13013 Marseille",
         coordinates: [43.3469, 5.4231],
         chefs: ["Position vacante"],
-        description: "PROJET HYBRIDE. Séance en soirée : aide aux devoirs suivie d'ouverture culturelle."
+        description: "PROJET HYBRIDE. Séance du mercredi soir : aide aux devoirs suivie d'ouverture culturelle."
     },
     {
         id: 9,

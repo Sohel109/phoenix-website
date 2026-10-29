@@ -17,7 +17,7 @@ export interface PlanningUser {
     token?: string;
 }
 
-export type DayOfWeek = 'Lundi' | 'Mardi' | 'Jeudi' | 'Vendredi' | 'Samedi';
+export type DayOfWeek = 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi';
 
 export interface TimeSlot {
     id: string;
@@ -104,7 +104,9 @@ export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
             }));
         case 8: // Arthur Rimbaud : 15h30-18h00 Jeudi
             return [{ id: 'slot-8-jeu', projectId: 8, day: 'Jeudi', startTime: '15:30', endTime: '18:00' }];
-        case 1: // Sup d'OM : Mardi, Jeudi, Samedi
+        case 7: // Jules Ferry : 14h00-16h30 Mercredi (Bi-hebdomadaire)
+            return [{ id: 'slot-7-mer', projectId: 7, day: 'Mercredi', startTime: '14:00', endTime: '16:30' }];
+        case 1: // Sup d'OM : Mardi, Jeudi, Samedi (plus de séance le mercredi)
             return [
                 { id: 'slot-1-mar', projectId: 1, day: 'Mardi', startTime: '18:00', endTime: '19:30' },
                 { id: 'slot-1-jeu', projectId: 1, day: 'Jeudi', startTime: '18:00', endTime: '19:30' },
@@ -112,6 +114,8 @@ export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
             ];
         case 9: // Roy d’Espagne : 16h00-18h30 Jeudi
             return [{ id: 'slot-9-jeu', projectId: 9, day: 'Jeudi', startTime: '16:00', endTime: '18:30' }];
+        case 3: // MASSA 13 : Mercredi 18h00-20h00
+            return [{ id: 'slot-3-mer', projectId: 3, day: 'Mercredi', startTime: '18:00', endTime: '20:00' }];
         default:
             return [];
     }
@@ -134,7 +138,7 @@ export function getSlotDuration(slot: TimeSlot): number {
     return (eh * 60 + em - sh * 60 - sm) / 60;
 }
 
-export const DAY_ORDER: DayOfWeek[] = ['Lundi', 'Mardi', 'Jeudi', 'Vendredi', 'Samedi'];
+export const DAY_ORDER: DayOfWeek[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
 
 // ─── Week utilities ───────────────────────────────────────────────────────────
