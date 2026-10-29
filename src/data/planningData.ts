@@ -1,6 +1,7 @@
 import { projectsData } from './projectsData';
 import { parseVoteData } from './voteResponse';
 import { parseChildrenData } from './childrenResponse';
+import { parseGouterData } from './gouterResponse';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -512,5 +513,81 @@ export async function removeChildApi(requesterId: string, token: string, project
 
 export async function saveChildAttendanceApi(requesterId: string, token: string, projectId: number, slotId: string, weekKey: string, presentIds: string[]): Promise<{ success: boolean; message: string; code?: string }> {
     const { success, message, code } = await postChildrenAction({ action: 'saveChildAttendance', requesterId, token, projectId, slotId, weekKey, presentIds });
+    return { success, message, code };
+}
+
+// ─── Goûters des projets ──────────────────────────────────────────────────────
+
+export interface GouterSlot {
+    /** Heure de début du créneau d'une heure, de 9 à 18. */
+    hour: number;
+    users: { userId: string; name: string }[];
+}
+
+export interface GouterItem {
+    id: string;
+    item: string;
+    userId: string;
+    name: string;
+    canRemove: boolean;
+}
+
+export interface Gouter {
+    id: string;
+    projectId: number;
+    /** Jour du goûter, AAAA-MM-JJ. */
+    date: string;
+    note: string;
+    isPast: boolean;
+    /** Vrai pour le Bureau et pour un chef de ce projet. */
+    canManage: boolean;
+    slots: GouterSlot[];
+    items: GouterItem[];
+}
+
+export interface GouterData {
+    success: true;
+    isBureau: boolean;
+    schoolYear: string;
+    /** Projets dont le compte peut ajouter ou annuler des goûters. */
+    manageableProjects: number[];
+    gouters: Gouter[];
+}
+
+const GOUTER_UNAVAILABLE = "Les goûters ne sont pas disponibles pour le moment.";
+
+const postGouterAction = (body: Record<string, unknown>) => postPlanningAction(body, GOUTER_UNAVAILABLE);
+
+type GouterWriteResult = Promise<{ success: boolean; message: string; code?: string }>;
+
+export async function fetchGouters(requesterId: string, token: string): Promise<{ ok: true; data: GouterData } | { ok: false; message: string; code?: string }> {
+    const result = await postGouterAction({ action: 'getGouters', requesterId, token });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const data = parseGouterData(result.data);
+    return data ? { ok: true, data } : { ok: false, message: GOUTER_UNAVAILABLE };
+}
+
+export async function addGoutersApi(requesterId: string, token: string, projectId: number, dates: string[], note: string): GouterWriteResult {
+    const { success, message, code } = await postGouterAction({ action: 'addGouters', requesterId, token, projectId, dates, note });
+    return { success, message, code };
+}
+
+export async function cancelGouterApi(requesterId: string, token: string, gouterId: string): GouterWriteResult {
+    const { success, message, code } = await postGouterAction({ action: 'cancelGouter', requesterId, token, gouterId });
+    return { success, message, code };
+}
+
+export async function setGouterSlotApi(requesterId: string, token: string, gouterId: string, hour: number, joined: boolean, userId?: string): GouterWriteResult {
+    const { success, message, code } = await postGouterAction({ action: 'setGouterSlot', requesterId, token, gouterId, hour, joined, userId });
+    return { success, message, code };
+}
+
+export async function addGouterItemApi(requesterId: string, token: string, gouterId: string, item: string): GouterWriteResult {
+    const { success, message, code } = await postGouterAction({ action: 'addGouterItem', requesterId, token, gouterId, item });
+    return { success, message, code };
+}
+
+export async function removeGouterItemApi(requesterId: string, token: string, itemId: string): GouterWriteResult {
+    const { success, message, code } = await postGouterAction({ action: 'removeGouterItem', requesterId, token, itemId });
     return { success, message, code };
 }
