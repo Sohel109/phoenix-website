@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import type { PlanningUser, Booking, BookingStatus } from '../data/planningData';
+import type { PlanningUser, Booking, BookingStatus, ManualHourEntry, QuotaExemption } from '../data/planningData';
 import {
     authenticateUser,
     getWeekKey,
@@ -13,29 +13,8 @@ import {
 } from '../data/planningData';
 import type { EventAttendance } from '../data/planningData';
 
-// ─── Types d'heures manuelles (Bureau) ───────────────────────────────────────
-
-export interface ManualHourEntry {
-    id: string;
-    userId: string;
-    userName: string;
-    hours: number;
-    reason: string;
-    grantedBy: string;
-    createdAt: string;
-    projectId?: number;
-}
-
-// ─── Membres renouvelants / Exemption quota (50h N-1 validées) ──────────────
-
-export interface QuotaExemption {
-    userId: string;
-    userName: string;
-    grantedBy: string;
-    grantedAt: string;
-    year: string; // e.g. "2024-2025"
-    note?: string;
-}
+// ─── Types d'heures manuelles et d'exemptions : définis dans planningData.ts, ré-exportés ici ───
+export type { ManualHourEntry, QuotaExemption } from '../data/planningData';
 
 export interface AssociationMember {
     id: string;

@@ -2,6 +2,7 @@ import { projectsData } from './projectsData';
 import { parseVoteData } from './voteResponse';
 import { parseChildrenData } from './childrenResponse';
 import { parseGouterData } from './gouterResponse';
+import { parseExemptionsData, parseImportResult, parseManualHoursData } from './hoursResponse';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -584,6 +585,11 @@ export async function cancelGouterApi(requesterId: string, token: string, gouter
     return { success, message, code };
 }
 
+export async function moveGouterApi(requesterId: string, token: string, gouterId: string, date: string): GouterWriteResult {
+    const { success, message, code } = await postGouterAction({ action: 'moveGouter', requesterId, token, gouterId, date });
+    return { success, message, code };
+}
+
 export async function setGouterSlotApi(requesterId: string, token: string, gouterId: string, hour: number, joined: boolean, userId?: string): GouterWriteResult {
     const { success, message, code } = await postGouterAction({ action: 'setGouterSlot', requesterId, token, gouterId, hour, joined, userId });
     return { success, message, code };
@@ -597,4 +603,106 @@ export async function addGouterItemApi(requesterId: string, token: string, goute
 export async function removeGouterItemApi(requesterId: string, token: string, itemId: string): GouterWriteResult {
     const { success, message, code } = await postGouterAction({ action: 'removeGouterItem', requesterId, token, itemId });
     return { success, message, code };
+}
+
+// ─── Heures manuelles et membres renouvelants (enregistrés dans le Sheet) ─────
+
+export interface ManualHourEntry {
+    id: string;
+    userId: string;
+    userName: string;
+    hours: number;
+    reason: string;
+    grantedBy: string;
+    /** Absent des attributions importées de l'ancien stockage dans le navigateur. */
+    grantedById?: string;
+    createdAt: string;
+    /** Absent pour la mission générale. */
+    projectId?: number;
+}
+
+export interface QuotaExemption {
+    userId: string;
+    userName: string;
+    grantedBy: string;
+    grantedAt: string;
+    year: string; // e.g. "2024-2025"
+    note?: string;
+}
+
+export interface ManualHoursData {
+    isBureau: boolean;
+    /** Projets pour lesquels le compte peut attribuer des heures (tous pour le Bureau). */
+    manageableProjects: number[];
+    manualHours: ManualHourEntry[];
+}
+
+export interface ExemptionsData {
+    exemptions: QuotaExemption[];
+}
+
+const HOURS_UNAVAILABLE = "Les heures manuelles ne sont pas disponibles pour le moment.";
+
+const postHoursAction = (body: Record<string, unknown>) => postPlanningAction(body, HOURS_UNAVAILABLE);
+
+type HoursWriteResult = Promise<{ success: boolean; message: string; code?: string }>;
+type HoursImportResult = Promise<{ ok: true; imported: number; ignored: number } | { ok: false; message: string; code?: string }>;
+
+export async function fetchManualHours(requesterId: string, token: string): Promise<{ ok: true; data: ManualHoursData } | { ok: false; message: string; code?: string }> {
+    const result = await postHoursAction({ action: 'getManualHours', requesterId, token });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const data = parseManualHoursData(result.data);
+    return data ? { ok: true, data } : { ok: false, message: HOURS_UNAVAILABLE };
+}
+
+export async function addManualHoursApi(
+    requesterId: string,
+    token: string,
+    userId: string,
+    userName: string,
+    hours: number,
+    reason: string,
+    projectId?: number
+): HoursWriteResult {
+    const { success, message, code } = await postHoursAction({ action: 'addManualHours', requesterId, token, userId, userName, hours, reason, projectId });
+    return { success, message, code };
+}
+
+export async function deleteManualHoursApi(requesterId: string, token: string, id: string): HoursWriteResult {
+    const { success, message, code } = await postHoursAction({ action: 'deleteManualHours', requesterId, token, id });
+    return { success, message, code };
+}
+
+export async function importManualHoursApi(requesterId: string, token: string, entries: unknown[]): HoursImportResult {
+    const result = await postHoursAction({ action: 'importManualHours', requesterId, token, entries });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const parsed = parseImportResult(result.data);
+    return parsed ? { ok: true, ...parsed } : { ok: false, message: HOURS_UNAVAILABLE };
+}
+
+export async function fetchExemptions(requesterId: string, token: string): Promise<{ ok: true; data: ExemptionsData } | { ok: false; message: string; code?: string }> {
+    const result = await postHoursAction({ action: 'getExemptions', requesterId, token });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const data = parseExemptionsData(result.data);
+    return data ? { ok: true, data } : { ok: false, message: HOURS_UNAVAILABLE };
+}
+
+export async function setExemptionApi(
+    requesterId: string,
+    token: string,
+    userId: string,
+    userName: string,
+    exempt: boolean,
+    note?: string,
+    year?: string
+): HoursWriteResult {
+    const { success, message, code } = await postHoursAction({ action: 'setExemption', requesterId, token, userId, userName, exempt, note, year });
+    return { success, message, code };
+}
+
+export async function importExemptionsApi(requesterId: string, token: string, entries: unknown[]): HoursImportResult {
+    const result = await postHoursAction({ action: 'importExemptions', requesterId, token, entries });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const parsed = parseImportResult(result.data);
+    return parsed ? { ok: true, ...parsed } : { ok: false, message: HOURS_UNAVAILABLE };
 }
