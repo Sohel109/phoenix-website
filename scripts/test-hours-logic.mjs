@@ -218,3 +218,128 @@ test('les colonnes de texte sont créées au format texte', () => {
     const text = h.formats('HeuresManuelles').filter(([, f]) => f === '@').map(([range]) => range);
     for (const col of ['A:A', 'B:B', 'C:C', 'E:E', 'F:F', 'G:G', 'I:I']) assert.ok(text.includes(col), col);
 });
+
+// ─── Import de l'existant (heures enregistrées dans le navigateur du Bureau) ───
+
+const legacy = (n, extra = {}) => ({
+    id: `mh-17000000000${n}-abcde`,
+    userId: 't1',
+    userName: 'Tuteur Un',
+    hours: 5,
+    reason: 'Olympiades, week-end complet',
+    grantedBy: 'Sohel HAGGUI',
+    createdAt: '2026-10-10T08:00:00.000Z',
+    projectId: 4,
+    ...extra,
+});
+const importHours = (h, requesterId, entries) => plain(h.call('importManualHours', { requesterId, entries }));
+
+test('import des heures : réservé au Bureau, rien n est écrit sinon', () => {
+    const h = fresh();
+    for (const id of ['c4', 't1']) assert.equal(importHours(h, id, [legacy(1)]).code, 'forbidden', id);
+    assert.equal(dataRows(h).length, 0);
+});
+
+test('import des heures : garde les valeurs d origine, ignore les invalides et les identifiants déjà présents', () => {
+    const h = fresh();
+    const entries = [
+        legacy(1),
+        legacy(2, { projectId: undefined, userId: 'custom-clara-martin', userName: 'Clara Martin', hours: 2.5 }),
+        legacy(3, { hours: 0.3 }),
+        legacy(4, { reason: 'court' }),
+        legacy(5, { projectId: 12 }),
+        legacy(1),
+        legacy(6, { id: '=cmd' }),
+    ];
+    assert.deepEqual(importHours(h, 'b1', entries), { success: true, imported: 2, ignored: 5 });
+    const stored = get(h, 'b1').manualHours;
+    const first = stored.find((m) => m.id === legacy(1).id);
+    assert.equal(first.createdAt, '2026-10-10T08:00:00.000Z');
+    assert.equal(first.grantedBy, 'Sohel HAGGUI');
+    assert.equal(first.grantedById, '');
+    assert.equal(first.projectId, 4);
+    assert.equal('projectId' in stored.find((m) => m.userId === 'custom-clara-martin'), false);
+    // Relancer l'import ne double rien.
+    assert.deepEqual(importHours(h, 'b1', entries), { success: true, imported: 0, ignored: 7 });
+    assert.equal(dataRows(h).length, 2);
+});
+
+test('import des heures : plus de 500 entrées est refusé, une liste absente aussi', () => {
+    const h = fresh();
+    const many = Array.from({ length: 501 }, (_, i) => legacy(i, { id: `mh-bulk-${i}` }));
+    assert.equal(importHours(h, 'b1', many).code, 'invalid');
+    assert.equal(importHours(h, 'b1', undefined).code, 'invalid');
+    assert.equal(dataRows(h).length, 0);
+});
+
+test('une attribution importée est supprimable par le Bureau mais pas par un chef de projet', () => {
+    const h = fresh();
+    importHours(h, 'b1', [legacy(1)]);
+    assert.equal(del(h, 'c4', legacy(1).id).code, 'forbidden');
+    assert.equal(del(h, 'b1', legacy(1).id).success, true);
+    assert.equal(dataRows(h).length, 0);
+});
+
+// ─── Membres renouvelants ─────────────────────────────────────────────────────
+
+const exempt = (h, requesterId, extra) => plain(h.call('setExemption', { requesterId, ...extra }));
+const exemptions = (h, requesterId) => plain(h.call('getExemptions', { requesterId }));
+
+test('renouvelants : seul le Bureau ajoute et retire, sans doublon', () => {
+    const h = fresh();
+    for (const id of ['c4', 't1']) assert.equal(exempt(h, id, { userId: 't1', exempt: true }).code, 'forbidden', id);
+    assert.equal(exempt(h, 'b1', { userId: 't1', exempt: true, note: '=Quota 50h validé en 2025', year: '2025-2026' }).success, true);
+    assert.equal(exempt(h, 'b1', { userId: 't1', exempt: true }).success, true);
+    const list = exemptions(h, 'b1').exemptions;
+    assert.equal(list.length, 1);
+    assert.equal(list[0].userName, 'Tuteur Un');
+    assert.equal(list[0].grantedBy, 'Bureau');
+    assert.equal(list[0].year, '2025-2026');
+    assert.equal(list[0].note.startsWith('='), false);
+    assert.equal(exempt(h, 'b1', { userId: 't1', exempt: false }).success, true);
+    assert.equal(exemptions(h, 'b1').exemptions.length, 0);
+});
+
+test('renouvelants : valeurs refusées', () => {
+    const h = fresh();
+    assert.equal(exempt(h, 'b1', { userId: 'inconnu', exempt: true }).code, 'invalid');
+    assert.equal(exempt(h, 'b1', { userId: 't1' }).code, 'invalid');
+    assert.equal(exempt(h, 'b1', { userId: 't1', exempt: 'oui' }).code, 'invalid');
+    assert.equal(exemptions(h, 'b1').exemptions.length, 0);
+});
+
+test('renouvelants : le Bureau et les chefs de projet lisent tout, un tuteur seulement sa propre entrée', () => {
+    const h = fresh();
+    exempt(h, 'b1', { userId: 't1', exempt: true });
+    exempt(h, 'b1', { userId: 't2', exempt: true });
+    assert.equal(exemptions(h, 'b1').exemptions.length, 2);
+    assert.equal(exemptions(h, 'c4').exemptions.length, 2);
+    assert.deepEqual(exemptions(h, 't1').exemptions.map((e) => e.userId), ['t1']);
+    assert.deepEqual(exemptions(h, 't3').exemptions, []);
+});
+
+test('import des renouvelants : Bureau seulement, sans doublon, entrées invalides ignorées', () => {
+    const h = fresh();
+    const entries = [
+        { userId: 't1', userName: 'Tuteur Un', grantedBy: 'Sohel', grantedAt: '2026-09-15T10:00:00.000Z', year: '2024-2025', note: '+Quota validé' },
+        { userId: 't2', userName: 'Tuteur Deux', grantedBy: 'Sohel', grantedAt: 'pas une date', year: '2024-2025', note: '' },
+        { userId: 't1', userName: 'Tuteur Un' },
+        { userId: '', userName: 'Sans identifiant' },
+        { userId: 't3', userName: '   ' },
+    ];
+    assert.equal(plain(h.call('importExemptions', { requesterId: 'c4', entries })).code, 'forbidden');
+    assert.deepEqual(plain(h.call('importExemptions', { requesterId: 'b1', entries })), { success: true, imported: 2, ignored: 3 });
+    const list = exemptions(h, 'b1').exemptions;
+    assert.equal(list.length, 2);
+    assert.equal(list.find((e) => e.userId === 't1').grantedAt, '2026-09-15T10:00:00.000Z');
+    assert.equal(list.find((e) => e.userId === 't1').note.startsWith('+'), false);
+    assert.deepEqual(plain(h.call('importExemptions', { requesterId: 'b1', entries })), { success: true, imported: 0, ignored: 5 });
+    assert.equal(plain(h.call('importExemptions', { requesterId: 'b1', entries: undefined })).code, 'invalid');
+});
+
+test('renouvelants : colonnes de texte et onglet créé à la première utilisation', () => {
+    const h = fresh();
+    exempt(h, 'b1', { userId: 't1', exempt: true });
+    const text = h.formats('ExemptionsQuota').filter(([, f]) => f === '@').map(([range]) => range);
+    for (const col of ['A:A', 'B:B', 'C:C', 'D:D', 'E:E', 'F:F']) assert.ok(text.includes(col), col);
+});

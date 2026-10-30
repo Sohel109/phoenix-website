@@ -1812,6 +1812,14 @@ var MANUAL_REASON_MIN = 8;
 var MANUAL_REASON_MAX = 300;
 var MANUAL_NAME_MAX = 60;
 var MANUAL_DUPLICATE_WINDOW_MS = 120 * 1000;
+var MANUAL_IMPORT_MAX = 500;
+var EXEMPTIONS_SHEET = {
+  name: 'ExemptionsQuota',
+  headers: ['userId', 'userName', 'grantedBy', 'grantedAt', 'year', 'note'],
+  textColumns: ['A', 'B', 'C', 'D', 'E', 'F']
+};
+var EXEMPTION_NOTE_MAX = 200;
+var EXEMPTION_YEAR_MAX = 20;
 
 function getManualHoursSheet() {
   return getGouterSheet(MANUAL_HOURS_SHEET);
@@ -1915,7 +1923,10 @@ function handleHoursAction(action, postData) {
     if (action === 'getManualHours') return manualHoursGet(ctx);
     if (action === 'addManualHours') return manualHoursAdd(ctx, postData);
     if (action === 'deleteManualHours') return manualHoursDelete(ctx, postData);
-    return voteFail('invalid', 'Pas encore disponible.');
+    if (action === 'importManualHours') return manualHoursImport(ctx, postData);
+    if (action === 'getExemptions') return exemptionsGet(ctx);
+    if (action === 'setExemption') return exemptionsSet(ctx, postData);
+    return exemptionsImport(ctx, postData);
   } catch (err) {
     return voteFail('error', err.toString());
   } finally {
@@ -2008,6 +2019,125 @@ function manualHoursDelete(ctx, postData) {
   if (!allowed) return voteFail('forbidden', 'Vous ne pouvez supprimer que vos propres attributions, pour vos projets.');
   sheet.deleteRow(target.sheetRow);
   return { success: true };
+}
+
+// Date ISO valide telle quelle, sinon l'instant présent.
+function isoOrNow(value) {
+  var time = new Date(String(value === null || value === undefined ? '' : value)).getTime();
+  return new Date(isNaN(time) ? nowMs() : time).toISOString();
+}
+
+// Identifiant de membre accepté à l'import : lettres, chiffres, tiret et souligné (pas de formule, pas d'espace).
+function isImportableUserId(value) {
+  return /^[A-Za-z0-9_-]{1,80}$/.test(String(value === null || value === undefined ? '' : value));
+}
+
+// Reprend dans le Sheet les heures que le Bureau avait saisies dans son navigateur (jusqu'ici jamais envoyées au serveur).
+function manualHoursImport(ctx, postData) {
+  if (ctx.user.role !== 'bureau') return voteFail('forbidden', "Seul le Bureau peut importer des heures.");
+  var entries = postData.entries;
+  if (!Array.isArray(entries) || entries.length > MANUAL_IMPORT_MAX) {
+    return voteFail('invalid', 'Liste invalide (' + MANUAL_IMPORT_MAX + ' entrées au plus).');
+  }
+  var sheet = getManualHoursSheet();
+  var known = {};
+  readManualHours(sheet).forEach(function(e) { known[e.id] = true; });
+  var imported = 0;
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    if (!entry || typeof entry !== 'object') continue;
+    var id = String(entry.id === null || entry.id === undefined ? '' : entry.id);
+    var fields = validateManualHourFields(entry);
+    var name = cleanFreeText(entry.userName, MANUAL_NAME_MAX);
+    if (!/^[A-Za-z][A-Za-z0-9_-]{2,60}$/.test(id) || known[id] || fields.error || !isImportableUserId(entry.userId) || !name) continue;
+    sheet.appendRow([id, String(entry.userId), name, fields.hours, fields.reason, cleanFreeText(entry.grantedBy, MANUAL_NAME_MAX), '',
+      fields.projectId === null ? '' : fields.projectId, isoOrNow(entry.createdAt)]);
+    known[id] = true;
+    imported++;
+  }
+  return { success: true, imported: imported, ignored: entries.length - imported };
+}
+
+function getExemptionsSheet() {
+  return getGouterSheet(EXEMPTIONS_SHEET);
+}
+
+function readExemptions(sheet) {
+  return readVoteRows(sheet).map(function(r) {
+    var c = r.cells;
+    return {
+      sheetRow: r.sheetRow,
+      userId: String(c[0]),
+      userName: String(c[1]),
+      grantedBy: c[2] === null || c[2] === undefined ? '' : String(c[2]),
+      grantedAt: c[3] === null || c[3] === undefined ? '' : String(c[3]),
+      year: c[4] === null || c[4] === undefined ? '' : String(c[4]),
+      note: c[5] === null || c[5] === undefined ? '' : String(c[5])
+    };
+  });
+}
+
+function exemptionsGet(ctx) {
+  var user = ctx.user;
+  var all = readExemptions(getExemptionsSheet());
+  var visible = all.filter(function(e) {
+    return user.role === 'bureau' || user.role === 'chef_projet' || e.userId === user.id;
+  });
+  return {
+    success: true,
+    exemptions: visible.map(function(e) {
+      return { userId: e.userId, userName: e.userName, grantedBy: e.grantedBy, grantedAt: e.grantedAt, year: e.year, note: e.note };
+    })
+  };
+}
+
+function exemptionsSet(ctx, postData) {
+  if (ctx.user.role !== 'bureau') return voteFail('forbidden', "Seul le Bureau peut modifier les membres renouvelants.");
+  if (postData.exempt !== true && postData.exempt !== false) return voteFail('invalid', 'Valeur « exempt » manquante.');
+  var userId = String(postData.userId === null || postData.userId === undefined ? '' : postData.userId).trim();
+  var name = '';
+  var listed = findVoteUser(ctx.users, userId);
+  if (listed) {
+    name = listed.name;
+  } else if (/^custom-[a-z0-9-]{1,60}$/.test(userId)) {
+    name = cleanFreeText(postData.userName, MANUAL_NAME_MAX);
+  }
+  if (!name) return voteFail('invalid', 'Membre introuvable.');
+
+  var sheet = getExemptionsSheet();
+  var existing = readExemptions(sheet).filter(function(e) { return e.userId === userId; });
+  if (postData.exempt === true) {
+    if (existing.length === 0) {
+      sheet.appendRow([userId, name, ctx.user.name, new Date(nowMs()).toISOString(),
+        cleanFreeText(postData.year, EXEMPTION_YEAR_MAX), cleanFreeText(postData.note, EXEMPTION_NOTE_MAX)]);
+    }
+  } else {
+    for (var i = existing.length - 1; i >= 0; i--) sheet.deleteRow(existing[i].sheetRow);
+  }
+  return { success: true };
+}
+
+function exemptionsImport(ctx, postData) {
+  if (ctx.user.role !== 'bureau') return voteFail('forbidden', "Seul le Bureau peut importer les membres renouvelants.");
+  var entries = postData.entries;
+  if (!Array.isArray(entries) || entries.length > MANUAL_IMPORT_MAX) {
+    return voteFail('invalid', 'Liste invalide (' + MANUAL_IMPORT_MAX + ' entrées au plus).');
+  }
+  var sheet = getExemptionsSheet();
+  var known = {};
+  readExemptions(sheet).forEach(function(e) { known[e.userId] = true; });
+  var imported = 0;
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    if (!entry || typeof entry !== 'object') continue;
+    var name = cleanFreeText(entry.userName, MANUAL_NAME_MAX);
+    if (!isImportableUserId(entry.userId) || known[String(entry.userId)] || !name) continue;
+    sheet.appendRow([String(entry.userId), name, cleanFreeText(entry.grantedBy, MANUAL_NAME_MAX), isoOrNow(entry.grantedAt),
+      cleanFreeText(entry.year, EXEMPTION_YEAR_MAX), cleanFreeText(entry.note, EXEMPTION_NOTE_MAX)]);
+    known[String(entry.userId)] = true;
+    imported++;
+  }
+  return { success: true, imported: imported, ignored: entries.length - imported };
 }
 
 // ==========================================
