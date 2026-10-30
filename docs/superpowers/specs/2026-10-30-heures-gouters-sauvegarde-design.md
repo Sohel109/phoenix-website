@@ -17,7 +17,7 @@ Quatre chantiers liés par le même script Apps Script :
 
 - **Stockage :** onglet `HeuresManuelles` (créé automatiquement), colonnes `id`, `userId`, `userName`, `hours`, `reason`, `grantedBy`, `grantedById`, `projectId`, `createdAt`. `projectId` vide = « Mission Générale / Bureau ». Les colonnes de texte sont créées au format texte. `id` commence par une lettre (`h` + 7 caractères hexadécimaux).
 - **Bureau :** comme aujourd'hui. Il attribue à n'importe quel membre de la liste ou à un nom hors liste (`userId` de la forme `custom-...`), pour n'importe quel projet ou la mission générale, et supprime n'importe quelle attribution.
-- **Chef de projet :** attribue uniquement pour un projet de la colonne J « Projets enfants » du Sheet (remplie par le Bureau ; la colonne F ne donne aucun droit car chaque membre peut la modifier), uniquement à un membre de la liste qui a au moins une réservation (statut différent de `annule`) sur un créneau de ce projet, relevée dans l'onglet `Bookings` (le numéro du projet est dans le `slotId`, `slot-<projet>-<jour>`). Pas de mission générale, pas de nom hors liste. Il supprime uniquement les attributions dont il est l'auteur (`grantedById`) sur un de ses projets.
+- **Chef de projet :** attribue uniquement pour un projet de la colonne J « Projets enfants » du Sheet (remplie par le Bureau ; la colonne F ne donne aucun droit car chaque membre peut la modifier), uniquement à un membre de la liste qui a au moins une réservation (statut différent de `annule`) sur un créneau de ce projet, relevée dans l'onglet `Bookings` (le numéro du projet est dans le `slotId`, `slot-<projet>-<jour>`). Pas de mission générale, pas de nom hors liste, et jamais pour lui-même (les heures comptent pour l'attestation). Il supprime uniquement les attributions dont il est l'auteur (`grantedById`) sur un de ses projets.
 - **Tuteur :** aucune écriture.
 - **Lecture :** chaque membre reçoit ses propres attributions ; un chef de projet reçoit en plus celles dont le `projectId` est un de ses projets ; le Bureau reçoit tout.
 - **Contrôles serveur :** jeton de session valide avant toute lecture ou écriture (`unauthenticated` sinon) ; rôle et projets lus dans la feuille des utilisateurs, jamais dans la requête ; `hours` nombre fini, de 0,5 à 50, par pas de 0,5 ; justification de 8 à 300 caractères après nettoyage (`cleanFreeText`) ; nom hors liste nettoyé et limité à 60 caractères ; `projectId` entre 1 et 9 ; membre inexistant refusé.
@@ -47,6 +47,7 @@ Quatre chantiers liés par le même script Apps Script :
 ### Sauvegarde
 
 - `sauvegarderLeSheet()` copie le Sheet dans le dossier Drive « Sauvegardes Phoenix » (créé si besoin), copie nommée `Sauvegarde Phoenix AAAA-MM-JJ`, puis ne garde que les 8 copies les plus récentes de ce dossier (les plus anciennes sont mises à la corbeille). Elle ne touche à aucun fichier hors de ce dossier.
+- Les éléments à la corbeille (copies, dossier) sont ignorés : Drive les liste encore.
 - `installerSauvegardeHebdo()` crée le déclencheur hebdomadaire (lundi, entre 3 h et 4 h), après avoir supprimé un éventuel déclencheur existant pour la même fonction (on peut la lancer plusieurs fois sans doublon). À lancer une fois à la main : Google demande alors l'autorisation d'accéder à Drive.
 
 ## Hors périmètre (YAGNI)

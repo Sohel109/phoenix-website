@@ -2001,6 +2001,8 @@ function manualHoursAdd(ctx, postData) {
   }
 
   if (user.role === 'chef_projet') {
+    // Les heures comptent pour l'attestation : un chef de projet ne se les attribue pas à lui-même.
+    if (userId === user.id) return voteFail('forbidden', "Vous ne pouvez pas vous attribuer des heures à vous-même.");
     if (fields.projectId === null || !canManageProject(user, fields.projectId)) {
       return voteFail('forbidden', 'Vous ne pouvez attribuer des heures que pour vos projets.');
     }
@@ -2177,15 +2179,22 @@ var BACKUP_PREFIX = 'Sauvegarde Phoenix ';
 var BACKUP_KEEP = 8;
 
 function sauvegarderLeSheet() {
+  // Drive liste aussi les éléments mis à la corbeille : on les ignore, sinon une copie ou un dossier jeté à la main
+  // compterait comme une sauvegarde valide (et serait effacé définitivement au bout de 30 jours).
   var folders = DriveApp.getFoldersByName(BACKUP_FOLDER_NAME);
-  var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(BACKUP_FOLDER_NAME);
+  var folder = null;
+  while (folders.hasNext() && !folder) {
+    var candidate = folders.next();
+    if (!candidate.isTrashed()) folder = candidate;
+  }
+  if (!folder) folder = DriveApp.createFolder(BACKUP_FOLDER_NAME);
   var name = BACKUP_PREFIX + todayKeyParis();
   var pattern = /^Sauvegarde Phoenix \d{4}-\d{2}-\d{2}$/;
   var copies = [];
   var files = folder.getFiles();
   while (files.hasNext()) {
     var file = files.next();
-    if (pattern.test(file.getName())) copies.push(file);
+    if (!file.isTrashed() && pattern.test(file.getName())) copies.push(file);
   }
   var alreadyDone = copies.some(function(file) { return file.getName() === name; });
   if (!alreadyDone) {

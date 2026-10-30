@@ -7,6 +7,7 @@ import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate } from '../../data/planningData';
 import { AttestationModal } from '../../components/planning/AttestationModal';
+import { HoursLoadBanner } from '../../components/planning/HoursLoadBanner';
 import { getAcademicYear } from '../../utils/academicYear';
 
 interface StatCardProps {
@@ -289,6 +290,7 @@ export function PlanningCompte() {
 
     return (
         <PlanningLayout title="Mon compte">
+            <HoursLoadBanner />
             {/* Profile header card */}
             <motion.div
                 initial={{ opacity: 0, y: -10 }}

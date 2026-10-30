@@ -7,9 +7,10 @@ import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
 import { PlanningSkeletonList } from '../../components/planning/PlanningSkeletonCard';
 import { eligibleMemberIds, canDeleteManualHour } from '../../data/manualHoursRules';
+import { HoursLoadBanner } from '../../components/planning/HoursLoadBanner';
 
 export function PlanningRecap() {
-    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption, hoursAccess, hoursError, hoursLoadError, pendingLocalHours, importLocalHours } = usePlanning();
+    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption, hoursAccess, hoursError, pendingLocalHours, importLocalHours } = usePlanning();
     const [filterType, setFilterType] = useState<'week' | 'month' | 'year' | 'all'>('all');
     const [selectedWeek, setSelectedWeek] = useState(currentWeekKey);
     const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
@@ -44,7 +45,8 @@ export function PlanningRecap() {
     const manageableProjects = hoursAccess.manageableProjects;
     const canGrantHours = isBureau || (isChef && manageableProjects.length > 0);
     // Projets de ce chef de projet où le membre a une réservation : lui seul peut y attribuer des heures.
-    const chefProjectsFor = (memberId: string) => (isChef ? manageableProjects.filter(pid => eligibleMemberIds(bookings, pid).has(memberId)) : []);
+    // Jamais pour soi-même : le serveur le refuse aussi.
+    const chefProjectsFor = (memberId: string) => (isChef && memberId !== currentUser?.id ? manageableProjects.filter(pid => eligibleMemberIds(bookings, pid).has(memberId)) : []);
 
     // Ref sur l'input de recherche (pour les raccourcis clavier)
     const searchRef = useRef<HTMLInputElement>(null);
@@ -217,7 +219,7 @@ export function PlanningRecap() {
             : selectedManualProject === 'general' ? new Set<string>() : eligibleMemberIds(bookings, Number(selectedManualProject));
 
         return Array.from(map.entries())
-            .filter(([id]) => allowed === null || allowed.has(id))
+            .filter(([id]) => allowed === null || (allowed.has(id) && id !== currentUser?.id))
             .map(([id, name]) => ({ id, name }))
             .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
     }, [allUsers, bookings, currentUser, manualHours, isBureau, selectedManualProject]);
@@ -406,12 +408,7 @@ export function PlanningRecap() {
                 </div>
             )}
 
-            {hoursLoadError && (
-                <div role="status" className="mb-4 px-4 py-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs flex items-center gap-2.5">
-                    <AlertCircle size={16} className="shrink-0" />
-                    <span>{hoursLoadError}</span>
-                </div>
-            )}
+            <HoursLoadBanner />
 
             {isBureau && (pendingLocalHours.hours > 0 || pendingLocalHours.exemptions > 0) && (
                 <div className="mb-4 px-4 py-3 rounded-2xl bg-[#2D0A32] border border-[#EC602B]/60 text-[#ECDDFD] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">

@@ -76,3 +76,40 @@ test('installerSauvegardeHebdo fait aussi une première copie, pour que l autori
     h.ctx.installerSauvegardeHebdo();
     assert.deepEqual(names(h), ['Sauvegarde Phoenix 2026-10-30']);
 });
+
+// ─── Relecture finale : les éléments à la corbeille sont listés par Drive, le script doit les ignorer ──────────
+
+test('une copie du jour mise à la corbeille à la main est refaite', () => {
+    const h = fresh();
+    h.ctx.sauvegarderLeSheet();
+    h.drive.folders.get(FOLDER).files[0].trashed = true;
+    h.ctx.sauvegarderLeSheet();
+    assert.deepEqual(names(h), ['Sauvegarde Phoenix 2026-10-30']);
+});
+
+test('une copie à la corbeille n occupe pas une des 8 places', () => {
+    const h = fresh();
+    for (let d = 1; d <= 8; d++) {
+        h.setNow(dayKey(d));
+        h.ctx.sauvegarderLeSheet();
+    }
+    h.drive.folders.get(FOLDER).files.find((f) => f.name === `Sauvegarde Phoenix ${dayKey(8)}`).trashed = true;
+    h.setNow(dayKey(9));
+    h.ctx.sauvegarderLeSheet();
+    assert.equal(names(h).length, 8);
+    assert.ok(names(h).includes(`Sauvegarde Phoenix ${dayKey(9)}`));
+    assert.ok(names(h).includes(`Sauvegarde Phoenix ${dayKey(1)}`));
+});
+
+test('un dossier de sauvegardes mis à la corbeille n est pas réutilisé : un nouveau dossier reçoit la copie', () => {
+    const h = fresh();
+    h.ctx.sauvegarderLeSheet();
+    const old = h.drive.folders.get(FOLDER);
+    old.trashed = true;
+    h.setNow('2026-11-02');
+    h.ctx.sauvegarderLeSheet();
+    const current = h.drive.folders.get(FOLDER);
+    assert.notEqual(current, old);
+    assert.deepEqual(current.files.filter((f) => !f.trashed).map((f) => f.name), ['Sauvegarde Phoenix 2026-11-02']);
+    assert.equal(old.files.length, 1);
+});

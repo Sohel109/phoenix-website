@@ -100,14 +100,15 @@ export function loadScript(options) {
     const mailbox = [];
     const alerts = [];
     const ss = new FakeSpreadsheet(options);
-    // Faux Drive : dossiers par nom, fichiers hors dossier (jamais touchés par le script), corbeille simulée par `trashed`.
-    const drive = { folders: new Map(), outsideFiles: [{ name: 'Sauvegarde Phoenix 2020-01-01', trashed: false }] };
+    // Faux Drive : dossiers par nom, fichiers hors dossier (jamais touchés par le script). Comme le vrai DriveApp, les listes
+    // renvoient aussi les éléments mis à la corbeille (`trashed`) : c'est au script de les ignorer avec isTrashed().
+    const drive = { folders: new Map(), staleFolders: [], outsideFiles: [{ name: 'Sauvegarde Phoenix 2020-01-01', trashed: false }] };
     const iterator = (list) => { let i = 0; return { hasNext: () => i < list.length, next: () => list[i++] }; };
-    const fakeFile = (entry) => ({ getName: () => entry.name, setTrashed: (value) => { entry.trashed = value; } });
-    const fakeFolder = (name) => ({
-        getFiles: () => iterator(drive.folders.get(name).files.filter((f) => !f.trashed).map(fakeFile)),
-        addCopy: (copyName) => { const entry = { name: copyName, trashed: false }; drive.folders.get(name).files.push(entry); return fakeFile(entry); },
-        folderName: name,
+    const fakeFile = (entry) => ({ getName: () => entry.name, isTrashed: () => entry.trashed, setTrashed: (value) => { entry.trashed = value; } });
+    const fakeFolder = (entry) => ({
+        isTrashed: () => Boolean(entry.trashed),
+        getFiles: () => iterator(entry.files.map(fakeFile)),
+        addCopy: (copyName) => { const file = { name: copyName, trashed: false }; entry.files.push(file); return fakeFile(file); },
     });
     const triggers = [];
     const fakeTrigger = (entry) => ({ getHandlerFunction: () => entry.handler, entry });
@@ -118,8 +119,14 @@ export function loadScript(options) {
         SpreadsheetApp: { getActiveSpreadsheet: () => ss, getUi: () => ({ alert: (m) => alerts.push(m) }) },
         Session: { getScriptTimeZone: () => 'Europe/Paris' },
         DriveApp: {
-            getFoldersByName: (name) => iterator(drive.folders.has(name) ? [fakeFolder(name)] : []),
-            createFolder: (name) => { drive.folders.set(name, { files: [] }); return fakeFolder(name); },
+            getFoldersByName: (name) => iterator([...(drive.folders.has(name) ? [drive.folders.get(name)] : []), ...drive.staleFolders.filter((f) => f.name === name)].map(fakeFolder)),
+            createFolder: (name) => {
+                // Un dossier du même nom resté à la corbeille reste listé à côté du nouveau.
+                if (drive.folders.has(name)) drive.staleFolders.push(drive.folders.get(name));
+                const entry = { name, files: [], trashed: false };
+                drive.folders.set(name, entry);
+                return fakeFolder(entry);
+            },
             getFileById: (id) => {
                 if (id !== ss.getId()) throw new Error(`Fichier inconnu : ${id}`);
                 return { makeCopy: (copyName, folder) => folder.addCopy(copyName) };

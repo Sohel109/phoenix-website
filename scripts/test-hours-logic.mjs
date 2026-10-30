@@ -343,3 +343,16 @@ test('renouvelants : colonnes de texte et onglet créé à la première utilisat
     const text = h.formats('ExemptionsQuota').filter(([, f]) => f === '@').map(([range]) => range);
     for (const col of ['A:A', 'B:B', 'C:C', 'D:D', 'E:E', 'F:F']) assert.ok(text.includes(col), col);
 });
+
+// ─── Relecture finale : pas d'auto-attribution pour un chef de projet ─────────
+
+test('un chef de projet ne peut pas s attribuer des heures à lui-même, même avec une réservation sur son projet', () => {
+    const h = fresh();
+    book(h, 'c4', 'slot-4-lun');
+    assert.equal(add(h, 'c4', { userId: 'c4', projectId: 4, hours: 50 }).code, 'forbidden');
+    assert.equal(dataRows(h).length, 0);
+    // Le Bureau peut en attribuer à un chef de projet ; un chef de projet à un membre du Bureau qui a réservé sur son projet.
+    assert.equal(add(h, 'b1', { userId: 'c4', projectId: 4 }).success, true);
+    book(h, 'b1', 'slot-4-mar');
+    assert.equal(add(h, 'c4', { userId: 'b1', projectId: 4, reason: 'Aide à la préparation du goûter' }).success, true);
+});

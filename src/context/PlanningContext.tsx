@@ -87,6 +87,8 @@ interface PlanningContextType {
     hoursError: string | null;
     /** Message si les heures manuelles n'ont pas pu être lues (script pas à jour, réseau, session expirée), sinon null. */
     hoursLoadError: string | null;
+    /** Code de l'erreur de lecture : « unauthenticated » quand la session est expirée. */
+    hoursLoadCode: string | null;
     /** Entrées encore enregistrées seulement dans ce navigateur (ancien stockage), à envoyer au serveur par le Bureau. */
     pendingLocalHours: { hours: number; exemptions: number };
     importLocalHours: () => Promise<{ ok: boolean; message: string }>;
@@ -127,6 +129,8 @@ interface HoursState {
     exemptions: QuotaExemption[];
     access: { isBureau: boolean; manageableProjects: number[] };
     loadError: string | null;
+    /** Code d'erreur du script (par exemple « unauthenticated » pour une session expirée). */
+    loadCode: string | null;
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -235,6 +239,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
                 ? { isBureau: hoursResult.data.isBureau, manageableProjects: hoursResult.data.manageableProjects }
                 : NO_HOURS_ACCESS,
             loadError: !hoursResult.ok ? hoursResult.message : !exemptionsResult.ok ? exemptionsResult.message : null,
+            loadCode: !hoursResult.ok ? (hoursResult.code ?? null) : !exemptionsResult.ok ? (exemptionsResult.code ?? null) : null,
         });
     }, [hoursUserId]);
 
@@ -264,6 +269,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const exemptions = currentHours?.exemptions ?? EMPTY_EXEMPTIONS;
     const hoursAccess = currentHours?.access ?? NO_HOURS_ACCESS;
     const hoursLoadError = currentHours?.loadError ?? null;
+    const hoursLoadCode = currentHours?.loadCode ?? null;
 
     const pendingLocalHours = useMemo(
         () => (localImportDone || !hoursUserId
@@ -671,7 +677,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,
             refreshPlanningData, changePassword, isPending,
-            manualHours, addManualHours, deleteManualHours, hoursAccess, hoursError, hoursLoadError, pendingLocalHours, importLocalHours,
+            manualHours, addManualHours, deleteManualHours, hoursAccess, hoursError, hoursLoadError, hoursLoadCode, pendingLocalHours, importLocalHours,
             exemptions, toggleQuotaExemption, isQuotaExempt,
             isEditModeActive, setEditModeActive, toggleEditMode
         }}>
