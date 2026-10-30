@@ -2167,6 +2167,52 @@ function exemptionsImport(ctx, postData) {
 }
 
 // ==========================================
+// SAUVEGARDE HEBDOMADAIRE DU SHEET
+// ==========================================
+// Une copie du Sheet est déposée dans le dossier Drive « Sauvegardes Phoenix » (créé au besoin). Seules les 8 copies les
+// plus récentes de ce dossier sont gardées : les plus anciennes vont à la corbeille. Rien d'autre n'est jamais touché.
+
+var BACKUP_FOLDER_NAME = 'Sauvegardes Phoenix';
+var BACKUP_PREFIX = 'Sauvegarde Phoenix ';
+var BACKUP_KEEP = 8;
+
+function sauvegarderLeSheet() {
+  var folders = DriveApp.getFoldersByName(BACKUP_FOLDER_NAME);
+  var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(BACKUP_FOLDER_NAME);
+  var name = BACKUP_PREFIX + todayKeyParis();
+  var pattern = /^Sauvegarde Phoenix \d{4}-\d{2}-\d{2}$/;
+  var copies = [];
+  var files = folder.getFiles();
+  while (files.hasNext()) {
+    var file = files.next();
+    if (pattern.test(file.getName())) copies.push(file);
+  }
+  var alreadyDone = copies.some(function(file) { return file.getName() === name; });
+  if (!alreadyDone) {
+    copies.push(DriveApp.getFileById(SpreadsheetApp.getActiveSpreadsheet().getId()).makeCopy(name, folder));
+  }
+  // Le tri se fait sur le nom (la date y figure) : une copie lancée à la main avec une autre date ne dérègle pas l'ordre.
+  copies.sort(function(a, b) { return a.getName() < b.getName() ? 1 : (a.getName() > b.getName() ? -1 : 0); });
+  for (var i = BACKUP_KEEP; i < copies.length; i++) copies[i].setTrashed(true);
+  return name;
+}
+
+/**
+ * À exécuter UNE FOIS dans l'éditeur Apps Script : planifie la sauvegarde chaque lundi (entre 3 h et 4 h) et en fait
+ * une première tout de suite, ce qui déclenche la demande d'autorisation d'accès à Drive. Peut être relancée sans risque :
+ * un éventuel ancien déclencheur de la même fonction est remplacé, les autres déclencheurs ne sont pas touchés.
+ */
+function installerSauvegardeHebdo() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'sauvegarderLeSheet') ScriptApp.deleteTrigger(triggers[i]);
+  }
+  ScriptApp.newTrigger('sauvegarderLeSheet').timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(3).create();
+  var name = sauvegarderLeSheet();
+  Logger.log('Sauvegarde hebdomadaire installée (lundi, vers 3 h). Première copie : ' + name);
+}
+
+// ==========================================
 // 4. ENVOI DE MAIL DYNAMIQUE SUR CASE À COCHER
 // ==========================================
 // FONCTION D'ENVOI D'E-MAIL PAR CASE À COCHER

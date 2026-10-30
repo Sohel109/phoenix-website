@@ -79,6 +79,7 @@ class FakeSpreadsheet {
         for (const u of options.users) this.users.appendRow([u.id, u.name, u.login ?? '', u.password ?? '', u.role ?? '', u.projects ?? '', u.email ?? '', '', '', u.childProjects ?? '']);
         this.sheets = new Map();
     }
+    getId() { return 'sheet-id-1'; }
     getSheets() { return [this.users, ...this.sheets.values()]; }
     getActiveSheet() { return this.users; }
     getSheetByName(name) { return this.sheets.get(name) ?? null; }
@@ -99,12 +100,42 @@ export function loadScript(options) {
     const mailbox = [];
     const alerts = [];
     const ss = new FakeSpreadsheet(options);
+    // Faux Drive : dossiers par nom, fichiers hors dossier (jamais touchés par le script), corbeille simulée par `trashed`.
+    const drive = { folders: new Map(), outsideFiles: [{ name: 'Sauvegarde Phoenix 2020-01-01', trashed: false }] };
+    const iterator = (list) => { let i = 0; return { hasNext: () => i < list.length, next: () => list[i++] }; };
+    const fakeFile = (entry) => ({ getName: () => entry.name, setTrashed: (value) => { entry.trashed = value; } });
+    const fakeFolder = (name) => ({
+        getFiles: () => iterator(drive.folders.get(name).files.filter((f) => !f.trashed).map(fakeFile)),
+        addCopy: (copyName) => { const entry = { name: copyName, trashed: false }; drive.folders.get(name).files.push(entry); return fakeFile(entry); },
+        folderName: name,
+    });
+    const triggers = [];
+    const fakeTrigger = (entry) => ({ getHandlerFunction: () => entry.handler, entry });
     const sandbox = {
         console,
         JSON,
         Logger: { log() {} },
         SpreadsheetApp: { getActiveSpreadsheet: () => ss, getUi: () => ({ alert: (m) => alerts.push(m) }) },
         Session: { getScriptTimeZone: () => 'Europe/Paris' },
+        DriveApp: {
+            getFoldersByName: (name) => iterator(drive.folders.has(name) ? [fakeFolder(name)] : []),
+            createFolder: (name) => { drive.folders.set(name, { files: [] }); return fakeFolder(name); },
+            getFileById: (id) => {
+                if (id !== ss.getId()) throw new Error(`Fichier inconnu : ${id}`);
+                return { makeCopy: (copyName, folder) => folder.addCopy(copyName) };
+            },
+        },
+        ScriptApp: {
+            WeekDay: { MONDAY: 'MONDAY' },
+            getProjectTriggers: () => triggers.map(fakeTrigger),
+            deleteTrigger: (trigger) => { triggers.splice(triggers.indexOf(trigger.entry), 1); },
+            newTrigger: (handler) => ({
+                timeBased() { return this; },
+                onWeekDay(day) { this.day = day; return this; },
+                atHour(hour) { this.hour = hour; return this; },
+                create() { triggers.push({ handler, weekDay: this.day, hour: this.hour }); },
+            }),
+        },
         GmailApp: { sendEmail: (to, subject) => { mailbox.push({ to, subject }); }, getAliases: () => [] },
         MailApp: { sendEmail: (m) => { mailbox.push({ to: m.to, subject: m.subject }); }, getRemainingDailyQuota: () => 100 },
         // Cache de script : les valeurs expirent selon l'horloge simulée (state.nowMs).
@@ -141,6 +172,8 @@ export function loadScript(options) {
 
     return {
         ctx,
+        drive,
+        triggers,
         setNow(key) { state.now = key; },
         advanceMs(ms) { state.nowMs += ms; },
         mailbox,

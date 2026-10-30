@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "test:vote": "node --experimental-strip-types --no-warnings --test scripts/test-vote-logic.mjs scripts/test-vote-client.mjs scripts/test-mail-dedup.mjs scripts/test-password-hash.mjs scripts/test-children-logic.mjs scripts/test-children-client.mjs scripts/test-gouters-logic.mjs scripts/test-gouters-client.mjs scripts/test-hours-logic.mjs"
+    "test:vote": "node --experimental-strip-types --no-warnings --test scripts/test-vote-logic.mjs scripts/test-vote-client.mjs scripts/test-mail-dedup.mjs scripts/test-password-hash.mjs scripts/test-children-logic.mjs scripts/test-children-client.mjs scripts/test-gouters-logic.mjs scripts/test-gouters-client.mjs scripts/test-hours-logic.mjs scripts/test-backup.mjs"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.21",
