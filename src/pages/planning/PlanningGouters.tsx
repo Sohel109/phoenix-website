@@ -180,7 +180,7 @@ export function PlanningGouters() {
                                     const result = await addGoutersApi(currentUser.id, token, projectId, dates, note);
                                     if (result.success) {
                                         remaining = result.ignored;
-                                        setNotice(describeAddedDates(result.added, result.ignored));
+                                        setNotice(describeAddedDates(result.added, result.ignored, result.reasons));
                                     }
                                     return result;
                                 });

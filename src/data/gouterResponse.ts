@@ -57,8 +57,10 @@ export function formatSlotHours(hour: number): string {
 }
 
 /** Phrase affichée après un ajout de dates : combien ont été ajoutées, et quelles lignes ont été écartées. */
-export function describeAddedDates(added: number, ignored: string[]): string {
+export function describeAddedDates(added: number, ignored: string[], reasons: string[] = []): string {
     const done = added === 0 ? 'Aucune date ajoutée.' : `${added} date${added > 1 ? 's' : ''} ajoutée${added > 1 ? 's' : ''}.`;
     if (ignored.length === 0) return done;
+    // Le script dit pour chaque ligne pourquoi elle est écartée ; sans cela (script plus ancien), on donne la liste des causes possibles.
+    if (reasons.length > 0) return `${done} Lignes ignorées : ${reasons.join(' ; ')}.`;
     return `${done} Lignes ignorées (format invalide, date passée, déjà prise ou après le 31 août) : ${ignored.join(', ')}.`;
 }

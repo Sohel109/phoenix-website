@@ -461,3 +461,50 @@ test('moveGouter : un goûter passé, annulé ou inconnu est refusé', () => {
     assert.equal(move(h, 'c4', past, '2026-11-28').code, 'invalid');
     assert.equal(h.sheet('Gouters')[1][2], '2026-11-14');
 });
+
+// ─── Dates plus faciles à saisir, erreurs précises ────────────────────────────
+
+test('une date sans zéro (2027-2-5) est acceptée et enregistrée comme 2027-02-05, sans doublon avec sa forme complète', () => {
+    const h = fresh();
+    const out = addG(h, 'c4', 4, ['2027-2-5', '2027-02-05', '2026-11-4']);
+    assert.equal(out.success, true);
+    assert.equal(out.added, 2);
+    assert.deepEqual(out.ignored, ['2027-02-05']);
+    assert.deepEqual(list(h, 't1').gouters.map((g) => g.date), ['2026-11-04', '2027-02-05']);
+    assert.equal(addG(h, 'c4', 4, ['2027-2-5']).added, 0);
+});
+
+test('chaque date écartée est expliquée, dans l ordre saisi', () => {
+    const h = fresh();
+    const out = addG(h, 'c4', 4, ['2026-11-14', '21/11/2026', '2026-10-01', '2026-2-30', '2027-09-15', '2026-11-14']);
+    assert.equal(out.added, 1);
+    assert.deepEqual(out.reasons, [
+        '21/11/2026 : format invalide (écrivez par exemple 2026-11-14)',
+        '2026-10-01 : date passée',
+        '2026-2-30 : date inexistante',
+        "2027-09-15 : après le 31 août (fin de l'année scolaire)",
+        '2026-11-14 : en double dans votre liste',
+    ]);
+    assert.deepEqual(addG(h, 'c4', 4, ['2026-11-14']).reasons, ['2026-11-14 : déjà prise pour ce projet']);
+});
+
+test('aucune date valide : le message dit quelle ligne est refusée et pourquoi', () => {
+    const h = fresh();
+    const out = addG(h, 'c4', 4, ['2026-10-11', '2026-2-12']);
+    assert.equal(out.code, 'invalid');
+    assert.match(out.message, /2026-10-11 : date passée/);
+    assert.match(out.message, /2026-2-12 : date passée/);
+    assert.equal(addG(h, 'c4', 4, []).code, 'invalid');
+    assert.equal(h.sheet('Gouters')?.length ?? 1, 1);
+});
+
+test('moveGouter : une date sans zéro est acceptée, un refus dit pourquoi', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    addG(h, 'c4', 4, ['2026-12-12']);
+    assert.equal(move(h, 'c4', id, '2027-2-5').success, true);
+    assert.equal(dateOf(h, id), '2027-02-05');
+    assert.match(move(h, 'c4', id, '2026-10-01').message, /date passée/);
+    assert.match(move(h, 'c4', id, '12 décembre').message, /format invalide/);
+    assert.match(move(h, 'c4', id, '2026-12-12').message, /déjà un goûter à cette date/);
+});

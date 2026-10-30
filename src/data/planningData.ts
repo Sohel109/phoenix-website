@@ -574,10 +574,11 @@ export async function addGoutersApi(
     projectId: number,
     dates: string[],
     note: string
-): Promise<{ success: boolean; message: string; code?: string; added: number; ignored: string[] }> {
+): Promise<{ success: boolean; message: string; code?: string; added: number; ignored: string[]; reasons: string[] }> {
     const { success, message, code, data } = await postGouterAction({ action: 'addGouters', requesterId, token, projectId, dates, note });
     const ignored = Array.isArray(data?.ignored) ? (data.ignored as unknown[]).map(String) : [];
-    return { success, message, code, added: typeof data?.added === 'number' ? data.added : 0, ignored };
+    const reasons = Array.isArray(data?.reasons) ? (data.reasons as unknown[]).map(String) : [];
+    return { success, message, code, added: typeof data?.added === 'number' ? data.added : 0, ignored, reasons };
 }
 
 export async function cancelGouterApi(requesterId: string, token: string, gouterId: string): GouterWriteResult {

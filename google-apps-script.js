@@ -1679,6 +1679,22 @@ function goutersGet(ctx) {
   };
 }
 
+// « 2026-2-5 » est lu comme « 2026-02-05 » : le zéro n'est pas obligatoire. Toute autre forme est rendue telle quelle.
+function normalizeDateLine(line) {
+  var m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(line);
+  if (!m) return line;
+  return m[1] + '-' + (m[2].length === 1 ? '0' + m[2] : m[2]) + '-' + (m[3].length === 1 ? '0' + m[3] : m[3]);
+}
+
+// Pourquoi une date (déjà normalisée) est refusée, en français pour l'utilisateur ; '' si elle est acceptable.
+function gouterDateProblem(date, today, lastDay) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return 'format invalide (écrivez par exemple 2026-11-14)';
+  if (!isValidDateKey(date)) return 'date inexistante';
+  if (date < today) return 'date passée';
+  if (date > lastDay) return "après le 31 août (fin de l'année scolaire)";
+  return '';
+}
+
 function goutersAdd(ctx, postData) {
   var projectId = parseInt(postData.projectId, 10);
   if (isNaN(projectId) || CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return voteFail('invalid', 'Projet inconnu.');
@@ -1692,24 +1708,34 @@ function goutersAdd(ctx, postData) {
   });
   var toAdd = [];
   var ignored = [];
+  var reasons = [];
+  var anyValid = false;
   for (var i = 0; i < wanted.length; i++) {
     var line = String(wanted[i] === null || wanted[i] === undefined ? '' : wanted[i]).trim();
     if (line === '') continue;
-    var acceptable = isValidDateKey(line) && line >= ctx.today && line <= lastDay;
-    if (acceptable && !taken[line] && toAdd.indexOf(line) === -1) {
-      toAdd.push(line);
-    } else {
+    var date = normalizeDateLine(line);
+    var problem = gouterDateProblem(date, ctx.today, lastDay);
+    if (!problem) {
+      anyValid = true;
+      if (taken[date]) problem = 'déjà prise pour ce projet';
+      else if (toAdd.indexOf(date) !== -1) problem = 'en double dans votre liste';
+    }
+    if (problem) {
       ignored.push(line);
+      reasons.push(line + ' : ' + problem);
+    } else {
+      toAdd.push(date);
     }
   }
-  // Rien d'acceptable (ni date valide déjà prise) : on le dit au lieu de répondre par un succès à vide.
-  var anyValid = toAdd.length > 0 || ignored.some(function(line) { return isValidDateKey(line) && line >= ctx.today && line <= lastDay; });
-  if (!anyValid) return voteFail('invalid', "Aucune date valide (format AAAA-MM-JJ, de aujourd'hui au 31 août).");
+  // Rien d'acceptable (ni date valide déjà prise) : on dit quelle ligne est refusée et pourquoi, au lieu d'un succès à vide.
+  if (!anyValid) {
+    return voteFail('invalid', reasons.length > 0 ? 'Aucune date valide. ' + reasons.join(' ; ') + '.' : 'Aucune date saisie.');
+  }
   var note = cleanFreeText(postData.note, GOUTER_TEXT_MAX);
   for (var j = 0; j < toAdd.length; j++) {
     ctx.sheets.gouters.appendRow([newRowId('g'), projectId, toAdd[j], note, true, ctx.user.id, todayKeyParis()]);
   }
-  return { success: true, added: toAdd.length, ignored: ignored };
+  return { success: true, added: toAdd.length, ignored: ignored, reasons: reasons };
 }
 
 function goutersCancel(ctx, postData) {
@@ -1735,11 +1761,9 @@ function goutersMove(ctx, postData) {
   if (!gouter) return voteFail('invalid', 'Goûter introuvable.');
   if (!canManageProject(ctx.user, gouter.projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
   if (gouter.date < ctx.today) return voteFail('invalid', 'Ce goûter est passé : sa date ne peut plus être modifiée.');
-  var date = String(postData.date === null || postData.date === undefined ? '' : postData.date).trim();
-  var lastDay = schoolYearFor(ctx.today).end;
-  if (!isValidDateKey(date) || date < ctx.today || date > lastDay) {
-    return voteFail('invalid', "Date invalide (format AAAA-MM-JJ, de aujourd'hui au 31 août).");
-  }
+  var date = normalizeDateLine(String(postData.date === null || postData.date === undefined ? '' : postData.date).trim());
+  var problem = gouterDateProblem(date, ctx.today, schoolYearFor(ctx.today).end);
+  if (problem) return voteFail('invalid', 'Date refusée : ' + problem + '.');
   if (date === gouter.date) return { success: true };
   for (var j = 0; j < all.length; j++) {
     if (all[j].active && all[j].projectId === gouter.projectId && all[j].id !== gouter.id && all[j].date === date) {

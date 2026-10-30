@@ -50,6 +50,14 @@ test('parseGouterData rejette un goûter mal formé', () => {
     assert.equal(bad({ canManage: undefined }), null);
 });
 
+test('describeAddedDates reprend les raisons données par le serveur, ligne par ligne', () => {
+    assert.equal(
+        describeAddedDates(1, ['21/11/2026', '2026-10-01'], ['21/11/2026 : format invalide (écrivez par exemple 2026-11-14)', '2026-10-01 : date passée']),
+        '1 date ajoutée. Lignes ignorées : 21/11/2026 : format invalide (écrivez par exemple 2026-11-14) ; 2026-10-01 : date passée.'
+    );
+    assert.equal(describeAddedDates(2, [], []), '2 dates ajoutées.');
+});
+
 test('describeAddedDates résume les dates ajoutées et signale celles qui ont été ignorées', () => {
     assert.equal(describeAddedDates(2, []), '2 dates ajoutées.');
     assert.equal(describeAddedDates(1, []), '1 date ajoutée.');
