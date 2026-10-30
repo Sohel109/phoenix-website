@@ -6,9 +6,10 @@ import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
 import { PlanningSkeletonList } from '../../components/planning/PlanningSkeletonCard';
+import { eligibleMemberIds, canDeleteManualHour } from '../../data/manualHoursRules';
 
 export function PlanningRecap() {
-    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption } = usePlanning();
+    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption, hoursAccess, hoursError, hoursLoadError, pendingLocalHours, importLocalHours } = usePlanning();
     const [filterType, setFilterType] = useState<'week' | 'month' | 'year' | 'all'>('all');
     const [selectedWeek, setSelectedWeek] = useState(currentWeekKey);
     const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
@@ -31,9 +32,19 @@ export function PlanningRecap() {
     const [isSubmittingManual, setIsSubmittingManual] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [manualSuccessToast, setManualSuccessToast] = useState('');
+    const [manualSubmitFailed, setManualSubmitFailed] = useState(false);
+    const [deleteFailed, setDeleteFailed] = useState(false);
+    const [importMessage, setImportMessage] = useState('');
+    const [isImporting, setIsImporting] = useState(false);
 
     const isBureau = currentUser?.role === 'bureau';
     const isAuthorized = Boolean(currentUser && (currentUser.role === 'chef_projet' || isBureau));
+    // Le Bureau attribue partout ; un chef de projet seulement pour ses projets (liste fournie par le serveur).
+    const isChef = currentUser?.role === 'chef_projet';
+    const manageableProjects = hoursAccess.manageableProjects;
+    const canGrantHours = isBureau || (isChef && manageableProjects.length > 0);
+    // Projets de ce chef de projet où le membre a une réservation : lui seul peut y attribuer des heures.
+    const chefProjectsFor = (memberId: string) => (isChef ? manageableProjects.filter(pid => eligibleMemberIds(bookings, pid).has(memberId)) : []);
 
     // Ref sur l'input de recherche (pour les raccourcis clavier)
     const searchRef = useRef<HTMLInputElement>(null);
@@ -200,10 +211,16 @@ export function PlanningRecap() {
             if (m.userId && m.userName) map.set(m.userId, m.userName.trim());
         });
 
+        // Un chef de projet ne voit que les membres qui ont une réservation sur le projet choisi (le serveur vérifie la même règle).
+        const allowed = isBureau
+            ? null
+            : selectedManualProject === 'general' ? new Set<string>() : eligibleMemberIds(bookings, Number(selectedManualProject));
+
         return Array.from(map.entries())
+            .filter(([id]) => allowed === null || allowed.has(id))
             .map(([id, name]) => ({ id, name }))
             .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
-    }, [allUsers, bookings, currentUser, manualHours]);
+    }, [allUsers, bookings, currentUser, manualHours, isBureau, selectedManualProject]);
 
     const totalPeriodHours = recapData.reduce((acc, u) => acc + u.totalHours, 0);
 
@@ -343,6 +360,7 @@ export function PlanningRecap() {
         }
 
         setIsSubmittingManual(true);
+        setManualSubmitFailed(false);
 
         const success = await addManualHours(
             targetId,
@@ -362,7 +380,7 @@ export function PlanningRecap() {
             setManualSuccessToast(`✅ +${hoursNum}h créditées à ${targetName} avec justification enregistrée !`);
             setTimeout(() => setManualSuccessToast(''), 4500);
         } else {
-            alert("Erreur lors de l'enregistrement des heures.");
+            setManualSubmitFailed(true);
         }
     };
 
@@ -388,6 +406,41 @@ export function PlanningRecap() {
                 </div>
             )}
 
+            {hoursLoadError && (
+                <div role="status" className="mb-4 px-4 py-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs flex items-center gap-2.5">
+                    <AlertCircle size={16} className="shrink-0" />
+                    <span>{hoursLoadError}</span>
+                </div>
+            )}
+
+            {isBureau && (pendingLocalHours.hours > 0 || pendingLocalHours.exemptions > 0) && (
+                <div className="mb-4 px-4 py-3 rounded-2xl bg-[#2D0A32] border border-[#EC602B]/60 text-[#ECDDFD] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <span>
+                        {pendingLocalHours.hours} attribution{pendingLocalHours.hours > 1 ? 's' : ''} d'heures et {pendingLocalHours.exemptions} membre{pendingLocalHours.exemptions > 1 ? 's' : ''} renouvelant{pendingLocalHours.exemptions > 1 ? 's' : ''} ne
+                        {' '}{pendingLocalHours.hours + pendingLocalHours.exemptions > 1 ? 'sont' : 'est'} enregistré{pendingLocalHours.hours + pendingLocalHours.exemptions > 1 ? 's' : ''} que sur cet ordinateur : les autres membres ne les voient pas.
+                    </span>
+                    <button
+                        type="button"
+                        disabled={isImporting}
+                        onClick={async () => {
+                            setIsImporting(true);
+                            const result = await importLocalHours();
+                            setImportMessage(result.message);
+                            setIsImporting(false);
+                        }}
+                        className="btn-phoenix-gradient min-h-[44px] px-4 py-2 rounded-full text-white font-school uppercase tracking-wider text-xs cursor-pointer disabled:opacity-60"
+                    >
+                        {isImporting ? 'Envoi...' : 'Les envoyer au serveur'}
+                    </button>
+                </div>
+            )}
+
+            {importMessage && (
+                <div role="status" className="mb-4 px-4 py-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 text-xs">
+                    {importMessage}
+                </div>
+            )}
+
             {/* En-tête de la page */}
             <div className="mb-6 pt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -398,16 +451,23 @@ export function PlanningRecap() {
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-2.5">
-                    {/* Boutons Bureau : Ajout manuel & Historique des justifications */}
-                    {isBureau && (
+                    {/* Ajout manuel (Bureau, ou chef de projet pour ses projets) & Historique des justifications */}
+                    {canGrantHours && (
                         <>
                             <motion.button
                                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                                 onClick={() => {
                                     setIsCustomMember(false);
                                     setCustomMemberName('');
-                                    if (memberOptions.length > 0 && !selectedUserId) {
-                                        setSelectedUserId(memberOptions[0].id);
+                                    setManualSubmitFailed(false);
+                                    if (isBureau) {
+                                        if (memberOptions.length > 0 && !selectedUserId) {
+                                            setSelectedUserId(memberOptions[0].id);
+                                        }
+                                    } else {
+                                        // Chef de projet : un de ses projets, et un membre à choisir dans la liste de ce projet.
+                                        setSelectedManualProject(String(manageableProjects[0]));
+                                        setSelectedUserId('');
                                     }
                                     setShowAddModal(true);
                                 }}
@@ -415,7 +475,7 @@ export function PlanningRecap() {
                                 title="Créditer des heures manuelles avec justification écrite obligatoire"
                             >
                                 <Plus size={15} />
-                                <span>Ajouter des heures (Bureau)</span>
+                                <span>Ajouter des heures</span>
                             </motion.button>
 
                             {manualHours.length > 0 && (
@@ -791,12 +851,18 @@ export function PlanningRecap() {
                                                     <GraduationCap size={13} />
                                                     <span>{isExempt ? 'Quota 2A Acquis' : 'Valider 2A'}</span>
                                                 </button>
+                                            </>
+                                        )}
 
+                                        {(isBureau || chefProjectsFor(u.id).length > 0) && (
+                                            <>
                                                 <button
                                                     type="button"
                                                     onClick={() => {
                                                         setIsCustomMember(false);
                                                         setCustomMemberName('');
+                                                        setManualSubmitFailed(false);
+                                                        if (!isBureau) setSelectedManualProject(String(chefProjectsFor(u.id)[0]));
                                                         setSelectedUserId(u.id);
                                                         setShowAddModal(true);
                                                     }}
@@ -913,9 +979,11 @@ export function PlanningRecap() {
                                                 {m.name} {currentUser?.id === m.id ? '(Vous)' : ''}
                                             </option>
                                         ))}
-                                        <option value="__custom__" className="bg-[#2D0A32] text-[#EC602B] font-bold">
-                                            ➕ Autre membre (saisie manuelle du prénom & nom)...
-                                        </option>
+                                        {isBureau && (
+                                            <option value="__custom__" className="bg-[#2D0A32] text-[#EC602B] font-bold">
+                                                ➕ Autre membre (saisie manuelle du prénom & nom)...
+                                            </option>
+                                        )}
                                     </select>
 
                                     {isCustomMember && (
@@ -971,11 +1039,14 @@ export function PlanningRecap() {
                                         </label>
                                         <select
                                             value={selectedManualProject}
-                                            onChange={(e) => setSelectedManualProject(e.target.value)}
+                                            onChange={(e) => {
+                                                setSelectedManualProject(e.target.value);
+                                                if (!isBureau) setSelectedUserId('');
+                                            }}
                                             className="w-full bg-[#1F0422] border border-[#6F2B75]/50 rounded-2xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#EC602B] transition-all cursor-pointer font-sans"
                                         >
-                                            <option value="general" className="bg-[#2D0A32]">Mission Générale / Bureau</option>
-                                            {projectsData.map(p => (
+                                            {isBureau && <option value="general" className="bg-[#2D0A32]">Mission Générale / Bureau</option>}
+                                            {projectsData.filter(p => isBureau || manageableProjects.includes(p.id)).map(p => (
                                                 <option key={p.id} value={p.id} className="bg-[#2D0A32]">{p.name}</option>
                                             ))}
                                         </select>
@@ -1011,6 +1082,12 @@ export function PlanningRecap() {
                                         </p>
                                     </div>
                                 </div>
+
+                                {manualSubmitFailed && (
+                                    <p role="alert" className="text-xs text-rose-300 bg-rose-950/40 border border-rose-500/30 rounded-xl px-3 py-2">
+                                        {hoursError || "Erreur lors de l'enregistrement des heures."}
+                                    </p>
+                                )}
 
                                 {/* Actions */}
                                 <div className="pt-3 border-t border-[#6F2B75]/30 flex items-center justify-end gap-2.5">
@@ -1069,6 +1146,11 @@ export function PlanningRecap() {
                             </div>
 
                             <div className="overflow-y-auto space-y-3 pr-1 flex-1">
+                                {deleteFailed && (
+                                    <p role="alert" className="text-xs text-rose-300 bg-rose-950/40 border border-rose-500/30 rounded-xl px-3 py-2">
+                                        {hoursError || "La suppression n'a pas pu être enregistrée."}
+                                    </p>
+                                )}
                                 {manualHours.length === 0 ? (
                                     <p className="text-center py-8 text-[#ECDDFD]/60 text-xs">Aucune heure manuelle enregistrée.</p>
                                 ) : (
@@ -1092,11 +1174,14 @@ export function PlanningRecap() {
                                                 </p>
                                             </div>
 
+                                            {currentUser && canDeleteManualHour(mh, currentUser, manageableProjects) && (
                                             <button
                                                 type="button"
-                                                onClick={() => {
+                                                onClick={async () => {
                                                     if (window.confirm(`Supprimer cette attribution de ${mh.hours}h accordée à ${mh.userName} ?`)) {
-                                                        deleteManualHours(mh.id);
+                                                        setDeleteFailed(false);
+                                                        const ok = await deleteManualHours(mh.id);
+                                                        if (!ok) setDeleteFailed(true);
                                                     }
                                                 }}
                                                 className="self-end sm:self-center w-11 h-11 rounded-xl text-rose-400 hover:text-white hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer shrink-0 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
@@ -1105,6 +1190,7 @@ export function PlanningRecap() {
                                             >
                                                 <Trash2 size={15} />
                                             </button>
+                                            )}
                                         </div>
                                     ))
                                 )}

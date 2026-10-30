@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { PlanningUser, Booking, BookingStatus, ManualHourEntry, QuotaExemption } from '../data/planningData';
 import {
     authenticateUser,
@@ -10,7 +10,16 @@ import {
     syncEventAttendanceApi,
     changePasswordApi,
     updateUserProjectApi,
+    fetchManualHours,
+    addManualHoursApi,
+    deleteManualHoursApi,
+    importManualHoursApi,
+    fetchExemptions,
+    setExemptionApi,
+    importExemptionsApi,
 } from '../data/planningData';
+import { canDeleteManualHour } from '../data/manualHoursRules';
+import { createLatestGate } from '../data/voteResponse';
 import type { EventAttendance } from '../data/planningData';
 
 // ─── Types d'heures manuelles et d'exemptions : définis dans planningData.ts, ré-exportés ici ───
@@ -72,6 +81,15 @@ interface PlanningContextType {
     manualHours: ManualHourEntry[];
     addManualHours: (userId: string, userName: string, hours: number, reason: string, projectId?: number) => Promise<boolean>;
     deleteManualHours: (id: string) => Promise<boolean>;
+    /** Droits de ce compte sur les heures manuelles, tels que renvoyés par le serveur. */
+    hoursAccess: { isBureau: boolean; manageableProjects: number[] };
+    /** Dernier refus du serveur sur une écriture (ajout, suppression, renouvelant), sinon null. */
+    hoursError: string | null;
+    /** Message si les heures manuelles n'ont pas pu être lues (script pas à jour, réseau, session expirée), sinon null. */
+    hoursLoadError: string | null;
+    /** Entrées encore enregistrées seulement dans ce navigateur (ancien stockage), à envoyer au serveur par le Bureau. */
+    pendingLocalHours: { hours: number; exemptions: number };
+    importLocalHours: () => Promise<{ ok: boolean; message: string }>;
     exemptions: QuotaExemption[];
     toggleQuotaExemption: (userId: string, userName: string, isExempt: boolean, note?: string) => Promise<boolean>;
     isQuotaExempt: (userId: string) => boolean;
@@ -83,6 +101,33 @@ interface PlanningContextType {
 const PlanningContext = createContext<PlanningContextType | null>(null);
 
 const SESSION_KEY = 'phoenix_planning_session';
+
+// Ancien stockage des heures manuelles et des renouvelants : le navigateur de celui qui les saisissait.
+// Plus lu comme source de vérité, seulement proposé à l'envoi vers le serveur (Bureau).
+const LOCAL_MANUAL_HOURS_KEY = 'phoenix_manual_hours_v1';
+const LOCAL_EXEMPTIONS_KEY = 'phoenix_quota_exemptions_v1';
+const LOCAL_IMPORTED_FLAG = 'phoenix_hours_imported_v1';
+const EMPTY_HOURS: ManualHourEntry[] = [];
+const EMPTY_EXEMPTIONS: QuotaExemption[] = [];
+const NO_HOURS_ACCESS = { isBureau: false, manageableProjects: [] as number[] };
+
+function readLocalList(key: string): unknown[] {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(key) ?? '[]');
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+interface HoursState {
+    /** Compte pour lequel ces données ont été lues : elles ne sont jamais montrées à un autre compte. */
+    forUser: string;
+    manualHours: ManualHourEntry[];
+    exemptions: QuotaExemption[];
+    access: { isBureau: boolean; manageableProjects: number[] };
+    loadError: string | null;
+}
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
@@ -165,53 +210,67 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             .catch(() => {});
     }, []);
 
-    // ── Heures manuelles / exceptionnelles (attribuées par le Bureau) ───────────
-    const [manualHours, setManualHours] = useState<ManualHourEntry[]>(() => {
-        try {
-            const saved = localStorage.getItem('phoenix_manual_hours_v1');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed)) return parsed;
-            }
-        } catch { /* fallback */ }
-        return [];
+    // ── Heures manuelles et membres renouvelants : enregistrés dans le Sheet, le serveur vérifie jeton et rôle ──
+    const hoursUserId = currentUser?.id;
+    const hoursToken = currentUser?.token ?? '';
+    const [hoursState, setHoursState] = useState<HoursState | null>(null);
+    const [hoursError, setHoursError] = useState<string | null>(null);
+    const [localImportDone, setLocalImportDone] = useState<boolean>(() => {
+        try { return localStorage.getItem(LOCAL_IMPORTED_FLAG) === 'true'; } catch { return false; }
     });
+    // Les réponses d'Apps Script n'arrivent pas forcément dans l'ordre : seule la dernière lecture compte.
+    const hoursGate = useRef(createLatestGate());
+
+    type HoursReads = [Awaited<ReturnType<typeof fetchManualHours>>, Awaited<ReturnType<typeof fetchExemptions>>];
+    const readHours = useCallback((): Promise<HoursReads> => {
+        return Promise.all([fetchManualHours(hoursUserId ?? '', hoursToken), fetchExemptions(hoursUserId ?? '', hoursToken)]);
+    }, [hoursUserId, hoursToken]);
+
+    const applyHours = useCallback(([hoursResult, exemptionsResult]: HoursReads) => {
+        setHoursState({
+            forUser: hoursUserId ?? '',
+            manualHours: hoursResult.ok ? hoursResult.data.manualHours : EMPTY_HOURS,
+            exemptions: exemptionsResult.ok ? exemptionsResult.data.exemptions : EMPTY_EXEMPTIONS,
+            access: hoursResult.ok
+                ? { isBureau: hoursResult.data.isBureau, manageableProjects: hoursResult.data.manageableProjects }
+                : NO_HOURS_ACCESS,
+            loadError: !hoursResult.ok ? hoursResult.message : !exemptionsResult.ok ? exemptionsResult.message : null,
+        });
+    }, [hoursUserId]);
+
+    // Relecture après une écriture : on attend la réponse du serveur, la dernière lecture lancée l'emporte.
+    const reloadHours = useCallback(async () => {
+        if (!hoursUserId) return;
+        const ticket = hoursGate.current.next();
+        const reads = await readHours();
+        if (hoursGate.current.isLatest(ticket)) applyHours(reads);
+    }, [hoursUserId, readHours, applyHours]);
 
     useEffect(() => {
-        fetch('/api/planning/manual-hours')
-            .then(res => res.json())
-            .then(data => {
-                if (data?.success && Array.isArray(data.manualHours)) {
-                    setManualHours(data.manualHours);
-                    localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(data.manualHours));
-                }
-            })
-            .catch(() => {});
-    }, []);
+        if (!hoursUserId) return;
+        const gate = hoursGate.current;
+        const ticket = gate.next();
+        void readHours().then((reads) => {
+            if (gate.isLatest(ticket)) applyHours(reads);
+        });
+        return () => {
+            // Invalide la lecture en vol (changement de compte ou démontage).
+            gate.next();
+        };
+    }, [hoursUserId, readHours, applyHours]);
 
-    // ── Exemptions de quota / Membres renouvelants (N-1 validé) ────────────────
-    const [exemptions, setExemptions] = useState<QuotaExemption[]>(() => {
-        try {
-            const saved = localStorage.getItem('phoenix_quota_exemptions_v1');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed)) return parsed;
-            }
-        } catch { /* fallback */ }
-        return [];
-    });
+    const currentHours = hoursState && hoursState.forUser === hoursUserId ? hoursState : null;
+    const manualHours = currentHours?.manualHours ?? EMPTY_HOURS;
+    const exemptions = currentHours?.exemptions ?? EMPTY_EXEMPTIONS;
+    const hoursAccess = currentHours?.access ?? NO_HOURS_ACCESS;
+    const hoursLoadError = currentHours?.loadError ?? null;
 
-    useEffect(() => {
-        fetch('/api/planning/exemptions')
-            .then(res => res.json())
-            .then(data => {
-                if (data?.success && Array.isArray(data.exemptions)) {
-                    setExemptions(data.exemptions);
-                    localStorage.setItem('phoenix_quota_exemptions_v1', JSON.stringify(data.exemptions));
-                }
-            })
-            .catch(() => {});
-    }, []);
+    const pendingLocalHours = useMemo(
+        () => (localImportDone || !hoursUserId
+            ? { hours: 0, exemptions: 0 }
+            : { hours: readLocalList(LOCAL_MANUAL_HOURS_KEY).length, exemptions: readLocalList(LOCAL_EXEMPTIONS_KEY).length }),
+        [localImportDone, hoursUserId]
+    );
 
     const isPending = useCallback((key: string) => pendingKeys.has(key), [pendingKeys]);
 
@@ -486,54 +545,37 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         return res;
     }, [currentUser]);
 
-    // ── Actions Heures Manuelles (Bureau uniquement) ──────────────────────────
+    // ── Actions Heures Manuelles : le Bureau partout, un chef de projet pour ses projets (le serveur décide) ──
     const addManualHours = useCallback(async (userId: string, userName: string, hours: number, reason: string, projectId?: number): Promise<boolean> => {
-        if (!currentUser || currentUser.role !== 'bureau') return false;
-        if (!reason || reason.trim().length < 5) return false;
+        if (!currentUser) return false;
+        const isChefForProject = currentUser.role === 'chef_projet' && projectId !== undefined && hoursAccess.manageableProjects.includes(projectId);
+        if (currentUser.role !== 'bureau' && !isChefForProject) return false;
+        if (!reason || reason.trim().length < 8) return false;
         if (hours <= 0) return false;
 
-        const newEntry: ManualHourEntry = {
-            id: `mh-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-            userId,
-            userName,
-            hours: Number(hours),
-            reason: reason.trim(),
-            grantedBy: currentUser.name,
-            createdAt: new Date().toISOString(),
-            projectId
-        };
-
-        const updated = [newEntry, ...manualHours];
-        setManualHours(updated);
-        try {
-            localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(updated));
-            await fetch('/api/planning/manual-hours', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ manualHours: updated })
-            });
-        } catch (e) {
-            console.error('Erreur sauvegarde manual hours:', e);
+        const result = await addManualHoursApi(currentUser.id, currentUser.token ?? '', userId, userName, Number(hours), reason.trim(), projectId);
+        if (!result.success) {
+            setHoursError(result.message);
+            return false;
         }
+        setHoursError(null);
+        await reloadHours();
         return true;
-    }, [currentUser, manualHours]);
+    }, [currentUser, hoursAccess, reloadHours]);
 
     const deleteManualHours = useCallback(async (id: string): Promise<boolean> => {
-        if (!currentUser || currentUser.role !== 'bureau') return false;
-        const updated = manualHours.filter(m => m.id !== id);
-        setManualHours(updated);
-        try {
-            localStorage.setItem('phoenix_manual_hours_v1', JSON.stringify(updated));
-            await fetch('/api/planning/manual-hours', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ manualHours: updated })
-            });
-        } catch (e) {
-            console.error('Erreur suppression manual hours:', e);
+        if (!currentUser) return false;
+        const entry = manualHours.find(m => m.id === id);
+        if (!entry || !canDeleteManualHour(entry, currentUser, hoursAccess.manageableProjects)) return false;
+        const result = await deleteManualHoursApi(currentUser.id, currentUser.token ?? '', id);
+        if (!result.success) {
+            setHoursError(result.message);
+            return false;
         }
+        setHoursError(null);
+        await reloadHours();
         return true;
-    }, [currentUser, manualHours]);
+    }, [currentUser, manualHours, hoursAccess, reloadHours]);
 
     const isQuotaExempt = useCallback((userId: string) => {
         return exemptions.some(e => e.userId === userId);
@@ -541,36 +583,43 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
 
     const toggleQuotaExemption = useCallback(async (userId: string, userName: string, isExempt: boolean, note?: string): Promise<boolean> => {
         if (!currentUser || currentUser.role !== 'bureau') return false;
-
-        let updated: QuotaExemption[];
-        if (isExempt) {
-            if (exemptions.some(e => e.userId === userId)) return true;
-            const newEntry: QuotaExemption = {
-                userId,
-                userName,
-                grantedBy: currentUser.name,
-                grantedAt: new Date().toISOString(),
-                year: '2024-2025',
-                note: note || 'Quota 50h validé lors de l\'année précédente (Membre renouvelant)'
-            };
-            updated = [...exemptions, newEntry];
-        } else {
-            updated = exemptions.filter(e => e.userId !== userId);
+        const result = await setExemptionApi(
+            currentUser.id,
+            currentUser.token ?? '',
+            userId,
+            userName,
+            isExempt,
+            isExempt ? (note || 'Quota 50h validé lors de l\'année précédente (Membre renouvelant)') : undefined,
+            isExempt ? '2024-2025' : undefined
+        );
+        if (!result.success) {
+            setHoursError(result.message);
+            return false;
         }
-
-        setExemptions(updated);
-        try {
-            localStorage.setItem('phoenix_quota_exemptions_v1', JSON.stringify(updated));
-            await fetch('/api/planning/exemptions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ exemptions: updated })
-            });
-        } catch (e) {
-            console.error('Erreur sauvegarde exemptions:', e);
-        }
+        setHoursError(null);
+        await reloadHours();
         return true;
-    }, [currentUser, exemptions]);
+    }, [currentUser, reloadHours]);
+
+    const importLocalHours = useCallback(async (): Promise<{ ok: boolean; message: string }> => {
+        if (!currentUser || currentUser.role !== 'bureau') return { ok: false, message: 'Seul le Bureau peut envoyer ces données.' };
+        const token = currentUser.token ?? '';
+        const hoursList = readLocalList(LOCAL_MANUAL_HOURS_KEY);
+        const exemptionsList = readLocalList(LOCAL_EXEMPTIONS_KEY);
+        const hoursResult = hoursList.length > 0 ? await importManualHoursApi(currentUser.id, token, hoursList) : { ok: true as const, imported: 0, ignored: 0 };
+        if (!hoursResult.ok) return { ok: false, message: hoursResult.message };
+        const exemptionsResult = exemptionsList.length > 0 ? await importExemptionsApi(currentUser.id, token, exemptionsList) : { ok: true as const, imported: 0, ignored: 0 };
+        if (!exemptionsResult.ok) return { ok: false, message: exemptionsResult.message };
+        // Les données locales ne sont pas effacées : elles restent une copie de sécurité. Le drapeau masque seulement le bandeau.
+        try { localStorage.setItem(LOCAL_IMPORTED_FLAG, 'true'); } catch { /* sans stockage, le bandeau reviendra */ }
+        setLocalImportDone(true);
+        await reloadHours();
+        const ignored = hoursResult.ignored + exemptionsResult.ignored;
+        return {
+            ok: true,
+            message: `${hoursResult.imported} attribution(s) d'heures et ${exemptionsResult.imported} membre(s) renouvelant(s) enregistrés sur le serveur${ignored > 0 ? `, ${ignored} ignorés (déjà présents ou invalides)` : ''}.`
+        };
+    }, [currentUser, reloadHours]);
 
     const updateUserProject = useCallback(async (projectId: number): Promise<{ success: boolean; message: string }> => {
         if (!currentUser) {
@@ -622,7 +671,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,
             refreshPlanningData, changePassword, isPending,
-            manualHours, addManualHours, deleteManualHours,
+            manualHours, addManualHours, deleteManualHours, hoursAccess, hoursError, hoursLoadError, pendingLocalHours, importLocalHours,
             exemptions, toggleQuotaExemption, isQuotaExempt,
             isEditModeActive, setEditModeActive, toggleEditMode
         }}>
