@@ -1596,7 +1596,7 @@ function readGouters(sheet) {
 }
 
 function handleGoutersAction(action, postData) {
-  if (action !== 'getGouters' && action !== 'addGouters' && action !== 'cancelGouter' &&
+  if (action !== 'getGouters' && action !== 'addGouters' && action !== 'cancelGouter' && action !== 'moveGouter' &&
       action !== 'setGouterSlot' && action !== 'addGouterItem' && action !== 'removeGouterItem') {
     return null;
   }
@@ -1620,6 +1620,7 @@ function handleGoutersAction(action, postData) {
     if (action === 'getGouters') return goutersGet(ctx);
     if (action === 'addGouters') return goutersAdd(ctx, postData);
     if (action === 'cancelGouter') return goutersCancel(ctx, postData);
+    if (action === 'moveGouter') return goutersMove(ctx, postData);
     if (action === 'setGouterSlot') return goutersSetSlot(ctx, postData);
     if (action === 'addGouterItem') return goutersAddItem(ctx, postData);
     return goutersRemoveItem(ctx, postData);
@@ -1721,6 +1722,31 @@ function goutersCancel(ctx, postData) {
   if (!canManageProject(ctx.user, gouter.projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
   if (gouter.date < ctx.today) return voteFail('invalid', 'Ce goûter est passé : il ne peut plus être annulé.');
   ctx.sheets.gouters.getRange(gouter.sheetRow, 5).setValue(false);
+  return { success: true };
+}
+
+// Change la date d'un goûter à venir : les inscriptions et les apports restent attachés à son identifiant.
+function goutersMove(ctx, postData) {
+  var gouter = null;
+  var all = readGouters(ctx.sheets.gouters);
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].active && all[i].id === String(postData.gouterId)) gouter = all[i];
+  }
+  if (!gouter) return voteFail('invalid', 'Goûter introuvable.');
+  if (!canManageProject(ctx.user, gouter.projectId)) return voteFail('forbidden', "Vous ne pouvez pas gérer les goûters de ce projet.");
+  if (gouter.date < ctx.today) return voteFail('invalid', 'Ce goûter est passé : sa date ne peut plus être modifiée.');
+  var date = String(postData.date === null || postData.date === undefined ? '' : postData.date).trim();
+  var lastDay = schoolYearFor(ctx.today).end;
+  if (!isValidDateKey(date) || date < ctx.today || date > lastDay) {
+    return voteFail('invalid', "Date invalide (format AAAA-MM-JJ, de aujourd'hui au 31 août).");
+  }
+  if (date === gouter.date) return { success: true };
+  for (var j = 0; j < all.length; j++) {
+    if (all[j].active && all[j].projectId === gouter.projectId && all[j].id !== gouter.id && all[j].date === date) {
+      return voteFail('invalid', 'Ce projet a déjà un goûter à cette date.');
+    }
+  }
+  ctx.sheets.gouters.getRange(gouter.sheetRow, 3).setValue(date);
   return { success: true };
 }
 

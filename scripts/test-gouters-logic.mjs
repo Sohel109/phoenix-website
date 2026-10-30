@@ -376,3 +376,88 @@ test('I2 : un goûter passé ne peut plus être annulé', () => {
     h.setNow('2026-11-14');
     assert.equal(cancel(h, 'c4', id).success, true);
 });
+
+// ─── Changer la date d'un goûter ──────────────────────────────────────────────
+
+const move = (h, requesterId, gouterId, date) => plain(h.call('moveGouter', { requesterId, gouterId, date }));
+const dateOf = (h, gouterId, viewer = 'b1') => list(h, viewer).gouters.find((g) => g.id === gouterId)?.date;
+
+test('moveGouter : sans jeton valide, unauthenticated', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    assert.equal(plain(h.raw('moveGouter', { requesterId: 'c4', gouterId: id, date: '2026-11-21' })).code, 'unauthenticated');
+    assert.equal(plain(h.raw('moveGouter', { requesterId: 'c4', gouterId: id, date: '2026-11-21', token: h.ctx.createSessionToken('t1') })).code, 'unauthenticated');
+    assert.equal(dateOf(h, id), '2026-11-14');
+});
+
+test('moveGouter : un tuteur et le chef d un autre projet sont refusés, le chef du projet et le Bureau réussissent', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    assert.equal(move(h, 't1', id, '2026-11-21').code, 'forbidden');
+    assert.equal(move(h, 'c7', id, '2026-11-21').code, 'forbidden');
+    assert.equal(dateOf(h, id), '2026-11-14');
+    assert.equal(move(h, 'c4', id, '2026-11-21').success, true);
+    assert.equal(dateOf(h, id), '2026-11-21');
+    assert.equal(move(h, 'b1', id, '2026-12-05').success, true);
+    assert.equal(dateOf(h, id), '2026-12-05');
+});
+
+test('moveGouter : les inscriptions et les apports restent attachés au goûter', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    assert.equal(slot(h, 't1', id, 10, true).success, true);
+    assert.equal(addItem(h, 't2', id, 'Cookies').success, true);
+    assert.equal(move(h, 'c4', id, '2026-11-28').success, true);
+    const moved = list(h, 'b1').gouters.find((g) => g.id === id);
+    assert.equal(moved.date, '2026-11-28');
+    assert.deepEqual(moved.slots.find((s) => s.hour === 10).users.map((u) => u.userId), ['t1']);
+    assert.deepEqual(moved.items.map((i) => i.item), ['Cookies']);
+});
+
+test('moveGouter : date refusée, rien ne change', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    addG(h, 'c4', 4, ['2026-12-12']);
+    const refused = {
+        'date passée': '2026-10-01',
+        'date invalide': '2026-02-30',
+        'texte': 'bientôt',
+        'après la fin de l année scolaire': '2027-09-01',
+        'déjà prise par un autre goûter du même projet': '2026-12-12',
+        'absente': '',
+    };
+    for (const [label, date] of Object.entries(refused)) {
+        assert.equal(move(h, 'c4', id, date).code, 'invalid', label);
+    }
+    assert.equal(dateOf(h, id), '2026-11-14');
+});
+
+test('moveGouter : la même date réussit sans rien changer', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    assert.equal(move(h, 'c4', id, '2026-11-14').success, true);
+    assert.equal(dateOf(h, id), '2026-11-14');
+    assert.equal(h.sheet('Gouters').length, 2);
+});
+
+test('moveGouter : la date d un goûter annulé ou d un autre projet est acceptée', () => {
+    const h = fresh();
+    const id = withGouter(h);
+    const cancelled = withGouter(h, 4, '2026-12-19');
+    cancel(h, 'c4', cancelled);
+    withGouter(h, 7, '2026-12-05');
+    assert.equal(move(h, 'c4', id, '2026-12-19').success, true);
+    assert.equal(move(h, 'c4', id, '2026-12-05').success, true);
+});
+
+test('moveGouter : un goûter passé, annulé ou inconnu est refusé', () => {
+    const h = fresh();
+    const past = withGouter(h, 4, '2026-11-14');
+    const cancelled = withGouter(h, 4, '2026-11-21');
+    cancel(h, 'c4', cancelled);
+    assert.equal(move(h, 'c4', cancelled, '2026-11-28').code, 'invalid');
+    assert.equal(move(h, 'c4', 'gzzzzzzz', '2026-11-28').code, 'invalid');
+    h.setNow('2026-11-15');
+    assert.equal(move(h, 'c4', past, '2026-11-28').code, 'invalid');
+    assert.equal(h.sheet('Gouters')[1][2], '2026-11-14');
+});
