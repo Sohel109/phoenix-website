@@ -84,6 +84,12 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  var hoursResult = handleHoursAction(action, postData);
+  if (hoursResult) {
+    return ContentService.createTextOutput(JSON.stringify(hoursResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'saveSiteContent') {
     var lock1 = LockService.getScriptLock();
     try {
@@ -1784,6 +1790,223 @@ function goutersRemoveItem(ctx, postData) {
     return voteFail('forbidden', "Vous ne pouvez retirer que vos propres apports.");
   }
   ctx.sheets.items.deleteRow(target.sheetRow);
+  return { success: true };
+}
+
+// ==========================================
+// HEURES MANUELLES ET MEMBRES RENOUVELANTS
+// ==========================================
+// Avant ce bloc, ces données n'existaient que dans le navigateur de la personne qui les saisissait.
+// Le Bureau attribue des heures à n'importe qui ; un chef de projet seulement pour ses projets (colonne J) et à un
+// membre qui a une réservation sur un créneau de ce projet. Rôle et projets viennent toujours du Sheet.
+
+var MANUAL_HOURS_ACTIONS = ['getManualHours', 'addManualHours', 'deleteManualHours', 'importManualHours', 'getExemptions', 'setExemption', 'importExemptions'];
+var MANUAL_HOURS_SHEET = {
+  name: 'HeuresManuelles',
+  headers: ['id', 'userId', 'userName', 'hours', 'reason', 'grantedBy', 'grantedById', 'projectId', 'createdAt'],
+  textColumns: ['A', 'B', 'C', 'E', 'F', 'G', 'I']
+};
+var MANUAL_HOURS_MIN = 0.5;
+var MANUAL_HOURS_MAX = 50;
+var MANUAL_REASON_MIN = 8;
+var MANUAL_REASON_MAX = 300;
+var MANUAL_NAME_MAX = 60;
+var MANUAL_DUPLICATE_WINDOW_MS = 120 * 1000;
+
+function getManualHoursSheet() {
+  return getGouterSheet(MANUAL_HOURS_SHEET);
+}
+
+// Les heures sont écrites comme nombres, mais un Sheet réglé en français peut les relire en texte (« 2,5 »).
+function parseHoursCell(value) {
+  var n = Number(String(value === null || value === undefined ? '' : value).replace(',', '.'));
+  return isNaN(n) ? 0 : n;
+}
+
+function readManualHours(sheet) {
+  return readVoteRows(sheet).map(function(r) {
+    var c = r.cells;
+    var projectId = parseInt(c[7], 10);
+    return {
+      sheetRow: r.sheetRow,
+      id: String(c[0]),
+      userId: String(c[1]),
+      userName: String(c[2]),
+      hours: parseHoursCell(c[3]),
+      reason: String(c[4]),
+      grantedBy: String(c[5]),
+      grantedById: c[6] === null || c[6] === undefined ? '' : String(c[6]),
+      projectId: CHILDREN_PROJECT_IDS.indexOf(projectId) === -1 ? null : projectId,
+      createdAt: c[8] === null || c[8] === undefined ? '' : String(c[8])
+    };
+  });
+}
+
+function publicManualHour(entry) {
+  var out = {
+    id: entry.id,
+    userId: entry.userId,
+    userName: entry.userName,
+    hours: entry.hours,
+    reason: entry.reason,
+    grantedBy: entry.grantedBy,
+    grantedById: entry.grantedById,
+    createdAt: entry.createdAt
+  };
+  if (entry.projectId !== null) out.projectId = entry.projectId;
+  return out;
+}
+
+// Contrôle commun à l'ajout et à l'import : heures (0,5 à 50 par pas de 0,5), justification (8 à 300 caractères),
+// projet (1 à 9, ou absent pour la mission générale). Renvoie { error } ou les valeurs nettoyées.
+function validateManualHourFields(fields) {
+  var raw = fields.hours;
+  if (raw === null || raw === undefined || String(raw).trim() === '') return { error: "Nombre d'heures invalide." };
+  var hours = Number(String(raw).replace(',', '.'));
+  if (isNaN(hours) || hours < MANUAL_HOURS_MIN || hours > MANUAL_HOURS_MAX || Math.round(hours * 2) !== hours * 2) {
+    return { error: "Le nombre d'heures doit être compris entre 0,5 et 50, par pas de 0,5." };
+  }
+  var reason = cleanFreeText(fields.reason, 1000);
+  if (reason.length < MANUAL_REASON_MIN || reason.length > MANUAL_REASON_MAX) {
+    return { error: 'La justification doit faire entre ' + MANUAL_REASON_MIN + ' et ' + MANUAL_REASON_MAX + ' caractères.' };
+  }
+  var projectId = null;
+  if (fields.projectId !== null && fields.projectId !== undefined && String(fields.projectId).trim() !== '') {
+    projectId = parseInt(fields.projectId, 10);
+    if (isNaN(projectId) || CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return { error: 'Projet inconnu.' };
+  }
+  return { hours: hours, reason: reason, projectId: projectId };
+}
+
+// Le membre a au moins une réservation (autre qu'annulée) sur un créneau du projet : slotId « slot-<projet>-<jour> ».
+function memberHasBookingOnProject(userId, projectId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Bookings');
+  if (!sheet) return false;
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    var match = /^slot-(\d+)-/.exec(String(values[i][1]));
+    if (!match || parseInt(match[1], 10) !== projectId) continue;
+    if (String(values[i][2]) !== userId) continue;
+    if (String(values[i][5]) === 'annule') continue;
+    return true;
+  }
+  return false;
+}
+
+function handleHoursAction(action, postData) {
+  if (MANUAL_HOURS_ACTIONS.indexOf(action) === -1) return null;
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(postData.requesterId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) {
+    return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
+  }
+  var isWrite = action !== 'getManualHours' && action !== 'getExemptions';
+  var lock = isWrite ? LockService.getScriptLock() : null;
+  try {
+    if (lock) lock.waitLock(15000);
+    var users = readChildrenUsers();
+    var user = findVoteUser(users, postData.requesterId);
+    if (!user) return voteFail('forbidden', 'Compte introuvable.');
+    var ctx = { user: user, users: users, today: todayKeyParis() };
+    if (action === 'getManualHours') return manualHoursGet(ctx);
+    if (action === 'addManualHours') return manualHoursAdd(ctx, postData);
+    if (action === 'deleteManualHours') return manualHoursDelete(ctx, postData);
+    return voteFail('invalid', 'Pas encore disponible.');
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    if (lock) lock.releaseLock();
+  }
+}
+
+function manualHoursGet(ctx) {
+  var user = ctx.user;
+  var visible = readManualHours(getManualHoursSheet()).filter(function(entry) {
+    if (user.role === 'bureau') return true;
+    if (entry.userId === user.id) return true;
+    return user.role === 'chef_projet' && entry.projectId !== null && canManageProject(user, entry.projectId);
+  });
+  visible.sort(function(a, b) {
+    if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
+    return b.sheetRow - a.sheetRow;
+  });
+  return {
+    success: true,
+    isBureau: user.role === 'bureau',
+    manageableProjects: manageableProjectsOf(user),
+    manualHours: visible.map(publicManualHour)
+  };
+}
+
+function manualHoursAdd(ctx, postData) {
+  var user = ctx.user;
+  if (user.role !== 'bureau' && user.role !== 'chef_projet') {
+    return voteFail('forbidden', "Seuls le Bureau et les chefs de projet peuvent attribuer des heures.");
+  }
+  var fields = validateManualHourFields(postData);
+  if (fields.error) return voteFail('invalid', fields.error);
+
+  var userId = String(postData.userId === null || postData.userId === undefined ? '' : postData.userId).trim();
+  var targetName = '';
+  var listed = findVoteUser(ctx.users, userId);
+  if (listed) {
+    targetName = listed.name;
+  } else if (/^custom-[a-z0-9-]{1,60}$/.test(userId)) {
+    if (user.role !== 'bureau') return voteFail('forbidden', "Seul le Bureau peut attribuer des heures à un membre hors liste.");
+    targetName = cleanFreeText(postData.userName, MANUAL_NAME_MAX);
+    if (!targetName) return voteFail('invalid', 'Nom du membre manquant.');
+  } else {
+    return voteFail('invalid', 'Membre introuvable.');
+  }
+
+  if (user.role === 'chef_projet') {
+    if (fields.projectId === null || !canManageProject(user, fields.projectId)) {
+      return voteFail('forbidden', 'Vous ne pouvez attribuer des heures que pour vos projets.');
+    }
+    if (!memberHasBookingOnProject(userId, fields.projectId)) {
+      return voteFail('forbidden', "Ce membre n'a aucune réservation sur ce projet.");
+    }
+  }
+
+  var sheet = getManualHoursSheet();
+  // Double clic : la même attribution du même auteur, enregistrée il y a moins de 2 minutes, n'est pas répétée.
+  var now = nowMs();
+  var recent = readManualHours(sheet);
+  for (var i = recent.length - 1; i >= 0 && i >= recent.length - 50; i--) {
+    var e = recent[i];
+    var age = now - new Date(e.createdAt).getTime();
+    if (e.grantedById === user.id && e.userId === userId && e.hours === fields.hours && e.reason === fields.reason &&
+        e.projectId === fields.projectId && !isNaN(age) && age >= 0 && age < MANUAL_DUPLICATE_WINDOW_MS) {
+      return { success: true, id: e.id };
+    }
+  }
+
+  var id = newRowId('h');
+  sheet.appendRow([id, userId, targetName, fields.hours, fields.reason, user.name, user.id,
+    fields.projectId === null ? '' : fields.projectId, new Date(now).toISOString()]);
+  return { success: true, id: id };
+}
+
+function manualHoursDelete(ctx, postData) {
+  var user = ctx.user;
+  if (user.role !== 'bureau' && user.role !== 'chef_projet') {
+    return voteFail('forbidden', "Seuls le Bureau et les chefs de projet peuvent supprimer une attribution.");
+  }
+  var sheet = getManualHoursSheet();
+  var target = null;
+  var all = readManualHours(sheet);
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].id === String(postData.id)) target = all[i];
+  }
+  if (!target) return voteFail('invalid', 'Attribution introuvable.');
+  var allowed = user.role === 'bureau' ||
+    (target.grantedById === user.id && target.projectId !== null && canManageProject(user, target.projectId));
+  if (!allowed) return voteFail('forbidden', 'Vous ne pouvez supprimer que vos propres attributions, pour vos projets.');
+  sheet.deleteRow(target.sheetRow);
   return { success: true };
 }
 
