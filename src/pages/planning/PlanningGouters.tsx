@@ -6,12 +6,14 @@ import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { useGouters } from '../../hooks/useGouters';
 import { describeAddedDates, formatGouterDate } from '../../data/gouterResponse';
-import { addGouterItemApi, addGoutersApi, cancelGouterApi, removeGouterItemApi, setGouterSlotApi, type Gouter } from '../../data/planningData';
+import { addGouterItemApi, addGoutersApi, cancelGouterApi, moveGouterApi, removeGouterItemApi, setGouterSlotApi, type Gouter } from '../../data/planningData';
+import { downloadGouterXlsx } from '../../utils/exportGouter';
 import { projectsData } from '../../data/projectsData';
 import { GouterSlotsCard } from '../../components/planning/GouterSlotsCard';
 import { GouterItemsCard } from '../../components/planning/GouterItemsCard';
 import { GouterAddDatesCard } from '../../components/planning/GouterAddDatesCard';
-import { cardClass, secondaryButtonClass } from '../../components/planning/childrenStyles';
+import { GouterManageCard } from '../../components/planning/GouterManageCard';
+import { secondaryButtonClass } from '../../components/planning/childrenStyles';
 
 const projectName = (id: number) => projectsData.find((p) => p.id === id)?.name ?? `Projet ${id}`;
 
@@ -41,7 +43,6 @@ export function PlanningGouters() {
     const { data, loading, error, errorCode, reload } = useGouters();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [busy, setBusy] = useState(false);
-    const [confirmCancel, setConfirmCancel] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
     const [actionCode, setActionCode] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
@@ -117,7 +118,7 @@ export function PlanningGouters() {
                         <h2 className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">À venir</h2>
                         {upcoming.length === 0 && <p className="text-sm text-[#ECDDFD]/70">Aucun goûter n'est prévu pour le moment.</p>}
                         {upcoming.map((g) => (
-                            <GouterButton key={g.id} gouter={g} selected={g.id === selectedId} onSelect={() => { setSelectedId(g.id); setConfirmCancel(false); }} />
+                            <GouterButton key={g.id} gouter={g} selected={g.id === selectedId} onSelect={() => setSelectedId(g.id)} />
                         ))}
                     </section>
 
@@ -126,7 +127,7 @@ export function PlanningGouters() {
                             <summary className="cursor-pointer text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70 mb-3">Goûters passés ({past.length})</summary>
                             <div className="space-y-3">
                                 {[...past].reverse().map((g) => (
-                                    <GouterButton key={g.id} gouter={g} selected={g.id === selectedId} onSelect={() => { setSelectedId(g.id); setConfirmCancel(false); }} />
+                                    <GouterButton key={g.id} gouter={g} selected={g.id === selectedId} onSelect={() => setSelectedId(g.id)} />
                                 ))}
                             </div>
                         </details>
@@ -148,30 +149,22 @@ export function PlanningGouters() {
                                 onAdd={(item) => run(() => addGouterItemApi(currentUser.id, token, selected.id, item))}
                                 onRemove={(itemId) => void run(() => removeGouterItemApi(currentUser.id, token, itemId))}
                             />
-                            {selected.canManage && !selected.isPast && (
-                                <div className={cardClass}>
-                                    <h3 className="text-white font-bold tracking-wide mb-1">Gérer ce goûter</h3>
-                                    {confirmCancel ? (
-                                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                                            <p className="text-sm text-[#ECDDFD]/85">Annuler ce goûter ? Il disparaîtra de la liste pour tous.</p>
-                                            <span className="flex gap-2">
-                                                <button
-                                                    type="button"
-                                                    disabled={locked}
-                                                    onClick={() => { setConfirmCancel(false); setSelectedId(null); void run(() => cancelGouterApi(currentUser.id, token, selected.id)); }}
-                                                    className="px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider btn-phoenix-gradient text-white disabled:opacity-60"
-                                                >
-                                                    Confirmer
-                                                </button>
-                                                <button type="button" onClick={() => setConfirmCancel(false)} className={secondaryButtonClass}>Garder</button>
-                                            </span>
-                                        </div>
-                                    ) : (
-                                        <button type="button" disabled={locked} onClick={() => setConfirmCancel(true)} className={secondaryButtonClass}>
-                                            Annuler ce goûter
-                                        </button>
-                                    )}
-                                </div>
+                            {selected.canManage && (
+                                <GouterManageCard
+                                    key={`manage-${selected.id}`}
+                                    gouter={selected}
+                                    disabled={locked}
+                                    onMove={(date) => run(() => moveGouterApi(currentUser.id, token, selected.id, date))}
+                                    onCancel={() => { setSelectedId(null); void run(() => cancelGouterApi(currentUser.id, token, selected.id)); }}
+                                    onExport={async () => {
+                                        setActionError(null);
+                                        try {
+                                            await downloadGouterXlsx(selected, projectName(selected.projectId));
+                                        } catch {
+                                            setActionError("Le fichier Excel n'a pas pu être créé. Réessayez.");
+                                        }
+                                    }}
+                                />
                             )}
                         </>
                     )}
