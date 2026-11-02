@@ -102,12 +102,11 @@ function SlotCard({ slot, weekKey, bookings, members, onPlace, onUnplace, onNoti
                     <span className="text-[10px] uppercase tracking-wider mt-0.5">{date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '')}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-base font-bold text-white tracking-wide first-letter:uppercase">{dayLabel}</p>
-                    <p className="text-xs text-[#ECDDFD]/70 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <p className="text-xl sm:text-2xl font-display text-white tracking-wide leading-tight">{project?.name ?? `Projet ${slot.projectId}`}</p>
+                    <p className="text-sm font-semibold text-[#ECDDFD] mt-1 first-letter:uppercase">{dayLabel}</p>
+                    <p className="text-xs text-[#ECDDFD]/70 mt-0.5 flex items-center gap-1.5">
                         <Clock size={12} aria-hidden="true" />
                         <span className="font-mono">{slot.startTime}–{slot.endTime}</span>
-                        <span aria-hidden="true">·</span>
-                        <span>{project?.name ?? `Projet ${slot.projectId}`}</span>
                     </p>
                 </div>
                 <span className={`shrink-0 text-[10px] font-school uppercase tracking-wider px-2.5 py-1 rounded-full border ${badge.className}`}>{badge.label}</span>
@@ -207,8 +206,14 @@ function SlotCard({ slot, weekKey, bookings, members, onPlace, onUnplace, onNoti
 
 /** Placer des membres sur les créneaux de la semaine affichée (utile avant que tous les tuteurs aient leur code). */
 export function SlotPlacementPanel({ weekKey, slots, bookings, members, onPlace, onUnplace, onNotify }: SlotPlacementPanelProps) {
-    const active = slots
-        .filter((slot) => isSlotActiveThisWeek(slot.id, weekKey))
+    const [projectFilter, setProjectFilter] = useState<number | 'all'>('all');
+    const weekSlots = slots.filter((slot) => isSlotActiveThisWeek(slot.id, weekKey));
+    // Un filtre par projet dès qu'il y a plusieurs projets (Bureau, ou chef de plusieurs projets).
+    const projectIds = [...new Set(weekSlots.map((slot) => slot.projectId))]
+        .sort((a, b) => (projectsData.find((p) => p.id === a)?.name ?? '').localeCompare(projectsData.find((p) => p.id === b)?.name ?? '', 'fr', { sensitivity: 'base' }));
+    const filter = projectFilter !== 'all' && projectIds.includes(projectFilter) ? projectFilter : 'all';
+    const active = weekSlots
+        .filter((slot) => filter === 'all' || slot.projectId === filter)
         .sort((a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day) || a.startTime.localeCompare(b.startTime) || a.projectId - b.projectId);
 
     return (
@@ -220,6 +225,28 @@ export function SlotPlacementPanel({ weekKey, slots, bookings, members, onPlace,
                     Un créneau passé les compte présents tout de suite.
                 </span>
             </p>
+            {projectIds.length > 1 && (
+                <div role="group" aria-label="Filtrer par projet" className="mb-5 -mx-1 px-1 flex gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {(['all', ...projectIds] as const).map((id) => {
+                        const label = id === 'all' ? 'Tous les projets' : projectsData.find((p) => p.id === id)?.name ?? `Projet ${id}`;
+                        const count = id === 'all' ? weekSlots.length : weekSlots.filter((slot) => slot.projectId === id).length;
+                        const on = filter === id;
+                        return (
+                            <button
+                                key={id}
+                                type="button"
+                                aria-pressed={on}
+                                onClick={() => setProjectFilter(id)}
+                                className={`shrink-0 min-h-[44px] px-4 rounded-full border font-school text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                                    on ? 'btn-phoenix-gradient text-white border-transparent shadow-soft' : 'bg-[#1F0422]/70 text-[#ECDDFD]/80 border-[#6F2B75]/50 hover:text-white hover:border-[#EC602B]/60'
+                                }`}
+                            >
+                                {label} <span className="opacity-60">({count})</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
             {active.length === 0 ? (
                 <div className="flex flex-col items-center py-10 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
                     <XCircle size={32} className="text-[#ECDDFD]/30 mb-2" aria-hidden="true" />
