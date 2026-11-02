@@ -707,3 +707,26 @@ export async function importExemptionsApi(requesterId: string, token: string, en
     const parsed = parseImportResult(result.data);
     return parsed ? { ok: true, ...parsed } : { ok: false, message: HOURS_UNAVAILABLE };
 }
+
+// ─── Membres placés sur un créneau par un responsable ─────────────────────────
+
+const MEMBER_BOOKING_UNAVAILABLE = "Le placement de membres sur un créneau n'est pas disponible pour le moment.";
+
+const postMemberBookingAction = (body: Record<string, unknown>) => postPlanningAction(body, MEMBER_BOOKING_UNAVAILABLE);
+
+export async function addMemberBookingsApi(
+    requesterId: string,
+    token: string,
+    slotId: string,
+    weekKey: string,
+    userIds: string[]
+): Promise<{ success: boolean; message: string; code?: string; added: number; updated: number; already: number }> {
+    const { success, message, code, data } = await postMemberBookingAction({ action: 'addMemberBookings', requesterId, token, slotId, weekKey, userIds });
+    const count = (value: unknown) => (typeof value === 'number' ? value : 0);
+    return { success, message, code, added: count(data?.added), updated: count(data?.updated), already: count(data?.already) };
+}
+
+export async function removeMemberBookingApi(requesterId: string, token: string, bookingId: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postMemberBookingAction({ action: 'removeMemberBooking', requesterId, token, bookingId });
+    return { success, message, code };
+}

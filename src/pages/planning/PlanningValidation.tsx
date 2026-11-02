@@ -5,6 +5,7 @@ import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, formatWeekLabel, navigateWeek } from '../../data/planningData';
+import { SlotPlacementPanel } from '../../components/planning/SlotPlacementPanel';
 
 interface ConfirmationTarget {
     bookingId: string;
@@ -15,9 +16,10 @@ interface ConfirmationTarget {
 }
 
 export function PlanningValidation() {
-    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent, resetValidation, isPending } = usePlanning();
+    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent, resetValidation, isPending, placeMembers, unplaceMember, allUsers } = usePlanning();
     const [confirmTarget, setConfirmTarget] = useState<ConfirmationTarget | null>(null);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [view, setView] = useState<'validate' | 'place'>('validate');
 
     const isBureau = currentUser?.role === 'bureau';
 
@@ -118,6 +120,36 @@ export function PlanningValidation() {
                 </motion.button>
             </div>
 
+            {/* Deux vues : valider les présences, ou placer des membres sur les créneaux */}
+            <div role="tablist" aria-label="Que voulez-vous faire ?" className="mb-6 p-1.5 rounded-full bg-[#1F0422]/80 border border-[#6F2B75]/40 flex gap-1.5">
+                {([['validate', 'Valider les présences'], ['place', 'Placer des membres']] as const).map(([id, label]) => (
+                    <button
+                        key={id}
+                        type="button"
+                        role="tab"
+                        aria-selected={view === id}
+                        onClick={() => setView(id)}
+                        className={`flex-1 min-h-[44px] px-3 rounded-full font-school text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                            view === id ? 'btn-phoenix-gradient text-white shadow-soft' : 'text-[#ECDDFD]/70 hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
+
+            {view === 'place' ? (
+                <SlotPlacementPanel
+                    weekKey={currentWeekKey}
+                    slots={mySlots}
+                    bookings={bookings}
+                    members={allUsers}
+                    onPlace={(slotId, userIds) => placeMembers(slotId, currentWeekKey, userIds)}
+                    onUnplace={unplaceMember}
+                    onNotify={showToast}
+                />
+            ) : (
+                <>
             {/* À valider */}
             <div className="flex items-center gap-2 mb-3">
                 <span className="font-school text-xs uppercase tracking-widest text-[#ECDDFD]/70 font-semibold">
@@ -241,6 +273,8 @@ export function PlanningValidation() {
                             );
                         })}
                     </div>
+                </>
+            )}
                 </>
             )}
 

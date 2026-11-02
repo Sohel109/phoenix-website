@@ -17,6 +17,8 @@ import {
     fetchExemptions,
     setExemptionApi,
     importExemptionsApi,
+    addMemberBookingsApi,
+    removeMemberBookingApi,
 } from '../data/planningData';
 import { canDeleteManualHour } from '../data/manualHoursRules';
 import { createLatestGate } from '../data/voteResponse';
@@ -67,6 +69,10 @@ interface PlanningContextType {
     validatePresence: (bookingId: string) => Promise<boolean>;
     markAbsent: (bookingId: string) => Promise<boolean>;
     resetValidation: (bookingId: string) => Promise<boolean>;
+    /** Place des membres de la liste sur un créneau (Bureau, ou chef de projet pour ses projets) ; le serveur décide. */
+    placeMembers: (slotId: string, weekKey: string, userIds: string[]) => Promise<{ ok: boolean; message: string; added: number; updated: number; already: number }>;
+    /** Retire un membre d'un créneau (même droits). */
+    unplaceMember: (bookingId: string) => Promise<{ ok: boolean; message: string }>;
     currentWeekKey: string;
     setCurrentWeekKey: (wk: string) => void;
     unavailableWeeks: string[];
@@ -436,6 +442,24 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         return success;
     }, [bookings, currentUser, pendingKeys]);
 
+    const placeMembers = useCallback(async (slotId: string, weekKey: string, userIds: string[]) => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) {
+            return { ok: false, message: 'Action réservée aux responsables.', added: 0, updated: 0, already: 0 };
+        }
+        const result = await addMemberBookingsApi(currentUser.id, currentUser.token ?? '', slotId, weekKey, userIds);
+        if (result.success) await refreshPlanningData();
+        return { ok: result.success, message: result.message, added: result.added, updated: result.updated, already: result.already };
+    }, [currentUser, refreshPlanningData]);
+
+    const unplaceMember = useCallback(async (bookingId: string) => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) {
+            return { ok: false, message: 'Action réservée aux responsables.' };
+        }
+        const result = await removeMemberBookingApi(currentUser.id, currentUser.token ?? '', bookingId);
+        if (result.success) await refreshPlanningData();
+        return { ok: result.success, message: result.message };
+    }, [currentUser, refreshPlanningData]);
+
     const resetValidation = useCallback(async (bookingId: string): Promise<boolean> => {
         if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return false;
         if (pendingKeys.has(bookingId)) return false;
@@ -672,7 +696,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             currentUser, login, logout,
             bookings, allUsers, getWeekBookings,
             updateUserProject, getTutorsForProject,
-            toggleAvailability, validatePresence, markAbsent, resetValidation,
+            toggleAvailability, validatePresence, markAbsent, resetValidation, placeMembers, unplaceMember,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,

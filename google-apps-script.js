@@ -90,6 +90,12 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  var memberBookingResult = handleMemberBookingAction(action, postData);
+  if (memberBookingResult) {
+    return ContentService.createTextOutput(JSON.stringify(memberBookingResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'saveSiteContent') {
     var lock1 = LockService.getScriptLock();
     try {
@@ -2190,6 +2196,125 @@ function exemptionsImport(ctx, postData) {
     imported++;
   }
   return { success: true, imported: imported, ignored: entries.length - imported };
+}
+
+// ==========================================
+// RÉSERVATIONS PLACÉES PAR UN RESPONSABLE
+// ==========================================
+// Tous les tuteurs n'ont pas encore leur code : le Bureau, et un chef de projet pour ses projets (colonne J), placent
+// des membres de la liste sur un créneau, passé, du jour ou à venir. Un créneau passé donne directement « présent »
+// (confirmé par le responsable, les heures comptent) ; un créneau du jour ou à venir donne « prévu », à valider ensuite.
+
+var MEMBER_BOOKING_ACTIONS = ['addMemberBookings', 'removeMemberBooking'];
+var MEMBER_BOOKING_MAX = 50;
+var BOOKING_HEADERS = ['id', 'slotId', 'userId', 'userName', 'weekKey', 'status', 'validatedBy', 'validatedAt'];
+
+function handleMemberBookingAction(action, postData) {
+  if (MEMBER_BOOKING_ACTIONS.indexOf(action) === -1) return null;
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(postData.requesterId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) {
+    return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
+  }
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(15000);
+    var users = readChildrenUsers();
+    var user = findVoteUser(users, postData.requesterId);
+    if (!user) return voteFail('forbidden', 'Compte introuvable.');
+    if (user.role !== 'bureau' && user.role !== 'chef_projet') {
+      return voteFail('forbidden', 'Seuls le Bureau et les chefs de projet peuvent placer des membres sur un créneau.');
+    }
+    var ctx = { user: user, users: users, today: todayKeyParis(), sheet: getOrCreateSheet('Bookings', BOOKING_HEADERS) };
+    if (action === 'addMemberBookings') return memberBookingsAdd(ctx, postData);
+    return memberBookingRemove(ctx, postData);
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function memberBookingsAdd(ctx, postData) {
+  var slot = parseSlotId(postData.slotId);
+  if (!slot || CHILDREN_PROJECT_IDS.indexOf(slot.projectId) === -1) return voteFail('invalid', 'Créneau inconnu.');
+  if (!canManageProject(ctx.user, slot.projectId)) return voteFail('forbidden', 'Vous ne pouvez placer des membres que sur les créneaux de vos projets.');
+  var date = sessionDateKey(postData.weekKey, postData.slotId);
+  if (!date) return voteFail('invalid', 'Semaine invalide.');
+  var year = schoolYearFor(ctx.today);
+  if (date < year.start || date > year.end) return voteFail('invalid', "Cette semaine n'est pas dans l'année scolaire en cours.");
+
+  var wanted = Array.isArray(postData.userIds) ? postData.userIds : [];
+  if (wanted.length === 0 || wanted.length > MEMBER_BOOKING_MAX) {
+    return voteFail('invalid', 'Choisissez entre 1 et ' + MEMBER_BOOKING_MAX + ' membres.');
+  }
+  var members = [];
+  var seen = {};
+  for (var i = 0; i < wanted.length; i++) {
+    var member = findVoteUser(ctx.users, wanted[i]);
+    if (!member) return voteFail('invalid', 'Membre introuvable.');
+    if (!seen[member.id]) {
+      seen[member.id] = true;
+      members.push(member);
+    }
+  }
+
+  var isPast = date < ctx.today;
+  var status = isPast ? 'confirme' : 'prevu';
+  var stamp = new Date(nowMs()).toISOString();
+  var values = ctx.sheet.getDataRange().getValues();
+  var added = 0;
+  var updated = 0;
+  var already = 0;
+  for (var m = 0; m < members.length; m++) {
+    var found = 0;
+    for (var r = 1; r < values.length; r++) {
+      if (String(values[r][2]) === members[m].id && String(values[r][1]) === String(postData.slotId) && String(values[r][4]) === String(postData.weekKey)) {
+        if (found === 0 || String(values[found - 1][5]) === 'annule') found = r + 1;
+      }
+    }
+    if (found === 0) {
+      ctx.sheet.appendRow(['bk-' + nowMs() + '-' + Math.random().toString(36).slice(2, 7), postData.slotId, members[m].id, members[m].name,
+        postData.weekKey, status, isPast ? ctx.user.id : '', isPast ? stamp : '']);
+      added++;
+      continue;
+    }
+    var current = String(values[found - 1][5]);
+    if (current === 'annule') {
+      ctx.sheet.getRange(found, 4).setValue(members[m].name);
+      ctx.sheet.getRange(found, 6).setValue(status);
+      ctx.sheet.getRange(found, 7).setValue(isPast ? ctx.user.id : '');
+      ctx.sheet.getRange(found, 8).setValue(isPast ? stamp : '');
+      added++;
+    } else if (current === 'prevu' && isPast) {
+      ctx.sheet.getRange(found, 6).setValue('confirme');
+      ctx.sheet.getRange(found, 7).setValue(ctx.user.id);
+      ctx.sheet.getRange(found, 8).setValue(stamp);
+      updated++;
+    } else {
+      already++;
+    }
+  }
+  return { success: true, added: added, updated: updated, already: already, status: status };
+}
+
+function memberBookingRemove(ctx, postData) {
+  var values = ctx.sheet.getDataRange().getValues();
+  var row = 0;
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]) === String(postData.bookingId)) row = i + 1;
+  }
+  if (row === 0) return voteFail('invalid', 'Réservation introuvable.');
+  var slot = parseSlotId(values[row - 1][1]);
+  if (ctx.user.role !== 'bureau' && (!slot || !canManageProject(ctx.user, slot.projectId))) {
+    return voteFail('forbidden', 'Vous ne pouvez retirer que des membres des créneaux de vos projets.');
+  }
+  ctx.sheet.deleteRow(row);
+  return { success: true };
 }
 
 // ==========================================
