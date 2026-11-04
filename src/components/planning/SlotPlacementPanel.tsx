@@ -94,7 +94,7 @@ function SlotCard({ slot, weekKey, bookings, members, onPlace, onUnplace, onNoti
         <motion.li
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 shadow-soft-lg backdrop-blur-md list-none"
+            className="p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 shadow-soft-lg backdrop-blur-md list-none"
         >
             <div className="flex items-start gap-4">
                 <div className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex flex-col items-center justify-center shadow-soft" aria-hidden="true">
@@ -248,7 +248,7 @@ export function SlotPlacementPanel({ weekKey, slots, bookings, members, onPlace,
                 </div>
             )}
             {active.length === 0 ? (
-                <div className="flex flex-col items-center py-10 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                <div className="flex flex-col items-center py-10 text-center rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
                     <XCircle size={32} className="text-[#ECDDFD]/30 mb-2" aria-hidden="true" />
                     <p className="text-[#ECDDFD]/60 text-sm">Aucun créneau cette semaine pour vos projets.</p>
                 </div>

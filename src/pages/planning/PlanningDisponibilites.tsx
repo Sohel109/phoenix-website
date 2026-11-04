@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, AlertTriangle, LoaderCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, LoaderCircle, Calendar } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import {
@@ -53,9 +54,16 @@ export function PlanningDisponibilites() {
     const bookedCount = filteredSlots.filter(s => isBooked(s.id)).length;
 
     return (
-        <PlanningLayout title="Disponibilités">
+        <PlanningLayout title="Mes disponibilités">
+            <PlanningPageHeader
+                icon={<Calendar size={16} />}
+                section="Mon activité"
+                title="Mes disponibilités"
+                description="Choisissez, semaine par semaine, les créneaux où vous pouvez venir."
+            />
+
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-5 p-4 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
+            <div className="flex items-center justify-between mb-5 p-4 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
@@ -77,7 +85,7 @@ export function PlanningDisponibilites() {
             </div>
 
             {/* Global unavailability switch */}
-            <div className="flex items-center justify-between p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 shadow-soft-lg backdrop-blur-md">
+            <div className="flex items-center justify-between p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 shadow-soft-lg backdrop-blur-md">
                 <div className="flex items-center gap-3.5">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
                         <AlertTriangle size={18} className={unavailable ? 'text-amber-200' : 'text-white'} />
@@ -124,7 +132,7 @@ export function PlanningDisponibilites() {
                 {unavailable ? (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-12 text-center bg-[#2D0A32]/90 rounded-[2rem] border border-[#6F2B75]/40 shadow-soft-lg"
+                        className="flex flex-col items-center justify-center py-12 text-center bg-[#2D0A32]/90 rounded-2xl border border-[#6F2B75]/40 shadow-soft-lg"
                     >
                         <div className="w-14 h-14 rounded-full bg-[#EC602B]/20 border border-[#EC602B]/40 text-[#EC602B] flex items-center justify-center mb-3">
                             <AlertTriangle size={28} />
@@ -135,7 +143,7 @@ export function PlanningDisponibilites() {
                 ) : (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="rounded-[2rem] overflow-hidden border border-[#6F2B75]/40 bg-[#2D0A32]/90 backdrop-blur-md shadow-soft-lg"
+                        className="rounded-2xl overflow-hidden border border-[#6F2B75]/40 bg-[#2D0A32]/90 backdrop-blur-md shadow-soft-lg"
                     >
                         {/* Table header */}
                         <div className="grid grid-cols-[1fr_80px_80px_1fr_80px] gap-px bg-[#1F0422]/80 px-4 py-3 text-xs font-school font-bold text-[#ECDDFD]/70 uppercase tracking-widest border-b border-[#6F2B75]/40">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Users, ShieldCheck, RotateCcw, LoaderCircle, Check } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, formatWeekLabel, navigateWeek } from '../../data/planningData';
@@ -25,7 +26,7 @@ export function PlanningValidation() {
 
     if (!currentUser || (currentUser.role !== 'chef_projet' && !isBureau)) {
         return (
-            <PlanningLayout title="Validation">
+            <PlanningLayout title="Valider les présences">
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <ShieldCheck size={48} className="text-white/20 mb-4" />
                     <p className="text-white font-bold text-lg">Accès restreint</p>
@@ -82,7 +83,7 @@ export function PlanningValidation() {
     };
 
     return (
-        <PlanningLayout title="Validation des présences">
+        <PlanningLayout title="Valider les présences">
             {/* Toast notification */}
             <AnimatePresence>
                 {toastMessage && (
@@ -98,8 +99,15 @@ export function PlanningValidation() {
                 )}
             </AnimatePresence>
 
+            <PlanningPageHeader
+                icon={<CheckCircle size={16} />}
+                section="Gestion"
+                title="Valider les présences"
+                description="Confirmez qui est venu à chaque séance, ou placez vous-même des membres sur les créneaux."
+            />
+
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-6 p-4 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
+            <div className="flex items-center justify-between mb-6 p-4 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
@@ -158,7 +166,7 @@ export function PlanningValidation() {
             </div>
 
             {prevuBookings.length === 0 ? (
-                <div className="flex flex-col items-center py-10 text-center mb-8 rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                <div className="flex flex-col items-center py-10 text-center mb-8 rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
                     <Users size={32} className="text-[#ECDDFD]/30 mb-2" />
                     <p className="text-[#ECDDFD]/60 text-sm">Aucune présence à valider pour cette semaine.</p>
                 </div>
@@ -173,7 +181,7 @@ export function PlanningValidation() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                                className="flex items-center gap-4 p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 shadow-soft-lg backdrop-blur-md"
+                                className="flex items-center gap-4 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 shadow-soft-lg backdrop-blur-md"
                             >
                                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center font-bold text-sm shadow-soft">
                                     {userName.charAt(0)}

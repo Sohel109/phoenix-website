@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Clock, MapPin, Calendar, Users, X, Download, Filter, AlertTriangle, Grid, User } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWeek, type TimeSlot } from '../../data/planningData';
@@ -60,6 +61,13 @@ export function PlanningHoraire() {
 
     return (
         <PlanningLayout title="Horaire">
+            <PlanningPageHeader
+                icon={<Clock size={16} />}
+                section="Mon activité"
+                title="Horaire"
+                description="Le planning de la semaine : tous les créneaux de l'association, ou seulement les vôtres."
+            />
+
             {/* Navigation Tabs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
                 <div className="flex bg-[#2D0A32]/90 p-1.5 rounded-full border border-[#6F2B75]/40 shrink-0 backdrop-blur-md shadow-soft">
@@ -100,7 +108,7 @@ export function PlanningHoraire() {
             </div>
 
             {/* Week navigator */}
-            <div className="flex items-center justify-between mb-6 p-4 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
+            <div className="flex items-center justify-between mb-6 p-4 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentWeekKey(navigateWeek(currentWeekKey, 'prev'))}
@@ -124,7 +132,7 @@ export function PlanningHoraire() {
             {/* TAB 1: MON EMPLOI DU TEMPS */}
             {activeTab === 'mine' && (
                 enrichedMyBookings.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                    <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
                         <div className="w-14 h-14 rounded-full bg-[#6F2B75]/30 border border-[#6F2B75]/50 flex items-center justify-center text-[#ECDDFD]/60 mb-3 shadow-soft">
                             <Clock size={28} />
                         </div>
@@ -143,7 +151,7 @@ export function PlanningHoraire() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.05 }}
                                     onClick={() => setSelectedSlotForModal(slot!)}
-                                    className="flex items-center gap-4 p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all cursor-pointer group shadow-soft-lg hover:-translate-y-0.5"
+                                    className="flex items-center gap-4 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all cursor-pointer group shadow-soft-lg hover:-translate-y-0.5"
                                 >
                                     <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex flex-col items-center justify-center text-center shadow-soft group-hover:scale-105 transition-transform">
                                         <span className="text-[11px] font-school uppercase tracking-wider text-white/90 leading-none">{slot!.day.slice(0, 3)}</span>
@@ -184,7 +192,7 @@ export function PlanningHoraire() {
             {activeTab === 'global' && (
                 <div className="space-y-6">
                     {/* Project Filter Toolbar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg">
                         <div className="flex items-center gap-2.5 text-[#ECDDFD] text-xs font-school uppercase tracking-wider font-semibold">
                             <Filter size={15} className="text-[#EC602B]" />
                             <span>Filtrer par projet :</span>
@@ -202,7 +210,7 @@ export function PlanningHoraire() {
                     </div>
 
                     {slotsByDay.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                        <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
                             <Clock size={36} className="text-[#ECDDFD]/30 mb-3" />
                             <p className="text-white font-medium">Aucun créneau programmé pour ce filtre cette semaine</p>
                         </div>
@@ -226,7 +234,7 @@ export function PlanningHoraire() {
                                                 key={slot.id}
                                                 whileHover={{ y: -2 }}
                                                 onClick={() => setSelectedSlotForModal(slot)}
-                                                className={`p-5 rounded-[2rem] border transition-all cursor-pointer flex flex-col justify-between backdrop-blur-md shadow-soft-lg ${
+                                                className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between backdrop-blur-md shadow-soft-lg ${
                                                     hasAttendees
                                                         ? 'bg-[#2D0A32]/90 border-[#6F2B75]/40 hover:border-[#EC602B]/60'
                                                         : 'bg-[#2D0A32]/60 border-amber-500/30 hover:border-amber-500/60'
@@ -332,7 +340,7 @@ export function PlanningHoraire() {
 
                         <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1 my-5">
                             {getSlotAttendees(selectedSlotForModal.id).length === 0 ? (
-                                <div className="p-5 rounded-[2rem] bg-amber-500/10 border border-amber-500/20 text-center">
+                                <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
                                     <AlertTriangle size={24} className="mx-auto text-amber-400 mb-2" />
                                     <p className="text-amber-200 text-xs font-bold">Aucun tuteur inscrit pour cette séance</p>
                                     <p className="text-amber-200/60 text-[11px] mt-1">N'hésitez pas à vous inscrire dans l'onglet Disponibilités !</p>

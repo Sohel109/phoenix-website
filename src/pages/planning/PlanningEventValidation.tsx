@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Download, CheckCircle, Search, ShieldCheck, Users, Loader2, RotateCcw } from 'lucide-react';
+import { Download, CheckCircle, Search, ShieldCheck, Users, Loader2, RotateCcw, CheckSquare } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { SPECIAL_EVENTS } from '../../data/planningData';
 
@@ -108,7 +109,7 @@ export function PlanningEventValidation() {
 
     if (!currentUser || !isBureau) {
         return (
-            <PlanningLayout title="Événements">
+            <PlanningLayout title="Valider les événements">
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <ShieldCheck size={48} className="text-white/20 mb-4" />
                     <p className="text-white font-bold text-lg">Accès restreint</p>
@@ -119,13 +120,13 @@ export function PlanningEventValidation() {
     }
 
     return (
-        <PlanningLayout title="Validation Événements">
-            <div className="mb-6 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-display text-white tracking-wide">Validation Événements</h1>
-                    <p className="text-[#ECDDFD]/70 text-sm mt-1">Gérez les présences pour les grands événements Phœnix.</p>
-                </div>
-                <div className="flex items-center gap-3">
+        <PlanningLayout title="Valider les événements">
+            <PlanningPageHeader
+                icon={<CheckSquare size={16} />}
+                section="Gestion"
+                title="Valider les événements"
+                description="Gérez les présences pour les grands événements Phœnix."
+                actions={<>
                     <motion.button
                         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         onClick={loadData}
@@ -143,8 +144,8 @@ export function PlanningEventValidation() {
                         <Download size={16} />
                         Exporter CSV
                     </motion.button>
-                </div>
-            </div>
+                </>}
+            />
 
             {/* Event Tabs */}
             <div className="flex overflow-x-auto pb-2 mb-6 gap-2 no-scrollbar">
@@ -165,15 +166,15 @@ export function PlanningEventValidation() {
 
             {/* Stats Summary */}
             <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="p-4 sm:p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
+                <div className="p-4 sm:p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
                     <p className="text-[#ECDDFD]/60 text-[10px] font-school uppercase tracking-wider font-bold mb-1">Présents</p>
                     <p className="text-2xl sm:text-3xl font-display text-emerald-400">{stats.present}</p>
                 </div>
-                <div className="p-4 sm:p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
+                <div className="p-4 sm:p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
                     <p className="text-[#ECDDFD]/60 text-[10px] font-school uppercase tracking-wider font-bold mb-1">Absents</p>
                     <p className="text-2xl sm:text-3xl font-display text-rose-400">{stats.absent}</p>
                 </div>
-                <div className="p-4 sm:p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
+                <div className="p-4 sm:p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 text-center shadow-soft-lg">
                     <p className="text-[#ECDDFD]/60 text-[10px] font-school uppercase tracking-wider font-bold mb-1">Taux</p>
                     <p className="text-2xl sm:text-3xl font-display text-white">{stats.percent}%</p>
                 </div>
@@ -199,7 +200,7 @@ export function PlanningEventValidation() {
                         <p className="text-[#ECDDFD]/60 text-sm animate-pulse">Chargement des membres depuis Google Sheet...</p>
                     </div>
                 ) : filteredMembers.length === 0 ? (
-                    <div className="text-center py-12 rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30">
+                    <div className="text-center py-12 rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30">
                         <Users size={48} className="mx-auto text-[#ECDDFD]/20 mb-3" />
                         <p className="text-[#ECDDFD]/40 font-medium">Aucun membre trouvé.</p>
                     </div>
@@ -213,7 +214,7 @@ export function PlanningEventValidation() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.02 }}
                                 onClick={() => toggleEventAttendance(member.id, selectedEventId)}
-                                className={`flex items-center justify-between p-4 sm:p-5 rounded-[2rem] border transition-all cursor-pointer backdrop-blur-md shadow-soft ${
+                                className={`flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer backdrop-blur-md shadow-soft ${
                                     isPresent 
                                         ? 'bg-[#2D0A32]/95 border-emerald-500/40' 
                                         : 'bg-[#2D0A32]/60 border-[#6F2B75]/30 hover:border-[#6F2B75]/60'

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
 import type { NotificationCategory, PlanningNotification } from '../../hooks/usePlanningNotifications';
 
@@ -36,22 +37,12 @@ export function PlanningNotifications() {
 
     return (
         <PlanningLayout title="Notifications">
-            {/* Header */}
-            <div className="mb-6 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shadow-soft">
-                            <Bell size={15} />
-                        </div>
-                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">Espace Suivi</span>
-                    </div>
-                    <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">Centre de Notifications</h1>
-                    <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
-                        Suivez en direct l'état de validation de vos séances de tutorat et de vos présences aux événements.
-                    </p>
-                </div>
-
-                {unreadCount > 0 && (
+            <PlanningPageHeader
+                icon={<Bell size={15} />}
+                section="Mon activité"
+                title="Notifications"
+                description="Suivez l'état de validation de vos séances de tutorat et de vos présences aux événements."
+                actions={unreadCount > 0 ? (
                     <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -61,8 +52,8 @@ export function PlanningNotifications() {
                         <Check size={16} />
                         Tout marquer comme lu
                     </motion.button>
-                )}
-            </div>
+                ) : undefined}
+            />
 
             {/* Filter Bar */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6 p-2 rounded-full bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
@@ -113,7 +104,7 @@ export function PlanningNotifications() {
             {/* Notification List */}
             <div className="space-y-4">
                 {filteredNotifications.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
+                    <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30 shadow-soft-lg">
                         <div className="w-16 h-16 rounded-full bg-[#6F2B75]/30 flex items-center justify-center text-[#ECDDFD]/50 mb-3 shadow-soft">
                             <Bell size={28} />
                         </div>
@@ -130,7 +121,7 @@ export function PlanningNotifications() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.04 }}
-                                className={`p-5 sm:p-6 rounded-[2rem] border transition-all backdrop-blur-md shadow-soft-lg ${
+                                className={`p-5 sm:p-6 rounded-2xl border transition-all backdrop-blur-md shadow-soft-lg ${
                                     notif.read
                                         ? 'bg-[#2D0A32]/60 border-[#6F2B75]/30 opacity-75'
                                         : 'bg-[#2D0A32]/95 border-[#EC602B]/40 shadow-soft'

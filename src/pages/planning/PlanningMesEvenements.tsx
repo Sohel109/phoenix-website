@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, CheckCircle, XCircle, AlertTriangle, Sparkles, Info, Edit3 } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { SPECIAL_EVENTS } from '../../data/planningData';
 import { useEvents } from '../../hooks/useEvents';
@@ -33,24 +34,13 @@ export function PlanningMesEvenements() {
     };
 
     return (
-        <PlanningLayout title="Événements">
-            {/* Header */}
-            <div className="mb-8 pt-2">
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <Sparkles size={16} className="text-[#EC602B]" />
-                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">Participation associative</span>
-                    </div>
-                    <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">Mes Événements</h1>
-                    <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
-                        Indiquez votre présence pour chacun des 4 grands événements Phœnix de l'année. 
-                        La présence des tuteurs et membres est essentielle au succès de nos actions.
-                    </p>
-                </motion.div>
-            </div>
+        <PlanningLayout title="Mes événements">
+            <PlanningPageHeader
+                icon={<Sparkles size={16} />}
+                section="Mon activité"
+                title="Mes événements"
+                description="Indiquez votre présence pour chacun des 4 grands événements Phœnix de l'année. La présence des tuteurs et membres est essentielle au succès de nos actions."
+            />
 
             {/* Events List */}
             <div className="space-y-5">
@@ -70,7 +60,7 @@ export function PlanningMesEvenements() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.08 }}
-                            className="p-6 sm:p-7 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 backdrop-blur-md shadow-soft-lg"
+                            className="p-6 sm:p-7 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/50 transition-all duration-300 backdrop-blur-md shadow-soft-lg"
                         >
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
                                 {/* Event Details */}
@@ -176,7 +166,7 @@ export function PlanningMesEvenements() {
             </div>
 
             {/* General footer note */}
-            <div className="mt-8 p-5 rounded-[2rem] bg-[#2D0A32]/70 border border-[#6F2B75]/30 flex items-start gap-3.5 backdrop-blur-sm shadow-soft">
+            <div className="mt-8 p-5 rounded-2xl bg-[#2D0A32]/70 border border-[#6F2B75]/30 flex items-start gap-3.5 backdrop-blur-sm shadow-soft">
                 <Info size={18} className="text-[#EC602B] shrink-0 mt-0.5" />
                 <p className="text-[#ECDDFD]/70 text-xs leading-relaxed">
                     Les présences déclarées ici permettent au pôle Événements et au Bureau de dimensionner les équipes, la logistique et les transports. Toute modification de dernière minute doit être signalée directement aux responsables.

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Award, CheckCircle, Lock, RefreshCw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { useVoteData } from '../../hooks/useVoteData';
 import { castVoteApi, withdrawVoteApi } from '../../data/planningData';
@@ -62,27 +63,18 @@ export function PlanningVote() {
     const candidates = data ? data.candidates.filter((c) => c.id !== currentUser.id) : [];
 
     return (
-        <PlanningLayout title="Vote du mois">
-            <div className="mb-8 pt-2">
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <Award size={16} className="text-[#EC602B]" />
-                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">Vie de l'association</span>
-                    </div>
-                    <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">Tuteur du mois</h1>
-                    {data?.isOpen && (
-                        <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
-                            Du {formatDay(data.opensOn)} au {formatDay(data.closesOn)}, choisissez parmi les candidats celui qui vous a le plus marqué ce mois-ci.
-                            Votre vote reste secret. Vous pouvez le modifier ou le retirer jusqu'à la fermeture.
-                        </p>
-                    )}
-                </motion.div>
-            </div>
+        <PlanningLayout title="Tuteur du mois">
+            <PlanningPageHeader
+                icon={<Award size={16} />}
+                section="Mon activité"
+                title="Tuteur du mois"
+                description={data?.isOpen ? `Du ${formatDay(data.opensOn)} au ${formatDay(data.closesOn)}, choisissez parmi les candidats celui qui vous a le plus marqué ce mois-ci. Votre vote reste secret. Vous pouvez le modifier ou le retirer jusqu'à la fermeture.` : undefined}
+            />
 
             {loading && !data && <p className="text-[#ECDDFD]/70 text-sm">Chargement du vote...</p>}
 
             {needsLogin && (
-                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div role="alert" className="mb-6 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">Votre session doit être renouvelée pour voter. Reconnectez-vous, cela ne prend que quelques secondes.</p>
                     <button
                         type="button"
@@ -95,7 +87,7 @@ export function PlanningVote() {
             )}
 
             {error && !needsLogin && (
-                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div role="alert" className="mb-6 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">{error}</p>
                     <button
                         type="button"
@@ -110,7 +102,7 @@ export function PlanningVote() {
             )}
 
             {data && !data.isOpen && (
-                <div className="p-6 sm:p-7 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg flex items-start gap-4">
+                <div className="p-6 sm:p-7 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft-lg flex items-start gap-4">
                     <div className="w-11 h-11 rounded-lg bg-white/5 border border-[#ECDDFD]/10 text-[#ECDDFD]/70 flex items-center justify-center shrink-0">
                         <Lock size={18} />
                     </div>

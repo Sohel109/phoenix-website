@@ -14,6 +14,7 @@ interface DashCard {
     to: string;
     gradient: string;
     badge?: number;
+    section: 'activite' | 'gestion';
     chefOnly?: boolean;
     bureauOnly?: boolean;
 }
@@ -22,58 +23,66 @@ const cards: DashCard[] = [
     {
         icon: <Calendar size={26} />,
         label: 'Mes disponibilités',
-        description: 'Gérez vos créneaux semaine par semaine',
+        description: 'Choisissez vos créneaux, semaine par semaine',
         to: '/planning/disponibilites',
         gradient: 'from-[#EC602B] to-[#F1885C]',
+        section: 'activite',
     },
     {
         icon: <CalendarCheck size={26} />,
         label: 'Horaire',
-        description: 'Visualisez votre planning de la semaine',
+        description: 'Le planning de la semaine',
         to: '/planning/horaire',
         gradient: 'from-[#6F2B75] to-[#EC602B]',
+        section: 'activite',
     },
     {
         icon: <Sparkles size={26} />,
         label: 'Mes événements',
-        description: 'Présence SimONU, JEDC, Olympiades...',
+        description: 'Votre présence à SimONU, JEDC, Olympiades...',
         to: '/planning/mes-evenements',
         gradient: 'from-[#83338A] to-[#EC602B]',
-    },
-    {
-        icon: <Bell size={26} />,
-        label: 'Notifications',
-        description: 'Suivi des validations & présences',
-        to: '/planning/notifications',
-        gradient: 'from-[#EC602B] to-[#F29C38]',
-    },
-    {
-        icon: <Award size={26} />,
-        label: 'Vote du mois',
-        description: 'Votez pour le tuteur du mois',
-        to: '/planning/vote',
-        gradient: 'from-[#83338A] to-[#EC602B]',
+        section: 'activite',
     },
     {
         icon: <Cookie size={26} />,
         label: 'Goûters',
-        description: "Inscrivez-vous aux créneaux et indiquez ce que vous apportez",
+        description: 'Inscrivez-vous et indiquez ce que vous apportez',
         to: '/planning/gouters',
         gradient: 'from-[#EC602B] to-[#F29C38]',
+        section: 'activite',
+    },
+    {
+        icon: <Award size={26} />,
+        label: 'Tuteur du mois',
+        description: 'Votez pour le tuteur du mois',
+        to: '/planning/vote',
+        gradient: 'from-[#83338A] to-[#EC602B]',
+        section: 'activite',
+    },
+    {
+        icon: <Bell size={26} />,
+        label: 'Notifications',
+        description: 'Validations et présences à suivre',
+        to: '/planning/notifications',
+        gradient: 'from-[#EC602B] to-[#F29C38]',
+        section: 'activite',
     },
     {
         icon: <User size={26} />,
         label: 'Mon compte',
-        description: 'Vos heures, absences et statistiques',
+        description: 'Vos heures, absences et attestation',
         to: '/planning/compte',
         gradient: 'from-[#6F2B75] to-[#A043A8]',
+        section: 'activite',
     },
     {
         icon: <CheckSquare size={26} />,
         label: 'Valider les présences',
-        description: 'Confirmez les présences de vos tuteurs',
+        description: 'Confirmez les présences, placez des membres',
         to: '/planning/validation',
         gradient: 'from-[#2E7D32] to-[#4CAF50]',
+        section: 'gestion',
         chefOnly: true,
     },
     {
@@ -82,22 +91,25 @@ const cards: DashCard[] = [
         description: "Faites l'appel des enfants de votre projet",
         to: '/planning/presences-enfants',
         gradient: 'from-[#6F2B75] to-[#EC602B]',
+        section: 'gestion',
         chefOnly: true,
     },
     {
         icon: <FileText size={26} />,
         label: 'Récapitulatif des heures',
-        description: 'Bilan et export des heures validées',
+        description: 'Bilan, ajout et export des heures',
         to: '/planning/recap',
         gradient: 'from-[#1976D2] to-[#42A5F5]',
+        section: 'gestion',
         chefOnly: true,
     },
     {
         icon: <CheckSquare size={26} />,
-        label: 'Validation Événements',
+        label: 'Valider les événements',
         description: 'Présences SimONU, JEDC, Olympiades...',
         to: '/planning/events',
         gradient: 'from-[#6F2B75] to-[#3B82F6]',
+        section: 'gestion',
         bureauOnly: true,
     },
 ];
@@ -214,64 +226,56 @@ export function PlanningDashboard() {
                 </motion.div>
             )}
 
-            {/* Bento dashboard cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {visibleCards.map((card, i) => (
-                    <motion.div
-                        key={card.to}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.05 + i * 0.05, duration: 0.3 }}
-                    >
-                        <Link
-                            to={card.to}
-                            className="flex flex-col gap-4 p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all duration-300 group hover:-translate-y-1 shadow-soft-lg h-full"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className={`w-14 h-14 rounded-full bg-gradient-to-tr ${card.gradient} flex items-center justify-center text-white shadow-soft relative group-hover:scale-105 transition-transform duration-300`}>
-                                    {card.icon}
-                                    {card.badge !== undefined && card.badge > 0 && (
-                                        <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#EC602B] text-white text-[11px] font-school font-bold flex items-center justify-center border-2 border-[#2D0A32] shadow-sm">
-                                            {card.badge > 9 ? '9+' : card.badge}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="w-9 h-9 rounded-full bg-white/5 border border-[#ECDDFD]/10 flex items-center justify-center text-[#ECDDFD]/60 group-hover:text-[#EC602B] group-hover:border-[#EC602B]/40 group-hover:translate-x-0.5 transition-all duration-300">
-                                    <ArrowRight size={16} />
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-white font-bold text-lg tracking-wide group-hover:text-[#ECDDFD] transition-colors">
-                                    {card.label}
-                                </h3>
-                                <p className="text-[#ECDDFD]/70 text-sm mt-1 leading-relaxed">
-                                    {card.description}
-                                </p>
-                            </div>
-                        </Link>
-                    </motion.div>
-                ))}
-            </div>
+            {/* Deux blocs : ce que je fais, et ce que je gère */}
+            {([['activite', 'Mon activité'], ['gestion', 'Gestion']] as const).map(([section, heading]) => {
+                const sectionCards = visibleCards.filter(c => c.section === section);
+                if (sectionCards.length === 0) return null;
+                return (
+                    <section key={section} aria-labelledby={`dash-${section}`} className="mb-10">
+                        <h2 id={`dash-${section}`} className="mb-4 flex items-center gap-3 text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">
+                            {heading}
+                            <span className="h-px flex-1 bg-[#6F2B75]/40" aria-hidden="true" />
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {sectionCards.map((card, i) => (
+                                <motion.div
+                                    key={card.to}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.05 + i * 0.04, duration: 0.3 }}
+                                >
+                                    <Link
+                                        to={card.to}
+                                        className="flex items-center gap-4 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 hover:border-[#EC602B]/60 backdrop-blur-md transition-all duration-300 group hover:-translate-y-0.5 shadow-soft-lg h-full focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                                    >
+                                        <div className={`w-14 h-14 rounded-full bg-gradient-to-tr ${card.gradient} flex items-center justify-center text-white shadow-soft relative shrink-0 group-hover:scale-105 transition-transform duration-300`}>
+                                            {card.icon}
+                                            {card.badge !== undefined && card.badge > 0 && (
+                                                <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#EC602B] text-white text-[11px] font-school font-bold flex items-center justify-center border-2 border-[#2D0A32] shadow-sm">
+                                                    {card.badge > 9 ? '9+' : card.badge}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <h3 className="text-white font-bold text-base sm:text-lg tracking-wide">{card.label}</h3>
+                                            <p className="text-[#ECDDFD]/70 text-sm mt-0.5 leading-snug">{card.description}</p>
+                                        </div>
+                                        <ArrowRight size={18} className="shrink-0 text-[#ECDDFD]/40 group-hover:text-[#EC602B] group-hover:translate-x-0.5 transition-all duration-300" />
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </section>
+                );
+            })}
 
-            {/* Naviguer vers le site public sans se déconnecter */}
-            <div className="mt-8 p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-5 shadow-soft-lg">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center shrink-0 shadow-soft">
-                        <Globe size={22} />
-                    </div>
-                    <div>
-                        <p className="text-base font-bold text-white tracking-wide">Naviguer sur le site public Phœnix</p>
-                        <p className="text-xs text-[#ECDDFD]/70 mt-0.5">Consultez les actualités, projets et documents associatifs tout en restant connecté</p>
-                    </div>
-                </div>
-                <Link
-                    to="/"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white text-xs font-school uppercase tracking-wider transition-all duration-300 border border-[#ECDDFD]/30 hover:border-[#EC602B]/60 shadow-sm whitespace-nowrap"
-                >
-                    <span>Accéder au site public</span>
-                    <ArrowRight size={15} className="text-[#EC602B]" />
+            {/* Le bouton « Site public » du haut de page fait la même chose : un simple lien suffit ici */}
+            <p className="text-center text-xs text-[#ECDDFD]/60">
+                <Link to="/" className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
+                    <Globe size={13} className="text-[#EC602B]" />
+                    Retourner sur le site public, sans vous déconnecter
                 </Link>
-            </div>
+            </p>
         </PlanningLayout>
     );
 }

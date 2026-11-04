@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Cookie, RefreshCw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { useGouters } from '../../hooks/useGouters';
 import { describeAddedDates, formatGouterDate } from '../../data/gouterResponse';
@@ -78,23 +78,17 @@ export function PlanningGouters() {
 
     return (
         <PlanningLayout title="Goûters">
-            <div className="mb-8 pt-2">
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <Cookie size={16} className="text-[#EC602B]" />
-                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">Vie des projets</span>
-                    </div>
-                    <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">Goûters</h1>
-                    <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
-                        Chaque projet organise des goûters pour se financer. Inscrivez-vous aux heures où vous pouvez aider et indiquez ce que vous apportez.
-                    </p>
-                </motion.div>
-            </div>
+            <PlanningPageHeader
+                icon={<Cookie size={16} />}
+                section="Mon activité"
+                title="Goûters"
+                description="Chaque projet organise des goûters pour se financer. Inscrivez-vous aux heures où vous pouvez aider et indiquez ce que vous apportez."
+            />
 
             {loading && !data && <p className="text-[#ECDDFD]/70 text-sm">Chargement...</p>}
 
             {needsLogin && (
-                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div role="alert" className="mb-6 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">Votre session doit être renouvelée. Reconnectez-vous, cela ne prend que quelques secondes.</p>
                     <button type="button" onClick={handleReconnect} className="px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider btn-phoenix-gradient text-white">
                         Se reconnecter
@@ -103,7 +97,7 @@ export function PlanningGouters() {
             )}
 
             {error && !needsLogin && (
-                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div role="alert" className="mb-6 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">{error}</p>
                     <button type="button" onClick={() => void reload()} disabled={loading} className={`${secondaryButtonClass} flex items-center justify-center gap-2`}>
                         <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />

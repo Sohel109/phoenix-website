@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, ChevronLeft, CalendarCheck, Bell, Calendar, Clock, UserCheck, Globe } from 'lucide-react';
+import { LogOut, ChevronLeft, CalendarCheck, Bell, Calendar, Clock, UserCheck, Globe, CheckSquare, FileText } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
 import { PlanningNotificationsDrawer } from '../../components/planning/PlanningNotificationsDrawer';
 
 interface PlanningLayoutProps {
     children: React.ReactNode;
+    /** Nom de la page : repris par l'en-tête de la page elle-même, plus affiché dans la barre du haut. */
     title?: string;
     showBack?: boolean;
     backTo?: string;
 }
 
-export function PlanningLayout({ children, title, showBack = true, backTo = '/planning' }: PlanningLayoutProps) {
+export function PlanningLayout({ children, showBack = true, backTo = '/planning' }: PlanningLayoutProps) {
     const { currentUser, logout } = usePlanning();
     const navigate = useNavigate();
     const location = useLocation();
@@ -24,11 +25,19 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
         navigate('/planning/login');
     };
 
+    const canManage = currentUser?.role === 'chef_projet' || currentUser?.role === 'bureau';
+    // Les mêmes noms que sur le tableau de bord ; les responsables ont en plus leurs deux pages du quotidien.
     const quickLinks = [
-        { label: 'Tableau de bord', path: '/planning', icon: CalendarCheck },
-        { label: 'Mes disponibilités', path: '/planning/disponibilites', icon: Calendar },
+        { label: 'Accueil', path: '/planning', icon: CalendarCheck },
+        { label: 'Disponibilités', path: '/planning/disponibilites', icon: Calendar },
         { label: 'Horaire', path: '/planning/horaire', icon: Clock },
         { label: 'Mon compte', path: '/planning/compte', icon: UserCheck },
+        ...(canManage
+            ? [
+                { label: 'Valider', path: '/planning/validation', icon: CheckSquare },
+                { label: 'Récap', path: '/planning/recap', icon: FileText },
+            ]
+            : []),
     ];
 
     return (
@@ -59,29 +68,23 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                                 Phoenix <span className="text-[#EC602B]">Planning</span>
                             </span>
                         </Link>
-                        {title && (
-                            <>
-                                <span className="text-[#ECDDFD]/40 text-sm">/</span>
-                                <span className="text-[#ECDDFD] text-xs sm:text-sm font-school font-bold uppercase tracking-wider truncate max-w-[120px] sm:max-w-none">{title}</span>
-                            </>
-                        )}
                     </div>
 
                     {/* Quick navigation links on medium+ screens */}
-                    <nav className="hidden md:flex items-center gap-1.5">
+                    <nav className={`${canManage ? 'hidden lg:flex' : 'hidden md:flex'} items-center gap-1`} aria-label="Navigation de l'espace membre">
                         {quickLinks.map((item) => {
                             const isActive = location.pathname === item.path;
                             return (
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`px-3.5 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all flex items-center gap-1.5 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
+                                    className={`px-3 py-1.5 rounded-full text-xs font-school uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B] ${
                                         isActive
                                             ? 'bg-gradient-to-r from-[#6F2B75] to-[#8E3B95] text-white border border-[#ECDDFD]/40 shadow-soft'
                                             : 'text-[#ECDDFD]/75 hover:text-white hover:bg-white/10 border border-transparent'
                                     }`}
                                 >
-                                    <item.icon size={13} className={isActive ? 'text-[#EC602B]' : ''} />
+                                    <item.icon size={13} className={`hidden xl:block ${isActive ? 'text-[#EC602B]' : ''}`} />
                                     <span>{item.label}</span>
                                 </Link>
                             );
@@ -94,9 +97,10 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                             to="/"
                             className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 min-h-[38px] rounded-full bg-white/10 hover:bg-[#6F2B75]/40 text-[#ECDDFD] hover:text-white transition-all text-xs font-school uppercase tracking-wider border border-[#ECDDFD]/30 shadow-xs active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                             title="Quitter l'espace membre et revenir au site public (sans vous déconnecter)"
+                            aria-label="Site public"
                         >
                             <Globe size={14} className="text-[#EC602B]" />
-                            <span>Site public</span>
+                            <span className="hidden sm:inline whitespace-nowrap">Site public</span>
                         </Link>
 
                         {currentUser && (
@@ -117,7 +121,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                                     )}
                                 </button>
 
-                                <div className="hidden lg:flex flex-col items-end">
+                                <div className="hidden xl:flex flex-col items-end">
                                     <span className="text-xs sm:text-sm font-bold text-white leading-tight">{currentUser.name}</span>
                                     <span className="text-[10px] text-[#EC602B] font-school font-bold tracking-widest uppercase">
                                         {currentUser.role === 'bureau' ? 'Bureau' : currentUser.role === 'chef_projet' ? 'Chef de Projet' : 'Tuteur'}
@@ -131,7 +135,7 @@ export function PlanningLayout({ children, title, showBack = true, backTo = '/pl
                                     aria-label="Se déconnecter de l'espace membre"
                                 >
                                     <LogOut size={14} />
-                                    <span className="hidden sm:block">Déconnexion</span>
+                                    <span className="hidden xl:block">Déconnexion</span>
                                 </button>
                             </>
                         )}

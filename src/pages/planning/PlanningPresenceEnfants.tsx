@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ClipboardCheck, RefreshCw, ShieldCheck } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { useChildrenData } from '../../hooks/useChildrenData';
 import { isStaleChildrenData } from '../../data/childrenResponse';
@@ -72,23 +72,17 @@ export function PlanningPresenceEnfants() {
 
     return (
         <PlanningLayout title="Présence enfants">
-            <div className="mb-8 pt-2">
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <ClipboardCheck size={16} className="text-[#EC602B]" />
-                        <span className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70">Vie des projets</span>
-                    </div>
-                    <h1 className="text-3xl sm:text-4xl font-display text-white tracking-wide">Présence enfants</h1>
-                    <p className="text-[#ECDDFD]/70 text-sm mt-1 max-w-xl leading-relaxed">
-                        Tenez la liste des enfants de votre projet et faites l'appel à chaque séance.
-                    </p>
-                </motion.div>
-            </div>
+            <PlanningPageHeader
+                icon={<ClipboardCheck size={16} />}
+                section="Gestion"
+                title="Présence enfants"
+                description="Tenez la liste des enfants de votre projet et faites l'appel à chaque séance."
+            />
 
             {loading && !data && <p className="text-[#ECDDFD]/70 text-sm">Chargement...</p>}
 
             {needsLogin && (
-                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div role="alert" className="mb-6 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">Votre session doit être renouvelée. Reconnectez-vous, cela ne prend que quelques secondes.</p>
                     <button type="button" onClick={handleReconnect} className="px-5 py-2.5 rounded-full font-school text-xs uppercase tracking-wider btn-phoenix-gradient text-white">
                         Se reconnecter
@@ -97,7 +91,7 @@ export function PlanningPresenceEnfants() {
             )}
 
             {error && !needsLogin && (
-                <div role="alert" className="mb-6 p-5 rounded-xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div role="alert" className="mb-6 p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#EC602B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-[#ECDDFD]/85">{error}</p>
                     <button type="button" onClick={() => void reload()} disabled={loading} className={`${secondaryButtonClass} flex items-center justify-center gap-2`}>
                         <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />

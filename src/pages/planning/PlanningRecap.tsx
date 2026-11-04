@@ -7,7 +7,9 @@ import { projectsData } from '../../data/projectsData';
 import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
 import { PlanningSkeletonList } from '../../components/planning/PlanningSkeletonCard';
 import { eligibleMemberIds, canDeleteManualHour } from '../../data/manualHoursRules';
+import { computeRecap, describeRecapFilter } from '../../data/recapHours';
 import { HoursLoadBanner } from '../../components/planning/HoursLoadBanner';
+import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 
 export function PlanningRecap() {
     const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption, hoursAccess, hoursError, pendingLocalHours, importLocalHours } = usePlanning();
@@ -16,7 +18,8 @@ export function PlanningRecap() {
     const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
     const [selectedProjectId, setSelectedProjectId] = useState<number | 'all'>('all');
-    const [showAllMembers, setShowAllMembers] = useState(true);
+    // Par défaut, seuls les membres qui ont des heures dans la sélection sont listés.
+    const [includeZero, setIncludeZero] = useState(false);
 
     // Recherche par nom et tri des bénévoles
     const [searchQuery, setSearchQuery] = useState('');
@@ -90,69 +93,24 @@ export function PlanningRecap() {
         return Array.from(years).sort((a, b) => b - a);
     }, [bookings]);
 
-    // Calculer les heures consolidées (créneaux de planning + heures manuelles bureau)
-    const recapData = useMemo(() => {
-        const filteredBookings = bookings.filter(b => {
-            if (b.status !== 'confirme') return false;
-            
-            const slot = timeSlots.find(s => s.id === b.slotId);
-            if (!slot) return false;
+    // Heures consolidées (créneaux confirmés et heures manuelles), dans la période et le projet choisis
+    const recapData = useMemo(() => computeRecap({
+        bookings,
+        manualHours,
+        slots: timeSlots,
+        allUsers: allUsers || [],
+        filter: { type: filterType, week: selectedWeek, month: selectedMonth, year: selectedYear, projectId: selectedProjectId },
+        includeZero,
+        weekStart: getWeekStartDate,
+        duration: getSlotDuration,
+    }), [bookings, manualHours, filterType, selectedWeek, selectedMonth, selectedYear, selectedProjectId, includeZero, allUsers]);
 
-            if (selectedProjectId !== 'all' && slot.projectId !== selectedProjectId) return false;
-
-            const weekStart = getWeekStartDate(b.weekKey);
-            
-            if (filterType === 'week' && b.weekKey !== selectedWeek) return false;
-            if (filterType === 'month' && (weekStart.getMonth() !== selectedMonth || weekStart.getFullYear() !== selectedYear)) return false;
-            if (filterType === 'year' && weekStart.getFullYear() !== selectedYear) return false;
-
-            return true;
-        });
-
-        // Agréger par utilisateur et projet
-        const userStats: Record<string, { id: string, name: string, totalHours: number, slotHours: number, manualHoursCount: number, byProject: Record<number, number> }> = {};
-        
-        filteredBookings.forEach(b => {
-            const slot = timeSlots.find(s => s.id === b.slotId)!;
-            const duration = getSlotDuration(slot);
-            const userName = b.userName || b.userId;
-            
-            if (!userStats[b.userId]) {
-                userStats[b.userId] = { id: b.userId, name: userName, totalHours: 0, slotHours: 0, manualHoursCount: 0, byProject: {} };
-            }
-            
-            userStats[b.userId].totalHours += duration;
-            userStats[b.userId].slotHours += duration;
-            userStats[b.userId].byProject[slot.projectId] = (userStats[b.userId].byProject[slot.projectId] || 0) + duration;
-        });
-
-        // Intégrer les heures manuelles accordées par le Bureau
-        manualHours.forEach(mh => {
-            if (!userStats[mh.userId]) {
-                userStats[mh.userId] = { id: mh.userId, name: mh.userName || mh.userId, totalHours: 0, slotHours: 0, manualHoursCount: 0, byProject: {} };
-            }
-            userStats[mh.userId].totalHours += mh.hours;
-            userStats[mh.userId].manualHoursCount += mh.hours;
-            if (mh.projectId) {
-                userStats[mh.userId].byProject[mh.projectId] = (userStats[mh.userId].byProject[mh.projectId] || 0) + mh.hours;
-            }
-        });
-
-        // Si showAllMembers est activé, ajouter tous les membres de l'association à 0h
-        if (showAllMembers) {
-            (allUsers || []).forEach(u => {
-                const cleanedName = u.name.replace(/\t/g, '').trim();
-                if (!userStats[u.id]) {
-                    userStats[u.id] = { id: u.id, name: cleanedName, totalHours: 0, slotHours: 0, manualHoursCount: 0, byProject: {} };
-                }
-            });
-        }
-
-        return Object.values(userStats).sort((a, b) => {
-            if (b.totalHours !== a.totalHours) return b.totalHours - a.totalHours;
-            return a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' });
-        });
-    }, [bookings, manualHours, filterType, selectedWeek, selectedMonth, selectedYear, selectedProjectId, showAllMembers, allUsers]);
+    const filterSummary = describeRecapFilter(
+        { type: filterType, week: selectedWeek, month: selectedMonth, year: selectedYear, projectId: selectedProjectId },
+        { projectName: projectsData.find(p => p.id === selectedProjectId)?.name, weekLabel: formatWeekLabel(selectedWeek) },
+    );
+    const isFilterDefault = filterType === 'all' && selectedProjectId === 'all';
+    const resetFilters = () => { setFilterType('all'); setSelectedProjectId('all'); };
 
     // Bénévoles filtrés par recherche et triés dynamiquement
     const displayedMembers = useMemo(() => {
@@ -225,6 +183,7 @@ export function PlanningRecap() {
     }, [allUsers, bookings, currentUser, manualHours, isBureau, selectedManualProject]);
 
     const totalPeriodHours = recapData.reduce((acc, u) => acc + u.totalHours, 0);
+    const activeCount = recapData.filter(u => u.totalHours > 0).length;
 
     const handleDownload = () => {
         let content = "Récapitulatif des heures Phoenix EDC\n";
@@ -388,7 +347,7 @@ export function PlanningRecap() {
 
     if (!isAuthorized) {
         return (
-            <PlanningLayout title="Récapitulatif">
+            <PlanningLayout title="Récapitulatif des heures">
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <ShieldCheck size={48} className="text-white/20 mb-4" />
                     <p className="text-white font-bold text-lg font-school">Accès restreint</p>
@@ -399,7 +358,7 @@ export function PlanningRecap() {
     }
 
     return (
-        <PlanningLayout title="Récapitulatif">
+        <PlanningLayout title="Récapitulatif des heures">
             {/* Toast de succès */}
             {manualSuccessToast && (
                 <div className="fixed bottom-6 right-6 z-50 bg-[#2D0A32] border border-[#EC602B] text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
@@ -439,15 +398,12 @@ export function PlanningRecap() {
             )}
 
             {/* En-tête de la page */}
-            <div className="mb-6 pt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-display text-white tracking-wide">Récapitulatif des heures</h1>
-                    <p className="text-[#ECDDFD]/70 text-sm mt-1">
-                        Suivi des heures validées et avancement vers le seuil officiel de <strong>50 heures</strong>.
-                    </p>
-                </div>
-                
-                <div className="flex flex-wrap items-center gap-2.5">
+            <PlanningPageHeader
+                icon={<FileText size={16} />}
+                section="Gestion"
+                title="Récapitulatif des heures"
+                description={<>Suivi des heures validées et avancement vers le seuil officiel de <strong>50 heures</strong>.</>}
+                actions={<>
                     {/* Ajout manuel (Bureau, ou chef de projet pour ses projets) & Historique des justifications */}
                     {canGrantHours && (
                         <>
@@ -541,35 +497,16 @@ export function PlanningRecap() {
                             </motion.button>
                         </>
                     )}
-                </div>
-            </div>
-
+                </>}
+            />
 
             {/* Filtres */}
-            <div className="p-6 rounded-xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 backdrop-blur-md shadow-soft-lg space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-2">
-                        <Filter size={16} className="text-[#EC602B]" />
-                        <span className="text-xs font-school font-bold text-[#ECDDFD]/80 uppercase tracking-widest">Filtres de période</span>
-                    </div>
-
-                    {/* Toggle Tous les membres de l'association */}
-                    {isBureau && (
-                        <button
-                            type="button"
-                            onClick={() => setShowAllMembers(!showAllMembers)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-school uppercase tracking-wider transition-all cursor-pointer border self-start sm:self-auto ${
-                                showAllMembers
-                                    ? 'bg-[#EC602B]/20 text-[#EC602B] border-[#EC602B]/50 font-bold'
-                                    : 'bg-white/5 text-[#ECDDFD]/60 border-white/10 hover:text-white'
-                            }`}
-                            title="Afficher tous les membres de l'association ou uniquement ceux ayant des heures"
-                        >
-                            {showAllMembers ? 'Affichage : Tous les membres (y compris 0h)' : 'Affichage : Membres avec heures uniquement'}
-                        </button>
-                    )}
+            <div className="p-6 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 mb-6 backdrop-blur-md shadow-soft-lg space-y-4">
+                <div className="flex items-center gap-2">
+                    <Filter size={16} className="text-[#EC602B]" />
+                    <span className="text-xs font-school font-bold text-[#ECDDFD]/80 uppercase tracking-widest">Période et projet</span>
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {/* Filter Type */}
                     <select
@@ -644,29 +581,41 @@ export function PlanningRecap() {
                         ))}
                     </select>
                 </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+                    <p className="text-[#ECDDFD]/80" aria-live="polite">
+                        Sélection : <span className="text-white font-semibold">{filterSummary}</span>
+                    </p>
+                    {!isFilterDefault && (
+                        <button type="button" onClick={resetFilters} className="inline-flex items-center gap-1.5 min-h-[32px] px-3 rounded-full text-[#EC602B] hover:text-white hover:bg-[#EC602B]/20 border border-[#EC602B]/40 font-school uppercase tracking-wider cursor-pointer transition-all active:scale-95">
+                            <X size={12} />
+                            Réinitialiser
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Overview Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
+                <div className="p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
                     <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Total période</p>
                     <p className="text-3xl font-display text-white mt-1 tabular-nums">
                         {totalPeriodHours}<span className="text-lg text-[#EC602B] font-school ml-1">h</span>
                     </p>
                 </div>
 
-                <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
+                <div className="p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
                     <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Bénévoles actifs</p>
                     <p className="text-3xl font-display text-white mt-1 tabular-nums">
-                        {recapData.length}
+                        {activeCount}
                     </p>
                 </div>
 
-                <div className="p-5 rounded-[2rem] bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
+                <div className="p-5 rounded-2xl bg-[#2D0A32]/90 border border-[#6F2B75]/40 backdrop-blur-md shadow-soft">
                     <p className="text-xs font-school uppercase tracking-wider text-[#ECDDFD]/70 font-semibold">Attestations validées (≥ 50h ou 2A)</p>
                     <p className="text-3xl font-display text-emerald-400 mt-1 tabular-nums">
                         {recapData.filter(u => u.totalHours >= 50 || isQuotaExempt(u.id)).length}
-                        <span className="text-xs font-school text-[#ECDDFD]/60 ml-2 font-normal">/ {recapData.length}</span>
+                        <span className="text-xs font-school text-[#ECDDFD]/60 ml-2 font-normal">/ {activeCount}</span>
                     </p>
                 </div>
             </div>
@@ -684,13 +633,24 @@ export function PlanningRecap() {
                             {searchQuery.trim() && ` (sur ${recapData.length})`}
                         </span>
                     </div>
-                    <span className="text-[11px] text-[#ECDDFD]/50 font-mono hidden sm:inline">
-                        Seuil d'attestation : 50 heures (ou Quota 2A validé)
-                    </span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <label className="inline-flex items-center gap-2 min-h-[32px] text-xs text-[#ECDDFD]/85 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={includeZero}
+                                onChange={(e) => setIncludeZero(e.target.checked)}
+                                className="w-4 h-4 accent-[#EC602B] cursor-pointer"
+                            />
+                            Afficher aussi les membres à 0 h
+                        </label>
+                        <span className="text-[11px] text-[#ECDDFD]/50 font-mono hidden sm:inline">
+                            Seuil d'attestation : 50 heures (ou Quota 2A validé)
+                        </span>
+                    </div>
                 </div>
 
                 {/* Barre de Recherche & Tri */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-[1.75rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30">
                     {/* Recherche par nom / prénom */}
                     <div className="relative flex-1">
                         <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ECDDFD]/50 pointer-events-none" />
@@ -720,7 +680,7 @@ export function PlanningRecap() {
                         <div className="relative flex-1 sm:flex-initial">
                             <select
                                 value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as any)}
+                                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                                 className="w-full appearance-none bg-[#1F0422]/90 border border-[#6F2B75]/50 hover:border-[#EC602B]/60 focus:border-[#EC602B] rounded-full pl-3.5 pr-8 py-2 text-xs text-white font-school uppercase tracking-wider outline-none cursor-pointer transition-all"
                                 aria-label="Trier les bénévoles"
                             >
@@ -757,7 +717,7 @@ export function PlanningRecap() {
             {isLoading ? (
                 <PlanningSkeletonList count={8} />
             ) : displayedMembers.length === 0 ? (
-                <div className="flex flex-col items-center py-12 text-center rounded-[2rem] bg-[#2D0A32]/60 border border-[#6F2B75]/30 p-6">
+                <div className="flex flex-col items-center py-12 text-center rounded-2xl bg-[#2D0A32]/60 border border-[#6F2B75]/30 p-6">
                     <FileText size={40} className="text-[#ECDDFD]/30 mb-3" />
                     {searchQuery.trim() ? (
                         <>
@@ -776,7 +736,14 @@ export function PlanningRecap() {
                             </button>
                         </>
                     ) : (
-                        <p className="text-[#ECDDFD]/60 font-medium">Aucune heure validée pour ces critères.</p>
+                        <>
+                            <p className="text-[#ECDDFD]/80 font-medium">Aucune heure validée pour cette sélection.</p>
+                            {!isFilterDefault && (
+                                <button type="button" onClick={resetFilters} className="mt-4 px-4 py-2 rounded-full bg-[#EC602B]/20 text-[#EC602B] hover:bg-[#EC602B]/30 border border-[#EC602B]/50 text-xs font-school uppercase tracking-wider font-bold transition-all cursor-pointer active:scale-95">
+                                    Réinitialiser les filtres
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
             ) : (
@@ -789,7 +756,7 @@ export function PlanningRecap() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.04 }}
-                                className="p-5 rounded-[2rem] bg-[#2D0A32]/80 border border-[#6F2B75]/30 hover:border-[#6F2B75]/60 transition-all shadow-sm"
+                                className="p-5 rounded-2xl bg-[#2D0A32]/80 border border-[#6F2B75]/30 hover:border-[#6F2B75]/60 transition-all shadow-sm"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                                     <div className="flex items-center gap-3.5">

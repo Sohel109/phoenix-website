@@ -84,7 +84,7 @@ export function MemberPickerDialog({ title, subtitle, isPast, members, takenIds,
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 40, opacity: 0 }}
                 onClick={(event) => event.stopPropagation()}
-                className="w-full sm:max-w-lg max-h-[92vh] flex flex-col rounded-t-[2rem] sm:rounded-[2rem] bg-[#2D0A32] border border-[#6F2B75]/60 shadow-2xl overflow-hidden"
+                className="w-full sm:max-w-lg max-h-[92vh] flex flex-col rounded-t-[2rem] sm:rounded-2xl bg-[#2D0A32] border border-[#6F2B75]/60 shadow-2xl overflow-hidden"
             >
                 <div className="p-5 pb-3 flex items-start justify-between gap-3">
                     <div className="min-w-0">
