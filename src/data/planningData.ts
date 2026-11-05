@@ -3,6 +3,7 @@ import { parseVoteData } from './voteResponse';
 import { parseChildrenData } from './childrenResponse';
 import { parseGouterData } from './gouterResponse';
 import { parseExemptionsData, parseImportResult, parseManualHoursData } from './hoursResponse';
+import { isActiveBiweekly } from './biweekly';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -123,11 +124,12 @@ export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
     }
 });
 
+const JULES_FERRY_ANCHOR_WEEK = '2026-W45';
+
 export function isSlotActiveThisWeek(slotId: string, weekKey: string): boolean {
     if (slotId.startsWith('slot-7-')) { // Jules Ferry
-        const weekNum = parseInt(weekKey.split('-W')[1], 10);
-        // On considère les semaines paires (ex: W02, W04) comme actives pour Jules Ferry
-        return weekNum % 2 === 0;
+        // Une semaine sur deux, calée sur la séance du 2 au 8 novembre 2026 (2026-W45)
+        return isActiveBiweekly(weekKey, JULES_FERRY_ANCHOR_WEEK);
     }
     return true;
 }
