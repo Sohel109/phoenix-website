@@ -100,11 +100,12 @@ export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
             return [{ id: 'slot-6-jeu', projectId: 6, day: 'Jeudi', startTime: '16:30', endTime: '18:30' }];
         case 2: // ACSE : 14h00-17h30 Samedi
             return [{ id: 'slot-2-sam', projectId: 2, day: 'Samedi', startTime: '14:00', endTime: '17:30' }];
-        case 5: // Apprentis d’Auteuil : 16h00-18h30 Mardi Jeudi
-            return ['Mardi', 'Jeudi'].map(day => ({
-                id: `slot-5-${day.toLowerCase().substring(0,3)}`,
-                projectId: 5, day: day as DayOfWeek, startTime: '16:00', endTime: '18:30'
-            }));
+        case 5: // Apprentis d’Auteuil : Mardi et Jeudi 17h30-19h00, Mercredi 17h00-18h30
+            return [
+                { id: 'slot-5-mar', projectId: 5, day: 'Mardi', startTime: '17:30', endTime: '19:00' },
+                { id: 'slot-5-mer', projectId: 5, day: 'Mercredi', startTime: '17:00', endTime: '18:30' },
+                { id: 'slot-5-jeu', projectId: 5, day: 'Jeudi', startTime: '17:30', endTime: '19:00' }
+            ];
         case 8: // Arthur Rimbaud : 15h30-18h00 Jeudi
             return [{ id: 'slot-8-jeu', projectId: 8, day: 'Jeudi', startTime: '15:30', endTime: '18:00' }];
         case 7: // Jules Ferry : 14h00-16h30 Mercredi (Bi-hebdomadaire)
