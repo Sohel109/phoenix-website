@@ -96,7 +96,7 @@ export const projectsData: Project[] = [
         type: 'hybride',
         address: "12 Rue Richard, 13014 Marseille",
         coordinates: [43.3318, 5.3899],
-        chefs: ["Abdollah JOUNOUDI", "Cannelle JUVENTIN"],
+        chefs: ["Abdollah JOUNOUDI", "Kahili JUVENTIN"],
         description: "PROJET HYBRIDE. Soutien scolaire 4 soirs par semaine (lundi, mardi, jeudi, vendredi) avec débats réguliers."
     },
     {

@@ -189,7 +189,7 @@ export const projects: ProjectItem[] = [
         locationName: "Centre social Saint-Gabriel (13014 Marseille)",
         schedule: "Lundi, mardi, jeudi et vendredi soir",
         axes: ["Soutien scolaire 4x/semaine", "Ouverture culturelle", "Débats d'actualité mensuels"],
-        chefs: ["Abdollah JOUNOUDI", "Cannelle JUVENTIN"],
+        chefs: ["Abdollah JOUNOUDI", "Kahili JUVENTIN"],
         instagram: "saint_gabriel_phoenix",
         trip: "Sorties mensuelles et voyage de fin d'année"
     },
