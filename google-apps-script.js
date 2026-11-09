@@ -96,6 +96,12 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  var sessionResult = handleSessionAction(action, postData);
+  if (sessionResult) {
+    return ContentService.createTextOutput(JSON.stringify(sessionResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'saveSiteContent') {
     var lock1 = LockService.getScriptLock();
     try {
@@ -692,7 +698,8 @@ function getPlanningDataInternal() {
     success: true,
     bookings: bookings,
     unavailableWeeks: unavailableWeeks,
-    eventAttendance: eventAttendance
+    eventAttendance: eventAttendance,
+    sessionChanges: readSessionChanges()
   };
 }
 
@@ -1248,9 +1255,10 @@ function readActiveChildren(sheet, projectId) {
 
 var SLOT_DAY_INDEX = { lun: 0, mar: 1, mer: 2, jeu: 3, ven: 4, sam: 5 };
 
-// « slot-4-jeu » : projet 4, jeudi. Renvoie null pour tout autre format.
+// « slot-4-jeu » : projet 4, jeudi. Une séance ajoutée à une date garde ce format avec un suffixe (« slot-4-jeu-s1a2b3c4 »).
+// Renvoie null pour tout autre format.
 function parseSlotId(slotId) {
-  var m = /^slot-(\d{1,2})-(lun|mar|mer|jeu|ven|sam)$/.exec(String(slotId));
+  var m = /^slot-(\d{1,2})-(lun|mar|mer|jeu|ven|sam)(?:-s[a-z0-9]{3,12})?$/.exec(String(slotId));
   return m ? { projectId: parseInt(m[1], 10), dayIndex: SLOT_DAY_INDEX[m[2]] } : null;
 }
 
@@ -2315,6 +2323,190 @@ function memberBookingRemove(ctx, postData) {
   }
   ctx.sheet.deleteRow(row);
   return { success: true };
+}
+
+// ==========================================
+// SÉANCES EXCEPTIONNELLES
+// ==========================================
+// Les séances régulières sont définies côté site (un créneau par projet et par jour). Cette feuille ne garde que les
+// exceptions : « ajout » = une séance à une date précise avec ses horaires, « annulation » = une séance régulière
+// qui n'a pas lieu à une date. Le Bureau agit sur tous les projets, un chef de projet sur ses projets (colonne J).
+
+var SESSION_ACTIONS = ['addSession', 'cancelSession', 'restoreSession'];
+var SESSIONS_SHEET = { name: 'Seances', headers: ['id', 'kind', 'projectId', 'date', 'startTime', 'endTime', 'slotId', 'createdBy', 'createdAt'] };
+var SESSION_DAY_ABBR = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
+
+function getSessionsSheet() {
+  var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SESSIONS_SHEET.name) !== null;
+  var sheet = getOrCreateSheet(SESSIONS_SHEET.name, SESSIONS_SHEET.headers);
+  // Dates et heures en texte : Sheets ne doit pas les convertir en vraies dates.
+  if (!existed) sheet.getRange('D:F').setNumberFormat('@');
+  return sheet;
+}
+
+// Texte de la colonne « date », même si Sheets l'a converti en vraie date.
+function sessionDateText(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') return Utilities.formatDate(value, 'Europe/Paris', 'yyyy-MM-dd');
+  return String(value === null || value === undefined ? '' : value);
+}
+
+function readSessionChanges() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SESSIONS_SHEET.name);
+  if (!sheet) return [];
+  var values = sheet.getDataRange().getValues();
+  var out = [];
+  for (var i = 1; i < values.length; i++) {
+    var row = values[i];
+    if (!row[0] || !row[6]) continue;
+    out.push({
+      id: String(row[0]),
+      kind: String(row[1]),
+      projectId: parseInt(row[2], 10),
+      date: sessionDateText(row[3]),
+      startTime: String(row[4] === null || row[4] === undefined ? '' : row[4]),
+      endTime: String(row[5] === null || row[5] === undefined ? '' : row[5]),
+      slotId: String(row[6])
+    });
+  }
+  return out;
+}
+
+// « yyyy-MM-dd » réel (le 30 février ou un texte quelconque donnent null) : date UTC du jour.
+function parseSessionDate(text) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(text));
+  if (!m) return null;
+  var d = new Date(Date.UTC(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10)));
+  return formatUtcDateKey(d) === String(text) ? d : null;
+}
+
+// « HH:MM » à deux chiffres, par pas de 5 minutes, entre 07:00 et 22:00. Renvoie les minutes depuis minuit, ou -1.
+function parseSessionTime(text) {
+  var m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(String(text));
+  if (!m) return -1;
+  var minutes = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  if (minutes % 5 !== 0 || minutes < 7 * 60 || minutes > 22 * 60) return -1;
+  return minutes;
+}
+
+function handleSessionAction(action, postData) {
+  if (SESSION_ACTIONS.indexOf(action) === -1) return null;
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(postData.requesterId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) {
+    return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
+  }
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(15000);
+    var users = readChildrenUsers();
+    var user = findVoteUser(users, postData.requesterId);
+    if (!user) return voteFail('forbidden', 'Compte introuvable.');
+    if (user.role !== 'bureau' && user.role !== 'chef_projet') {
+      return voteFail('forbidden', 'Seuls le Bureau et les chefs de projet peuvent ajouter ou annuler une séance.');
+    }
+    var ctx = { user: user, today: todayKeyParis(), sheet: getSessionsSheet() };
+    if (action === 'addSession') return sessionAdd(ctx, postData);
+    if (action === 'cancelSession') return sessionCancel(ctx, postData);
+    return sessionRestore(ctx, postData);
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function sessionAdd(ctx, postData) {
+  var projectId = typeof postData.projectId === 'number' ? postData.projectId : NaN;
+  if (CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return voteFail('invalid', 'Projet inconnu.');
+  if (!canManageProject(ctx.user, projectId)) return voteFail('forbidden', 'Vous ne pouvez gérer que les séances de vos projets.');
+  var day = parseSessionDate(postData.date);
+  if (!day) return voteFail('invalid', 'Date invalide.');
+  var dayIndex = (day.getUTCDay() + 6) % 7;
+  if (dayIndex > 5) return voteFail('invalid', 'Pas de séance le dimanche.');
+  var year = schoolYearFor(ctx.today);
+  if (postData.date < year.start || postData.date > year.end) return voteFail('invalid', "Cette date n'est pas dans l'année scolaire en cours.");
+  var start = parseSessionTime(postData.startTime);
+  var end = parseSessionTime(postData.endTime);
+  if (start < 0 || end < 0) return voteFail('invalid', 'Horaires invalides : entre 07:00 et 22:00, par pas de 5 minutes.');
+  if (end <= start) return voteFail('invalid', "L'heure de fin doit être après l'heure de début.");
+
+  var values = ctx.sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][1]) === 'ajout' && String(values[i][2]) === String(projectId) && sessionDateText(values[i][3]) === postData.date
+      && String(values[i][4]) === postData.startTime && String(values[i][5]) === postData.endTime) {
+      return voteFail('conflict', 'Cette séance existe déjà.');
+    }
+  }
+  var id = newRowId('s');
+  var slotId = 'slot-' + projectId + '-' + SESSION_DAY_ABBR[dayIndex] + '-' + id;
+  ctx.sheet.appendRow([id, 'ajout', projectId, postData.date, postData.startTime, postData.endTime, slotId, ctx.user.id, new Date(nowMs()).toISOString()]);
+  return { success: true, id: id, slotId: slotId };
+}
+
+// Lit la séance visée par une annulation ou un rétablissement : projet, droits, semaine, jour.
+function sessionTarget(ctx, postData) {
+  var slot = parseSlotId(postData.slotId);
+  if (!slot || CHILDREN_PROJECT_IDS.indexOf(slot.projectId) === -1) return { error: voteFail('invalid', 'Séance inconnue.') };
+  if (!canManageProject(ctx.user, slot.projectId)) return { error: voteFail('forbidden', 'Vous ne pouvez gérer que les séances de vos projets.') };
+  var date = sessionDateKey(postData.weekKey, postData.slotId);
+  if (!date) return { error: voteFail('invalid', 'Semaine invalide.') };
+  return { slot: slot, date: date, isExtra: /^slot-\d{1,2}-(lun|mar|mer|jeu|ven|sam)-s[a-z0-9]{3,12}$/.test(String(postData.slotId)) };
+}
+
+function sessionCancel(ctx, postData) {
+  var target = sessionTarget(ctx, postData);
+  if (target.error) return target.error;
+  var values = ctx.sheet.getDataRange().getValues();
+  var row = 0;
+  for (var i = 1; i < values.length; i++) {
+    if (target.isExtra) {
+      if (String(values[i][1]) === 'ajout' && String(values[i][6]) === String(postData.slotId)) row = i + 1;
+    } else if (String(values[i][1]) === 'annulation' && String(values[i][6]) === String(postData.slotId) && sessionDateText(values[i][3]) === target.date) {
+      return voteFail('conflict', 'Cette séance est déjà annulée.');
+    }
+  }
+  if (target.isExtra) {
+    if (row === 0) return voteFail('invalid', 'Séance introuvable.');
+    if (sessionDateText(values[row - 1][3]) !== target.date) return voteFail('invalid', 'Cette séance a lieu une autre semaine.');
+  }
+
+  // Les inscrits simples sont retirés ; une présence déjà validée (ou une absence) bloque l'annulation pour ne pas perdre d'heures.
+  var bookings = getOrCreateSheet('Bookings', BOOKING_HEADERS);
+  var data = bookings.getDataRange().getValues();
+  var toCancel = [];
+  for (var b = 1; b < data.length; b++) {
+    if (String(data[b][1]) !== String(postData.slotId) || String(data[b][4]) !== String(postData.weekKey)) continue;
+    var status = String(data[b][5]);
+    if (status === 'confirme' || status === 'absent') {
+      return voteFail('conflict', 'Des présences sont déjà validées sur cette séance. Remettez-les en attente avant de l\'annuler.');
+    }
+    if (status === 'prevu') toCancel.push(b + 1);
+  }
+  for (var c = 0; c < toCancel.length; c++) bookings.getRange(toCancel[c], 6).setValue('annule');
+
+  if (target.isExtra) {
+    ctx.sheet.deleteRow(row);
+  } else {
+    ctx.sheet.appendRow([newRowId('s'), 'annulation', target.slot.projectId, target.date, '', '', postData.slotId, ctx.user.id, new Date(nowMs()).toISOString()]);
+  }
+  return { success: true, cancelled: toCancel.length };
+}
+
+function sessionRestore(ctx, postData) {
+  var target = sessionTarget(ctx, postData);
+  if (target.error) return target.error;
+  var values = ctx.sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][1]) === 'annulation' && String(values[i][6]) === String(postData.slotId) && sessionDateText(values[i][3]) === target.date) {
+      ctx.sheet.deleteRow(i + 1);
+      return { success: true };
+    }
+  }
+  return voteFail('invalid', "Cette séance n'est pas annulée.");
 }
 
 // ==========================================
