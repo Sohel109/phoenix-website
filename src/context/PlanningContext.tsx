@@ -19,7 +19,14 @@ import {
     importExemptionsApi,
     addMemberBookingsApi,
     removeMemberBookingApi,
+    addSessionApi,
+    cancelSessionApi,
+    restoreSessionApi,
+    timeSlots,
+    isSlotActiveThisWeek,
 } from '../data/planningData';
+import type { TimeSlot } from '../data/planningData';
+import { slotsForWeek as mergeSlotsForWeek, cancelledForWeek as mergeCancelledForWeek, findSlot, type SessionChange } from '../data/sessionCalendar';
 import { canDeleteManualHour } from '../data/manualHoursRules';
 import { createLatestGate } from '../data/voteResponse';
 import type { EventAttendance } from '../data/planningData';
@@ -73,6 +80,18 @@ interface PlanningContextType {
     placeMembers: (slotId: string, weekKey: string, userIds: string[]) => Promise<{ ok: boolean; message: string; added: number; updated: number; already: number }>;
     /** Retire un membre d'un créneau (même droits). */
     unplaceMember: (bookingId: string) => Promise<{ ok: boolean; message: string }>;
+    /** Exceptions aux séances régulières : séances ajoutées et séances annulées à une date. */
+    sessionChanges: SessionChange[];
+    /** Séances d'une semaine : règles fixes (alternance incluse), moins les annulées, plus les ajoutées. */
+    slotsForWeek: (weekKey: string) => TimeSlot[];
+    /** Séances régulières normalement prévues cette semaine mais annulées. */
+    cancelledSlotsForWeek: (weekKey: string) => { slot: TimeSlot; change: SessionChange }[];
+    /** Retrouve une séance (régulière ou ajoutée) par son identifiant. */
+    slotById: (slotId: string) => TimeSlot | undefined;
+    /** Ajoute une séance à une date (Bureau, ou chef de projet pour ses projets) ; le serveur décide. */
+    addSession: (input: { projectId: number; date: string; startTime: string; endTime: string }) => Promise<{ ok: boolean; message: string }>;
+    cancelSession: (slotId: string, weekKey: string) => Promise<{ ok: boolean; message: string }>;
+    restoreSession: (slotId: string, weekKey: string) => Promise<{ ok: boolean; message: string }>;
     currentWeekKey: string;
     setCurrentWeekKey: (wk: string) => void;
     unavailableWeeks: string[];
@@ -157,6 +176,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [unavailableWeeks, setUnavailableWeeks] = useState<string[]>([]);
     const [eventAttendance, setEventAttendance] = useState<EventAttendance[]>([]);
+    const [sessionChanges, setSessionChanges] = useState<SessionChange[]>([]);
     const [currentWeekKey, setCurrentWeekKey] = useState(() => getWeekKey(new Date()));
     const [pendingKeys, setPendingKeys] = useState<Set<string>>(new Set());
 
@@ -303,6 +323,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             setBookings(data.bookings);
             setUnavailableWeeks(data.unavailableWeeks);
             setEventAttendance(data.eventAttendance);
+            setSessionChanges(data.sessionChanges);
         }
     }, []);
 
@@ -316,6 +337,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             setBookings(data.bookings);
             setUnavailableWeeks(data.unavailableWeeks);
             setEventAttendance(data.eventAttendance);
+            setSessionChanges(data.sessionChanges);
         });
 
         // Polling automatique toutes les 30 secondes pour synchroniser les données entre utilisateurs sur Vercel
@@ -459,6 +481,38 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         if (result.success) await refreshPlanningData();
         return { ok: result.success, message: result.message };
     }, [currentUser, refreshPlanningData]);
+
+    const slotsForWeek = useCallback(
+        (weekKey: string): TimeSlot[] => mergeSlotsForWeek(timeSlots, sessionChanges, weekKey, isSlotActiveThisWeek),
+        [sessionChanges]
+    );
+    const cancelledSlotsForWeek = useCallback(
+        (weekKey: string) => mergeCancelledForWeek(timeSlots, sessionChanges, weekKey, isSlotActiveThisWeek),
+        [sessionChanges]
+    );
+    const slotById = useCallback((slotId: string): TimeSlot | undefined => findSlot(timeSlots, sessionChanges, slotId), [sessionChanges]);
+
+    const sessionWrite = useCallback(async (run: (id: string, token: string) => Promise<{ success: boolean; message: string }>) => {
+        if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) {
+            return { ok: false, message: 'Action réservée aux responsables.' };
+        }
+        const result = await run(currentUser.id, currentUser.token ?? '');
+        if (result.success) await refreshPlanningData();
+        return { ok: result.success, message: result.message };
+    }, [currentUser, refreshPlanningData]);
+
+    const addSession = useCallback(
+        (input: { projectId: number; date: string; startTime: string; endTime: string }) => sessionWrite((id, token) => addSessionApi(id, token, input)),
+        [sessionWrite]
+    );
+    const cancelSession = useCallback(
+        (slotId: string, weekKey: string) => sessionWrite((id, token) => cancelSessionApi(id, token, slotId, weekKey)),
+        [sessionWrite]
+    );
+    const restoreSession = useCallback(
+        (slotId: string, weekKey: string) => sessionWrite((id, token) => restoreSessionApi(id, token, slotId, weekKey)),
+        [sessionWrite]
+    );
 
     const resetValidation = useCallback(async (bookingId: string): Promise<boolean> => {
         if (!currentUser || (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau')) return false;
@@ -697,6 +751,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             bookings, allUsers, getWeekBookings,
             updateUserProject, getTutorsForProject,
             toggleAvailability, validatePresence, markAbsent, resetValidation, placeMembers, unplaceMember,
+            sessionChanges, slotsForWeek, cancelledSlotsForWeek, slotById, addSession, cancelSession, restoreSession,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,

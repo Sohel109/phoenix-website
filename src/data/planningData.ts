@@ -4,6 +4,7 @@ import { parseChildrenData } from './childrenResponse';
 import { parseGouterData } from './gouterResponse';
 import { parseExemptionsData, parseImportResult, parseManualHoursData } from './hoursResponse';
 import { isActiveBiweekly } from './biweekly';
+import { parseSessionChanges, type SessionChange } from './sessionCalendar';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,6 +29,8 @@ export interface TimeSlot {
     day: DayOfWeek;
     startTime: string;
     endTime: string;
+    /** Présent seulement pour une séance ajoutée à une date précise (yyyy-MM-dd). */
+    date?: string;
 }
 
 export type BookingStatus = 'prevu' | 'confirme' | 'absent' | 'annule';
@@ -182,7 +185,7 @@ export function navigateWeek(weekKey: string, direction: 'prev' | 'next'): strin
 
 // ─── API Sync Utilities ───────────────────────────────────────────────────────
 
-export async function fetchPlanningData(): Promise<{ bookings: Booking[], unavailableWeeks: string[], eventAttendance: EventAttendance[] } | null> {
+export async function fetchPlanningData(): Promise<{ bookings: Booking[], unavailableWeeks: string[], eventAttendance: EventAttendance[], sessionChanges: SessionChange[] } | null> {
     try {
         const API_URL = import.meta.env.VITE_API_URL || '';
         const response = await fetch(`${API_URL}/api/planning`);
@@ -204,7 +207,9 @@ export async function fetchPlanningData(): Promise<{ bookings: Booking[], unavai
                 return {
                     bookings: Array.from(bookingMap.values()),
                     unavailableWeeks: data.unavailableWeeks || [],
-                    eventAttendance: data.eventAttendance || []
+                    eventAttendance: data.eventAttendance || [],
+                    // Absent tant que le script Google n'est pas redéployé : aucune exception.
+                    sessionChanges: parseSessionChanges(data.sessionChanges)
                 };
             }
         }
@@ -731,5 +736,30 @@ export async function addMemberBookingsApi(
 
 export async function removeMemberBookingApi(requesterId: string, token: string, bookingId: string): Promise<{ success: boolean; message: string; code?: string }> {
     const { success, message, code } = await postMemberBookingAction({ action: 'removeMemberBooking', requesterId, token, bookingId });
+    return { success, message, code };
+}
+
+// ─── Séances exceptionnelles : ajouter ou annuler une séance à une date ───────
+
+const SESSIONS_UNAVAILABLE = "La gestion des séances n'est pas disponible pour le moment.";
+
+const postSessionAction = (body: Record<string, unknown>) => postPlanningAction(body, SESSIONS_UNAVAILABLE);
+
+export async function addSessionApi(
+    requesterId: string,
+    token: string,
+    input: { projectId: number; date: string; startTime: string; endTime: string }
+): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postSessionAction({ action: 'addSession', requesterId, token, ...input });
+    return { success, message, code };
+}
+
+export async function cancelSessionApi(requesterId: string, token: string, slotId: string, weekKey: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postSessionAction({ action: 'cancelSession', requesterId, token, slotId, weekKey });
+    return { success, message, code };
+}
+
+export async function restoreSessionApi(requesterId: string, token: string, slotId: string, weekKey: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postSessionAction({ action: 'restoreSession', requesterId, token, slotId, weekKey });
     return { success, message, code };
 }
