@@ -6,7 +6,7 @@ import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader
 import { usePlanning } from '../../context/PlanningContext';
 import { useChildrenData } from '../../hooks/useChildrenData';
 import { isStaleChildrenData } from '../../data/childrenResponse';
-import { addChildrenApi, getWeekKey, isSlotActiveThisWeek, navigateWeek, removeChildApi, saveChildAttendanceApi, timeSlots } from '../../data/planningData';
+import { addChildrenApi, getWeekKey, navigateWeek, removeChildApi, saveChildAttendanceApi } from '../../data/planningData';
 import { projectsData } from '../../data/projectsData';
 import { ChildrenAttendanceCard } from '../../components/planning/ChildrenAttendanceCard';
 import { ChildrenRosterCard } from '../../components/planning/ChildrenRosterCard';
@@ -16,7 +16,7 @@ import { secondaryButtonClass } from '../../components/planning/childrenStyles';
 const projectName = (id: number) => projectsData.find((p) => p.id === id)?.name ?? `Projet ${id}`;
 
 export function PlanningPresenceEnfants() {
-    const { currentUser, logout } = usePlanning();
+    const { currentUser, logout, slotsForWeek } = usePlanning();
     const navigate = useNavigate();
     const [selectedProject, setSelectedProject] = useState<number | null>(null);
     const [weekKey, setWeekKey] = useState(() => getWeekKey(new Date()));
@@ -49,7 +49,7 @@ export function PlanningPresenceEnfants() {
     const stale = isStaleChildrenData(data, selectedProject, weekKey, slotId);
     const showCards = data !== null && projectId !== null && (!stale || loading);
     const locked = busy || loading || stale;
-    const projectSlots = projectId === null ? [] : timeSlots.filter((slot) => slot.projectId === projectId && isSlotActiveThisWeek(slot.id, weekKey));
+    const projectSlots = projectId === null ? [] : slotsForWeek(weekKey).filter((slot) => slot.projectId === projectId);
 
     const run = async (action: () => Promise<{ success: boolean; message: string; code?: string }>): Promise<boolean> => {
         setBusy(true);

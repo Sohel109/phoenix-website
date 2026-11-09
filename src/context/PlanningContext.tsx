@@ -26,7 +26,7 @@ import {
     isSlotActiveThisWeek,
 } from '../data/planningData';
 import type { TimeSlot } from '../data/planningData';
-import { slotsForWeek as mergeSlotsForWeek, cancelledForWeek as mergeCancelledForWeek, findSlot, type SessionChange } from '../data/sessionCalendar';
+import { slotsForWeek as mergeSlotsForWeek, cancelledForWeek as mergeCancelledForWeek, findSlot, extraSlots, type SessionChange } from '../data/sessionCalendar';
 import { canDeleteManualHour } from '../data/manualHoursRules';
 import { createLatestGate } from '../data/voteResponse';
 import type { EventAttendance } from '../data/planningData';
@@ -86,6 +86,8 @@ interface PlanningContextType {
     slotsForWeek: (weekKey: string) => TimeSlot[];
     /** Séances régulières normalement prévues cette semaine mais annulées. */
     cancelledSlotsForWeek: (weekKey: string) => { slot: TimeSlot; change: SessionChange }[];
+    /** Toutes les séances connues, régulières et ajoutées, toutes semaines confondues (calcul des heures, export). */
+    allSlots: TimeSlot[];
     /** Retrouve une séance (régulière ou ajoutée) par son identifiant. */
     slotById: (slotId: string) => TimeSlot | undefined;
     /** Ajoute une séance à une date (Bureau, ou chef de projet pour ses projets) ; le serveur décide. */
@@ -490,6 +492,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
         (weekKey: string) => mergeCancelledForWeek(timeSlots, sessionChanges, weekKey, isSlotActiveThisWeek),
         [sessionChanges]
     );
+    const allSlots = useMemo<TimeSlot[]>(() => [...timeSlots, ...extraSlots(sessionChanges)], [sessionChanges]);
     const slotById = useCallback((slotId: string): TimeSlot | undefined => findSlot(timeSlots, sessionChanges, slotId), [sessionChanges]);
 
     const sessionWrite = useCallback(async (run: (id: string, token: string) => Promise<{ success: boolean; message: string }>) => {
@@ -751,7 +754,7 @@ export function PlanningProvider({ children }: { children: React.ReactNode }) {
             bookings, allUsers, getWeekBookings,
             updateUserProject, getTutorsForProject,
             toggleAvailability, validatePresence, markAbsent, resetValidation, placeMembers, unplaceMember,
-            sessionChanges, slotsForWeek, cancelledSlotsForWeek, slotById, addSession, cancelSession, restoreSession,
+            sessionChanges, slotsForWeek, cancelledSlotsForWeek, allSlots, slotById, addSession, cancelSession, restoreSession,
             currentWeekKey, setCurrentWeekKey,
             unavailableWeeks, toggleWeekUnavailable, isWeekUnavailable,
             eventAttendance, toggleEventAttendance, setEventAttendanceStatus,

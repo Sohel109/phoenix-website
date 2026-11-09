@@ -5,7 +5,7 @@ import { Clock, XCircle, AlertTriangle, User, ShieldCheck, KeyRound, Eye, EyeOff
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, getSlotDuration, getWeekStartDate } from '../../data/planningData';
+import { getSlotDuration, getWeekStartDate } from '../../data/planningData';
 import { AttestationModal } from '../../components/planning/AttestationModal';
 import { HoursLoadBanner } from '../../components/planning/HoursLoadBanner';
 import { getAcademicYear } from '../../utils/academicYear';
@@ -73,7 +73,7 @@ function StatCard({ icon, label, value, unit, sublabel, gradient, progressBar }:
 }
 
 export function PlanningCompte() {
-    const { currentUser, bookings, changePassword, manualHours, isQuotaExempt, isEditModeActive, toggleEditMode, updateUserProject } = usePlanning();
+    const { currentUser, bookings, changePassword, manualHours, isQuotaExempt, isEditModeActive, toggleEditMode, updateUserProject, slotById } = usePlanning();
     
     // Project selection state
     const currentProjectId = currentUser?.projectIds?.[0] || 2;
@@ -111,7 +111,7 @@ export function PlanningCompte() {
     const heuresPresteesH = myBookings
         .filter(b => b.status === 'confirme')
         .reduce((sum, b) => {
-            const slot = timeSlots.find(s => s.id === b.slotId);
+            const slot = slotById(b.slotId);
             return sum + (slot ? getSlotDuration(slot) : 0);
         }, 0);
 
@@ -128,7 +128,7 @@ export function PlanningCompte() {
         .reverse()
         .slice(0, 5)
         .map(b => {
-            const slot = timeSlots.find(s => s.id === b.slotId);
+            const slot = slotById(b.slotId);
             const project = slot ? projectsData.find(p => p.id === slot.projectId) : null;
             return { b, slot, project };
         });
@@ -176,7 +176,7 @@ export function PlanningCompte() {
         ];
 
         confirmedBookings.forEach(b => {
-            const slot = timeSlots.find(s => s.id === b.slotId);
+            const slot = slotById(b.slotId);
             if (!slot) return;
             const project = projectsData.find(p => p.id === slot.projectId);
             const weekStart = getWeekStartDate(b.weekKey);

@@ -5,7 +5,7 @@ import { PlanningLayout } from './PlanningLayout';
 import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, formatWeekLabel, navigateWeek, DAY_ORDER, isSlotActiveThisWeek, type TimeSlot } from '../../data/planningData';
+import { formatWeekLabel, navigateWeek, DAY_ORDER, type TimeSlot } from '../../data/planningData';
 import { generateICS, downloadICSFile } from '../../utils/icsExport';
 
 const STATUS_CONFIG = {
@@ -16,7 +16,7 @@ const STATUS_CONFIG = {
 };
 
 export function PlanningHoraire() {
-    const { currentUser, currentWeekKey, setCurrentWeekKey, getWeekBookings, bookings } = usePlanning();
+    const { currentUser, currentWeekKey, setCurrentWeekKey, getWeekBookings, bookings, slotsForWeek, allSlots, slotById } = usePlanning();
     const [selectedSlotForModal, setSelectedSlotForModal] = useState<TimeSlot | null>(null);
     const [activeTab, setActiveTab] = useState<'mine' | 'global'>('global');
     const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
@@ -24,20 +24,23 @@ export function PlanningHoraire() {
     if (!currentUser) return null;
 
     const weekBookings = getWeekBookings(currentWeekKey, currentUser.id);
+    // Séances de la semaine : règles fixes, alternance, annulations et séances ajoutées comprises
+    const weekSlots = slotsForWeek(currentWeekKey);
+    const weekSlotIds = new Set(weekSlots.map(s => s.id));
 
     const enrichedMyBookings = weekBookings
         .map(booking => {
-            const slot = timeSlots.find(s => s.id === booking.slotId);
+            const slot = slotById(booking.slotId);
             const project = slot ? projectsData.find(p => p.id === slot.projectId) : null;
             return { booking, slot, project };
         })
-        .filter(e => e.slot && e.project && isSlotActiveThisWeek(e.slot.id, currentWeekKey))
+        .filter(e => e.slot && e.project && weekSlotIds.has(e.slot.id))
         .sort((a, b) => DAY_ORDER.indexOf(a.slot!.day) - DAY_ORDER.indexOf(b.slot!.day));
 
     // Handler pour télécharger le fichier .ics de l'agenda
     const handleExportCalendar = () => {
         const allMyBookings = bookings.filter(b => b.userId === currentUser.id);
-        const icsContent = generateICS(allMyBookings, timeSlots, projectsData, currentUser.name);
+        const icsContent = generateICS(allMyBookings, allSlots, projectsData, currentUser.name);
         downloadICSFile(`planning-phoenix-${currentUser.name.toLowerCase().replace(/\s+/g, '_')}.ics`, icsContent);
     };
 
@@ -47,8 +50,7 @@ export function PlanningHoraire() {
     };
 
     // Filter time slots for global view based on project filter and active weeks
-    const filteredGlobalSlots = timeSlots.filter(slot => {
-        if (!isSlotActiveThisWeek(slot.id, currentWeekKey)) return false;
+    const filteredGlobalSlots = weekSlots.filter(slot => {
         if (selectedProjectId !== 'all' && slot.projectId !== Number(selectedProjectId)) return false;
         return true;
     });

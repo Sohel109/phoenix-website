@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Printer, Download, X, ShieldCheck, Award, AlertCircle, Clock, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import type { PlanningUser, Booking } from '../../data/planningData';
-import { timeSlots, getSlotDuration } from '../../data/planningData';
+import { getSlotDuration } from '../../data/planningData';
 import { projectsData } from '../../data/projectsData';
 import { getBureauPresident } from '../../data/teamData';
 import { usePlanning } from '../../context/PlanningContext';
@@ -16,7 +16,7 @@ interface AttestationModalProps {
 
 
 export function AttestationModal({ user, bookings, onClose }: AttestationModalProps) {
-    const { manualHours, isQuotaExempt } = usePlanning();
+    const { manualHours, isQuotaExempt, slotById } = usePlanning();
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
     const [president, setPresident] = useState(() => getBureauPresident());
     const [qrDataUrl, setQrDataUrl] = useState<string>('');
@@ -48,7 +48,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
     const myConfirmedBookings = bookings.filter(b => b.userId === user.id && b.status === 'confirme');
 
     const slotHours = myConfirmedBookings.reduce((sum, b) => {
-        const slot = timeSlots.find(s => s.id === b.slotId);
+        const slot = slotById(b.slotId);
         return sum + (slot ? getSlotDuration(slot) : 0);
     }, 0);
 
@@ -66,11 +66,11 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
     const projectBreakdown = user.projectIds.map(projId => {
         const project = projectsData.find(p => p.id === projId);
         const projBookings = myConfirmedBookings.filter(b => {
-            const slot = timeSlots.find(s => s.id === b.slotId);
+            const slot = slotById(b.slotId);
             return slot && slot.projectId === projId;
         });
         const hours = projBookings.reduce((sum, b) => {
-            const slot = timeSlots.find(s => s.id === b.slotId);
+            const slot = slotById(b.slotId);
             return sum + (slot ? getSlotDuration(slot) : 0);
         }, 0);
         return { project, hours, count: projBookings.length };

@@ -4,7 +4,7 @@ import { Download, FileText, Filter, ShieldCheck, Plus, Clock, X, Trash2, Histor
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
+import { getSlotDuration, getWeekStartDate, formatWeekLabel } from '../../data/planningData';
 import { PlanningSkeletonList } from '../../components/planning/PlanningSkeletonCard';
 import { eligibleMemberIds, canDeleteManualHour } from '../../data/manualHoursRules';
 import { computeRecap, describeRecapFilter } from '../../data/recapHours';
@@ -12,7 +12,7 @@ import { HoursLoadBanner } from '../../components/planning/HoursLoadBanner';
 import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 
 export function PlanningRecap() {
-    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption, hoursAccess, hoursError, pendingLocalHours, importLocalHours } = usePlanning();
+    const { currentUser, bookings, currentWeekKey, manualHours, addManualHours, deleteManualHours, allUsers, isQuotaExempt, toggleQuotaExemption, hoursAccess, hoursError, pendingLocalHours, importLocalHours, allSlots } = usePlanning();
     const [filterType, setFilterType] = useState<'week' | 'month' | 'year' | 'all'>('all');
     const [selectedWeek, setSelectedWeek] = useState(currentWeekKey);
     const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
@@ -97,13 +97,13 @@ export function PlanningRecap() {
     const recapData = useMemo(() => computeRecap({
         bookings,
         manualHours,
-        slots: timeSlots,
+        slots: allSlots,
         allUsers: allUsers || [],
         filter: { type: filterType, week: selectedWeek, month: selectedMonth, year: selectedYear, projectId: selectedProjectId },
         includeZero,
         weekStart: getWeekStartDate,
         duration: getSlotDuration,
-    }), [bookings, manualHours, filterType, selectedWeek, selectedMonth, selectedYear, selectedProjectId, includeZero, allUsers]);
+    }), [bookings, manualHours, filterType, selectedWeek, selectedMonth, selectedYear, selectedProjectId, includeZero, allUsers, allSlots]);
 
     const filterSummary = describeRecapFilter(
         { type: filterType, week: selectedWeek, month: selectedMonth, year: selectedYear, projectId: selectedProjectId },

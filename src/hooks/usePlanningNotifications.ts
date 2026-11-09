@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { usePlanning } from '../context/PlanningContext';
-import { timeSlots, SPECIAL_EVENTS, formatWeekLabel } from '../data/planningData';
+import { SPECIAL_EVENTS, formatWeekLabel } from '../data/planningData';
 import { projectsData } from '../data/projectsData';
 
 export type NotificationCategory = 'all' | 'seance' | 'event';
@@ -37,7 +37,7 @@ function loadReadIds(userId?: string): string[] {
 }
 
 export function usePlanningNotifications() {
-    const { currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable } = usePlanning();
+    const { currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable, allSlots, slotById } = usePlanning();
     const [referenceTime] = useState(() => Date.now());
     const [readIds, setReadIds] = useState<string[]>(() => loadReadIds(currentUser?.id));
     const [prevUserId, setPrevUserId] = useState(currentUser?.id);
@@ -119,7 +119,7 @@ export function usePlanningNotifications() {
         const myBookings = bookings.filter(b => b.userId === currentUser.id);
 
         myBookings.forEach((b) => {
-            const slot = timeSlots.find(s => s.id === b.slotId);
+            const slot = slotById(b.slotId);
             const project = slot ? projectsData.find(p => p.id === slot.projectId) : null;
             const projName = project?.name || 'Séance tutorat';
             const isRead = (id: string) => readIds.includes(id);
@@ -193,8 +193,8 @@ export function usePlanningNotifications() {
         if (currentUser.role === 'chef_projet' || currentUser.role === 'bureau') {
             const isBureau = currentUser.role === 'bureau';
             const relevantSlots = isBureau
-                ? timeSlots
-                : timeSlots.filter(s => currentUser.projectIds.includes(s.projectId));
+                ? allSlots
+                : allSlots.filter(s => currentUser.projectIds.includes(s.projectId));
             const relevantSlotIds = new Set(relevantSlots.map(s => s.id));
             const pendingValidations = bookings.filter(b => b.weekKey === currentWeekKey && b.status === 'prevu' && relevantSlotIds.has(b.slotId));
 
@@ -219,7 +219,7 @@ export function usePlanningNotifications() {
             if (a.read !== b.read) return a.read ? 1 : -1;
             return b.timestamp - a.timestamp;
         });
-    }, [currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable, readIds, referenceTime]);
+    }, [currentUser, bookings, eventAttendance, currentWeekKey, isWeekUnavailable, readIds, referenceTime, allSlots, slotById]);
 
     const unreadCount = useMemo(() => {
         return notifications.filter(n => !n.read).length;

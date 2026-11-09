@@ -5,7 +5,7 @@ import { PlanningLayout } from './PlanningLayout';
 import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
-import { timeSlots, formatWeekLabel, navigateWeek } from '../../data/planningData';
+import { formatWeekLabel, navigateWeek } from '../../data/planningData';
 import { groupValidationSessions, type ValidationSession } from '../../data/validationSessions';
 import { SlotPlacementPanel } from '../../components/planning/SlotPlacementPanel';
 
@@ -16,7 +16,7 @@ interface BulkTarget {
 }
 
 export function PlanningValidation() {
-    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent, resetValidation, isPending, placeMembers, unplaceMember, allUsers } = usePlanning();
+    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, validatePresence, markAbsent, resetValidation, isPending, placeMembers, unplaceMember, allUsers, slotsForWeek, allSlots } = usePlanning();
     const [bulkTarget, setBulkTarget] = useState<BulkTarget | null>(null);
     const [bulkRunning, setBulkRunning] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -27,13 +27,20 @@ export function PlanningValidation() {
     const isBureau = currentUser?.role === 'bureau';
     const allowed = !!currentUser && (currentUser.role === 'chef_projet' || isBureau);
 
-    // Créneaux de mes projets (tous les projets pour le Bureau ou un responsable sans projet rattaché)
-    const mySlots = useMemo(() => {
-        const myProjectIds = (currentUser?.projectIds || []).map(Number);
-        return isBureau || myProjectIds.length === 0
-            ? timeSlots
-            : timeSlots.filter((s) => myProjectIds.includes(Number(s.projectId)));
-    }, [currentUser, isBureau]);
+    // Séances de mes projets (tous les projets pour le Bureau ou un responsable sans projet rattaché).
+    // Pour valider on prend toutes les séances connues : une réservation déjà faite ne disparaît pas parce que
+    // l'alternance ou une annulation a changé.
+    const myProjectIds = useMemo(() => (currentUser?.projectIds || []).map(Number), [currentUser]);
+    const seesAllProjects = isBureau || myProjectIds.length === 0;
+    const mySlots = useMemo(
+        () => (seesAllProjects ? allSlots : allSlots.filter((s) => myProjectIds.includes(Number(s.projectId)))),
+        [allSlots, seesAllProjects, myProjectIds]
+    );
+    // Pour placer des membres, seulement les séances qui ont lieu cette semaine.
+    const placementSlots = useMemo(
+        () => (seesAllProjects ? slotsForWeek(currentWeekKey) : slotsForWeek(currentWeekKey).filter((s) => myProjectIds.includes(Number(s.projectId)))),
+        [seesAllProjects, slotsForWeek, currentWeekKey, myProjectIds]
+    );
 
     const allSessions = useMemo(
         () => groupValidationSessions({ bookings, slots: mySlots, weekKey: currentWeekKey, projectNames: PROJECT_NAMES }),
@@ -278,7 +285,7 @@ export function PlanningValidation() {
             {view === 'place' ? (
                 <SlotPlacementPanel
                     weekKey={currentWeekKey}
-                    slots={mySlots}
+                    slots={placementSlots}
                     bookings={bookings}
                     members={allUsers}
                     onPlace={(slotId, userIds) => placeMembers(slotId, currentWeekKey, userIds)}

@@ -6,7 +6,7 @@ import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
 import {
-    timeSlots, DAY_ORDER, formatWeekLabel, navigateWeek, isSlotActiveThisWeek
+    DAY_ORDER, formatWeekLabel, navigateWeek
 } from '../../data/planningData';
 
 // ─── Toggle Switch ────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ function Toggle({ checked, onChange, disabled, loading }: { checked: boolean; on
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function PlanningDisponibilites() {
-    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, toggleAvailability, isWeekUnavailable, toggleWeekUnavailable, isPending } = usePlanning();
+    const { currentUser, currentWeekKey, setCurrentWeekKey, bookings, toggleAvailability, isWeekUnavailable, toggleWeekUnavailable, isPending, slotsForWeek } = usePlanning();
     const [activeProjectId, setActiveProjectId] = useState<number | null>(null);
 
     const weekLabel = formatWeekLabel(currentWeekKey);
@@ -41,10 +41,10 @@ export function PlanningDisponibilites() {
 
     // Slots filtrés par le projet sélectionné (tous par défaut) + logique bi-hebdomadaire
     const filteredSlots = useMemo(() => {
-        return timeSlots
-            .filter(s => (activeProjectId === null || s.projectId === activeProjectId) && isSlotActiveThisWeek(s.id, currentWeekKey))
+        return slotsForWeek(currentWeekKey)
+            .filter(s => activeProjectId === null || s.projectId === activeProjectId)
             .sort((a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day));
-    }, [activeProjectId, currentWeekKey]);
+    }, [activeProjectId, currentWeekKey, slotsForWeek]);
 
     if (!currentUser) return null;
 

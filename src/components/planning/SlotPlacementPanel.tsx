@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarPlus, Check, Clock, X, XCircle, UserPlus } from 'lucide-react';
 import { projectsData } from '../../data/projectsData';
-import { DAY_ORDER, getWeekStartDate, isSlotActiveThisWeek, type Booking, type TimeSlot } from '../../data/planningData';
+import { DAY_ORDER, getWeekStartDate, type Booking, type TimeSlot } from '../../data/planningData';
 import { MemberPickerDialog, type PickableMember } from './MemberPickerDialog';
 
 interface SlotPlacementPanelProps {
@@ -207,7 +207,8 @@ function SlotCard({ slot, weekKey, bookings, members, onPlace, onUnplace, onNoti
 /** Placer des membres sur les créneaux de la semaine affichée (utile avant que tous les tuteurs aient leur code). */
 export function SlotPlacementPanel({ weekKey, slots, bookings, members, onPlace, onUnplace, onNotify }: SlotPlacementPanelProps) {
     const [projectFilter, setProjectFilter] = useState<number | 'all'>('all');
-    const weekSlots = slots.filter((slot) => isSlotActiveThisWeek(slot.id, weekKey));
+    // `slots` contient déjà les séances de cette semaine (alternance, annulations et ajouts compris).
+    const weekSlots = slots;
     // Un filtre par projet dès qu'il y a plusieurs projets (Bureau, ou chef de plusieurs projets).
     const projectIds = [...new Set(weekSlots.map((slot) => slot.projectId))]
         .sort((a, b) => (projectsData.find((p) => p.id === a)?.name ?? '').localeCompare(projectsData.find((p) => p.id === b)?.name ?? '', 'fr', { sensitivity: 'base' }));
