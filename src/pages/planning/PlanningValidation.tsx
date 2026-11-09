@@ -8,6 +8,7 @@ import { projectsData } from '../../data/projectsData';
 import { formatWeekLabel, navigateWeek } from '../../data/planningData';
 import { groupValidationSessions, type ValidationSession } from '../../data/validationSessions';
 import { SlotPlacementPanel } from '../../components/planning/SlotPlacementPanel';
+import { SessionsManager } from '../../components/planning/SessionsManager';
 
 const PROJECT_NAMES: Record<number, string> = Object.fromEntries(projectsData.map((p) => [p.id, p.name]));
 
@@ -20,7 +21,7 @@ export function PlanningValidation() {
     const [bulkTarget, setBulkTarget] = useState<BulkTarget | null>(null);
     const [bulkRunning, setBulkRunning] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
-    const [view, setView] = useState<'validate' | 'place'>('validate');
+    const [view, setView] = useState<'validate' | 'place' | 'sessions'>('validate');
     const [projectFilter, setProjectFilter] = useState<number | 'all'>('all');
     const [openDone, setOpenDone] = useState<Set<string>>(new Set());
 
@@ -36,6 +37,8 @@ export function PlanningValidation() {
         () => (seesAllProjects ? allSlots : allSlots.filter((s) => myProjectIds.includes(Number(s.projectId)))),
         [allSlots, seesAllProjects, myProjectIds]
     );
+    // Projets dont cette personne gère les séances : tous pour le Bureau, sinon les siens.
+    const managedProjectIds = useMemo(() => (seesAllProjects ? projectsData.map((p) => p.id) : myProjectIds), [seesAllProjects, myProjectIds]);
     // Pour placer des membres, seulement les séances qui ont lieu cette semaine.
     const placementSlots = useMemo(
         () => (seesAllProjects ? slotsForWeek(currentWeekKey) : slotsForWeek(currentWeekKey).filter((s) => myProjectIds.includes(Number(s.projectId)))),
@@ -237,7 +240,7 @@ export function PlanningValidation() {
                 icon={<CheckCircle size={16} />}
                 section="Gestion"
                 title="Valider les présences"
-                description="Confirmez qui est venu à chaque séance, ou placez vous-même des membres sur les créneaux."
+                description="Confirmez qui est venu à chaque séance, placez des membres sur les créneaux, ou ajoutez et annulez une séance."
             />
 
             {/* Week navigator */}
@@ -264,9 +267,9 @@ export function PlanningValidation() {
                 </motion.button>
             </div>
 
-            {/* Deux vues : valider les présences, ou placer des membres sur les créneaux */}
+            {/* Trois vues : valider les présences, placer des membres sur les créneaux, ou gérer les séances de la semaine */}
             <div role="tablist" aria-label="Que voulez-vous faire ?" className="mb-6 p-1.5 rounded-full bg-[#1F0422]/80 border border-[#6F2B75]/40 flex gap-1.5">
-                {([['validate', 'Valider les présences'], ['place', 'Placer des membres']] as const).map(([id, label]) => (
+                {([['validate', 'Présences'], ['place', 'Placer des membres'], ['sessions', 'Séances']] as const).map(([id, label]) => (
                     <button
                         key={id}
                         type="button"
@@ -282,7 +285,13 @@ export function PlanningValidation() {
                 ))}
             </div>
 
-            {view === 'place' ? (
+            {view === 'sessions' ? (
+                <SessionsManager
+                    weekKey={currentWeekKey}
+                    projectIds={managedProjectIds}
+                    onNotify={showToast}
+                />
+            ) : view === 'place' ? (
                 <SlotPlacementPanel
                     weekKey={currentWeekKey}
                     slots={placementSlots}

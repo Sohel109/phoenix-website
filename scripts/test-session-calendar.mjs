@@ -84,3 +84,11 @@ test('parseSessionChanges est défensif', () => {
     assert.deepEqual(parseSessionChanges([ADD, CANCEL]), [ADD, CANCEL]);
     assert.equal(parseSessionChanges([{ ...ADD, projectId: '7' }])[0].projectId, 7);
 });
+
+test('schoolYearBounds : du 1er septembre au 31 août qui contient le jour', async () => {
+    const { schoolYearBounds } = await import('../src/data/sessionCalendar.ts');
+    assert.deepEqual(schoolYearBounds('2026-11-09'), { start: '2026-09-01', end: '2027-08-31' });
+    assert.deepEqual(schoolYearBounds('2027-03-01'), { start: '2026-09-01', end: '2027-08-31' });
+    assert.deepEqual(schoolYearBounds('2026-08-31'), { start: '2025-09-01', end: '2026-08-31' });
+    assert.deepEqual(schoolYearBounds('2026-09-01'), { start: '2026-09-01', end: '2027-08-31' });
+});

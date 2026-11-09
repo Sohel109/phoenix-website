@@ -116,3 +116,11 @@ export function cancelledForWeek<S extends SessionSlot>(regular: S[], changes: S
 export function findSlot<S extends SessionSlot>(regular: S[], changes: SessionChange[], slotId: string): SessionSlot | undefined {
     return regular.find((s) => s.id === slotId) ?? extraSlots(changes).find((s) => s.id === slotId);
 }
+
+/** Année scolaire (1er septembre au 31 août) qui contient le jour donné (yyyy-MM-dd), comme côté serveur. */
+export function schoolYearBounds(todayKey: string): { start: string; end: string } {
+    const year = Number(todayKey.slice(0, 4));
+    const month = Number(todayKey.slice(5, 7));
+    const startYear = month >= 9 ? year : year - 1;
+    return { start: `${startYear}-09-01`, end: `${startYear + 1}-08-31` };
+}
