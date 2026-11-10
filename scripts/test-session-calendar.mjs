@@ -92,3 +92,11 @@ test('schoolYearBounds : du 1er septembre au 31 août qui contient le jour', asy
     assert.deepEqual(schoolYearBounds('2026-08-31'), { start: '2025-09-01', end: '2026-08-31' });
     assert.deepEqual(schoolYearBounds('2026-09-01'), { start: '2026-09-01', end: '2027-08-31' });
 });
+
+test('parseSessionChanges ignore un ajout dont les horaires ne sont pas HH:MM (feuille recréée à la main)', () => {
+    assert.deepEqual(parseSessionChanges([{ ...ADD, startTime: 'Sat Dec 30 1899 14:00:00', endTime: '16:00' }]), []);
+    assert.deepEqual(parseSessionChanges([{ ...ADD, startTime: '', endTime: '' }]), []);
+    assert.deepEqual(parseSessionChanges([{ ...ADD, startTime: '9:00' }]), []);
+    // une annulation n'a pas d'horaires : elle reste valable
+    assert.deepEqual(parseSessionChanges([CANCEL]), [CANCEL]);
+});

@@ -29,6 +29,8 @@ export interface SessionSlot {
 
 type IsActive = (slotId: string, weekKey: string) => boolean;
 
+const TIME_RE = /^\d{2}:\d{2}$/;
+
 const DAYS: DayOfWeek[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
 /** Date UTC du jour `yyyy-MM-dd`, ou null si ce n'est pas une vraie date. */
@@ -67,6 +69,8 @@ export function parseSessionChanges(raw: unknown): SessionChange[] {
         if ((kind !== 'ajout' && kind !== 'annulation') || !Number.isFinite(projectId)) continue;
         if (typeof r.id !== 'string' || typeof r.slotId !== 'string' || !r.slotId || typeof r.date !== 'string') continue;
         if (weekKeyOfDate(r.date) === null) continue;
+        // Un ajout sans horaires lisibles (feuille recréée à la main, heures converties par Sheets) fausserait les durées.
+        if (kind === 'ajout' && !(typeof r.startTime === 'string' && TIME_RE.test(r.startTime) && typeof r.endTime === 'string' && TIME_RE.test(r.endTime))) continue;
         out.push({
             id: r.id,
             kind,

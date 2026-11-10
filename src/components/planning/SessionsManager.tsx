@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { CalendarPlus, CalendarX, RotateCcw, LoaderCircle, Users } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
 import { projectsData } from '../../data/projectsData';
@@ -32,11 +32,26 @@ const formatDay = (date: string) => {
 
 /** Ajouter ou annuler une séance à une date, pour les projets de l'utilisateur (le serveur revérifie les droits). */
 export function SessionsManager({ weekKey, projectIds, onNotify }: SessionsManagerProps) {
-    const { bookings, slotsForWeek, cancelledSlotsForWeek, addSession, cancelSession, restoreSession } = usePlanning();
+    const { bookings, slotsForWeek, cancelledSlotsForWeek, addSession, cancelSession, restoreSession, setCurrentWeekKey } = usePlanning();
     const [adding, setAdding] = useState(false);
     const [toCancel, setToCancel] = useState<TimeSlot | null>(null);
     const [busyId, setBusyId] = useState<string | null>(null);
     const [cancelError, setCancelError] = useState<string | null>(null);
+
+    const keepButtonRef = useRef<HTMLButtonElement>(null);
+
+    // Fenêtre de confirmation : focus sur « Garder » (le choix sans danger) à l'ouverture, Échap pour fermer.
+    useEffect(() => {
+        if (!toCancel) return;
+        const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        keepButtonRef.current?.focus();
+        const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setToCancel(null); };
+        window.addEventListener('keydown', onKey);
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            opener?.focus();
+        };
+    }, [toCancel]);
 
     const allowed = useMemo(() => new Set(projectIds), [projectIds]);
     const sessions = slotsForWeek(weekKey)
@@ -160,22 +175,23 @@ export function SessionsManager({ weekKey, projectIds, onNotify }: SessionsManag
                 </>
             )}
 
-            <AnimatePresence>
-                {adding && (
-                    <AddSessionDialog
-                        projects={projects}
-                        existingOn={existingOn}
-                        onClose={() => setAdding(false)}
-                        onSubmit={async (input) => {
-                            const result = await addSession(input);
-                            if (!result.ok) return result.message || 'Impossible d’ajouter la séance.';
-                            onNotify(`Séance ajoutée : ${projectName(input.projectId)}, ${formatDay(input.date)}`);
-                            setAdding(false);
-                            return null;
-                        }}
-                    />
-                )}
-            </AnimatePresence>
+            {adding && (
+                <AddSessionDialog
+                    projects={projects}
+                    existingOn={existingOn}
+                    onClose={() => setAdding(false)}
+                    onSubmit={async (input) => {
+                        const result = await addSession(input);
+                        if (!result.ok) return result.message || 'Impossible d’ajouter la séance.';
+                        onNotify(`Séance ajoutée : ${projectName(input.projectId)}, ${formatDay(input.date)}`);
+                        // La liste affiche une semaine : on va à celle de la séance pour qu'on la voie tout de suite.
+                        const addedWeek = weekKeyOfDate(input.date);
+                        if (addedWeek && addedWeek !== weekKey) setCurrentWeekKey(addedWeek);
+                        setAdding(false);
+                        return null;
+                    }}
+                />
+            )}
 
             {toCancel && createPortal(
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="cancel-session-title">
@@ -202,6 +218,7 @@ export function SessionsManager({ weekKey, projectIds, onNotify }: SessionsManag
                         <div className="flex gap-3">
                             <button
                                 type="button"
+                                ref={keepButtonRef}
                                 onClick={() => setToCancel(null)}
                                 disabled={busyId === toCancel.id}
                                 className="flex-1 min-h-[44px] rounded-full bg-white/10 hover:bg-white/15 text-white font-school uppercase text-xs tracking-wider transition-colors disabled:opacity-50 cursor-pointer"

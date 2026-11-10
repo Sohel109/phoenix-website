@@ -2255,6 +2255,8 @@ function memberBookingsAdd(ctx, postData) {
   if (!date) return voteFail('invalid', 'Semaine invalide.');
   var year = schoolYearFor(ctx.today);
   if (date < year.start || date > year.end) return voteFail('invalid', "Cette semaine n'est pas dans l'année scolaire en cours.");
+  var unavailable = sessionAvailabilityProblem(postData.slotId, date);
+  if (unavailable) return voteFail('conflict', unavailable);
 
   var wanted = Array.isArray(postData.userIds) ? postData.userIds : [];
   if (wanted.length === 0 || wanted.length > MEMBER_BOOKING_MAX) {
@@ -2419,6 +2421,41 @@ function handleSessionAction(action, postData) {
   }
 }
 
+// Identifiant d'une séance ajoutée à une date (« slot-7-mer-s1a2b3c4 »), par opposition à un créneau régulier.
+function isExtraSlotId(slotId) {
+  return /^slot-\d{1,2}-(lun|mar|mer|jeu|ven|sam)-s[a-z0-9]{3,12}$/.test(String(slotId));
+}
+
+// Une réservation ne doit pas se rattacher à une séance annulée, supprimée, ou qui a lieu à une autre date.
+// Renvoie le message à afficher, ou null si la séance est bien ouverte.
+function sessionAvailabilityProblem(slotId, date) {
+  var changes = readSessionChanges();
+  var i;
+  if (isExtraSlotId(slotId)) {
+    for (i = 0; i < changes.length; i++) {
+      if (changes[i].kind === 'ajout' && changes[i].slotId === String(slotId)) {
+        return changes[i].date === date ? null : "Cette séance a lieu à une autre date.";
+      }
+    }
+    return "Cette séance n'existe pas ou a été supprimée.";
+  }
+  for (i = 0; i < changes.length; i++) {
+    if (changes[i].kind === 'annulation' && changes[i].slotId === String(slotId) && changes[i].date === date) return 'Cette séance est annulée.';
+  }
+  return null;
+}
+
+// L'appel des enfants a-t-il déjà été fait sur cette séance (créneau et semaine) ?
+function sessionHasChildAttendance(slotId, weekKey) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CHILDREN_SHEETS.attendance.name);
+  if (!sheet) return false;
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][1]) === String(slotId) && String(values[i][2]) === String(weekKey)) return true;
+  }
+  return false;
+}
+
 function sessionAdd(ctx, postData) {
   var projectId = typeof postData.projectId === 'number' ? postData.projectId : NaN;
   if (CHILDREN_PROJECT_IDS.indexOf(projectId) === -1) return voteFail('invalid', 'Projet inconnu.');
@@ -2454,7 +2491,7 @@ function sessionTarget(ctx, postData) {
   if (!canManageProject(ctx.user, slot.projectId)) return { error: voteFail('forbidden', 'Vous ne pouvez gérer que les séances de vos projets.') };
   var date = sessionDateKey(postData.weekKey, postData.slotId);
   if (!date) return { error: voteFail('invalid', 'Semaine invalide.') };
-  return { slot: slot, date: date, isExtra: /^slot-\d{1,2}-(lun|mar|mer|jeu|ven|sam)-s[a-z0-9]{3,12}$/.test(String(postData.slotId)) };
+  return { slot: slot, date: date, isExtra: isExtraSlotId(postData.slotId) };
 }
 
 function sessionCancel(ctx, postData) {
@@ -2474,6 +2511,11 @@ function sessionCancel(ctx, postData) {
     if (sessionDateText(values[row - 1][3]) !== target.date) return voteFail('invalid', 'Cette séance a lieu une autre semaine.');
   }
 
+  // L'appel des enfants est rattaché à la séance : l'annuler le rendrait invisible mais il resterait compté.
+  if (sessionHasChildAttendance(postData.slotId, postData.weekKey)) {
+    return voteFail('conflict', "L'appel des enfants a déjà été fait sur cette séance : elle ne peut plus être annulée.");
+  }
+
   // Les inscrits simples sont retirés ; une présence déjà validée (ou une absence) bloque l'annulation pour ne pas perdre d'heures.
   var bookings = getOrCreateSheet('Bookings', BOOKING_HEADERS);
   var data = bookings.getDataRange().getValues();
@@ -2484,16 +2526,25 @@ function sessionCancel(ctx, postData) {
     if (status === 'confirme' || status === 'absent') {
       return voteFail('conflict', 'Des présences sont déjà validées sur cette séance. Remettez-les en attente avant de l\'annuler.');
     }
-    if (status === 'prevu') toCancel.push(b + 1);
+    if (status === 'prevu') toCancel.push({ row: b + 1, id: String(data[b][0]) });
   }
-  for (var c = 0; c < toCancel.length; c++) bookings.getRange(toCancel[c], 6).setValue('annule');
+  // Les autres actions sur les réservations (disponibilités des tuteurs) ne prennent pas ce verrou : juste avant chaque
+  // écriture, on s'assure que la ligne est toujours la même réservation, encore « prévue ».
+  var cancelled = 0;
+  for (var c = 0; c < toCancel.length; c++) {
+    var target_ = toCancel[c];
+    if (String(bookings.getRange(target_.row, 1).getValue()) === target_.id && String(bookings.getRange(target_.row, 6).getValue()) === 'prevu') {
+      bookings.getRange(target_.row, 6).setValue('annule');
+      cancelled++;
+    }
+  }
 
   if (target.isExtra) {
     ctx.sheet.deleteRow(row);
   } else {
     ctx.sheet.appendRow([newRowId('s'), 'annulation', target.slot.projectId, target.date, '', '', postData.slotId, ctx.user.id, new Date(nowMs()).toISOString()]);
   }
-  return { success: true, cancelled: toCancel.length };
+  return { success: true, cancelled: cancelled };
 }
 
 function sessionRestore(ctx, postData) {

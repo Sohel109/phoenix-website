@@ -194,3 +194,54 @@ test('un créneau régulier du samedi (« sam ») n est pas pris pour une séanc
     assert.equal(restore(h, 'b1', 'slot-2-sam', '2026-W49').success, true);
     assert.equal(seances(h).length, 0);
 });
+
+// ── Après la relecture indépendante ──────────────────────────────────────────
+
+const ATTENDANCE_HEADERS = ['projectId', 'slotId', 'weekKey', 'childId', 'present', 'markedBy', 'markedAt'];
+const callAdd = (h, requesterId, slotId, weekKey, userIds) => plain(h.call('addMemberBookings', { requesterId, slotId, weekKey, userIds }));
+
+test('annuler est refusé si l appel des enfants a déjà été fait sur la séance, rien ne change', () => {
+    const h = fresh();
+    h.ctx.getOrCreateSheet('PresencesSeances', ATTENDANCE_HEADERS).appendRow([7, 'slot-7-mer', '2026-W49', 'k1', true, 'c7', '2026-12-02T15:00:00.000Z']);
+    book(h, 't1', 'slot-7-mer', '2026-W49');
+    const out = cancel(h, 'c7', 'slot-7-mer', '2026-W49');
+    assert.equal(out.code, 'conflict');
+    assert.match(out.message, /appel/i);
+    assert.equal(statusOf(h, 't1', 'slot-7-mer', '2026-W49'), 'prevu');
+    assert.equal(seances(h).length, 0);
+});
+
+test('l appel fait sur une autre semaine ou une autre séance ne bloque pas l annulation', () => {
+    const h = fresh();
+    const sheet = h.ctx.getOrCreateSheet('PresencesSeances', ATTENDANCE_HEADERS);
+    sheet.appendRow([7, 'slot-7-mer', '2026-W47', 'k1', true, 'c7', 'x']);
+    sheet.appendRow([4, 'slot-4-mar', '2026-W49', 'k2', true, 'c4', 'x']);
+    assert.equal(cancel(h, 'c7', 'slot-7-mer', '2026-W49').success, true);
+});
+
+test('placer un membre sur une séance régulière annulée est refusé', () => {
+    const h = fresh();
+    cancel(h, 'c7', 'slot-7-mer', '2026-W49');
+    const out = callAdd(h, 'c7', 'slot-7-mer', '2026-W49', ['t1']);
+    assert.equal(out.code, 'conflict');
+    assert.match(out.message, /annulée/i);
+    assert.equal(bookingRows(h).length, 0);
+    // la même séance une autre semaine reste possible
+    assert.equal(callAdd(h, 'c7', 'slot-7-mer', '2026-W50', ['t1']).success, true);
+});
+
+test('placer un membre sur une séance ajoutée qui n existe pas ou plus est refusé', () => {
+    const h = fresh();
+    assert.equal(callAdd(h, 'c7', 'slot-7-mer-sabcdef0', '2026-W48', ['t1']).code, 'conflict');
+    const { slotId } = add(h, 'c7');
+    assert.equal(callAdd(h, 'c7', slotId, '2026-W48', ['t1']).success, true);
+    cancel(h, 'c7', slotId, '2026-W48'); // les prevu passent à annule, la ligne disparaît
+    assert.equal(callAdd(h, 'c7', slotId, '2026-W48', ['t2']).code, 'conflict');
+    assert.equal(statusOf(h, 't2', slotId, '2026-W48'), undefined);
+});
+
+test('placer un membre sur une séance ajoutée, mais à une autre semaine que sa date : refusé', () => {
+    const h = fresh();
+    const { slotId } = add(h, 'c7');
+    assert.equal(callAdd(h, 'c7', slotId, '2026-W49', ['t1']).code, 'conflict');
+});

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, CalendarPlus, TriangleAlert } from 'lucide-react';
@@ -43,23 +43,36 @@ export function AddSessionDialog({ projects, existingOn, onClose, onSubmit }: Ad
 
     const bounds = useMemo(() => schoolYearBounds(todayKey()), []);
 
+    const firstFieldRef = useRef<HTMLSelectElement>(null);
+    // `onClose` change à chaque rendu du parent : on le garde en référence pour que l'effet ne se relance pas
+    // (sinon le focus reviendrait au premier champ en pleine saisie).
+    const onCloseRef = useRef(onClose);
+    useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+
     useEffect(() => {
-        const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+        // Le focus va au premier champ à l'ouverture et revient au bouton qui a ouvert la fenêtre à la fermeture.
+        const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        firstFieldRef.current?.focus();
+        const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onCloseRef.current(); };
         window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
-    }, [onClose]);
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            opener?.focus();
+        };
+    }, []);
 
     const day = date ? dayOfDate(date) : null;
     const sundayChosen = date !== '' && day === null;
     const outOfYear = date !== '' && (date < bounds.start || date > bounds.end);
     const timesInvalid = toMinutes(startTime) < 0 || toMinutes(endTime) < 0 || toMinutes(endTime) <= toMinutes(startTime)
-        || toMinutes(startTime) < 7 * 60 || toMinutes(endTime) > 22 * 60;
+        || toMinutes(startTime) < 7 * 60 || toMinutes(endTime) > 22 * 60
+        || toMinutes(startTime) % 5 !== 0 || toMinutes(endTime) % 5 !== 0;
     const existing = date !== '' && day !== null ? existingOn(projectId, date) : [];
 
     let problem: string | null = null;
     if (sundayChosen) problem = 'Il n’y a pas de séance le dimanche.';
     else if (outOfYear) problem = 'Cette date n’est pas dans l’année scolaire en cours.';
-    else if (timesInvalid) problem = 'Les horaires doivent être entre 07:00 et 22:00, avec une fin après le début.';
+    else if (timesInvalid) problem = 'Les horaires doivent être entre 07:00 et 22:00, par pas de 5 minutes, avec une fin après le début.';
     const canSubmit = !busy && projectId !== 0 && date !== '' && problem === null;
 
     const submit = async () => {
@@ -100,7 +113,7 @@ export function AddSessionDialog({ projects, existingOn, onClose, onSubmit }: Ad
                 <div className="px-5 pb-4 space-y-4">
                     <div>
                         <label htmlFor="session-project" className={LABEL}>Projet</label>
-                        <select id="session-project" value={projectId} onChange={(event) => setProjectId(Number(event.target.value))} className={FIELD}>
+                        <select id="session-project" ref={firstFieldRef} value={projectId} onChange={(event) => setProjectId(Number(event.target.value))} className={FIELD}>
                             {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                     </div>
