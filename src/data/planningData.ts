@@ -109,8 +109,8 @@ export const timeSlots: TimeSlot[] = projectsData.flatMap((project) => {
                 { id: 'slot-5-mer', projectId: 5, day: 'Mercredi', startTime: '17:00', endTime: '18:30' },
                 { id: 'slot-5-jeu', projectId: 5, day: 'Jeudi', startTime: '17:30', endTime: '19:00' }
             ];
-        case 8: // Arthur Rimbaud : 15h30-18h00 Jeudi
-            return [{ id: 'slot-8-jeu', projectId: 8, day: 'Jeudi', startTime: '15:30', endTime: '18:00' }];
+        case 8: // Arthur Rimbaud : 16h30-19h00 Jeudi
+            return [{ id: 'slot-8-jeu', projectId: 8, day: 'Jeudi', startTime: '16:30', endTime: '19:00' }];
         case 7: // Jules Ferry : 14h00-16h30 Mercredi (Bi-hebdomadaire)
             return [{ id: 'slot-7-mer', projectId: 7, day: 'Mercredi', startTime: '14:00', endTime: '16:30' }];
         case 1: // Sup d'OM : Mardi, Jeudi, Samedi (plus de séance le mercredi)
