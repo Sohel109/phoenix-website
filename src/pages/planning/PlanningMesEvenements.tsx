@@ -39,8 +39,23 @@ export function PlanningMesEvenements() {
                 icon={<Sparkles size={16} />}
                 section="Mon activité"
                 title="Mes événements"
-                description="Indiquez votre présence pour chacun des 4 grands événements Phœnix de l'année. La présence des tuteurs et membres est essentielle au succès de nos actions."
+                description="Indiquez votre présence pour chacun des 4 grands événements Phœnix de l'année."
             />
+
+            <div
+                role="note"
+                className="mb-6 flex items-start gap-3 p-4 sm:p-5 rounded-2xl bg-[#EC602B]/15 border-2 border-[#EC602B]/70 text-white"
+            >
+                <AlertTriangle size={22} className="text-[#EC602B] shrink-0 mt-0.5" />
+                <div>
+                    <p className="font-school text-sm sm:text-base font-bold uppercase tracking-wider">
+                        La présence est OBLIGATOIRE
+                    </p>
+                    <p className="text-[#ECDDFD]/85 text-sm mt-1 leading-relaxed">
+                        Tous les tuteurs et membres doivent participer à ces 4 événements. Répondez pour chacun d'eux. Une absence reste un cas exceptionnel, à justifier auprès du Bureau.
+                    </p>
+                </div>
+            </div>
 
             {/* Events List */}
             <div className="space-y-5">
@@ -67,6 +82,9 @@ export function PlanningMesEvenements() {
                                 <div className="flex-1">
                                     <div className="flex flex-wrap items-center gap-2.5 mb-2.5">
                                         <h2 className="text-xl font-bold text-white tracking-wide">{event.label}</h2>
+                                        <span className="px-3 py-0.5 rounded-full text-xs font-school font-bold uppercase tracking-wider bg-[#EC602B] text-white">
+                                            Obligatoire
+                                        </span>
                                         <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-school uppercase tracking-wider bg-[#1F0422]/80 text-[#ECDDFD] border border-[#6F2B75]/40">
                                             <Calendar size={12} className="text-[#EC602B]" />
                                             {eventDate}
