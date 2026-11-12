@@ -439,6 +439,11 @@ export interface ChildrenData {
      * null pour un chef de projet ou le Bureau (toutes les séances de leurs projets).
      */
     allowedSlots: string[] | null;
+    /**
+     * Nombre de venues attendues par enfant et par semaine (St Gabriel : 2), ou null quand chaque séance compte.
+     * Avec un quota, un enfant n'est compté absent que s'il vient moins souvent dans la semaine.
+     */
+    weeklyQuota: number | null;
 }
 
 const VOTE_UNAVAILABLE = "Le vote n'est pas disponible pour le moment.";

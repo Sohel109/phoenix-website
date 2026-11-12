@@ -1337,19 +1337,49 @@ function readAttendanceRows(sheet) {
   });
 }
 
+// Projets où chaque enfant vient un nombre fixe de fois par semaine, et non à toutes les séances.
+// St Gabriel : 2 fois (lundi et jeudi, ou mardi et vendredi, parfois un autre jour à la place).
+var CHILDREN_WEEKLY_QUOTA = { 4: 2 };
+
+function weeklyQuotaFor(projectId) {
+  return projectId !== null && CHILDREN_WEEKLY_QUOTA[projectId] ? CHILDREN_WEEKLY_QUOTA[projectId] : null;
+}
+
+// Séances comptées et présences à partir de lignes d'appel (un ou plusieurs enfants).
+// Sans quota, chaque séance avec appel compte. Avec un quota, semaine par semaine et enfant par enfant : on attend
+// min(quota, séances avec appel) venues, et on compte max(venues attendues, venues réelles). Un enfant qui vient
+// le mardi au lieu du lundi n'a donc aucune absence, et un enfant venu 3 fois reste à 100 %.
+function countAttendance(rows, quota) {
+  var weeks = {};
+  for (var i = 0; i < rows.length; i++) {
+    var key = rows[i].childId + '|' + rows[i].weekKey;
+    var week = weeks[key] || (weeks[key] = { held: 0, present: 0 });
+    week.held++;
+    if (rows[i].present) week.present++;
+  }
+  var sessions = 0;
+  var present = 0;
+  Object.keys(weeks).forEach(function(key) {
+    var w = weeks[key];
+    var expected = quota ? Math.min(quota, w.held) : w.held;
+    sessions += Math.max(expected, w.present);
+    present += w.present;
+  });
+  return { sessions: sessions, present: present };
+}
+
 // Séances comptées et taux d'un projet sur l'année scolaire, enfants retirés compris.
 function projectAttendanceStats(attendanceRows, projectId, year) {
   var sessions = {};
-  var present = 0;
-  var total = 0;
+  var rows = [];
   for (var i = 0; i < attendanceRows.length; i++) {
     var r = attendanceRows[i];
     if (r.projectId !== String(projectId) || r.date === '' || r.date < year.start || r.date > year.end) continue;
     sessions[r.slotId + '|' + r.weekKey] = true;
-    total++;
-    if (r.present) present++;
+    rows.push(r);
   }
-  return { sessionCount: Object.keys(sessions).length, rate: percentOrNull(present, total) };
+  var counted = countAttendance(rows, weeklyQuotaFor(projectId));
+  return { sessionCount: Object.keys(sessions).length, rate: percentOrNull(counted.present, counted.sessions) };
 }
 
 function handleChildrenAction(action, postData) {
@@ -1488,12 +1518,13 @@ function childrenGetData(ctx, postData) {
       };
     }
     var stats = projectAttendanceStats(attendanceRows, ctx.projectId, year);
+    var quota = weeklyQuotaFor(ctx.projectId);
     var perChild = active.map(function(c) {
       var mine = ofProject.filter(function(r) { return r.childId === c.id && r.date !== '' && r.date >= year.start && r.date <= year.end; });
-      var presentCount = mine.filter(function(r) { return r.present; }).length;
-      return { id: c.id, name: c.name, sessions: mine.length, present: presentCount, rate: percentOrNull(presentCount, mine.length) };
+      var counted = countAttendance(mine, quota);
+      return { id: c.id, name: c.name, sessions: counted.sessions, present: counted.present, rate: percentOrNull(counted.present, counted.sessions) };
     });
-    summary = { schoolYear: year.label, childCount: active.length, sessionCount: stats.sessionCount, rate: stats.rate, children: perChild };
+    summary = { schoolYear: year.label, childCount: active.length, sessionCount: stats.sessionCount, rate: stats.rate, weeklyQuota: quota, children: perChild };
   }
 
   var overview = null;
@@ -1526,7 +1557,8 @@ function childrenGetData(ctx, postData) {
     doneSlots: doneSlots,
     summary: summary,
     overview: overview,
-    allowedSlots: allowedSlots
+    allowedSlots: allowedSlots,
+    weeklyQuota: weeklyQuotaFor(ctx.projectId)
   };
 }
 

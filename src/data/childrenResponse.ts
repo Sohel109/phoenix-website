@@ -24,12 +24,17 @@ export function parseChildrenData(raw: unknown): ChildrenData | null {
         !isArrayOf(d.doneSlots, (id) => typeof id === 'string') ||
         !(summary === null || (isObject(summary) && typeof summary.schoolYear === 'string' && isNullableNumber(summary.rate) && isArrayOf(summary.children, isObject))) ||
         !(d.overview === null || isArrayOf(d.overview, isObject)) ||
-        !(d.allowedSlots === undefined || d.allowedSlots === null || isArrayOf(d.allowedSlots, (id) => typeof id === 'string'))
+        !(d.allowedSlots === undefined || d.allowedSlots === null || isArrayOf(d.allowedSlots, (id) => typeof id === 'string')) ||
+        !(d.weeklyQuota === undefined || isNullableNumber(d.weeklyQuota))
     ) {
         return null;
     }
-    // Un script d'avant l'appel par les tuteurs n'envoie pas `allowedSlots` : c'est alors un responsable (null).
-    return { ...(raw as unknown as ChildrenData), allowedSlots: (d.allowedSlots as string[] | null | undefined) ?? null };
+    // Un script plus ancien n'envoie ni `allowedSlots` (c'est alors un responsable) ni `weeklyQuota` (pas de quota).
+    return {
+        ...(raw as unknown as ChildrenData),
+        allowedSlots: (d.allowedSlots as string[] | null | undefined) ?? null,
+        weeklyQuota: (d.weeklyQuota as number | null | undefined) ?? null,
+    };
 }
 
 /** Date du jour à Paris, au format AAAA-MM-JJ (le serveur fait foi pour refuser une séance à venir). */

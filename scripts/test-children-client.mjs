@@ -36,6 +36,13 @@ test('allowedSlots : la liste d\'un tuteur est gardée, son absence (ancien scri
     assert.equal(parseChildrenData(VALID)?.allowedSlots, null);
 });
 
+test('weeklyQuota : gardé quand il est envoyé, null sinon (ancien script), rejeté si ce n\'est pas un nombre', () => {
+    assert.equal(parseChildrenData({ ...VALID, weeklyQuota: 2 })?.weeklyQuota, 2);
+    assert.equal(parseChildrenData({ ...VALID, weeklyQuota: null })?.weeklyQuota, null);
+    assert.equal(parseChildrenData(VALID)?.weeklyQuota, null);
+    assert.equal(parseChildrenData({ ...VALID, weeklyQuota: '2' }), null);
+});
+
 test('allowedSlots : un type inattendu fait rejeter la réponse', () => {
     assert.equal(parseChildrenData({ ...VALID, allowedSlots: 'slot-4-jeu' }), null);
     assert.equal(parseChildrenData({ ...VALID, allowedSlots: [4] }), null);

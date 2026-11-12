@@ -15,6 +15,7 @@ export function ChildrenSummaryCard({ data }: { data: ChildrenData }) {
                         {summary.sessionCount === 0
                             ? "Aucun appel enregistré cette année."
                             : `${summary.sessionCount} séance${summary.sessionCount > 1 ? 's' : ''} avec appel, ${summary.childCount} enfant${summary.childCount > 1 ? 's' : ''} dans la liste, taux de présence ${formatRate(summary.rate)}.`}
+                        {data.weeklyQuota !== null && summary.sessionCount > 0 && ` Chaque enfant est attendu ${data.weeklyQuota} fois par semaine : « Séances » compte ses venues attendues, pas toutes les séances du projet.`}
                     </p>
                     {summary.children.length > 0 && (
                         <div className="overflow-x-auto">

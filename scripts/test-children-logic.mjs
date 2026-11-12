@@ -277,6 +277,88 @@ test('bilan : taux par enfant et pour le projet, séances comptées', () => {
     assert.equal(byName['Lina M.'].rate, 0);
 });
 
+// St Gabriel : chaque enfant vient 2 fois par semaine (lundi et jeudi, ou mardi et vendredi, parfois un autre jour).
+// Une absence ne compte que s'il est venu moins de 2 fois dans la semaine.
+const FULL_WEEK = '2026-W43'; // lundi 19 au vendredi 23 octobre, toutes passées
+const fullWeek = (h, requesterId, projectId, slots, presentBySlot) =>
+    slots.forEach((slot) => save(h, requesterId, projectId, slot, FULL_WEEK, presentBySlot[slot] ?? []));
+
+test('St Gabriel : venir 2 fois sur les 4 séances de la semaine, quels que soient les jours, ne compte aucune absence', () => {
+    const h = fresh();
+    const { ines, karim, lina } = withKids(h);
+    // Inès : lundi et jeudi. Karim : mardi et vendredi. Lina : lundi et mardi (elle a échangé son jeudi).
+    fullWeek(h, 'c4', 4, ['slot-4-lun', 'slot-4-mar', 'slot-4-jeu', 'slot-4-ven'], {
+        'slot-4-lun': [ines, lina], 'slot-4-mar': [karim, lina], 'slot-4-jeu': [ines], 'slot-4-ven': [karim],
+    });
+    const { summary } = get(h, 'c4');
+    const byName = Object.fromEntries(summary.children.map((c) => [c.name, [c.sessions, c.present, c.rate]]));
+    assert.deepEqual(byName['Inès B.'], [2, 2, 100]);
+    assert.deepEqual(byName['Karim D.'], [2, 2, 100]);
+    assert.deepEqual(byName['Lina M.'], [2, 2, 100]);
+    assert.equal(summary.rate, 100);
+    assert.equal(summary.sessionCount, 4);
+    assert.equal(summary.weeklyQuota, 2);
+});
+
+test('St Gabriel : venu une seule fois dans la semaine, une absence ; jamais venu, deux absences', () => {
+    const h = fresh();
+    const { ines } = withKids(h);
+    fullWeek(h, 'c4', 4, ['slot-4-lun', 'slot-4-mar', 'slot-4-jeu', 'slot-4-ven'], { 'slot-4-mar': [ines] });
+    const { summary } = get(h, 'c4');
+    const byName = Object.fromEntries(summary.children.map((c) => [c.name, [c.sessions, c.present, c.rate]]));
+    assert.deepEqual(byName['Inès B.'], [2, 1, 50]);
+    assert.deepEqual(byName['Lina M.'], [2, 0, 0]);
+    assert.equal(summary.rate, 17); // 1 présence sur 6 attendues
+});
+
+test('St Gabriel : venu 3 fois, les 3 séances comptent, le taux reste à 100', () => {
+    const h = fresh();
+    const { ines } = withKids(h);
+    fullWeek(h, 'c4', 4, ['slot-4-lun', 'slot-4-mar', 'slot-4-jeu', 'slot-4-ven'], {
+        'slot-4-lun': [ines], 'slot-4-mar': [ines], 'slot-4-jeu': [ines],
+    });
+    const ines3 = get(h, 'c4').summary.children.find((c) => c.name === 'Inès B.');
+    assert.deepEqual([ines3.sessions, ines3.present, ines3.rate], [3, 3, 100]);
+});
+
+test('St Gabriel : une semaine avec un seul appel n\'attend qu\'une venue', () => {
+    const h = fresh();
+    const { karim } = withKids(h);
+    fullWeek(h, 'c4', 4, ['slot-4-mar'], { 'slot-4-mar': [karim] });
+    const byName = Object.fromEntries(get(h, 'c4').summary.children.map((c) => [c.name, [c.sessions, c.present, c.rate]]));
+    assert.deepEqual(byName['Karim D.'], [1, 1, 100]);
+    assert.deepEqual(byName['Inès B.'], [1, 0, 0]);
+});
+
+test('St Gabriel : la vue Bureau applique la même règle', () => {
+    const h = fresh();
+    const { ines, karim, lina } = withKids(h);
+    fullWeek(h, 'c4', 4, ['slot-4-lun', 'slot-4-mar', 'slot-4-jeu', 'slot-4-ven'], {
+        'slot-4-lun': [ines, lina], 'slot-4-mar': [karim, lina], 'slot-4-jeu': [ines], 'slot-4-ven': [karim],
+    });
+    const four = get(h, 'b1').overview.find((o) => o.projectId === 4);
+    assert.equal(four.rate, 100);
+});
+
+test('autres projets : chaque séance manquée reste une absence', () => {
+    const h = fresh();
+    add(h, 'b1', 5, ['Adam B.']);
+    const adam = get(h, 'b1', { projectId: 5 }).children[0].id;
+    fullWeek(h, 'b1', 5, ['slot-5-mar', 'slot-5-mer', 'slot-5-jeu'], { 'slot-5-mar': [adam], 'slot-5-mer': [adam] });
+    const { summary } = get(h, 'b1', { projectId: 5 });
+    assert.deepEqual([summary.children[0].sessions, summary.children[0].present, summary.children[0].rate], [3, 2, 67]);
+    assert.equal(summary.weeklyQuota, null);
+});
+
+test('le quota est envoyé aussi au tuteur, sans le bilan', () => {
+    const h = fresh();
+    withKids(h);
+    book(h, 't4', 'slot-4-jeu', WEEK);
+    const out = get(h, 't4', { weekKey: WEEK });
+    assert.equal(out.weeklyQuota, 2);
+    assert.equal(out.summary, null);
+});
+
 test('un enfant ajouté après un appel n\'est pas compté sur cet appel', () => {
     const h = fresh();
     const { ines } = withKids(h);

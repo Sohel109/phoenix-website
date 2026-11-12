@@ -45,6 +45,12 @@ export function ChildrenAttendanceCard({
         <div className={cardClass}>
             <h3 className="text-white font-bold tracking-wide mb-1">Appel</h3>
             <p className="text-[#ECDDFD]/70 text-xs mb-4">Choisissez la séance, cochez les enfants présents, puis enregistrez.</p>
+            {data.weeklyQuota !== null && (
+                <p className="text-xs leading-relaxed mb-4 px-3.5 py-2.5 rounded-xl bg-[#1F0422]/70 border border-[#6F2B75]/40 text-[#ECDDFD]/85">
+                    Chaque enfant vient {data.weeklyQuota} fois par semaine, pas à toutes les séances. Cochez seulement ceux qui sont là :
+                    un enfant n’est compté absent que s’il vient moins de {data.weeklyQuota} fois dans la semaine, quels que soient les jours.
+                </p>
+            )}
 
             <div className="flex items-center justify-between mb-4 p-3 rounded-full bg-[#1F0422]/70 border border-[#6F2B75]/40">
                 <button type="button" disabled={disabled} onClick={() => onWeekChange('prev')} aria-label="Semaine précédente" className="w-9 h-9 rounded-full bg-[#6F2B75]/30 hover:bg-[#6F2B75]/60 text-white flex items-center justify-center disabled:opacity-60">
