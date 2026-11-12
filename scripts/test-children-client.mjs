@@ -30,6 +30,17 @@ test('parseChildrenData accepte la vue d\'ensemble du Bureau', () => {
     assert.equal(parseChildrenData(bureau)?.overview?.length, 1);
 });
 
+test('allowedSlots : la liste d\'un tuteur est gardée, son absence (ancien script) vaut null', () => {
+    assert.deepEqual(parseChildrenData({ ...VALID, summary: null, allowedSlots: ['slot-4-jeu'] })?.allowedSlots, ['slot-4-jeu']);
+    assert.equal(parseChildrenData({ ...VALID, allowedSlots: null })?.allowedSlots, null);
+    assert.equal(parseChildrenData(VALID)?.allowedSlots, null);
+});
+
+test('allowedSlots : un type inattendu fait rejeter la réponse', () => {
+    assert.equal(parseChildrenData({ ...VALID, allowedSlots: 'slot-4-jeu' }), null);
+    assert.equal(parseChildrenData({ ...VALID, allowedSlots: [4] }), null);
+});
+
 test('parseChildrenData rejette la réponse de connexion d\'un ancien script (pas encore redéployé)', () => {
     assert.equal(parseChildrenData({ success: true, user: { id: '1', name: 'X', role: 'tuteur' } }), null);
 });

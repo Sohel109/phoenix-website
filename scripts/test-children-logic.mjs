@@ -16,21 +16,35 @@ const names = (out) => out.children.map((c) => c.name);
 
 const get = (h, requesterId, extra = {}) => plain(h.call('getChildrenData', { requesterId, ...extra }));
 const add = (h, requesterId, projectId, list) => plain(h.call('addChildren', { requesterId, projectId, names: list }));
+/** Inscrit un membre sur une séance, comme le fait la page « Disponibilités ». */
+const book = (h, userId, slotId, weekKey, status = 'prevu') =>
+    h.raw('syncBooking', { booking: { id: `bk-${userId}-${slotId}-${weekKey}`, slotId, userId, userName: userId, weekKey, status } });
 
 // ─── Accès ────────────────────────────────────────────────────────────────────
 
-test('un tuteur est refusé sur les quatre actions', () => {
+test('un tuteur ne modifie jamais la liste des enfants, même inscrit sur une séance', () => {
     const h = fresh();
+    book(h, 't4', 'slot-4-jeu', '2026-W44');
     for (const [action, body] of [
-        ['getChildrenData', { projectId: 4 }],
         ['addChildren', { projectId: 4, names: ['Inès B.'] }],
         ['removeChild', { projectId: 4, childId: 'x' }],
-        ['saveChildAttendance', { projectId: 4, date: TODAY, presentIds: [] }],
     ]) {
         const out = plain(h.call(action, { requesterId: 't4', ...body }));
         assert.equal(out.success, false, action);
         assert.equal(out.code, 'forbidden', action);
     }
+});
+
+test('un tuteur inscrit sur aucune séance : aucun projet, aucun nom, appel refusé', () => {
+    const h = fresh();
+    add(h, 'c4', 4, ['Inès B.']);
+    const out = get(h, 't4');
+    assert.equal(out.success, true);
+    assert.deepEqual(out.projects, []);
+    assert.equal(out.projectId, null);
+    assert.deepEqual(out.children, []);
+    assert.equal(get(h, 't4', { projectId: 4 }).code, 'forbidden');
+    assert.equal(plain(h.call('saveChildAttendance', { requesterId: 't4', projectId: 4, slotId: 'slot-4-jeu', weekKey: '2026-W44', presentIds: [] })).code, 'forbidden');
 });
 
 test('sans jeton valide : unauthenticated', () => {
@@ -319,6 +333,79 @@ test('Bureau : vue d\'ensemble de tous les projets, appel possible ; un CDP n\'a
     assert.deepEqual([four.childCount, four.sessionCount, four.rate], [3, 1, 33]);
     assert.equal(save(h, 'b1', 4, 'slot-4-jeu', WEEK, [ines]).success, true);
     assert.equal(attendanceRows(h).at(-1)[5], 'b1');
+});
+
+// ─── Tuteurs : l'appel des séances où ils sont inscrits ───────────────────────
+
+test('tuteur inscrit : il voit le projet, la liste de sa séance et peut faire l\'appel, signé de son nom', () => {
+    const h = fresh();
+    const { ines, karim } = withKids(h);
+    book(h, 't4', 'slot-4-jeu', WEEK);
+    const overview = get(h, 't4', { weekKey: WEEK });
+    assert.deepEqual(overview.projects, [4]);
+    assert.equal(overview.projectId, 4);
+    assert.deepEqual(overview.allowedSlots, ['slot-4-jeu']);
+    const data = get(h, 't4', { projectId: 4, weekKey: WEEK, slotId: 'slot-4-jeu' });
+    assert.equal(data.success, true);
+    assert.deepEqual(names(data), ['Inès B.', 'Karim D.', 'Lina M.']);
+    const out = save(h, 't4', 4, 'slot-4-jeu', WEEK, [ines, karim]);
+    assert.equal(out.success, true);
+    assert.equal(attendanceRows(h).at(-1)[5], 't4');
+    const again = get(h, 't4', { projectId: 4, weekKey: WEEK, slotId: 'slot-4-jeu' });
+    assert.deepEqual(again.attendance.presentIds, [ines, karim]);
+});
+
+test('tuteur : ni bilan, ni vue Bureau, ni liste des enfants sans séance choisie', () => {
+    const h = fresh();
+    withKids(h);
+    book(h, 't4', 'slot-4-jeu', WEEK);
+    const out = get(h, 't4', { projectId: 4, weekKey: WEEK });
+    assert.equal(out.summary, null);
+    assert.equal(out.overview, null);
+    assert.deepEqual(out.children, []);
+});
+
+test('tuteur : refusé sur une séance du même projet où il n\'est pas inscrit, ou une autre semaine', () => {
+    const h = fresh();
+    const { ines } = withKids(h);
+    book(h, 't4', 'slot-4-jeu', WEEK);
+    assert.equal(get(h, 't4', { projectId: 4, weekKey: WEEK, slotId: 'slot-4-mar' }).code, 'forbidden');
+    assert.equal(get(h, 't4', { projectId: 4, weekKey: '2026-W43', slotId: 'slot-4-jeu' }).code, 'forbidden');
+    assert.equal(save(h, 't4', 4, 'slot-4-mar', WEEK, [ines]).code, 'forbidden');
+    assert.equal(save(h, 't4', 4, 'slot-4-jeu', '2026-W43', [ines]).code, 'forbidden');
+    assert.equal(attendanceRows(h).length, 0);
+});
+
+test('tuteur : une inscription annulée ou marquée absente ne donne aucun accès', () => {
+    for (const status of ['annule', 'absent']) {
+        const h = fresh();
+        const { ines } = withKids(h);
+        book(h, 't4', 'slot-4-jeu', WEEK, status);
+        assert.deepEqual(get(h, 't4', { weekKey: WEEK }).projects, [], status);
+        assert.equal(save(h, 't4', 4, 'slot-4-jeu', WEEK, [ines]).code, 'forbidden', status);
+    }
+});
+
+test('tuteur dont la présence est confirmée : l\'appel reste possible', () => {
+    const h = fresh();
+    const { ines } = withKids(h);
+    book(h, 't4', 'slot-4-jeu', WEEK, 'confirme');
+    assert.equal(save(h, 't4', 4, 'slot-4-jeu', WEEK, [ines]).success, true);
+});
+
+test('tuteur : la règle « pas d\'appel pour une séance à venir » s\'applique aussi', () => {
+    const h = fresh();
+    const { ines } = withKids(h);
+    book(h, 't4', 'slot-4-ven', WEEK);
+    const out = save(h, 't4', 4, 'slot-4-ven', WEEK, [ines]);
+    assert.equal(out.success, false);
+    assert.equal(out.code, 'invalid');
+});
+
+test('chef et Bureau : allowedSlots vaut null (toutes les séances de leurs projets)', () => {
+    const h = fresh();
+    assert.equal(get(h, 'c4').allowedSlots, null);
+    assert.equal(get(h, 'b1').allowedSlots, null);
 });
 
 // ─── Corrections de la relecture finale ───────────────────────────────────────

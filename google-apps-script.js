@@ -1371,12 +1371,23 @@ function handleChildrenAction(action, postData) {
     if (lock) lock.waitLock(15000);
     var users = readChildrenUsers();
     var user = findVoteUser(users, postData.requesterId);
-    if (!user || (user.role !== 'bureau' && user.role !== 'chef_projet')) {
-      return voteFail('forbidden', "Cette page est réservée aux chefs de projet et au Bureau.");
+    if (!user) return voteFail('forbidden', "Compte introuvable.");
+    var isManager = user.role === 'bureau' || user.role === 'chef_projet';
+    // Un tuteur fait seulement l'appel des séances où il est inscrit : jamais la liste des enfants ni le bilan.
+    var tutorSessions = null;
+    if (!isManager) {
+      if (action === 'addChildren' || action === 'removeChild') {
+        return voteFail('forbidden', "Seuls les chefs de projet et le Bureau modifient la liste des enfants.");
+      }
+      tutorSessions = tutorBookedSessions(user.id);
     }
     var accessible = [];
     for (var p = 0; p < CHILDREN_PROJECT_IDS.length; p++) {
-      if (user.role === 'bureau' || user.projectIds.indexOf(CHILDREN_PROJECT_IDS[p]) !== -1) accessible.push(CHILDREN_PROJECT_IDS[p]);
+      var pid = CHILDREN_PROJECT_IDS[p];
+      var allowed = tutorSessions !== null
+        ? tutorSessions.some(function(s) { return s.projectId === pid; })
+        : user.role === 'bureau' || user.projectIds.indexOf(pid) !== -1;
+      if (allowed) accessible.push(pid);
     }
     var hasProject = postData.projectId !== undefined && postData.projectId !== null && postData.projectId !== '';
     var projectId = null;
@@ -1393,6 +1404,7 @@ function handleChildrenAction(action, postData) {
       user: user,
       accessible: accessible,
       projectId: projectId,
+      tutorSessions: tutorSessions,
       sheets: { children: getChildrenSheet(), attendance: getAttendanceSheet() }
     };
     if (action === 'getChildrenData') return childrenGetData(ctx, postData);
@@ -1406,6 +1418,39 @@ function handleChildrenAction(action, postData) {
   }
 }
 
+// Séances (créneau + semaine) de l'année scolaire où un membre est inscrit et peut donc faire l'appel des enfants.
+// Une inscription annulée, ou un membre marqué absent, ne compte pas. Les doublons d'une même inscription se
+// résolvent comme dans getPlanningDataInternal : une ligne confirmée ou absente l'emporte.
+function tutorBookedSessions(userId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Bookings');
+  if (!sheet) return [];
+  var values = sheet.getDataRange().getValues();
+  var byKey = {};
+  for (var i = 1; i < values.length; i++) {
+    if (!values[i][0] || String(values[i][2]) !== String(userId)) continue;
+    var item = { slotId: String(values[i][1]), weekKey: String(values[i][4]), status: String(values[i][5]) };
+    var key = item.slotId + '_' + item.weekKey;
+    if (!byKey[key] || item.status === 'confirme' || item.status === 'absent') byKey[key] = item;
+  }
+  var year = schoolYearFor(todayKeyParis());
+  var sessions = [];
+  Object.keys(byKey).forEach(function(key) {
+    var b = byKey[key];
+    if (b.status !== 'prevu' && b.status !== 'confirme') return;
+    var slot = parseSlotId(b.slotId);
+    var date = slot ? sessionDateKey(b.weekKey, b.slotId) : null;
+    if (!slot || date === null || date < year.start || date > year.end) return;
+    sessions.push({ slotId: b.slotId, weekKey: b.weekKey, projectId: slot.projectId });
+  });
+  return sessions;
+}
+
+function tutorCanMark(ctx, slotId, weekKey) {
+  return ctx.tutorSessions.some(function(s) { return s.slotId === slotId && s.weekKey === weekKey; });
+}
+
+var TUTOR_NOT_BOOKED = "Vous ne pouvez faire l'appel que des séances où vous êtes inscrit.";
+
 function childrenGetData(ctx, postData) {
   var today = todayKeyParis();
   var weekKey = postData.weekKey ? String(postData.weekKey) : isoWeekKeyOfUtcDate(new Date(today + 'T00:00:00Z'));
@@ -1416,6 +1461,8 @@ function childrenGetData(ctx, postData) {
     var slot = parseSlotId(slotId);
     if (!slot || (ctx.projectId !== null && slot.projectId !== ctx.projectId)) return voteFail('invalid', 'Séance inconnue pour ce projet.');
   }
+  var isTutor = ctx.tutorSessions !== null;
+  if (isTutor && hasSlot && !tutorCanMark(ctx, slotId, weekKey)) return voteFail('forbidden', TUTOR_NOT_BOOKED);
   var year = schoolYearFor(today);
   var childRows = readVoteRows(ctx.sheets.children);
   var attendanceRows = readAttendanceRows(ctx.sheets.attendance);
@@ -1457,6 +1504,16 @@ function childrenGetData(ctx, postData) {
     });
   }
 
+  var allowedSlots = null;
+  if (isTutor) {
+    // Le tuteur ne voit les noms que pour la séance qu'il a choisie, et jamais le bilan de l'année.
+    if (slotId === null) children = [];
+    summary = null;
+    allowedSlots = ctx.tutorSessions
+      .filter(function(s) { return s.weekKey === weekKey && s.projectId === ctx.projectId; })
+      .map(function(s) { return s.slotId; });
+  }
+
   return {
     success: true,
     isBureau: isBureau,
@@ -1468,7 +1525,8 @@ function childrenGetData(ctx, postData) {
     attendance: attendance,
     doneSlots: doneSlots,
     summary: summary,
-    overview: overview
+    overview: overview,
+    allowedSlots: allowedSlots
   };
 }
 
@@ -1498,6 +1556,7 @@ function childrenSaveAttendance(ctx, postData) {
   var weekKey = String(postData.weekKey);
   var slot = parseSlotId(slotId);
   if (!slot || slot.projectId !== ctx.projectId) return voteFail('invalid', 'Séance inconnue pour ce projet.');
+  if (ctx.tutorSessions !== null && !tutorCanMark(ctx, slotId, weekKey)) return voteFail('forbidden', TUTOR_NOT_BOOKED);
   var date = sessionDateKey(weekKey, slotId);
   if (date === null) return voteFail('invalid', 'Semaine invalide.');
   if (date > todayKeyParis()) return voteFail('invalid', "L'appel ne peut pas être fait pour une séance à venir.");

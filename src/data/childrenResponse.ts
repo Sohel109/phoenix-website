@@ -23,11 +23,13 @@ export function parseChildrenData(raw: unknown): ChildrenData | null {
         !(d.attendance === null || (isObject(d.attendance) && typeof d.attendance.slotId === 'string' && typeof d.attendance.weekKey === 'string' && isArrayOf(d.attendance.presentIds, (id) => typeof id === 'string'))) ||
         !isArrayOf(d.doneSlots, (id) => typeof id === 'string') ||
         !(summary === null || (isObject(summary) && typeof summary.schoolYear === 'string' && isNullableNumber(summary.rate) && isArrayOf(summary.children, isObject))) ||
-        !(d.overview === null || isArrayOf(d.overview, isObject))
+        !(d.overview === null || isArrayOf(d.overview, isObject)) ||
+        !(d.allowedSlots === undefined || d.allowedSlots === null || isArrayOf(d.allowedSlots, (id) => typeof id === 'string'))
     ) {
         return null;
     }
-    return raw as unknown as ChildrenData;
+    // Un script d'avant l'appel par les tuteurs n'envoie pas `allowedSlots` : c'est alors un responsable (null).
+    return { ...(raw as unknown as ChildrenData), allowedSlots: (d.allowedSlots as string[] | null | undefined) ?? null };
 }
 
 /** Date du jour à Paris, au format AAAA-MM-JJ (le serveur fait foi pour refuser une séance à venir). */

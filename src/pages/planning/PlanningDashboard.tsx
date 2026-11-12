@@ -92,7 +92,6 @@ const cards: DashCard[] = [
         to: '/planning/presences-enfants',
         gradient: 'from-[#6F2B75] to-[#EC602B]',
         section: 'gestion',
-        chefOnly: true,
     },
     {
         icon: <FileText size={26} />,
@@ -130,6 +129,10 @@ export function PlanningDashboard() {
     }).map(c => {
         if (c.to === '/planning/notifications') {
             return { ...c, badge: unreadCount };
+        }
+        // Les tuteurs font l'appel des séances où ils sont inscrits : l'entrée va dans leur activité, pas dans la gestion.
+        if (c.to === '/planning/presences-enfants' && !isChef && !isBureau) {
+            return { ...c, section: 'activite' as const, description: "Faites l'appel des séances où vous êtes inscrit" };
         }
         return c;
     });

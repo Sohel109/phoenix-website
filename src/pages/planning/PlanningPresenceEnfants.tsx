@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ClipboardCheck, RefreshCw, ShieldCheck } from 'lucide-react';
+import { ClipboardCheck, RefreshCw } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { PlanningPageHeader } from '../../components/planning/PlanningPageHeader';
 import { usePlanning } from '../../context/PlanningContext';
@@ -28,18 +28,8 @@ export function PlanningPresenceEnfants() {
 
     if (!currentUser) return null;
 
-    if (currentUser.role !== 'chef_projet' && currentUser.role !== 'bureau') {
-        return (
-            <PlanningLayout title="Présence enfants">
-                <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <ShieldCheck size={48} className="text-white/20 mb-4" />
-                    <p className="text-white font-bold text-lg">Accès restreint</p>
-                    <p className="text-white/40 text-sm mt-1">Cette page est réservée aux chefs de projet et au Bureau.</p>
-                </div>
-            </PlanningLayout>
-        );
-    }
-
+    // Un tuteur fait seulement l'appel des séances où il est inscrit : pas de liste des enfants à gérer, pas de bilan.
+    const isManager = currentUser.role === 'chef_projet' || currentUser.role === 'bureau';
     const token = currentUser.token ?? '';
     const needsLogin = errorCode === 'unauthenticated' || actionCode === 'unauthenticated';
     // Le projet de la réponse fait foi : c'est celui dont l'appel et la liste sont affichés.
@@ -49,7 +39,10 @@ export function PlanningPresenceEnfants() {
     const stale = isStaleChildrenData(data, selectedProject, weekKey, slotId);
     const showCards = data !== null && projectId !== null && (!stale || loading);
     const locked = busy || loading || stale;
-    const projectSlots = projectId === null ? [] : slotsForWeek(weekKey).filter((slot) => slot.projectId === projectId);
+    const allowedSlots = data?.allowedSlots ?? null;
+    const projectSlots = projectId === null
+        ? []
+        : slotsForWeek(weekKey).filter((slot) => slot.projectId === projectId && (allowedSlots === null || allowedSlots.includes(slot.id)));
 
     const run = async (action: () => Promise<{ success: boolean; message: string; code?: string }>): Promise<boolean> => {
         setBusy(true);
@@ -74,9 +67,11 @@ export function PlanningPresenceEnfants() {
         <PlanningLayout title="Présence enfants">
             <PlanningPageHeader
                 icon={<ClipboardCheck size={16} />}
-                section="Gestion"
+                section={isManager ? 'Gestion' : 'Mon activité'}
                 title="Présence enfants"
-                description="Tenez la liste des enfants de votre projet et faites l'appel à chaque séance."
+                description={isManager
+                    ? "Tenez la liste des enfants de votre projet et faites l'appel à chaque séance."
+                    : "Faites l'appel des enfants aux séances où vous êtes inscrit."}
             />
 
             {loading && !data && <p className="text-[#ECDDFD]/70 text-sm">Chargement...</p>}
@@ -101,7 +96,11 @@ export function PlanningPresenceEnfants() {
             )}
 
             {data && data.projects.length === 0 && (
-                <p className="text-sm text-[#ECDDFD]/70">Aucun projet n'est rattaché à votre compte. Contactez le Bureau.</p>
+                <p className="text-sm text-[#ECDDFD]/70">
+                    {isManager
+                        ? "Aucun projet n'est rattaché à votre compte. Contactez le Bureau."
+                        : "Vous n'êtes inscrit sur aucune séance cette année. Inscrivez-vous sur une séance dans « Disponibilités » pour pouvoir y faire l'appel."}
+                </p>
             )}
 
             {data && showCards && projectId !== null && (
@@ -143,15 +142,19 @@ export function PlanningPresenceEnfants() {
                             if (data.slotId === null) return;
                             await run(() => saveChildAttendanceApi(currentUser.id, token, projectId, data.slotId as string, data.weekKey, presentIds));
                         }}
+                        noSlotsMessage={isManager ? undefined : "Vous n'êtes inscrit sur aucune séance de ce projet cette semaine."}
+                        noChildrenMessage={isManager ? undefined : "La liste des enfants de ce projet est vide. Demandez à votre chef de projet de la remplir."}
                     />
-                    <ChildrenRosterCard
-                        data={data}
-                        disabled={locked}
-                        onAdd={(names) => run(() => addChildrenApi(currentUser.id, token, projectId, names))}
-                        onRemove={async (childId) => {
-                            await run(() => removeChildApi(currentUser.id, token, projectId, childId));
-                        }}
-                    />
+                    {isManager && (
+                        <ChildrenRosterCard
+                            data={data}
+                            disabled={locked}
+                            onAdd={(names) => run(() => addChildrenApi(currentUser.id, token, projectId, names))}
+                            onRemove={async (childId) => {
+                                await run(() => removeChildApi(currentUser.id, token, projectId, childId));
+                            }}
+                        />
+                    )}
                     <ChildrenSummaryCard data={data} />
                     {actionError && !needsLogin && <p role="alert" className="text-sm text-red-300">{actionError}</p>}
                 </div>

@@ -434,6 +434,11 @@ export interface ChildrenData {
     } | null;
     /** Vue d'ensemble de tous les projets, réservée au Bureau. */
     overview: { projectId: number; childCount: number; sessionCount: number; rate: number | null }[] | null;
+    /**
+     * Pour un tuteur : les séances de la semaine où il est inscrit, les seules dont il peut faire l'appel.
+     * null pour un chef de projet ou le Bureau (toutes les séances de leurs projets).
+     */
+    allowedSlots: string[] | null;
 }
 
 const VOTE_UNAVAILABLE = "Le vote n'est pas disponible pour le moment.";

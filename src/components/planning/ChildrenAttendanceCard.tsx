@@ -14,12 +14,20 @@ interface ChildrenAttendanceCardProps {
     onWeekChange: (direction: 'prev' | 'next') => void;
     onSlotChange: (slotId: string) => void;
     onSave: (presentIds: string[]) => Promise<void>;
+    /** Texte quand aucune séance n'est proposée (un tuteur ne voit que celles où il est inscrit). */
+    noSlotsMessage?: string;
+    /** Texte quand la liste des enfants est vide. */
+    noChildrenMessage?: string;
 }
 
 const slotLabel = (slot: TimeSlot) => `${slot.day} ${slot.startTime.replace(':', 'h')} - ${slot.endTime.replace(':', 'h')}`;
 
 /** Appel d'une séance. À remonter avec une `key` qui change quand le projet, la séance ou l'appel enregistré changent. */
-export function ChildrenAttendanceCard({ data, weekKey, slotId, slots, disabled, onWeekChange, onSlotChange, onSave }: ChildrenAttendanceCardProps) {
+export function ChildrenAttendanceCard({
+    data, weekKey, slotId, slots, disabled, onWeekChange, onSlotChange, onSave,
+    noSlotsMessage = 'Aucune séance prévue cette semaine pour ce projet.',
+    noChildrenMessage = 'Aucun enfant dans la liste de ce projet. Ajoutez-les dans la carte « Liste des enfants ».',
+}: ChildrenAttendanceCardProps) {
     const [checked, setChecked] = useState<Set<string>>(() => new Set(data.attendance?.presentIds ?? []));
     const alreadyDone = data.attendance !== null;
     const today = todayKeyParis();
@@ -49,7 +57,7 @@ export function ChildrenAttendanceCard({ data, weekKey, slotId, slots, disabled,
             </div>
 
             {slots.length === 0 ? (
-                <p className="text-sm text-[#ECDDFD]/70">Aucune séance prévue cette semaine pour ce projet.</p>
+                <p className="text-sm text-[#ECDDFD]/70">{noSlotsMessage}</p>
             ) : (
                 <ul className="flex flex-col gap-2 mb-5">
                     {slots.map((slot) => {
@@ -84,7 +92,7 @@ export function ChildrenAttendanceCard({ data, weekKey, slotId, slots, disabled,
                 <>
                     {alreadyDone && <p className="text-xs text-emerald-300 mb-3">L'appel de cette séance est déjà enregistré. Vous pouvez le corriger.</p>}
                     {data.children.length === 0 ? (
-                        <p className="text-sm text-[#ECDDFD]/70">Aucun enfant dans la liste de ce projet. Ajoutez-les dans la carte « Liste des enfants ».</p>
+                        <p className="text-sm text-[#ECDDFD]/70">{noChildrenMessage}</p>
                     ) : (
                         <>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mb-5">
