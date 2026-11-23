@@ -1,0 +1,113 @@
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
+import { NomineeCard } from '../components/nominees/NomineeCard';
+import { NomineeProfileView } from '../components/nominees/NomineeProfileView';
+import { fetchPublicNominees, nomineePhotoUrl } from '../data/planningData';
+import { formatNomineeMonth, type PublicNominee, type PublicNominees } from '../data/nominees';
+
+const projectOf = (nominee: PublicNominee) => nominee.stats.find((s) => s.label === 'Projet')?.value;
+const photoOf = (nominee: PublicNominee) => (nominee.photoId ? nomineePhotoUrl(nominee.photoId, nominee.updatedAt) : null);
+
+export function TuteurDuMois() {
+    const { slug } = useParams<{ slug?: string }>();
+    const [state, setState] = useState<{ loading: boolean; data: PublicNominees | null }>({ loading: true, data: null });
+
+    useEffect(() => {
+        let alive = true;
+        void fetchPublicNominees().then((data) => {
+            if (alive) setState({ loading: false, data });
+        });
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [slug]);
+
+    const { loading, data } = state;
+    const nominees = data?.nominees ?? [];
+    const monthLabel = data?.monthKey ? formatNomineeMonth(data.monthKey) : '';
+    const current = slug ? nominees.find((n) => n.slug === slug) : undefined;
+
+    return (
+        <div className="pt-page-safe pb-24 min-h-screen bg-[#FFFBF4] bg-bird-pattern">
+            <SEO
+                title={current ? `${current.displayName}, nommé au tuteur du mois – Phœnix EDC` : 'Tuteur du mois – Les nommés – Phœnix EDC'}
+                description={
+                    current
+                        ? `${current.displayName} est nommé au tuteur du mois de Phœnix EDC (${monthLabel}). Découvrez ses accomplissements.`
+                        : 'Chaque mois, le Bureau de Phœnix EDC nomme les tuteurs qui se sont le plus investis. Découvrez les nommés du mois et leurs accomplissements.'
+                }
+            />
+            <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
+                {loading && <p className="text-center text-[#2A082D]/70 text-sm py-24">Chargement des nommés...</p>}
+
+                {!loading && slug && !current && (
+                    <div className="text-center py-24">
+                        <h1 className="font-display text-4xl text-[#2A082D]">Ce nommé n'existe pas</h1>
+                        <p className="mt-3 text-[#2A082D]/70">Il n'est peut-être plus dans la liste du mois.</p>
+                        <Link to="/tuteur-du-mois" className="mt-6 inline-block px-6 py-3 rounded-full btn-phoenix-gradient text-white font-school text-xs font-bold uppercase tracking-wider">
+                            Voir les nommés
+                        </Link>
+                    </div>
+                )}
+
+                {!loading && current && (
+                    <NomineeProfileView
+                        name={current.displayName}
+                        photoUrl={photoOf(current)}
+                        accomplishments={current.accomplishments}
+                        stats={current.stats}
+                        isWinner={current.isWinner}
+                        monthLabel={monthLabel}
+                        tone="light"
+                        backHref="/tuteur-du-mois"
+                        backLabel="Tous les nommés"
+                        others={nominees.filter((n) => n.slug !== current.slug).map((n) => ({ name: n.displayName, href: `/tuteur-du-mois/${n.slug}` }))}
+                    />
+                )}
+
+                {!loading && !slug && (
+                    <>
+                        <header className="text-center mb-12 sm:mb-16">
+                            <div className="flex justify-center items-center gap-3 mb-4">
+                                <span className="h-px w-8 bg-[#EC602B]"></span>
+                                <span className="text-xs uppercase tracking-widest font-semibold text-[#904990]">Tuteur du mois</span>
+                                <span className="h-px w-8 bg-[#EC602B]"></span>
+                            </div>
+                            <h1 className="text-4xl sm:text-6xl md:text-7xl font-display text-[#2A082D] tracking-tight">
+                                Les <span className="marker-highlight text-[#EC602B]">nommés</span>
+                                {monthLabel && <span className="block mt-2 text-2xl sm:text-3xl text-[#2A082D]/80">de {monthLabel}</span>}
+                            </h1>
+                            <p className="mt-5 text-[#2A082D]/80 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
+                                Chaque mois, le Bureau nomme les tuteurs qui se sont le plus investis, puis les membres votent. Cliquez sur un nommé pour découvrir ce qu'il a accompli.
+                            </p>
+                        </header>
+
+                        {nominees.length === 0 ? (
+                            <p className="text-center text-[#2A082D]/75 py-10">Les nommés du mois arrivent bientôt.</p>
+                        ) : (
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+                                {nominees.map((nominee) => (
+                                    <li key={nominee.slug}>
+                                        <NomineeCard
+                                            name={nominee.displayName}
+                                            photoUrl={photoOf(nominee)}
+                                            subtitle={projectOf(nominee)}
+                                            isWinner={nominee.isWinner}
+                                            tone="light"
+                                            href={`/tuteur-du-mois/${nominee.slug}`}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}

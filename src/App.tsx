@@ -22,6 +22,7 @@ const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.P
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
 const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
 const EventDetail = lazy(() => import('./pages/EventDetail').then(m => ({ default: m.EventDetail })));
+const TuteurDuMois = lazy(() => import('./pages/TuteurDuMois').then(m => ({ default: m.TuteurDuMois })));
 const Partners = lazy(() => import('./pages/Partners').then(m => ({ default: m.Partners })));
 const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
 const LegalMentions = lazy(() => import('./pages/LegalMentions').then(m => ({ default: m.LegalMentions })));
@@ -120,6 +121,8 @@ function App() {
                   <Route path="/carte-des-projets" element={<ProjectMap />} />
                   <Route path="/evenements" element={<Events />} />
                   <Route path="/evenements/:id" element={<EventDetail />} />
+                  <Route path="/tuteur-du-mois" element={<TuteurDuMois />} />
+                  <Route path="/tuteur-du-mois/:slug" element={<TuteurDuMois />} />
                   <Route path="/partenaires" element={<Partners />} />
                   <Route path="/documents" element={<Documents />} />
                   <Route path="/mentions-legales" element={<LegalMentions />} />
@@ -181,6 +184,7 @@ function App() {
                   <Route path="/planning/mes-evenements" element={<PlanningGuard><PlanningMesEvenements /></PlanningGuard>} />
                   <Route path="/planning/notifications" element={<PlanningGuard><PlanningNotifications /></PlanningGuard>} />
                   <Route path="/planning/vote" element={<PlanningGuard><PlanningVote /></PlanningGuard>} />
+                  <Route path="/planning/vote/:slug" element={<PlanningGuard><PlanningVote /></PlanningGuard>} />
                   <Route path="/planning/presences-enfants" element={<PlanningGuard><PlanningPresenceEnfants /></PlanningGuard>} />
                   <Route path="/planning/gouters" element={<PlanningGuard><PlanningGouters /></PlanningGuard>} />
                   <Route path="*" element={<NotFound />} />

@@ -822,3 +822,21 @@ h1, h2, h3, .font-display {
     font-size: 3rem;
   }
 }
+
+/* ── FICHES DES NOMMÉS : COLLAGE QUI TREMBLE (stop motion) ── */
+@keyframes nominee-jitter {
+  0% { transform: rotate(-2deg) translate(0, 0); }
+  33.333% { transform: rotate(-0.8deg) translate(3px, -4px); }
+  66.666% { transform: rotate(-3deg) translate(-3px, 2px); }
+  100% { transform: rotate(-2deg) translate(0, 0); }
+}
+
+.nominee-jitter {
+  animation: nominee-jitter 0.9s steps(1, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nominee-jitter {
+    animation: none;
+  }
+}
