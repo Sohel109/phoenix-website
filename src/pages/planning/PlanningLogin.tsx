@@ -128,9 +128,9 @@ export function PlanningLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-[#1F0422] text-[#FFFBF4] bg-bird-pattern-dark flex flex-col items-center justify-center px-4 relative py-12 selection:bg-[#EC602B]/30 selection:text-white">
+        <div className="min-h-screen bg-[#1F0422] text-[#FFFBF4] bg-bird-pattern-dark flex flex-col items-center justify-center px-4 relative pb-12 pt-[calc(env(safe-area-inset-top,0px)+5rem)] selection:bg-[#EC602B]/30 selection:text-white">
             {/* Bouton retour au site public */}
-            <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-20">
+            <div className="fixed top-[calc(env(safe-area-inset-top,0px)+1rem)] left-4 sm:top-[calc(env(safe-area-inset-top,0px)+1.5rem)] sm:left-6 z-20">
                 <Link
                     to="/"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-[#ECDDFD] hover:text-white text-xs font-school uppercase tracking-wider backdrop-blur-md border border-[#ECDDFD]/20 transition-all shadow-md group cursor-pointer"

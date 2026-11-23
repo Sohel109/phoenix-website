@@ -228,7 +228,7 @@ export function PlanningValidation() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         role="status"
-                        className="fixed top-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-emerald-500 text-white font-semibold text-xs md:text-sm shadow-xl flex items-center gap-2 border border-emerald-400/40"
+                        className="fixed top-[calc(env(safe-area-inset-top,0px)+1.25rem)] left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-emerald-500 text-white font-semibold text-xs md:text-sm shadow-xl flex items-center gap-2 border border-emerald-400/40"
                     >
                         <Check size={16} />
                         {toastMessage}

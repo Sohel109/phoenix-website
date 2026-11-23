@@ -11,7 +11,7 @@ export function EditModeIndicator() {
         <aside
             role="complementary"
             aria-label="Statut du mode édition bureau"
-            className="fixed top-20 right-4 z-50 animate-bounce-subtle"
+            className="fixed top-[calc(env(safe-area-inset-top,0px)+5rem)] right-4 z-50 animate-bounce-subtle"
         >
             <div className="bg-[#2A082D]/95 backdrop-blur-md border border-emerald-400/50 shadow-glow-orange rounded-full pl-3.5 pr-2 py-1.5 flex items-center gap-2.5 text-white text-xs font-school font-bold tracking-wide">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />

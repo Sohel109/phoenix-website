@@ -200,7 +200,7 @@ export function AttestationModal({ user, bookings, onClose }: AttestationModalPr
             <button
                 type="button"
                 onClick={onClose}
-                className="fixed top-4 right-4 z-[110] bg-[#2A082D]/95 hover:bg-[#6F2B75] text-white border border-[#6F2B75]/60 rounded-full px-4 py-2.5 shadow-2xl flex items-center gap-2 font-school text-xs tracking-wider uppercase transition-all print:hidden cursor-pointer backdrop-blur-md hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
+                className="fixed top-[calc(env(safe-area-inset-top,0px)+1rem)] right-4 z-[110] bg-[#2A082D]/95 hover:bg-[#6F2B75] text-white border border-[#6F2B75]/60 rounded-full px-4 py-2.5 shadow-2xl flex items-center gap-2 font-school text-xs tracking-wider uppercase transition-all print:hidden cursor-pointer backdrop-blur-md hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                 title="Fermer (Échap)"
                 aria-label="Fermer l'attestation"
             >
