@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Award, EyeOff } from 'lucide-react';
+import { Award, Camera, EyeOff, FileText } from 'lucide-react';
 import { publishWinnerApi, setVoteCandidateApi } from '../../data/planningData';
 import type { VoteData } from '../../data/planningData';
+import { NomineeProfileEditor } from './NomineeProfileEditor';
 
 interface VoteBureauPanelProps {
     data: VoteData;
@@ -26,6 +27,7 @@ export function VoteBureauPanel({ data, requesterId, token, onChanged, disabled 
     const busy = working || disabled;
     const [error, setError] = useState<string | null>(null);
     const [choice, setChoice] = useState('');
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     if (!data.bureau) return null;
     const { counts, members } = data.bureau;
@@ -83,20 +85,38 @@ export function VoteBureauPanel({ data, requesterId, token, onChanged, disabled 
                 )}
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
                     {members.map((m) => (
-                        <li key={m.id}>
-                            <label className="flex items-center gap-3 py-1.5 text-sm text-white cursor-pointer">
+                        <li key={m.id} className="flex items-center justify-between gap-3">
+                            <label className="flex items-center gap-3 py-1.5 text-sm text-white cursor-pointer min-w-0">
                                 <input
                                     type="checkbox"
                                     checked={m.selected}
                                     disabled={busy}
-                                    onChange={() => void run(() => setVoteCandidateApi(requesterId, m.id, !m.selected, token))}
-                                    className="accent-[#EC602B] w-4 h-4"
+                                    onChange={() => {
+                                        // Décocher efface la fiche et met la photo à la corbeille.
+                                        if (m.selected && m.profile && !window.confirm(`Retirer ${m.name} des nommés ? Sa fiche et sa photo seront supprimées.`)) return;
+                                        void run(() => setVoteCandidateApi(requesterId, m.id, !m.selected, token));
+                                    }}
+                                    className="accent-[#EC602B] w-4 h-4 shrink-0"
                                 />
-                                {m.name}
+                                <span className="truncate">{m.name}</span>
                             </label>
+                            {m.selected && (
+                                <button
+                                    type="button"
+                                    disabled={busy}
+                                    onClick={() => setEditingId(m.id)}
+                                    className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-school uppercase tracking-wider border border-[#EC602B]/50 text-[#EC602B] hover:bg-[#EC602B] hover:text-white transition-all disabled:opacity-60"
+                                >
+                                    {m.profile?.photoId ? <FileText size={12} /> : <Camera size={12} />}
+                                    {m.profile ? 'Fiche' : 'Remplir la fiche'}
+                                </button>
+                            )}
                         </li>
                     ))}
                 </ul>
+                <p className="text-[#ECDDFD]/60 text-xs mt-3">
+                    Chaque nommé a une fiche (photo, accomplissements, stats) visible dans la page Vote et, dès qu'elle a une photo, sur la page publique « Tuteur du mois ».
+                </p>
             </div>
 
             <div className={cardClass}>
@@ -147,6 +167,12 @@ export function VoteBureauPanel({ data, requesterId, token, onChanged, disabled 
                 </div>
                 {error && <p role="alert" className="text-sm text-red-300 mt-3">{error}</p>}
             </div>
+            {editingId && (() => {
+                const member = members.find((m) => m.id === editingId);
+                return member ? (
+                    <NomineeProfileEditor member={member} requesterId={requesterId} token={token} onClose={() => setEditingId(null)} onChanged={onChanged} />
+                ) : null;
+            })()}
         </section>
     );
 }
