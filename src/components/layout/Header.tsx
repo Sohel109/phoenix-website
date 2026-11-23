@@ -35,7 +35,8 @@ export function Header() {
         { label: "L'Association", path: '/association' },
         { label: 'Nos Projets', path: '/projets' },
         { label: 'Événements', path: '/evenements' },
-        { label: 'Tuteur du mois', path: '/tuteur-du-mois' },
+        // Absent du menu ordinateur, déjà trop large sous 1536 px : seulement dans le menu téléphone.
+        { label: 'Tuteur du mois', path: '/tuteur-du-mois', mobileOnly: true },
         { label: 'Partenaires', path: '/partenaires' },
         { label: 'Documents', path: '/documents' },
         { label: 'Contact', path: '/contact' },
@@ -76,7 +77,7 @@ export function Header() {
 
                 {/* Desktop Nav Links aérés avec de l'espace */}
                 <nav className="hidden lg:flex items-center gap-2 xl:gap-5 2xl:gap-7">
-                    {navLinks.map((link) => {
+                    {navLinks.filter((link) => !link.mobileOnly).map((link) => {
                         const isActive = link.path === '/'
                             ? location.pathname === '/'
                             : location.pathname.startsWith(link.path);

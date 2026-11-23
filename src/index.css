@@ -832,6 +832,7 @@ h1, h2, h3, .font-display {
 }
 
 .nominee-jitter {
+  transform: rotate(-2deg);
   animation: nominee-jitter 0.9s steps(1, end) infinite;
 }
 

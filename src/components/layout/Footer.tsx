@@ -159,6 +159,11 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link to="/tuteur-du-mois" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
+                                    Tuteur du mois
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/partenaires" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
                                     Partenaires &amp; Réseau
                                 </Link>

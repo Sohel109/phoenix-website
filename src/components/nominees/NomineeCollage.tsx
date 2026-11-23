@@ -24,7 +24,7 @@ export function NomineeCollage({ photoUrl, name, animated = false, tone, classNa
     return (
         <div className={`relative ${className}`}>
             <div className={`relative p-2.5 sm:p-3 pb-8 sm:pb-10 ${paper} ${animated ? 'nominee-jitter' : '-rotate-2'}`}>
-                <MaskingTape variant="warm" angle="right" className="-top-3 left-1/2 -translate-x-1/2" />
+                <MaskingTape variant={tone === 'light' ? 'lilac' : 'warm'} angle="right" className="-top-3 left-1/2 -translate-x-1/2" />
                 <div className="aspect-[4/5] w-full overflow-hidden bg-[#2A082D]">
                     {photoUrl ? (
                         <img src={photoUrl} alt={`Photo de ${name}`} className="h-full w-full object-cover [filter:contrast(1.06)_saturate(0.92)]" loading="lazy" decoding="async" />
