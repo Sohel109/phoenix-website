@@ -104,11 +104,25 @@ export function loadScript(options) {
     // renvoient aussi les éléments mis à la corbeille (`trashed`) : c'est au script de les ignorer avec isTrashed().
     const drive = { folders: new Map(), staleFolders: [], outsideFiles: [{ name: 'Sauvegarde Phoenix 2020-01-01', trashed: false }] };
     const iterator = (list) => { let i = 0; return { hasNext: () => i < list.length, next: () => list[i++] }; };
-    const fakeFile = (entry) => ({ getName: () => entry.name, isTrashed: () => entry.trashed, setTrashed: (value) => { entry.trashed = value; } });
+    // Fichiers créés par le script (photos des nommés), retrouvables par identifiant.
+    drive.files = new Map();
+    const fakeFile = (entry) => ({
+        getName: () => entry.name,
+        getId: () => entry.id,
+        isTrashed: () => entry.trashed,
+        setTrashed: (value) => { entry.trashed = value; },
+        getBlob: () => entry.blob,
+    });
     const fakeFolder = (entry) => ({
         isTrashed: () => Boolean(entry.trashed),
         getFiles: () => iterator(entry.files.map(fakeFile)),
         addCopy: (copyName) => { const file = { name: copyName, trashed: false }; entry.files.push(file); return fakeFile(file); },
+        createFile: (blob) => {
+            const file = { id: `photo${crypto.randomUUID().replace(/-/g, '')}`, name: blob.getName(), trashed: false, blob, folder: entry.name };
+            entry.files.push(file);
+            drive.files.set(file.id, file);
+            return fakeFile(file);
+        },
     });
     const triggers = [];
     const fakeTrigger = (entry) => ({ getHandlerFunction: () => entry.handler, entry });
@@ -128,8 +142,9 @@ export function loadScript(options) {
                 return fakeFolder(entry);
             },
             getFileById: (id) => {
+                if (drive.files.has(id)) return fakeFile(drive.files.get(id));
                 if (id !== ss.getId()) throw new Error(`Fichier inconnu : ${id}`);
-                return { makeCopy: (copyName, folder) => folder.addCopy(copyName) };
+                return { makeCopy: (copyName, folder) => folder.addCopy(copyName), isTrashed: () => false, getBlob: () => { throw new Error('Pas une image'); } };
             },
         },
         ScriptApp: {
@@ -161,6 +176,13 @@ export function loadScript(options) {
         Utilities: {
             formatDate: (date, _tz, fmt) => formatParis(date, fmt),
             getUuid: () => crypto.randomUUID(),
+            // Comme Apps Script : octets signés.
+            base64Decode: (text) => Array.from(Buffer.from(text, 'base64')).map((b) => (b > 127 ? b - 256 : b)),
+            base64Encode: (bytes) => Buffer.from(bytes.map((b) => b & 255)).toString('base64'),
+            newBlob: (bytes, contentType, name) => {
+                let blobName = name;
+                return { getBytes: () => bytes, getContentType: () => contentType, getName: () => blobName, setName(n) { blobName = n; return this; } };
+            },
             // Comme Apps Script : tableau d'octets signés.
             computeHmacSha256Signature: (value, key) => Array.from(crypto.createHmac('sha256', key).update(value).digest()).map((b) => (b > 127 ? b - 256 : b)),
         },
@@ -207,6 +229,11 @@ export function loadScript(options) {
             const identity = body.voterId ?? body.requesterId;
             const withToken = 'token' in body || identity === undefined ? body : { ...body, token: ctx.createSessionToken(String(identity)) };
             return this.raw(action, withToken);
+        },
+        /** Lecture publique `doGet` (ex. get('getNominees')). */
+        get(action, params = {}) {
+            const out = ctx.doGet({ parameter: { action, ...params } });
+            return JSON.parse(out.text);
         },
         /** Appel tel quel, sans jeton ajouté. */
         raw(action, body = {}) {

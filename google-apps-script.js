@@ -57,6 +57,18 @@ function doGet(e) {
     }
   }
 
+  // Fiches publiques des nommés au tuteur du mois et leurs photos (lues sans compte par le site).
+  if (action === 'getNominees' || action === 'getNomineePhoto') {
+    try {
+      var nomineeResult = action === 'getNominees' ? getPublicNominees() : getPublicNomineePhoto(e.parameter.id);
+      return ContentService.createTextOutput(JSON.stringify(nomineeResult))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Action inconnue" }))
       .setMimeType(ContentService.MimeType.JSON);
 }
@@ -836,7 +848,8 @@ function protegerMotDePasseLigne(sheet, row) {
 var VOTE_SHEETS = {
   votes: { name: 'Votes', headers: ['monthKey', 'voterId', 'candidateId', 'updatedAt'] },
   candidates: { name: 'VoteCandidats', headers: ['monthKey', 'userId'] },
-  winners: { name: 'TuteurDuMois', headers: ['monthKey', 'userId', 'publishedAt'] }
+  winners: { name: 'TuteurDuMois', headers: ['monthKey', 'userId', 'publishedAt'] },
+  profiles: { name: 'FichesNommes', headers: ['monthKey', 'userId', 'displayName', 'accomplishments', 'stats', 'photoFileId', 'updatedAt'] }
 };
 
 function todayKeyParis() {
@@ -944,7 +957,8 @@ function voteFail(code, message) {
 }
 
 function handleVoteAction(action, postData) {
-  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'withdrawVote' && action !== 'setVoteCandidate' && action !== 'publishWinner') {
+  if (action !== 'getVoteData' && action !== 'castVote' && action !== 'withdrawVote' && action !== 'setVoteCandidate' && action !== 'publishWinner'
+      && action !== 'saveNomineeProfile' && action !== 'uploadNomineePhoto' && action !== 'removeNomineePhoto') {
     return null;
   }
   var claimedId = (action === 'castVote' || action === 'withdrawVote') ? postData.voterId : postData.requesterId;
@@ -964,7 +978,8 @@ function handleVoteAction(action, postData) {
     var sheets = {
       votes: getVoteSheet(VOTE_SHEETS.votes),
       candidates: getVoteSheet(VOTE_SHEETS.candidates),
-      winners: getVoteSheet(VOTE_SHEETS.winners)
+      winners: getVoteSheet(VOTE_SHEETS.winners),
+      profiles: getVoteSheet(VOTE_SHEETS.profiles)
     };
     var users = readVoteUsers();
     var win = voteWindowFor(todayKeyParis());
@@ -979,6 +994,9 @@ function handleVoteAction(action, postData) {
     if (action === 'castVote') return voteCast(ctx, postData);
     if (action === 'withdrawVote') return voteWithdraw(ctx, postData);
     if (action === 'setVoteCandidate') return voteSetCandidate(ctx, postData);
+    if (action === 'saveNomineeProfile') return nomineeSave(ctx, postData);
+    if (action === 'uploadNomineePhoto') return nomineeUploadPhoto(ctx, postData);
+    if (action === 'removeNomineePhoto') return nomineeRemovePhoto(ctx, postData);
     return votePublishWinner(ctx, postData);
   } catch (err) {
     return voteFail('error', err.toString());
@@ -1009,10 +1027,12 @@ function voteGetData(ctx, postData) {
   var requester = findVoteUser(ctx.users, postData.requesterId);
   if (!requester) return voteFail('unknown_user', 'Compte introuvable.');
 
+  var profileRows = readVoteRows(ctx.sheets.profiles);
+  var profiles = nomineeProfilesFor(profileRows, ctx.win.monthKey, ctx.eligibleIds);
   var candidates = [];
   for (var i = 0; i < ctx.users.length; i++) {
     if (ctx.eligibleIds.indexOf(ctx.users[i].id) !== -1) {
-      candidates.push({ id: ctx.users[i].id, name: ctx.users[i].name });
+      candidates.push({ id: ctx.users[i].id, name: ctx.users[i].name, profile: profiles[ctx.users[i].id] || null });
     }
   }
 
@@ -1059,11 +1079,13 @@ function voteGetData(ctx, postData) {
       if (b.count !== a.count) return b.count - a.count;
       return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
     });
+    var selectionProfiles = nomineeProfilesFor(profileRows, ctx.win.selectionMonthKey, ctx.selectionIds);
     result.bureau = {
       counts: countList,
       selectionMonthKey: ctx.win.selectionMonthKey,
       members: ctx.users.map(function(u) {
-        return { id: u.id, name: u.name, selected: ctx.selectionIds.indexOf(u.id) !== -1 };
+        var selected = ctx.selectionIds.indexOf(u.id) !== -1;
+        return { id: u.id, name: u.name, selected: selected, profile: selected ? (selectionProfiles[u.id] || null) : null };
       })
     };
   }
@@ -1134,6 +1156,7 @@ function voteSetCandidate(ctx, postData) {
     }
   }
   if (postData.selected && !alreadyThere) sheet.appendRow([ctx.win.selectionMonthKey, target.id]);
+  if (!postData.selected) nomineeDeleteProfile(ctx, target.id);
   return { success: true };
 }
 
@@ -1163,6 +1186,279 @@ function votePublishWinner(ctx, postData) {
     sheet.appendRow([ctx.win.monthKey, target.id, publishedAt]);
   }
   return { success: true };
+}
+
+// ==========================================
+// FICHES DES NOMMÉS AU TUTEUR DU MOIS
+// ==========================================
+// Le Bureau remplit une fiche par nommé du vote qu'il prépare (selectionMonthKey) : nom affiché, accomplissements,
+// stats et photo. Les photos vont dans un dossier Drive privé, jamais partagé ; le site les lit par le script.
+// La page publique (doGet getNominees) ne montre que les fiches avec photo du mois le plus récent qui en a, sans
+// jamais renvoyer l'identifiant d'un compte.
+var NOMINEE_PHOTO_FOLDER = 'Phoenix - Photos nommés';
+var NOMINEE_PHOTO_MAX = 1500000;
+var NOMINEE_LIMITS = { name: 60, items: 12, item: 160, stats: 8, statText: 30 };
+
+function nomineeSlug(name) {
+  var map = { 'à': 'a', 'â': 'a', 'ä': 'a', 'á': 'a', 'ã': 'a', 'ç': 'c', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+    'î': 'i', 'ï': 'i', 'í': 'i', 'ì': 'i', 'ô': 'o', 'ö': 'o', 'ó': 'o', 'ò': 'o', 'õ': 'o', 'ù': 'u', 'û': 'u', 'ü': 'u',
+    'ú': 'u', 'ÿ': 'y', 'ñ': 'n', 'œ': 'oe', 'æ': 'ae' };
+  var lower = String(name || '').toLowerCase();
+  var out = '';
+  for (var i = 0; i < lower.length; i++) {
+    var ch = lower.charAt(i);
+    out += map.hasOwnProperty(ch) ? map[ch] : ch;
+  }
+  out = out.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return out || 'nomme';
+}
+
+function parseJsonList(value) {
+  try {
+    var parsed = JSON.parse(String(value || '[]'));
+    return Object.prototype.toString.call(parsed) === '[object Array]' ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// Fiches d'un mois (dans l'ordre de la feuille), avec leur ligne dans la feuille.
+function readNomineeProfiles(rows, monthKey) {
+  var list = [];
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].cells;
+    if (normalizeMonthKey(c[0]) !== monthKey) continue;
+    list.push({
+      sheetRow: rows[i].sheetRow,
+      userId: String(c[1]),
+      displayName: String(c[2] || ''),
+      accomplishments: parseJsonList(c[3]),
+      stats: parseJsonList(c[4]),
+      photoFileId: c[5] ? String(c[5]) : '',
+      updatedAt: String(c[6] || '')
+    });
+  }
+  return list;
+}
+
+// Ajoute un slug à chaque fiche ; un doublon du même mois reçoit -2, -3...
+function withNomineeSlugs(list) {
+  var used = {};
+  for (var i = 0; i < list.length; i++) {
+    var base = nomineeSlug(list[i].displayName);
+    var slug = base;
+    var n = 2;
+    while (used[slug]) slug = base + '-' + (n++);
+    used[slug] = true;
+    list[i].slug = slug;
+  }
+  return list;
+}
+
+function publicNomineeProfile(p) {
+  return { displayName: p.displayName, slug: p.slug, accomplishments: p.accomplishments, stats: p.stats, photoId: p.photoFileId || null, updatedAt: p.updatedAt };
+}
+
+// Fiches des candidats d'un mois, indexées par identifiant de compte (pour l'espace membre).
+function nomineeProfilesFor(rows, monthKey, candidateIds) {
+  var list = readNomineeProfiles(rows, monthKey).filter(function(p) { return candidateIds.indexOf(p.userId) !== -1; });
+  withNomineeSlugs(list);
+  var byId = {};
+  for (var i = 0; i < list.length; i++) byId[list[i].userId] = publicNomineeProfile(list[i]);
+  return byId;
+}
+
+function trashNomineePhoto(fileId) {
+  if (!fileId) return;
+  try {
+    DriveApp.getFileById(fileId).setTrashed(true);
+  } catch (e) {
+    // Déjà supprimée à la main : rien à faire.
+  }
+}
+
+function getNomineePhotoFolder() {
+  var folders = DriveApp.getFoldersByName(NOMINEE_PHOTO_FOLDER);
+  while (folders.hasNext()) {
+    var folder = folders.next();
+    if (!folder.isTrashed()) return folder;
+  }
+  return DriveApp.createFolder(NOMINEE_PHOTO_FOLDER);
+}
+
+// Contrôles communs aux écritures : Bureau, membre connu et candidat du vote en préparation.
+function nomineeTarget(ctx, postData) {
+  if (!voteIsBureau(ctx, postData.requesterId)) return { error: voteFail('forbidden', 'Action réservée au Bureau.') };
+  var target = findVoteUser(ctx.users, postData.userId);
+  if (!target) return { error: voteFail('unknown_user', 'Compte introuvable.') };
+  if (ctx.selectionIds.indexOf(target.id) === -1) {
+    return { error: voteFail('not_candidate', "Ce membre n'est pas nommé pour le vote en préparation.") };
+  }
+  var existing = null;
+  var list = readNomineeProfiles(readVoteRows(ctx.sheets.profiles), ctx.win.selectionMonthKey);
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].userId === target.id) existing = list[i];
+  }
+  return { target: target, existing: existing };
+}
+
+function writeNomineeProfile(ctx, target, existing, fields) {
+  var row = [ctx.win.selectionMonthKey, target.id, fields.displayName, JSON.stringify(fields.accomplishments),
+    JSON.stringify(fields.stats), fields.photoFileId || '', new Date(nowMs()).toISOString()];
+  if (existing) {
+    for (var c = 0; c < row.length; c++) ctx.sheets.profiles.getRange(existing.sheetRow, c + 1).setValue(row[c]);
+  } else {
+    ctx.sheets.profiles.appendRow(row);
+  }
+}
+
+function cleanNomineeFields(postData) {
+  var name = typeof postData.displayName === 'string' ? postData.displayName.trim() : '';
+  if (!name || name.length > NOMINEE_LIMITS.name) return { error: 'Le nom affiché doit faire entre 1 et ' + NOMINEE_LIMITS.name + ' caractères.' };
+  var rawItems = postData.accomplishments;
+  if (Object.prototype.toString.call(rawItems) !== '[object Array]') return { error: 'Requête invalide.' };
+  var items = [];
+  for (var i = 0; i < rawItems.length; i++) {
+    var item = String(rawItems[i] === null || rawItems[i] === undefined ? '' : rawItems[i]).trim();
+    if (!item) continue;
+    if (item.length > NOMINEE_LIMITS.item) return { error: 'Un accomplissement fait au plus ' + NOMINEE_LIMITS.item + ' caractères.' };
+    items.push(item);
+  }
+  if (items.length > NOMINEE_LIMITS.items) return { error: 'Au plus ' + NOMINEE_LIMITS.items + ' accomplissements.' };
+  var rawStats = postData.stats;
+  if (Object.prototype.toString.call(rawStats) !== '[object Array]') return { error: 'Requête invalide.' };
+  var stats = [];
+  for (var s = 0; s < rawStats.length; s++) {
+    var st = rawStats[s] || {};
+    var label = String(st.label === null || st.label === undefined ? '' : st.label).trim();
+    var value = String(st.value === null || st.value === undefined ? '' : st.value).trim();
+    if (!label && !value) continue;
+    if (!label || !value || label.length > NOMINEE_LIMITS.statText || value.length > NOMINEE_LIMITS.statText) {
+      return { error: 'Chaque stat a un libellé et une valeur de 1 à ' + NOMINEE_LIMITS.statText + ' caractères.' };
+    }
+    stats.push({ label: label, value: value });
+  }
+  if (stats.length > NOMINEE_LIMITS.stats) return { error: 'Au plus ' + NOMINEE_LIMITS.stats + ' stats.' };
+  return { displayName: name, accomplishments: items, stats: stats };
+}
+
+function nomineeSave(ctx, postData) {
+  var t = nomineeTarget(ctx, postData);
+  if (t.error) return t.error;
+  var fields = cleanNomineeFields(postData);
+  if (fields.error) return voteFail('bad_request', fields.error);
+  fields.photoFileId = t.existing ? t.existing.photoFileId : '';
+  writeNomineeProfile(ctx, t.target, t.existing, fields);
+  return { success: true };
+}
+
+function nomineeUploadPhoto(ctx, postData) {
+  var t = nomineeTarget(ctx, postData);
+  if (t.error) return t.error;
+  var data = typeof postData.data === 'string' ? postData.data.replace(/^data:image\/jpeg;base64,/, '') : '';
+  if (data.length > NOMINEE_PHOTO_MAX) return voteFail('too_large', 'La photo est trop lourde.');
+  if (!data || !/^[A-Za-z0-9+\/]+={0,2}$/.test(data)) return voteFail('bad_request', 'Photo illisible.');
+  var bytes = Utilities.base64Decode(data);
+  if (bytes.length < 4 || (bytes[0] & 255) !== 0xFF || (bytes[1] & 255) !== 0xD8) return voteFail('bad_request', 'La photo doit être une image JPEG.');
+  var blob = Utilities.newBlob(bytes, 'image/jpeg', 'nomme-' + ctx.win.selectionMonthKey + '-' + t.target.id + '.jpg');
+  var file = getNomineePhotoFolder().createFile(blob);
+  var existing = t.existing;
+  var fields = existing
+    ? { displayName: existing.displayName, accomplishments: existing.accomplishments, stats: existing.stats }
+    : { displayName: t.target.name, accomplishments: [], stats: [] };
+  fields.photoFileId = file.getId();
+  writeNomineeProfile(ctx, t.target, existing, fields);
+  if (existing) trashNomineePhoto(existing.photoFileId);
+  return { success: true, photoId: file.getId() };
+}
+
+function nomineeRemovePhoto(ctx, postData) {
+  var t = nomineeTarget(ctx, postData);
+  if (t.error) return t.error;
+  if (!t.existing || !t.existing.photoFileId) return { success: true };
+  var e = t.existing;
+  writeNomineeProfile(ctx, t.target, e, { displayName: e.displayName, accomplishments: e.accomplishments, stats: e.stats, photoFileId: '' });
+  trashNomineePhoto(e.photoFileId);
+  return { success: true };
+}
+
+// Appelé quand le Bureau décoche un nommé : sa fiche du vote en préparation disparaît, la photo va à la corbeille.
+function nomineeDeleteProfile(ctx, userId) {
+  var list = readNomineeProfiles(readVoteRows(ctx.sheets.profiles), ctx.win.selectionMonthKey);
+  for (var i = list.length - 1; i >= 0; i--) {
+    if (list[i].userId !== userId) continue;
+    ctx.sheets.profiles.deleteRow(list[i].sheetRow);
+    trashNomineePhoto(list[i].photoFileId);
+  }
+}
+
+// Lignes d'un onglet sans le créer : une lecture publique ne doit rien écrire dans le Sheet.
+function readVoteRowsIfAny(def) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name);
+  return sheet ? readVoteRows(sheet) : [];
+}
+
+function nomineePhotoUsable(fileId) {
+  if (!fileId) return false;
+  try {
+    return !DriveApp.getFileById(fileId).isTrashed();
+  } catch (e) {
+    return false;
+  }
+}
+
+function getPublicNominees() {
+  var users = readVoteUsers();
+  var candidateRows = readVoteRowsIfAny(VOTE_SHEETS.candidates);
+  var profileRows = readVoteRowsIfAny(VOTE_SHEETS.profiles);
+  var months = {};
+  for (var i = 0; i < profileRows.length; i++) months[normalizeMonthKey(profileRows[i].cells[0])] = true;
+  var keys = Object.keys(months).sort().reverse();
+  for (var k = 0; k < keys.length; k++) {
+    var monthKey = keys[k];
+    var candidateIds = readCandidateIds(candidateRows, monthKey, users);
+    var list = readNomineeProfiles(profileRows, monthKey).filter(function(p) {
+      return candidateIds.indexOf(p.userId) !== -1 && nomineePhotoUsable(p.photoFileId);
+    });
+    if (list.length === 0) continue;
+    withNomineeSlugs(list);
+    var winnerId = null;
+    var winnerRows = readVoteRowsIfAny(VOTE_SHEETS.winners);
+    for (var w = 0; w < winnerRows.length; w++) {
+      if (normalizeMonthKey(winnerRows[w].cells[0]) === monthKey) winnerId = String(winnerRows[w].cells[1]);
+    }
+    // Ordre de la feuille des utilisateurs, gagnant en premier.
+    var order = {};
+    for (var u = 0; u < users.length; u++) order[users[u].id] = u;
+    list.sort(function(a, b) {
+      if ((a.userId === winnerId) !== (b.userId === winnerId)) return a.userId === winnerId ? -1 : 1;
+      return order[a.userId] - order[b.userId];
+    });
+    return {
+      success: true,
+      monthKey: monthKey,
+      nominees: list.map(function(p) {
+        var out = publicNomineeProfile(p);
+        out.isWinner = p.userId === winnerId;
+        return out;
+      })
+    };
+  }
+  return { success: true, monthKey: null, nominees: [] };
+}
+
+function getPublicNomineePhoto(fileId) {
+  var id = String(fileId || '');
+  var notFound = { success: false, code: 'not_found', message: 'Photo introuvable.' };
+  if (!id) return notFound;
+  var rows = readVoteRowsIfAny(VOTE_SHEETS.profiles);
+  var known = false;
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].cells[5] || '') === id) known = true;
+  }
+  if (!known || !nomineePhotoUsable(id)) return notFound;
+  var blob = DriveApp.getFileById(id).getBlob();
+  return { success: true, mimeType: 'image/jpeg', data: Utilities.base64Encode(blob.getBytes()) };
 }
 
 // ==========================================
