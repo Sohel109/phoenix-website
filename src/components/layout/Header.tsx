@@ -35,7 +35,7 @@ export function Header() {
         { label: "L'Association", path: '/association' },
         { label: 'Nos Projets', path: '/projets' },
         { label: 'Événements', path: '/evenements' },
-        // Absent du menu ordinateur, déjà trop large sous 1536 px : seulement dans le menu téléphone.
+        // Absent de la barre ordinateur, faute de place : seulement dans le menu déroulant (sous 1280 px).
         { label: 'Tuteur du mois', path: '/tuteur-du-mois', mobileOnly: true },
         { label: 'Partenaires', path: '/partenaires' },
         { label: 'Documents', path: '/documents' },
@@ -53,7 +53,7 @@ export function Header() {
                     : 'bg-[#FFFBF4]/90 backdrop-blur-sm border-b border-[#6F2B75]/5 pb-4'
             }`}
         >
-            <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between gap-4 lg:gap-8">
+            <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-6 2xl:px-12 flex items-center justify-between gap-4 lg:gap-8 xl:gap-6 2xl:gap-8">
                 {/* Brand / Logo Circulaire Officiel calé sur la gauche */}
                 <Link to="/" className="flex items-center gap-3 group shrink-0">
                     <div className="relative">
@@ -66,7 +66,7 @@ export function Header() {
                         />
                     </div>
                     <div className="flex flex-col">
-                        <span translate="no" className="notranslate font-display text-xl sm:text-2xl text-[#2A082D] leading-none tracking-tight">
+                        <span translate="no" className="notranslate font-display text-xl sm:text-2xl whitespace-nowrap text-[#2A082D] leading-none tracking-tight">
                             PHŒNIX <span className="text-[#EC602B]">EDC</span>
                         </span>
                         <span className="hidden sm:block text-[10px] uppercase font-school font-bold tracking-wider text-[#904990] mt-0.5">
@@ -75,8 +75,8 @@ export function Header() {
                     </div>
                 </Link>
 
-                {/* Desktop Nav Links aérés avec de l'espace */}
-                <nav className="hidden lg:flex items-center gap-2 xl:gap-5 2xl:gap-7">
+                {/* Desktop Nav Links : compacts entre 1280 et 1535 px, aérés au-delà */}
+                <nav className="hidden xl:flex items-center gap-0.5 2xl:gap-3 min-[1760px]:gap-5">
                     {navLinks.filter((link) => !link.mobileOnly).map((link) => {
                         const isActive = link.path === '/'
                             ? location.pathname === '/'
@@ -86,7 +86,7 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`px-2.5 py-1.5 text-sm font-medium transition-colors relative ${
+                                className={`px-2 2xl:px-2.5 py-1.5 text-[13px] 2xl:text-sm font-medium whitespace-nowrap transition-colors relative ${
                                     isActive
                                         ? 'text-[#EC602B] font-bold'
                                         : 'text-[#2A082D] hover:text-[#EC602B]'
@@ -94,7 +94,7 @@ export function Header() {
                             >
                                 {link.label}
                                 {isActive && (
-                                    <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-[#EC602B] rounded-full" />
+                                    <span className="absolute bottom-0 left-2 right-2 2xl:left-2.5 2xl:right-2.5 h-[2px] bg-[#EC602B] rounded-full" />
                                 )}
                             </Link>
                         );
@@ -102,24 +102,24 @@ export function Header() {
                 </nav>
 
                 {/* Right Action Buttons - Style inspiré d'Action Grand Sud */}
-                <div className="hidden sm:flex items-center gap-3 shrink-0">
+                <div className="hidden sm:flex items-center gap-3 xl:gap-2 2xl:gap-3 shrink-0 ml-auto xl:ml-0">
                     {/* Espace Membre (analogue à l'Espace Étudiant d'Action Grand Sud) */}
                     {currentUser ? (
                         <Link
                             to="/planning"
-                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#2A082D]/30 hover:border-[#EC602B] text-[#2A082D] hover:text-[#EC602B] text-xs font-semibold transition-all bg-white/60 hover:bg-white shadow-2xs"
+                            className="inline-flex items-center gap-2 px-4 xl:px-3 2xl:px-4 py-1.5 whitespace-nowrap rounded-full border border-[#2A082D]/30 hover:border-[#EC602B] text-[#2A082D] hover:text-[#EC602B] text-xs font-semibold transition-all bg-white/60 hover:bg-white shadow-2xs"
                             title={`Connecté : ${currentUser.name} (Espace Membre)`}
                         >
                             <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#6F2B75] to-[#EC602B] text-white flex items-center justify-center text-[10px] font-black shrink-0">
                                 {currentUser.name.charAt(0).toUpperCase()}
                             </span>
-                            <span className="max-w-[110px] truncate">{currentUser.name.split(' ')[0]}</span>
+                            <span className="max-w-[80px] 2xl:max-w-[110px] truncate">{currentUser.name.split(' ')[0]}</span>
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                         </Link>
                     ) : (
                         <Link
                             to="/planning/login"
-                            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#2A082D]/30 hover:border-[#EC602B] text-[#2A082D] hover:text-[#EC602B] text-xs font-semibold transition-all bg-white/60 hover:bg-white shadow-2xs"
+                            className="inline-flex items-center gap-1.5 px-4 xl:px-3 2xl:px-4 py-1.5 whitespace-nowrap rounded-full border border-[#2A082D]/30 hover:border-[#EC602B] text-[#2A082D] hover:text-[#EC602B] text-xs font-semibold transition-all bg-white/60 hover:bg-white shadow-2xs"
                             title="Accéder à l'Espace Membre"
                         >
                             <User size={13} className="text-[#EC602B]" />
@@ -132,12 +132,12 @@ export function Header() {
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#EC602B] hover:bg-[#FF7E2E] text-white text-xs font-semibold shadow-2xs btn-glow-orange transition-all active:scale-[0.98] touch-tactile"
+                        className="inline-flex items-center gap-1.5 px-4 xl:px-3 2xl:px-4 py-1.5 whitespace-nowrap rounded-full bg-[#EC602B] hover:bg-[#FF7E2E] text-white text-xs font-semibold shadow-2xs btn-glow-orange transition-all active:scale-[0.98] touch-tactile"
                         title="Faire un don déductible des impôts à 66% (HelloAsso sécurisé)"
                     >
                         <Heart size={13} fill="currentColor" className="text-white" />
                         <span>Faire un don</span>
-                        <span className="ml-0.5 px-1.5 py-0.2 bg-white/20 text-[10px] font-bold rounded text-white">
+                        <span className="ml-0.5 px-1.5 py-0.2 xl:hidden 2xl:inline bg-white/20 text-[10px] font-bold rounded text-white">
                             -66%
                         </span>
                     </a>
@@ -145,7 +145,7 @@ export function Header() {
 
 
                 {/* Mobile Menu Button */}
-                <div className="flex items-center gap-2 lg:hidden">
+                <div className="flex items-center gap-2 xl:hidden">
                     <a
                         href="https://www.helloasso.com/associations/egalite-des-chances-phoenix/collectes/a"
                         target="_blank"
@@ -177,7 +177,7 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="lg:hidden border-t border-[#6F2B75]/10 bg-[#FFFBF4]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
+                        className="xl:hidden border-t border-[#6F2B75]/10 bg-[#FFFBF4]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
                     >
                         <div className="flex flex-col gap-1.5 mb-4">
                             {navLinks.map((link) => {
