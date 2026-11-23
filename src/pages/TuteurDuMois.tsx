@@ -7,7 +7,7 @@ import { fetchPublicNominees, nomineePhotoUrl } from '../data/planningData';
 import { formatNomineeMonth, type PublicNominee, type PublicNominees } from '../data/nominees';
 
 const projectOf = (nominee: PublicNominee) => nominee.stats.find((s) => s.label === 'Projet')?.value;
-const photoOf = (nominee: PublicNominee) => (nominee.photoId ? nomineePhotoUrl(nominee.photoId, nominee.updatedAt) : null);
+const photoOf = (nominee: PublicNominee) => (nominee.photoId ? nomineePhotoUrl(nominee.photoId) : null);
 
 export function TuteurDuMois() {
     const { slug } = useParams<{ slug?: string }>();

@@ -114,11 +114,12 @@ export function loadScript(options) {
         getBlob: () => entry.blob,
     });
     const fakeFolder = (entry) => ({
+        getId: () => entry.id,
         isTrashed: () => Boolean(entry.trashed),
         getFiles: () => iterator(entry.files.map(fakeFile)),
         addCopy: (copyName) => { const file = { name: copyName, trashed: false }; entry.files.push(file); return fakeFile(file); },
         createFile: (blob) => {
-            const file = { id: `photo${crypto.randomUUID().replace(/-/g, '')}`, name: blob.getName(), trashed: false, blob, folder: entry.name };
+            const file = { id: `photo${crypto.randomUUID().replace(/-/g, '')}`, name: blob.getName(), trashed: false, blob, folder: entry.name, folderEntry: entry };
             entry.files.push(file);
             drive.files.set(file.id, file);
             return fakeFile(file);
@@ -137,8 +138,13 @@ export function loadScript(options) {
             createFolder: (name) => {
                 // Un dossier du même nom resté à la corbeille reste listé à côté du nouveau.
                 if (drive.folders.has(name)) drive.staleFolders.push(drive.folders.get(name));
-                const entry = { name, files: [], trashed: false };
+                const entry = { name, files: [], trashed: false, id: `folder${crypto.randomUUID().replace(/-/g, '')}` };
                 drive.folders.set(name, entry);
+                return fakeFolder(entry);
+            },
+            getFolderById: (id) => {
+                const entry = [...drive.folders.values(), ...drive.staleFolders].find((f) => f.id === id);
+                if (!entry) throw new Error(`Dossier inconnu : ${id}`);
                 return fakeFolder(entry);
             },
             getFileById: (id) => {

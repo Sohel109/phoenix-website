@@ -34,7 +34,7 @@ function withSlugs(candidates: VoteCandidate[]): { candidate: VoteCandidate; slu
 }
 
 const displayNameOf = (c: VoteCandidate) => c.profile?.displayName || c.name;
-const photoOf = (c: VoteCandidate) => (c.profile?.photoId ? nomineePhotoUrl(c.profile.photoId, c.profile.updatedAt) : null);
+const photoOf = (c: VoteCandidate) => (c.profile?.photoId ? nomineePhotoUrl(c.profile.photoId) : null);
 
 function formatMonth(monthKey: string): string {
     const [y, m] = monthKey.split('-').map(Number);

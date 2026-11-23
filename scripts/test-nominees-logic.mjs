@@ -198,10 +198,40 @@ test('getNominees : garde le mois précédent tant que le nouveau n\'a pas de ph
     assert.equal(res.monthKey, '2026-10');
     assert.deepEqual(res.nominees.map((n) => [n.slug, n.isWinner]), [['bob-durand', true], ['alice-martin', false]]);
 
+    // Une photo du mois en préparation ne bascule pas la page avant l'ouverture du vote.
     h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'c3', data: JPEG });
+    assert.equal(h.get('getNominees').monthKey, '2026-10');
+
+    h.setNow('2026-11-24');
     const next = h.get('getNominees');
     assert.equal(next.monthKey, '2026-11');
     assert.deepEqual(next.nominees.map((n) => n.slug), ['chloe']);
+});
+
+test('getNominees : même slug que dans l\'espace membre quand un homonyme n\'a pas de photo', () => {
+    const h = fresh();
+    h.call('saveNomineeProfile', profileInput('a1', { displayName: 'Sam' }));
+    h.call('saveNomineeProfile', profileInput('b2', { displayName: 'Sam' }));
+    h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'b2', data: JPEG });
+    assert.deepEqual(h.get('getNominees').nominees.map((n) => n.slug), ['sam-2']);
+    assert.equal(bureauMember(h, 'b2').profile.slug, 'sam-2');
+});
+
+test('FichesNommes : les colonnes de texte restent du texte brut dans le Sheet', () => {
+    const h = fresh();
+    h.call('saveNomineeProfile', profileInput('a1'));
+    assert.deepEqual(h.formats('FichesNommes').map((f) => f.join(' ')).sort(), ['A:A @', 'C:G @']);
+});
+
+test('uploadNomineePhoto : ignore un dossier du même nom qui existait déjà (par exemple partagé)', () => {
+    const h = fresh();
+    const shared = { name: 'Phoenix - Photos nommés', files: [], trashed: false };
+    h.drive.folders.set(shared.name, shared);
+    h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'a1', data: JPEG });
+    h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'b2', data: JPEG });
+    assert.equal(shared.files.length, 0);
+    const folders = new Set([...h.drive.files.values()].map((f) => f.folderEntry));
+    assert.equal(folders.size, 1);
 });
 
 test('getNominees : ignore une fiche dont le membre n\'est plus candidat ou dont la photo est à la corbeille', () => {

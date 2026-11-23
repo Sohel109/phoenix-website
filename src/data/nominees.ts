@@ -69,7 +69,10 @@ export function parseNominees(raw: unknown): PublicNominees | null {
 
 const SLUG_MAP: Record<string, string> = { œ: 'oe', æ: 'ae' };
 
-/** Même règle que le script : sans accents, minuscules, tirets. */
+/**
+ * Proche de la règle du script (sans accents, minuscules, tirets). Ne sert que pour un candidat sans fiche : dès qu'une
+ * fiche existe, le slug vient du script.
+ */
 export function nomineeSlug(name: string): string {
     const plain = name
         .toLowerCase()

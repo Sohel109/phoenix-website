@@ -519,9 +519,9 @@ export async function fetchPublicNominees(): Promise<PublicNominees | null> {
     }
 }
 
-export function nomineePhotoUrl(photoId: string, updatedAt: string): string {
+export function nomineePhotoUrl(photoId: string): string {
     const API_URL = import.meta.env.VITE_API_URL || '';
-    return `${API_URL}/api/planning?photo=${encodeURIComponent(photoId)}&v=${encodeURIComponent(updatedAt)}`;
+    return `${API_URL}/api/planning?photo=${encodeURIComponent(photoId)}`;
 }
 
 export async function castVoteApi(voterId: string, candidateId: string, token: string): Promise<{ success: boolean; message: string; code?: string }> {

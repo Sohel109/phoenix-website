@@ -72,15 +72,39 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
     const [busy, setBusy] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    // Saisie de départ, pour savoir s'il y a des modifications non enregistrées.
+    const [initial] = useState(() => JSON.stringify([displayName, itemsText, stats]));
+    const dirty = JSON.stringify([displayName, itemsText, stats]) !== initial;
+    const nameInput = useRef<HTMLInputElement>(null);
+
+    const requestClose = () => {
+        if (busy) return;
+        if (dirty && !window.confirm('Fermer sans enregistrer ? Vos modifications de la fiche seront perdues.')) return;
+        onClose();
+    };
+    const closeRef = useRef(requestClose);
     useEffect(() => {
+        closeRef.current = requestClose;
+    });
+
+    // Focus dans la fenêtre à l'ouverture, rendu au bouton d'origine à la fermeture ; la page derrière ne défile plus.
+    useEffect(() => {
+        const previous = document.activeElement as HTMLElement | null;
+        nameInput.current?.focus();
+        const overflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
         const onKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && !busy) onClose();
+            if (e.key === 'Escape') closeRef.current();
         };
         window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
-    }, [busy, onClose]);
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            document.body.style.overflow = overflow;
+            previous?.focus();
+        };
+    }, []);
 
-    const serverPhoto = member.profile?.photoId ? nomineePhotoUrl(member.profile.photoId, member.profile.updatedAt) : null;
+    const serverPhoto = member.profile?.photoId ? nomineePhotoUrl(member.profile.photoId) : null;
     const photo = localPhoto ?? (photoRemoved ? null : serverPhoto);
     const items = itemsText.split('\n').map((line) => line.trim()).filter(Boolean);
     const tooMany = items.length > MAX_ITEMS;
@@ -148,7 +172,7 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
                             <p className="text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/60">Fiche du nommé</p>
                             <h2 id="nominee-editor-title" className="mt-1 text-xl font-bold text-white">{member.name}</h2>
                         </div>
-                        <button type="button" onClick={onClose} disabled={busy !== null} aria-label="Fermer" className="w-9 h-9 rounded-full bg-white/5 border border-[#ECDDFD]/15 flex items-center justify-center text-[#ECDDFD]/70 hover:text-white">
+                        <button type="button" onClick={requestClose} disabled={busy !== null} aria-label="Fermer" className="w-9 h-9 rounded-full bg-white/5 border border-[#ECDDFD]/15 flex items-center justify-center text-[#ECDDFD]/70 hover:text-white">
                             <X size={16} />
                         </button>
                     </div>
@@ -176,7 +200,7 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
                         <div className="space-y-5">
                             <div>
                                 <label htmlFor="nominee-name" className="block text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70 mb-2">Nom affiché</label>
-                                <input id="nominee-name" value={displayName} maxLength={60} onChange={(e) => setDisplayName(e.target.value)} className={inputClass} />
+                                <input ref={nameInput} id="nominee-name" value={displayName} maxLength={60} onChange={(e) => setDisplayName(e.target.value)} className={inputClass} />
                             </div>
                             <div>
                                 <label htmlFor="nominee-items" className="block text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70 mb-2">Accomplissements</label>
@@ -226,7 +250,7 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
                     {error && <p role="alert" className="mt-5 text-sm text-red-300">{error}</p>}
 
                     <div className="mt-7 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-                        <button type="button" onClick={onClose} disabled={busy !== null} className={`${smallButton} justify-center py-2.5 bg-transparent text-[#ECDDFD]/80 border-[#6F2B75]/50 hover:text-white`}>
+                        <button type="button" onClick={requestClose} disabled={busy !== null} className={`${smallButton} justify-center py-2.5 bg-transparent text-[#ECDDFD]/80 border-[#6F2B75]/50 hover:text-white`}>
                             Fermer
                         </button>
                         <button type="button" onClick={() => void save()} disabled={busy !== null || !displayName.trim() || tooMany || tooLong} className={`${smallButton} justify-center py-2.5 btn-phoenix-gradient text-white border-transparent`}>

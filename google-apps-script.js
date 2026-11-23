@@ -849,7 +849,7 @@ var VOTE_SHEETS = {
   votes: { name: 'Votes', headers: ['monthKey', 'voterId', 'candidateId', 'updatedAt'] },
   candidates: { name: 'VoteCandidats', headers: ['monthKey', 'userId'] },
   winners: { name: 'TuteurDuMois', headers: ['monthKey', 'userId', 'publishedAt'] },
-  profiles: { name: 'FichesNommes', headers: ['monthKey', 'userId', 'displayName', 'accomplishments', 'stats', 'photoFileId', 'updatedAt'] }
+  profiles: { name: 'FichesNommes', headers: ['monthKey', 'userId', 'displayName', 'accomplishments', 'stats', 'photoFileId', 'updatedAt'], textColumns: 'C:G' }
 };
 
 function todayKeyParis() {
@@ -913,7 +913,11 @@ function normalizeMonthKey(value) {
 function getVoteSheet(def) {
   var existed = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(def.name) !== null;
   var sheet = getOrCreateSheet(def.name, def.headers);
-  if (!existed) sheet.getRange('A:A').setNumberFormat('@');
+  if (!existed) {
+    sheet.getRange('A:A').setNumberFormat('@');
+    // Textes libres (nom, JSON...) : sans ce format, « =... » deviendrait une formule et « 12/03 » une date.
+    if (def.textColumns) sheet.getRange(def.textColumns).setNumberFormat('@');
+  }
   return sheet;
 }
 
@@ -1277,13 +1281,22 @@ function trashNomineePhoto(fileId) {
   }
 }
 
+// Le dossier est retrouvé par son identifiant, jamais par son nom : un dossier du même nom partagé par quelqu'un
+// d'autre ne doit pas recevoir les photos.
 function getNomineePhotoFolder() {
-  var folders = DriveApp.getFoldersByName(NOMINEE_PHOTO_FOLDER);
-  while (folders.hasNext()) {
-    var folder = folders.next();
-    if (!folder.isTrashed()) return folder;
+  var props = PropertiesService.getScriptProperties();
+  var savedId = props.getProperty('NOMINEE_PHOTO_FOLDER_ID');
+  if (savedId) {
+    try {
+      var saved = DriveApp.getFolderById(savedId);
+      if (!saved.isTrashed()) return saved;
+    } catch (e) {
+      // Dossier supprimé : on en crée un nouveau.
+    }
   }
-  return DriveApp.createFolder(NOMINEE_PHOTO_FOLDER);
+  var folder = DriveApp.createFolder(NOMINEE_PHOTO_FOLDER);
+  props.setProperty('NOMINEE_PHOTO_FOLDER_ID', folder.getId());
+  return folder;
 }
 
 // Contrôles communs aux écritures : Bureau, membre connu et candidat du vote en préparation.
@@ -1413,15 +1426,20 @@ function getPublicNominees() {
   var profileRows = readVoteRowsIfAny(VOTE_SHEETS.profiles);
   var months = {};
   for (var i = 0; i < profileRows.length; i++) months[normalizeMonthKey(profileRows[i].cells[0])] = true;
+  // Un mois n'est montré qu'une fois son vote ouvert : avant, le Bureau prépare encore la liste.
+  var lastOpened = voteWindowFor(todayKeyParis()).monthKey;
   var keys = Object.keys(months).sort().reverse();
   for (var k = 0; k < keys.length; k++) {
     var monthKey = keys[k];
+    if (monthKey > lastOpened) continue;
     var candidateIds = readCandidateIds(candidateRows, monthKey, users);
-    var list = readNomineeProfiles(profileRows, monthKey).filter(function(p) {
-      return candidateIds.indexOf(p.userId) !== -1 && nomineePhotoUsable(p.photoFileId);
+    // Slugs calculés sur toutes les fiches des candidats, comme dans l'espace membre, avant d'écarter celles sans photo.
+    var list = withNomineeSlugs(readNomineeProfiles(profileRows, monthKey).filter(function(p) {
+      return candidateIds.indexOf(p.userId) !== -1;
+    })).filter(function(p) {
+      return nomineePhotoUsable(p.photoFileId);
     });
     if (list.length === 0) continue;
-    withNomineeSlugs(list);
     var winnerId = null;
     var winnerRows = readVoteRowsIfAny(VOTE_SHEETS.winners);
     for (var w = 0; w < winnerRows.length; w++) {
