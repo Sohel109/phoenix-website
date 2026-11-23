@@ -1,5 +1,6 @@
 import { projectsData } from './projectsData';
 import { parseVoteData } from './voteResponse';
+import { parseNominees, type NomineeProfile, type NomineeStat, type PublicNominees } from './nominees';
 import { parseChildrenData } from './childrenResponse';
 import { parseGouterData } from './gouterResponse';
 import { parseExemptionsData, parseImportResult, parseManualHoursData } from './hoursResponse';
@@ -382,6 +383,8 @@ export async function confirmResetPasswordApi(loginId: string, code: string, new
 export interface VoteCandidate {
     id: string;
     name: string;
+    /** Fiche remplie par le Bureau, ou null. */
+    profile: NomineeProfile | null;
 }
 
 export interface VoteData {
@@ -398,7 +401,8 @@ export interface VoteData {
         counts: { userId: string; name: string; count: number }[];
         /** Mois du vote que le Bureau prépare : le vote en cours s'il est ouvert, sinon le prochain. */
         selectionMonthKey: string;
-        members: { id: string; name: string; selected: boolean }[];
+        /** `profile` : fiche du vote en préparation (null si pas nommé ou pas encore remplie). */
+        members: { id: string; name: string; selected: boolean; profile: NomineeProfile | null }[];
     };
 }
 
@@ -481,6 +485,43 @@ export async function fetchVoteData(requesterId: string, token: string): Promise
     if (!result.success) return { ok: false, message: result.message, code: result.code };
     const data = parseVoteData(result.data);
     return data ? { ok: true, data } : { ok: false, message: VOTE_UNAVAILABLE };
+}
+
+export async function saveNomineeProfileApi(
+    requesterId: string,
+    userId: string,
+    fields: { displayName: string; accomplishments: string[]; stats: NomineeStat[] },
+    token: string
+): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postVoteAction({ action: 'saveNomineeProfile', requesterId, userId, ...fields, token });
+    return { success, message, code };
+}
+
+export async function uploadNomineePhotoApi(requesterId: string, userId: string, data: string, token: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postVoteAction({ action: 'uploadNomineePhoto', requesterId, userId, data, token });
+    return { success, message, code };
+}
+
+export async function removeNomineePhotoApi(requesterId: string, userId: string, token: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const { success, message, code } = await postVoteAction({ action: 'removeNomineePhoto', requesterId, userId, token });
+    return { success, message, code };
+}
+
+/** Fiches publiques des nommés (site public). null si le service ne répond pas comme prévu. */
+export async function fetchPublicNominees(): Promise<PublicNominees | null> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning?nominees=1`);
+        if (!response.ok) return null;
+        return parseNominees(await response.json());
+    } catch {
+        return null;
+    }
+}
+
+export function nomineePhotoUrl(photoId: string, updatedAt: string): string {
+    const API_URL = import.meta.env.VITE_API_URL || '';
+    return `${API_URL}/api/planning?photo=${encodeURIComponent(photoId)}&v=${encodeURIComponent(updatedAt)}`;
 }
 
 export async function castVoteApi(voterId: string, candidateId: string, token: string): Promise<{ success: boolean; message: string; code?: string }> {

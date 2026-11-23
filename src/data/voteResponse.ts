@@ -1,4 +1,5 @@
 import type { VoteData } from './planningData';
+import { parseNomineeProfile } from './nominees.ts';
 
 /**
  * Valide la réponse du script Google à `getVoteData`. Un script pas encore redéployé répond à côté
@@ -18,7 +19,13 @@ export function parseVoteData(raw: unknown): VoteData | null {
     ) {
         return null;
     }
-    return raw as VoteData;
+    // Un script d'avant les fiches n'envoie pas `profile` : on le ramène à null.
+    const data = raw as VoteData;
+    const candidates = data.candidates.map((c) => ({ ...c, profile: parseNomineeProfile((c as { profile?: unknown }).profile) }));
+    const bureau = data.bureau
+        ? { ...data.bureau, members: data.bureau.members.map((m) => ({ ...m, profile: parseNomineeProfile((m as { profile?: unknown }).profile) })) }
+        : undefined;
+    return { ...data, candidates, ...(bureau ? { bureau } : {}) };
 }
 
 /** Permet d'ignorer la réponse d'une requête quand une plus récente a été lancée depuis. */
