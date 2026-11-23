@@ -88,6 +88,21 @@ test('computeNomineeStats : sans projet déclaré, prend les projets des séance
     assert.equal(computeNomineeStats(statsInput({ projectIds: [] }))[0].value, 'St Gabriel, ACSE');
 });
 
+test('computeNomineeStats : projet le plus fréquent en premier, noms jamais coupés', () => {
+    const many = statsInput({
+        projectIds: [],
+        bookings: [
+            { userId: 'a', slotId: 's2', weekKey: '2026-10-05', status: 'confirme' },
+            { userId: 'a', slotId: 's4', weekKey: '2026-10-05', status: 'confirme' },
+            { userId: 'a', slotId: 's4', weekKey: '2026-10-12', status: 'confirme' },
+            { userId: 'a', slotId: 's8', weekKey: '2026-10-12', status: 'confirme' },
+        ],
+        slots: [...SLOTS, { id: 's8', projectId: 8 }],
+        projectName: (id) => ({ 2: 'ACSE', 4: 'St Gabriel', 8: 'Arthur Rimbaud' })[id],
+    });
+    assert.equal(computeNomineeStats(many)[0].value, 'St Gabriel, ACSE');
+});
+
 test('schoolYearStart : avant septembre, l\'année scolaire a commencé l\'an dernier', () => {
     assert.equal(schoolYearStart(new Date(2027, 2, 10)).getFullYear(), 2026);
     assert.equal(schoolYearStart(new Date(2026, 8, 1)).getFullYear(), 2026);

@@ -115,7 +115,8 @@ export function computeNomineeStats<S extends { id: string; projectId: number }>
     const slotById = new Map(input.slots.map((s) => [s.id, s]));
     let hours = 0;
     let sessions = 0;
-    const bookedProjects: number[] = [];
+    // Séances par projet, pour mettre en premier celui où le membre vient le plus.
+    const sessionsByProject = new Map<number, number>();
     for (const b of input.bookings) {
         if (b.userId !== input.userId || b.status !== 'confirme') continue;
         const slot = slotById.get(b.slotId);
@@ -124,15 +125,23 @@ export function computeNomineeStats<S extends { id: string; projectId: number }>
         if (input.weekStart(b.weekKey).getTime() + WEEK_MS <= start) continue;
         hours += input.duration(slot);
         sessions += 1;
-        if (!bookedProjects.includes(slot.projectId)) bookedProjects.push(slot.projectId);
+        sessionsByProject.set(slot.projectId, (sessionsByProject.get(slot.projectId) ?? 0) + 1);
     }
     for (const mh of input.manualHours) {
         if (mh.userId === input.userId && new Date(mh.createdAt).getTime() >= start) hours += mh.hours;
     }
+    const bookedProjects = [...sessionsByProject.entries()].sort((a, b) => b[1] - a[1]).map(([id]) => id);
     const projectIds = input.projectIds.length > 0 ? input.projectIds : bookedProjects;
     const names = projectIds.map(input.projectName).filter((n): n is string => Boolean(n));
+    // Seulement des noms entiers, dans la limite de 30 caractères d'une stat.
+    let projectValue = '';
+    for (const name of names) {
+        const next = projectValue ? `${projectValue}, ${name}` : name;
+        if (next.length > 30) break;
+        projectValue = next;
+    }
     const stats: NomineeStat[] = [];
-    if (names.length > 0) stats.push({ label: 'Projet', value: names.join(', ').slice(0, 30) });
+    if (projectValue) stats.push({ label: 'Projet', value: projectValue });
     stats.push({ label: 'Heures validées', value: formatHours(hours) });
     stats.push({ label: 'Séances', value: String(sessions) });
     return stats;
