@@ -16,6 +16,36 @@ export default async function handler(req, res) {
         return;
     }
 
+    // Fiches publiques des nommés au tuteur du mois, mises en cache par Vercel.
+    if (req.method === 'GET' && req.query && req.query.nominees !== undefined) {
+        try {
+            const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getNominees`);
+            const data = JSON.parse(await response.text());
+            if (data && data.success) res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
+            return res.status(200).json(data);
+        } catch (error) {
+            console.error('Erreur serverless nominees:', error);
+            return res.status(502).json({ success: false, message: 'Fiches indisponibles' });
+        }
+    }
+
+    // Photo d'un nommé : l'URL porte la date de mise à jour (v), une nouvelle photo change donc d'URL.
+    if (req.method === 'GET' && req.query && req.query.photo !== undefined) {
+        const id = String(req.query.photo);
+        if (!/^[A-Za-z0-9_-]{10,100}$/.test(id)) return res.status(400).json({ success: false, message: 'Photo invalide' });
+        try {
+            const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getNomineePhoto&id=${encodeURIComponent(id)}`);
+            const data = JSON.parse(await response.text());
+            if (!data || !data.success || typeof data.data !== 'string') return res.status(404).json({ success: false, message: 'Photo introuvable' });
+            res.setHeader('Content-Type', 'image/jpeg');
+            res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+            return res.status(200).send(Buffer.from(data.data, 'base64'));
+        } catch (error) {
+            console.error('Erreur serverless photo:', error);
+            return res.status(502).json({ success: false, message: 'Photo indisponible' });
+        }
+    }
+
     if (req.method === 'GET') {
         try {
             const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getPlanningData`);
