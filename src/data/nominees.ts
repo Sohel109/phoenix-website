@@ -14,6 +14,8 @@ export interface NomineeProfile {
     stats: NomineeStat[];
     photoId: string | null;
     updatedAt: string;
+    /** Mot du nommé, écrit par le Bureau ; vide si aucun. */
+    quote: string;
 }
 
 export interface PublicNominee extends NomineeProfile {
@@ -50,7 +52,9 @@ export function parseNomineeProfile(raw: unknown): NomineeProfile | null {
     ) {
         return null;
     }
-    return { displayName: d.displayName, slug: d.slug, accomplishments: d.accomplishments, stats, photoId: d.photoId, updatedAt: d.updatedAt };
+    // Un script d'avant la citation ne l'envoie pas : vide.
+    const quote = typeof d.quote === 'string' ? d.quote : '';
+    return { displayName: d.displayName, slug: d.slug, accomplishments: d.accomplishments, stats, photoId: d.photoId, updatedAt: d.updatedAt, quote };
 }
 
 /** Valide la réponse publique `getNominees`. Une fiche mal formée est écartée ; une réponse d'un autre type donne null. */

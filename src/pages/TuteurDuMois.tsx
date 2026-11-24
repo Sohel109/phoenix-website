@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { ArrowRight, Award } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { NomineeCard } from '../components/nominees/NomineeCard';
 import { NomineeProfileView } from '../components/nominees/NomineeProfileView';
@@ -12,7 +13,11 @@ const photoOf = (nominee: PublicNominee) => (nominee.photoId ? nomineePhotoUrl(n
 
 export function TuteurDuMois() {
     const { slug } = useParams<{ slug?: string }>();
-    const { loading, data } = usePublicNominees();
+    const { loading, data, spotlight } = usePublicNominees();
+    const voteOpen = spotlight?.kind === 'vote';
+    const closesLabel = spotlight?.kind === 'vote'
+        ? new Date(`${spotlight.closesOn}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+        : '';
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -51,7 +56,22 @@ export function TuteurDuMois() {
                         photoUrl={photoOf(current)}
                         accomplishments={current.accomplishments}
                         stats={current.stats}
+                        quote={current.quote}
                         isWinner={current.isWinner}
+                        actions={
+                            voteOpen ? (
+                                <div>
+                                    <Link
+                                        to={`/planning/vote/${current.slug}`}
+                                        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-full btn-phoenix-gradient text-white font-school text-sm font-bold uppercase tracking-wider shadow-soft"
+                                    >
+                                        <Award size={16} />
+                                        Voter pour {current.displayName.split(/\s+/)[0]}
+                                    </Link>
+                                    <p className="mt-2 text-center text-xs text-[#2A082D]/65">Réservé aux membres de Phœnix, jusqu'au {closesLabel}. Connexion à l'espace membre demandée.</p>
+                                </div>
+                            ) : undefined
+                        }
                         monthLabel={monthLabel}
                         tone="light"
                         backHref="/tuteur-du-mois"
@@ -75,6 +95,17 @@ export function TuteurDuMois() {
                             <p className="mt-5 text-[#2A082D]/80 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
                                 Chaque mois, le Bureau nomme les tuteurs qui se sont le plus investis, puis les membres votent. Cliquez sur un nommé pour découvrir ce qu'il a accompli.
                             </p>
+                            {voteOpen && nominees.length > 0 && (
+                                <div className="mt-8 inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-5 px-6 py-4 rounded-2xl bg-white border border-[#EC602B]/30 shadow-soft">
+                                    <p className="text-sm text-[#2A082D]/85">
+                                        <span className="font-bold text-[#EC602B]">Vote en cours</span> jusqu'au {closesLabel}. Membre de Phœnix ?
+                                    </p>
+                                    <Link to="/planning/vote" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full btn-phoenix-gradient text-white font-school text-xs font-bold uppercase tracking-wider">
+                                        Voter dans l'espace membre
+                                        <ArrowRight size={14} />
+                                    </Link>
+                                </div>
+                            )}
                         </header>
 
                         {nominees.length === 0 ? (

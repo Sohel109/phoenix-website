@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Eye, EyeOff, LogIn, Lock, User, Loader2, KeyRound, CheckCircle2, AlertCircle, Mail, ArrowLeft } from 'lucide-react';
 import { usePlanning } from '../../context/PlanningContext';
@@ -14,6 +14,10 @@ export function PlanningLogin() {
     const [error, setError] = useState('');
     const [isShaking, setIsShaking] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    // Page de l'espace membre demandée avant la connexion (par exemple un lien « Voter » du site public).
+    const location = useLocation();
+    const fromPath = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
+    const afterLogin = fromPath && fromPath.startsWith('/planning/') && fromPath !== '/planning/login' ? fromPath : '/planning';
 
     // Mot de passe oublié (sécurisé par OTP e-mail)
     const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -35,7 +39,7 @@ export function PlanningLogin() {
         try {
             const success = await login(loginId.trim(), password);
             if (success) {
-                navigate('/planning');
+                navigate(afterLogin);
             } else {
                 setError('Identifiant ou mot de passe incorrect.');
                 setIsShaking(true);

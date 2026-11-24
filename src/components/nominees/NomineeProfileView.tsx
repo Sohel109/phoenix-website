@@ -9,6 +9,8 @@ interface NomineeProfileViewProps {
     photoUrl: string | null;
     accomplishments: string[];
     stats: NomineeStat[];
+    /** Mot du nommé, affiché en grand sous son nom ; rien si vide. */
+    quote?: string;
     isWinner?: boolean;
     monthLabel: string;
     tone: 'light' | 'dark';
@@ -20,7 +22,7 @@ interface NomineeProfileViewProps {
 }
 
 /** Fiche d'un nommé : nom en très gros, collage qui tremble, bandeau de stats, accomplissements. */
-export function NomineeProfileView({ name, photoUrl, accomplishments, stats, isWinner = false, monthLabel, tone, backHref, backLabel, actions, others = [] }: NomineeProfileViewProps) {
+export function NomineeProfileView({ name, photoUrl, accomplishments, stats, quote = '', isWinner = false, monthLabel, tone, backHref, backLabel, actions, others = [] }: NomineeProfileViewProps) {
     const light = tone === 'light';
     const text = light ? 'text-[#2A082D]' : 'text-white';
     const muted = light ? 'text-[#2A082D]/70' : 'text-[#ECDDFD]/75';
@@ -51,6 +53,18 @@ export function NomineeProfileView({ name, photoUrl, accomplishments, stats, isW
                 </p>
                 <h1 className={`mt-3 font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] break-words ${text}`}>{name}</h1>
             </header>
+
+            {quote.trim() && (
+                <figure className="mt-8 max-w-3xl">
+                    <blockquote className={`relative pl-10 sm:pl-14 font-display text-2xl sm:text-3xl lg:text-4xl leading-snug ${text}`}>
+                        <span aria-hidden="true" className="absolute left-0 -top-2 sm:-top-3 font-display text-6xl sm:text-7xl leading-none text-[#EC602B]">«</span>
+                        <p className="whitespace-pre-line break-words">{quote.trim()}</p>
+                    </blockquote>
+                    <figcaption className={`mt-3 pl-10 sm:pl-14 text-xs font-school font-bold uppercase tracking-widest ${accent}`}>
+                        {name.split(/\s+/)[0]}, en quelques mots
+                    </figcaption>
+                </figure>
+            )}
 
             {stats.length > 0 && (
                 <dl className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">

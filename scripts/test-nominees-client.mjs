@@ -159,3 +159,8 @@ test('nomineeSpotlight : rien sans nommé', () => {
     assert.equal(nomineeSpotlight(null, '2026-11-24'), null);
     assert.equal(nomineeSpotlight({ monthKey: null, nominees: [] }, '2026-11-24'), null);
 });
+
+test('parseNomineeProfile : citation absente (ancien script) donne une chaîne vide', () => {
+    assert.equal(parseNomineeProfile(PROFILE).quote, '');
+    assert.equal(parseNomineeProfile({ ...PROFILE, quote: 'Votez !' }).quote, 'Votez !');
+});

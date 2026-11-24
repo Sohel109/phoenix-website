@@ -182,7 +182,7 @@ test('getNominees : seulement les fiches avec photo, sans identifiant de compte'
     assert.equal(res.monthKey, '2026-11');
     assert.deepEqual(res.nominees.map((n) => n.slug), ['alice-martin', 'chloe-du-pont']);
     const n = res.nominees[0];
-    assert.deepEqual(Object.keys(n).sort(), ['accomplishments', 'displayName', 'isWinner', 'photoId', 'slug', 'stats', 'updatedAt']);
+    assert.deepEqual(Object.keys(n).sort(), ['accomplishments', 'displayName', 'isWinner', 'photoId', 'quote', 'slug', 'stats', 'updatedAt']);
     const text = JSON.stringify(res);
     for (const id of ['"a1"', '"b2"', '"c3"', '"alice"', 'pw-']) assert.equal(text.includes(id), false, id);
 });
@@ -220,7 +220,7 @@ test('getNominees : même slug que dans l\'espace membre quand un homonyme n\'a 
 test('FichesNommes : les colonnes de texte restent du texte brut dans le Sheet', () => {
     const h = fresh();
     h.call('saveNomineeProfile', profileInput('a1'));
-    assert.deepEqual(h.formats('FichesNommes').map((f) => f.join(' ')).sort(), ['A:A @', 'C:G @']);
+    assert.deepEqual(h.formats('FichesNommes').map((f) => f.join(' ')).sort(), ['A:A @', 'C:H @']);
 });
 
 test('uploadNomineePhoto : ignore un dossier du même nom qui existait déjà (par exemple partagé)', () => {
@@ -260,4 +260,44 @@ test('getNomineePhoto : renvoie la photo d\'une fiche, refuse tout autre fichier
     assert.equal(h.get('getNomineePhoto', { id: '' }).code, 'not_found');
     h.drive.files.get(photoId).trashed = true;
     assert.equal(h.get('getNomineePhoto', { id: photoId }).code, 'not_found');
+});
+
+// ─── Citation du nommé ────────────────────────────────────────────────────────
+
+test('saveNomineeProfile : enregistre la citation et la renvoie partout', () => {
+    const h = fresh();
+    h.call('saveNomineeProfile', profileInput('a1', { quote: '  Votez pour moi, je ne lâche rien !  ' }));
+    h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'a1', data: JPEG });
+    assert.equal(bureauMember(h, 'a1').profile.quote, 'Votez pour moi, je ne lâche rien !');
+    assert.equal(h.call('getVoteData', { requesterId: 'b2' }).candidates.find((c) => c.id === 'a1').profile.quote, 'Votez pour moi, je ne lâche rien !');
+    assert.equal(h.get('getNominees').nominees[0].quote, 'Votez pour moi, je ne lâche rien !');
+    // L'envoi d'une photo garde la citation.
+    h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'a1', data: JPEG });
+    assert.equal(bureauMember(h, 'a1').profile.quote, 'Votez pour moi, je ne lâche rien !');
+});
+
+test('saveNomineeProfile : citation facultative, 300 caractères au plus', () => {
+    const h = fresh();
+    h.call('saveNomineeProfile', profileInput('a1'));
+    assert.equal(bureauMember(h, 'a1').profile.quote, '');
+    assert.equal(h.call('saveNomineeProfile', profileInput('a1', { quote: 'x'.repeat(301) })).code, 'bad_request');
+    assert.equal(h.call('saveNomineeProfile', profileInput('a1', { quote: 42 })).code, 'bad_request');
+});
+
+test('FichesNommes : une fiche écrite avant la citation se lit avec une citation vide', () => {
+    const h = fresh();
+    h.call('saveNomineeProfile', profileInput('a1'));
+    // Ligne d'un ancien script : 7 colonnes seulement.
+    h.setSheetCell('FichesNommes', 2, 8, '');
+    assert.equal(bureauMember(h, 'a1').profile.quote, '');
+});
+
+test('FichesNommes : un onglet créé avant la citation reçoit l\'en-tête et le format texte de la colonne H', () => {
+    const h = fresh();
+    h.call('saveNomineeProfile', profileInput('a1'));
+    h.setSheetCell('FichesNommes', 1, 8, '');
+    h.call('saveNomineeProfile', profileInput('a1', { quote: '=Votez' }));
+    assert.equal(h.sheet('FichesNommes')[0][7], 'quote');
+    assert.ok(h.formats('FichesNommes').some((f) => f[0] === 'H:H' && f[1] === '@'));
+    assert.equal(bureauMember(h, 'a1').profile.quote, '=Votez');
 });

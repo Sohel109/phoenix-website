@@ -849,7 +849,7 @@ var VOTE_SHEETS = {
   votes: { name: 'Votes', headers: ['monthKey', 'voterId', 'candidateId', 'updatedAt'] },
   candidates: { name: 'VoteCandidats', headers: ['monthKey', 'userId'] },
   winners: { name: 'TuteurDuMois', headers: ['monthKey', 'userId', 'publishedAt'] },
-  profiles: { name: 'FichesNommes', headers: ['monthKey', 'userId', 'displayName', 'accomplishments', 'stats', 'photoFileId', 'updatedAt'], textColumns: 'C:G' }
+  profiles: { name: 'FichesNommes', headers: ['monthKey', 'userId', 'displayName', 'accomplishments', 'stats', 'photoFileId', 'updatedAt', 'quote'], textColumns: 'C:H' }
 };
 
 function todayKeyParis() {
@@ -1201,7 +1201,7 @@ function votePublishWinner(ctx, postData) {
 // jamais renvoyer l'identifiant d'un compte.
 var NOMINEE_PHOTO_FOLDER = 'Phoenix - Photos nommés';
 var NOMINEE_PHOTO_MAX = 1500000;
-var NOMINEE_LIMITS = { name: 60, items: 12, item: 160, stats: 8, statText: 30 };
+var NOMINEE_LIMITS = { name: 60, items: 12, item: 160, stats: 8, statText: 30, quote: 300 };
 
 function nomineeSlug(name) {
   var map = { 'à': 'a', 'â': 'a', 'ä': 'a', 'á': 'a', 'ã': 'a', 'ç': 'c', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
@@ -1239,7 +1239,9 @@ function readNomineeProfiles(rows, monthKey) {
       accomplishments: parseJsonList(c[3]),
       stats: parseJsonList(c[4]),
       photoFileId: c[5] ? String(c[5]) : '',
-      updatedAt: String(c[6] || '')
+      updatedAt: String(c[6] || ''),
+      // Colonne ajoutée après coup : absente des fiches plus anciennes.
+      quote: c[7] === null || c[7] === undefined ? '' : String(c[7])
     });
   }
   return list;
@@ -1260,7 +1262,7 @@ function withNomineeSlugs(list) {
 }
 
 function publicNomineeProfile(p) {
-  return { displayName: p.displayName, slug: p.slug, accomplishments: p.accomplishments, stats: p.stats, photoId: p.photoFileId || null, updatedAt: p.updatedAt };
+  return { displayName: p.displayName, slug: p.slug, accomplishments: p.accomplishments, stats: p.stats, photoId: p.photoFileId || null, updatedAt: p.updatedAt, quote: p.quote || '' };
 }
 
 // Fiches des candidats d'un mois, indexées par identifiant de compte (pour l'espace membre).
@@ -1316,8 +1318,14 @@ function nomineeTarget(ctx, postData) {
 }
 
 function writeNomineeProfile(ctx, target, existing, fields) {
+  var sheet = ctx.sheets.profiles;
+  // Onglet créé avant la citation : on ajoute l'en-tête et le format texte de la colonne H.
+  if (sheet.getRange(1, 8).getValue() !== 'quote') {
+    sheet.getRange(1, 8).setValue('quote');
+    sheet.getRange('H:H').setNumberFormat('@');
+  }
   var row = [ctx.win.selectionMonthKey, target.id, fields.displayName, JSON.stringify(fields.accomplishments),
-    JSON.stringify(fields.stats), fields.photoFileId || '', new Date(nowMs()).toISOString()];
+    JSON.stringify(fields.stats), fields.photoFileId || '', new Date(nowMs()).toISOString(), fields.quote || ''];
   if (existing) {
     for (var c = 0; c < row.length; c++) ctx.sheets.profiles.getRange(existing.sheetRow, c + 1).setValue(row[c]);
   } else {
@@ -1352,7 +1360,11 @@ function cleanNomineeFields(postData) {
     stats.push({ label: label, value: value });
   }
   if (stats.length > NOMINEE_LIMITS.stats) return { error: 'Au plus ' + NOMINEE_LIMITS.stats + ' stats.' };
-  return { displayName: name, accomplishments: items, stats: stats };
+  var rawQuote = postData.quote;
+  if (rawQuote !== undefined && rawQuote !== null && typeof rawQuote !== 'string') return { error: 'Requête invalide.' };
+  var quote = rawQuote ? rawQuote.trim() : '';
+  if (quote.length > NOMINEE_LIMITS.quote) return { error: 'La citation fait au plus ' + NOMINEE_LIMITS.quote + ' caractères.' };
+  return { displayName: name, accomplishments: items, stats: stats, quote: quote };
 }
 
 function nomineeSave(ctx, postData) {
@@ -1377,8 +1389,8 @@ function nomineeUploadPhoto(ctx, postData) {
   var file = getNomineePhotoFolder().createFile(blob);
   var existing = t.existing;
   var fields = existing
-    ? { displayName: existing.displayName, accomplishments: existing.accomplishments, stats: existing.stats }
-    : { displayName: t.target.name, accomplishments: [], stats: [] };
+    ? { displayName: existing.displayName, accomplishments: existing.accomplishments, stats: existing.stats, quote: existing.quote }
+    : { displayName: t.target.name, accomplishments: [], stats: [], quote: '' };
   fields.photoFileId = file.getId();
   writeNomineeProfile(ctx, t.target, existing, fields);
   if (existing) trashNomineePhoto(existing.photoFileId);
@@ -1390,7 +1402,7 @@ function nomineeRemovePhoto(ctx, postData) {
   if (t.error) return t.error;
   if (!t.existing || !t.existing.photoFileId) return { success: true };
   var e = t.existing;
-  writeNomineeProfile(ctx, t.target, e, { displayName: e.displayName, accomplishments: e.accomplishments, stats: e.stats, photoFileId: '' });
+  writeNomineeProfile(ctx, t.target, e, { displayName: e.displayName, accomplishments: e.accomplishments, stats: e.stats, quote: e.quote, photoFileId: '' });
   trashNomineePhoto(e.photoFileId);
   return { success: true };
 }

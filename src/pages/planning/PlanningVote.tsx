@@ -180,6 +180,7 @@ export function PlanningVote() {
                     photoUrl={photoOf(current.candidate)}
                     accomplishments={current.candidate.profile?.accomplishments ?? []}
                     stats={current.candidate.profile?.stats ?? []}
+                    quote={current.candidate.profile?.quote ?? ''}
                     monthLabel={formatMonth(data.monthKey)}
                     tone="dark"
                     backHref="/planning/vote"

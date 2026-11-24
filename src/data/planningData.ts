@@ -490,7 +490,7 @@ export async function fetchVoteData(requesterId: string, token: string): Promise
 export async function saveNomineeProfileApi(
     requesterId: string,
     userId: string,
-    fields: { displayName: string; accomplishments: string[]; stats: NomineeStat[] },
+    fields: { displayName: string; accomplishments: string[]; stats: NomineeStat[]; quote: string },
     token: string
 ): Promise<{ success: boolean; message: string; code?: string }> {
     const { success, message, code } = await postVoteAction({ action: 'saveNomineeProfile', requesterId, userId, ...fields, token });

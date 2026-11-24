@@ -16,6 +16,7 @@ interface NomineeProfileEditorProps {
 const MAX_ITEMS = 12;
 const MAX_ITEM = 160;
 const MAX_STATS = 8;
+const MAX_QUOTE = 300;
 
 /** Lit une image choisie, la recadre en 4:5 et la réduit à 900 px de large (JPEG). */
 async function toPortraitJpeg(file: File): Promise<string> {
@@ -66,6 +67,7 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
     // Le formulaire garde sa saisie pendant que la page se recharge après l'envoi d'une photo.
     const [displayName, setDisplayName] = useState(member.profile?.displayName || member.name);
     const [itemsText, setItemsText] = useState((member.profile?.accomplishments ?? []).join('\n'));
+    const [quote, setQuote] = useState(member.profile?.quote ?? '');
     const [stats, setStats] = useState<NomineeStat[]>(() => (member.profile && member.profile.stats.length > 0 ? member.profile.stats : freshStats()));
     const [localPhoto, setLocalPhoto] = useState<string | null>(null);
     const [photoRemoved, setPhotoRemoved] = useState(false);
@@ -73,8 +75,8 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
     const [error, setError] = useState<string | null>(null);
 
     // Saisie de départ, pour savoir s'il y a des modifications non enregistrées.
-    const [initial] = useState(() => JSON.stringify([displayName, itemsText, stats]));
-    const dirty = JSON.stringify([displayName, itemsText, stats]) !== initial;
+    const [initial] = useState(() => JSON.stringify([displayName, itemsText, stats, quote]));
+    const dirty = JSON.stringify([displayName, itemsText, stats, quote]) !== initial;
     const nameInput = useRef<HTMLInputElement>(null);
 
     const requestClose = () => {
@@ -149,7 +151,7 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
     const save = async () => {
         setError(null);
         setBusy('save');
-        const result = await saveNomineeProfileApi(requesterId, member.id, { displayName: displayName.trim(), accomplishments: items, stats }, token);
+        const result = await saveNomineeProfileApi(requesterId, member.id, { displayName: displayName.trim(), accomplishments: items, stats, quote: quote.trim() }, token);
         if (!result.success) {
             setError(result.message);
             setBusy(null);
@@ -201,6 +203,19 @@ export function NomineeProfileEditor({ member, requesterId, token, onClose, onCh
                             <div>
                                 <label htmlFor="nominee-name" className="block text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70 mb-2">Nom affiché</label>
                                 <input ref={nameInput} id="nominee-name" value={displayName} maxLength={60} onChange={(e) => setDisplayName(e.target.value)} className={inputClass} />
+                            </div>
+                            <div>
+                                <label htmlFor="nominee-quote" className="block text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70 mb-2">Citation du nommé</label>
+                                <textarea
+                                    id="nominee-quote"
+                                    rows={3}
+                                    maxLength={MAX_QUOTE}
+                                    value={quote}
+                                    onChange={(e) => setQuote(e.target.value)}
+                                    placeholder="Son mot, avec ses propres phrases : pourquoi voter pour lui, ce que Phœnix lui apporte..."
+                                    className={`${inputClass} resize-y leading-relaxed`}
+                                />
+                                <p className="mt-1 text-[11px] text-[#ECDDFD]/55">{quote.trim().length} / {MAX_QUOTE} caractères. Facultatif, affichée en grand en haut de sa fiche.</p>
                             </div>
                             <div>
                                 <label htmlFor="nominee-items" className="block text-xs font-school font-bold uppercase tracking-widest text-[#ECDDFD]/70 mb-2">Accomplissements</label>
