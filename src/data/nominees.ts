@@ -190,3 +190,34 @@ export function formatNomineeMonth(monthKey: string): string {
     const [y, m] = monthKey.split('-').map(Number);
     return new Date(y, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 }
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/** Fenêtre du vote d'un mois : ses 7 derniers jours (même règle que le script). */
+export function nomineeVoteWindow(monthKey: string): { opensOn: string; closesOn: string } {
+    const [y, m] = monthKey.split('-').map(Number);
+    const last = new Date(y, m, 0).getDate();
+    return { opensOn: `${monthKey}-${pad2(last - 6)}`, closesOn: `${monthKey}-${pad2(last)}` };
+}
+
+/** Clé AAAA-MM-JJ du jour, à l'heure de Paris. */
+export function todayKeyParis(now: Date = new Date()): string {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+}
+
+export type NomineeSpotlight =
+    | { kind: 'vote'; monthKey: string; closesOn: string; nominees: PublicNominee[] }
+    | { kind: 'winner'; monthKey: string; winner: PublicNominee };
+
+/**
+ * Ce que le site public met en avant : les nommés pendant les 7 jours du vote, puis le gagnant une fois publié,
+ * jusqu'au vote suivant. Rien sinon.
+ */
+export function nomineeSpotlight(data: PublicNominees | null, todayKey: string): NomineeSpotlight | null {
+    if (!data || !data.monthKey || data.nominees.length === 0) return null;
+    const { opensOn, closesOn } = nomineeVoteWindow(data.monthKey);
+    if (todayKey >= opensOn && todayKey <= closesOn) return { kind: 'vote', monthKey: data.monthKey, closesOn, nominees: data.nominees };
+    const winner = data.nominees.find((n) => n.isWinner);
+    if (todayKey > closesOn && winner) return { kind: 'winner', monthKey: data.monthKey, winner };
+    return null;
+}

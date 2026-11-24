@@ -1,4 +1,5 @@
 import { KeyFigures } from '../components/sections/KeyFigures';
+import { NomineeSpotlightSection } from '../components/nominees/NomineeSpotlightSection';
 import { HeroScroll } from '../components/sections/HeroScroll';
 import { ConcreteActions } from '../components/sections/ConcreteActions';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
@@ -57,6 +58,9 @@ export function Home() {
 
             {/* Scroll Reveal Hero */}
             <HeroScroll />
+
+            {/* Tuteur du mois : nommés pendant le vote, puis gagnant publié (absent hors période) */}
+            <NomineeSpotlightSection variant="home" />
 
             {/* Stats Section - Animated Key Figures */}
             <KeyFigures />

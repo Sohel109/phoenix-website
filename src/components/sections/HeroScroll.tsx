@@ -170,7 +170,7 @@ export function HeroScroll() {
                 SECTION MOBILE (< 768px)
             ══════════════════════════════════════════════════════ */}
             <section
-                style={{ paddingTop: 'calc(max(6.5rem, env(safe-area-inset-top, 0px) + 5rem))' }}
+                style={{ paddingTop: 'calc(max(6.5rem, env(safe-area-inset-top, 0px) + 5rem) + var(--spotlight-bar, 0px))' }}
                 className="md:hidden relative w-full pb-16 px-5 bg-[#FFFBF4] overflow-hidden flex flex-col items-center text-center"
             >
                 {/* Trame filigrane Phœnix officielle mobile */}

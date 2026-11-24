@@ -124,3 +124,38 @@ test('portraitCrop : recadrage 4:5 centré, sans agrandir', () => {
     assert.deepEqual(portraitCrop(900, 2000), { sx: 0, sy: 438, sw: 900, sh: 1125, outW: 900, outH: 1125 });
     assert.deepEqual(portraitCrop(600, 750), { sx: 0, sy: 0, sw: 600, sh: 750, outW: 600, outH: 750 });
 });
+
+// ─── Mise en avant sur le site public ────────────────────────────────────────
+
+import { nomineeVoteWindow, nomineeSpotlight } from '../src/data/nominees.ts';
+
+const NOV = { monthKey: '2026-11', nominees: [{ ...PROFILE, slug: 'a', isWinner: false }, { ...PROFILE, slug: 'b', isWinner: false }] };
+
+test('nomineeVoteWindow : les 7 derniers jours du mois', () => {
+    assert.deepEqual(nomineeVoteWindow('2026-11'), { opensOn: '2026-11-24', closesOn: '2026-11-30' });
+    assert.deepEqual(nomineeVoteWindow('2026-12'), { opensOn: '2026-12-25', closesOn: '2026-12-31' });
+    assert.deepEqual(nomineeVoteWindow('2027-02'), { opensOn: '2027-02-22', closesOn: '2027-02-28' });
+});
+
+test('nomineeSpotlight : pendant le vote, les nommés', () => {
+    const s = nomineeSpotlight(NOV, '2026-11-24');
+    assert.equal(s.kind, 'vote');
+    assert.equal(s.closesOn, '2026-11-30');
+    assert.equal(s.nominees.length, 2);
+    assert.equal(nomineeSpotlight(NOV, '2026-11-30').kind, 'vote');
+});
+
+test('nomineeSpotlight : après le vote, seulement si un gagnant est publié', () => {
+    assert.equal(nomineeSpotlight(NOV, '2026-12-01'), null);
+    const won = { ...NOV, nominees: [{ ...PROFILE, slug: 'b', isWinner: true }, { ...PROFILE, slug: 'a', isWinner: false }] };
+    const s = nomineeSpotlight(won, '2026-12-10');
+    assert.equal(s.kind, 'winner');
+    assert.equal(s.winner.slug, 'b');
+    // Gagnant publié avant la fin du vote : on reste sur le vote jusqu'au 30.
+    assert.equal(nomineeSpotlight(won, '2026-11-29').kind, 'vote');
+});
+
+test('nomineeSpotlight : rien sans nommé', () => {
+    assert.equal(nomineeSpotlight(null, '2026-11-24'), null);
+    assert.equal(nomineeSpotlight({ monthKey: null, nominees: [] }, '2026-11-24'), null);
+});

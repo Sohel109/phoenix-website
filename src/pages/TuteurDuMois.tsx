@@ -1,33 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 import { NomineeCard } from '../components/nominees/NomineeCard';
 import { NomineeProfileView } from '../components/nominees/NomineeProfileView';
-import { fetchPublicNominees, nomineePhotoUrl } from '../data/planningData';
-import { formatNomineeMonth, type PublicNominee, type PublicNominees } from '../data/nominees';
+import { nomineePhotoUrl } from '../data/planningData';
+import { formatNomineeMonth, type PublicNominee } from '../data/nominees';
+import { usePublicNominees } from '../hooks/usePublicNominees';
 
 const projectOf = (nominee: PublicNominee) => nominee.stats.find((s) => s.label === 'Projet')?.value;
 const photoOf = (nominee: PublicNominee) => (nominee.photoId ? nomineePhotoUrl(nominee.photoId) : null);
 
 export function TuteurDuMois() {
     const { slug } = useParams<{ slug?: string }>();
-    const [state, setState] = useState<{ loading: boolean; data: PublicNominees | null }>({ loading: true, data: null });
-
-    useEffect(() => {
-        let alive = true;
-        void fetchPublicNominees().then((data) => {
-            if (alive) setState({ loading: false, data });
-        });
-        return () => {
-            alive = false;
-        };
-    }, []);
+    const { loading, data } = usePublicNominees();
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [slug]);
 
-    const { loading, data } = state;
     const nominees = data?.nominees ?? [];
     const monthLabel = data?.monthKey ? formatNomineeMonth(data.monthKey) : '';
     const current = slug ? nominees.find((n) => n.slug === slug) : undefined;

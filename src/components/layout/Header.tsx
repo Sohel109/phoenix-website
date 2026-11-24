@@ -3,10 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Heart, Menu, X, User, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlanning } from '../../context/PlanningContext';
+import { NomineeSpotlightBar } from '../nominees/NomineeSpotlightBar';
+import { usePublicNominees } from '../../hooks/usePublicNominees';
 
 export function Header() {
     const location = useLocation();
     const { currentUser } = usePlanning();
+    // Pastille sur le lien « Tuteur du mois » pendant les 7 jours du vote.
+    const voteLive = usePublicNominees().spotlight?.kind === 'vote';
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -35,8 +39,7 @@ export function Header() {
         { label: "L'Association", path: '/association' },
         { label: 'Nos Projets', path: '/projets' },
         { label: 'Événements', path: '/evenements' },
-        // Absent de la barre ordinateur, faute de place : seulement dans le menu déroulant (sous 1280 px).
-        { label: 'Tuteur du mois', path: '/tuteur-du-mois', mobileOnly: true },
+        { label: 'Tuteur du mois', path: '/tuteur-du-mois', live: true },
         { label: 'Partenaires', path: '/partenaires' },
         { label: 'Documents', path: '/documents' },
         { label: 'Contact', path: '/contact' },
@@ -44,16 +47,18 @@ export function Header() {
 
     return (
         <header
-            style={{
-                paddingTop: `calc(env(safe-area-inset-top, 0px) + ${isScrolled || isMobileMenuOpen ? '0.75rem' : '1rem'})`,
-            }}
+            style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
                 isScrolled || isMobileMenuOpen
                     ? 'bg-[#FFFBF4]/95 backdrop-blur-md shadow-sm border-b border-[#6F2B75]/10 pb-3'
                     : 'bg-[#FFFBF4]/90 backdrop-blur-sm border-b border-[#6F2B75]/5 pb-4'
             }`}
         >
-            <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-6 2xl:px-12 flex items-center justify-between gap-4 lg:gap-8 xl:gap-6 2xl:gap-8">
+            {/* Bandeau du tuteur du mois, au-dessus du menu (absent hors période). */}
+            <NomineeSpotlightBar />
+            <div
+                style={{ paddingTop: isScrolled || isMobileMenuOpen ? '0.75rem' : '1rem' }}
+                className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-6 2xl:px-12 flex items-center justify-between gap-4 lg:gap-8 xl:gap-4 2xl:gap-8">
                 {/* Brand / Logo Circulaire Officiel calé sur la gauche */}
                 <Link to="/" className="flex items-center gap-3 group shrink-0">
                     <div className="relative">
@@ -69,15 +74,15 @@ export function Header() {
                         <span translate="no" className="notranslate font-display text-xl sm:text-2xl whitespace-nowrap text-[#2A082D] leading-none tracking-tight">
                             PHŒNIX <span className="text-[#EC602B]">EDC</span>
                         </span>
-                        <span className="hidden sm:block text-[10px] uppercase font-school font-bold tracking-wider text-[#904990] mt-0.5">
+                        <span className="hidden sm:block xl:hidden 2xl:block text-[10px] uppercase font-school font-bold tracking-wider text-[#904990] mt-0.5">
                             Égalité des Chances · KEDGE BS
                         </span>
                     </div>
                 </Link>
 
                 {/* Desktop Nav Links : compacts entre 1280 et 1535 px, aérés au-delà */}
-                <nav className="hidden xl:flex items-center gap-0.5 2xl:gap-3 min-[1760px]:gap-5">
-                    {navLinks.filter((link) => !link.mobileOnly).map((link) => {
+                <nav className="hidden xl:flex items-center gap-0.5 2xl:gap-1 min-[1760px]:gap-4">
+                    {navLinks.map((link) => {
                         const isActive = link.path === '/'
                             ? location.pathname === '/'
                             : location.pathname.startsWith(link.path);
@@ -86,15 +91,21 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`px-2 2xl:px-2.5 py-1.5 text-[13px] 2xl:text-sm font-medium whitespace-nowrap transition-colors relative ${
+                                className={`px-1.5 2xl:px-2 py-1.5 text-[13px] 2xl:text-sm font-medium whitespace-nowrap transition-colors relative ${
                                     isActive
                                         ? 'text-[#EC602B] font-bold'
                                         : 'text-[#2A082D] hover:text-[#EC602B]'
                                 }`}
                             >
                                 {link.label}
+                                {link.live && voteLive && (
+                                    <>
+                                        <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-[#EC602B] align-[2px] animate-pulse" aria-hidden="true" />
+                                        <span className="sr-only"> (vote en cours)</span>
+                                    </>
+                                )}
                                 {isActive && (
-                                    <span className="absolute bottom-0 left-2 right-2 2xl:left-2.5 2xl:right-2.5 h-[2px] bg-[#EC602B] rounded-full" />
+                                    <span className="absolute bottom-0 left-1.5 right-1.5 2xl:left-2 2xl:right-2 h-[2px] bg-[#EC602B] rounded-full" />
                                 )}
                             </Link>
                         );
@@ -177,7 +188,7 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="xl:hidden border-t border-[#6F2B75]/10 bg-[#FFFBF4]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px))] overflow-y-auto"
+                        className="xl:hidden border-t border-[#6F2B75]/10 bg-[#FFFBF4]/98 backdrop-blur-xl px-4 pt-3 pb-6 shadow-xl overflow-hidden max-h-[calc(100vh-6rem-env(safe-area-inset-top,0px)-var(--spotlight-bar,0px))] overflow-y-auto"
                     >
                         <div className="flex flex-col gap-1.5 mb-4">
                             {navLinks.map((link) => {
@@ -196,7 +207,11 @@ export function Header() {
                                         }`}
                                     >
                                         <span>{link.label}</span>
-                                        {isActive && <span className="w-2 h-2 rounded-full bg-[#EC602B]" />}
+                                        {link.live && voteLive ? (
+                                            <span className="px-2 py-0.5 rounded-full bg-[#EC602B] text-white text-[10px] font-bold uppercase tracking-wider">Vote en cours</span>
+                                        ) : (
+                                            isActive && <span className="w-2 h-2 rounded-full bg-[#EC602B]" />
+                                        )}
                                     </Link>
                                 );
                             })}

@@ -6,6 +6,7 @@ import { useEvents } from '../hooks/useEvents';
 import { usePlanning } from '../context/PlanningContext';
 import { EditEventModal } from '../components/common/EditEventModal';
 import type { EventItem } from '../data/events';
+import { NomineeSpotlightSection } from '../components/nominees/NomineeSpotlightSection';
 
 const eventsBreadcrumbSchema = {
     "@context": "https://schema.org",
@@ -60,6 +61,9 @@ export function Events() {
                         Chaque année, Phoenix EDC organise et participe à des événements majeurs pour stimuler l'éloquence, la négociation diplomatique, le sport et la cohésion de nos jeunes.
                     </p>
                 </div>
+
+                {/* Tuteur du mois, en tête pendant le vote puis à l'annonce du gagnant */}
+                <NomineeSpotlightSection variant="events" />
 
                 {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
