@@ -71,11 +71,12 @@ export function NomineeProfileView({ name, photoUrl, accomplishments, stats, isW
                     {actions && <div className="mt-8 px-4">{actions}</div>}
                 </div>
 
-                <section className="md:col-span-7" aria-labelledby="nominee-accomplishments">
-                    <h2 id="nominee-accomplishments" className={`font-display text-3xl sm:text-4xl ${text}`}>
-                        Ses <span className="marker-highlight text-[#EC602B]">accomplissements</span>
-                    </h2>
-                    {accomplishments.length > 0 ? (
+                {/* Sans accomplissement, la partie n'apparaît pas du tout. */}
+                {accomplishments.length > 0 && (
+                    <section className="md:col-span-7" aria-labelledby="nominee-accomplishments">
+                        <h2 id="nominee-accomplishments" className={`font-display text-3xl sm:text-4xl ${text}`}>
+                            Ses <span className="marker-highlight text-[#EC602B]">accomplissements</span>
+                        </h2>
                         <ol className="mt-6 space-y-4">
                             {accomplishments.map((item, index) => (
                                 <li key={index} className="flex gap-4">
@@ -86,10 +87,8 @@ export function NomineeProfileView({ name, photoUrl, accomplishments, stats, isW
                                 </li>
                             ))}
                         </ol>
-                    ) : (
-                        <p className={`mt-6 text-sm ${muted}`}>Le Bureau n'a pas encore rempli cette partie.</p>
-                    )}
-                </section>
+                    </section>
+                )}
             </div>
 
             {others.length > 0 && (
