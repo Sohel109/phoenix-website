@@ -84,6 +84,12 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  var newsResult = handleNewsAction(action, postData);
+  if (newsResult) {
+    return ContentService.createTextOutput(JSON.stringify(newsResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   var childrenResult = handleChildrenAction(action, postData);
   if (childrenResult) {
     return ContentService.createTextOutput(JSON.stringify(childrenResult))
@@ -1489,6 +1495,241 @@ function getPublicNomineePhoto(fileId) {
   if (!known || !nomineePhotoUsable(id)) return notFound;
   var blob = DriveApp.getFileById(id).getBlob();
   return { success: true, mimeType: 'image/jpeg', data: Utilities.base64Encode(blob.getBytes()) };
+}
+
+// ==========================================
+// ACTUALITÉS DU SITE
+// ==========================================
+// Le Bureau et les membres qu'il autorise (onglet Publieurs) publient des articles depuis l'espace membre. Un article
+// non publié n'est visible que dans l'espace membre ; publié, il apparaît sur la page Actualités du site public.
+// Le slug et la date de publication sont fixés à la première publication et ne changent plus : les liens partagés
+// restent valables même si le titre change.
+var NEWS_SHEETS = {
+  articles: { name: 'Actualites', headers: ['id', 'slug', 'title', 'body', 'coverFileId', 'photoFileIds', 'projectId', 'published', 'publishedAt', 'createdBy', 'updatedBy', 'updatedAt'], textColumns: 'A:L' },
+  publishers: { name: 'Publieurs', headers: ['userId', 'grantedBy', 'grantedAt'], textColumns: 'A:C' }
+};
+var NEWS_LIMITS = { title: 120, body: 5000, photos: 6, publicArticles: 60, reels: 8, igFetch: 25 };
+var NEWS_ACTIONS = ['newsAccess', 'newsGetAdmin', 'newsSave', 'newsSetPublished', 'newsDelete', 'newsSetPublisher', 'newsUploadPhoto', 'newsRemovePhoto'];
+
+// Google Sheets peut convertir « 2026-11-12 » en date : on relit toujours une clé YYYY-MM-DD.
+function newsDateKey(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') return Utilities.formatDate(value, 'Europe/Paris', 'yyyy-MM-dd');
+  var s = String(value === null || value === undefined ? '' : value);
+  return /^\d{4}-\d{2}-\d{2}/.test(s) ? s.substr(0, 10) : '';
+}
+
+function readNewsArticles(rows) {
+  var list = [];
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].cells;
+    list.push({
+      sheetRow: rows[i].sheetRow,
+      id: String(c[0]),
+      slug: String(c[1] || ''),
+      title: String(c[2] === null || c[2] === undefined ? '' : c[2]),
+      body: String(c[3] === null || c[3] === undefined ? '' : c[3]),
+      coverFileId: c[4] ? String(c[4]) : '',
+      photoFileIds: parseJsonList(c[5]).map(String),
+      projectId: c[6] ? String(c[6]) : null,
+      published: String(c[7]) === 'oui',
+      publishedAt: newsDateKey(c[8]),
+      createdBy: String(c[9] || ''),
+      updatedBy: String(c[10] || ''),
+      updatedAt: String(c[11] || '')
+    });
+  }
+  return list;
+}
+
+function newsCanPublish(users, publisherRows, userId) {
+  var user = findVoteUser(users, userId);
+  if (!user) return false;
+  if (user.role === 'bureau') return true;
+  for (var i = 0; i < publisherRows.length; i++) {
+    if (String(publisherRows[i].cells[0]) === user.id) return true;
+  }
+  return false;
+}
+
+function handleNewsAction(action, postData) {
+  if (NEWS_ACTIONS.indexOf(action) === -1) return null;
+  var authenticated = false;
+  try {
+    authenticated = verifySessionToken(postData.requesterId, postData.token);
+  } catch (authErr) {
+    authenticated = false;
+  }
+  if (!authenticated) return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
+  var isWrite = action !== 'newsAccess' && action !== 'newsGetAdmin';
+  var lock = isWrite ? LockService.getScriptLock() : null;
+  try {
+    if (lock) lock.waitLock(15000);
+    var users = readVoteUsers();
+    var requester = findVoteUser(users, postData.requesterId);
+    if (!requester) return voteFail('forbidden', 'Compte introuvable.');
+    var publisherRows = readVoteRowsIfAny(NEWS_SHEETS.publishers);
+    var canPublish = newsCanPublish(users, publisherRows, requester.id);
+    var isBureau = requester.role === 'bureau';
+    if (action === 'newsAccess') return { success: true, canPublish: canPublish, isBureau: isBureau };
+    if (!canPublish) return voteFail('forbidden', "Vous n'avez pas accès aux actualités.");
+    var ctx = { users: users, requester: requester, isBureau: isBureau, publisherRows: publisherRows, articles: getVoteSheet(NEWS_SHEETS.articles) };
+    if (action === 'newsGetAdmin') return newsGetAdmin(ctx);
+    if (action === 'newsSave') return newsSave(ctx, postData);
+    if (action === 'newsSetPublished') return newsSetPublished(ctx, postData);
+    if (action === 'newsDelete') return newsDelete(ctx, postData);
+    if (action === 'newsSetPublisher') return newsSetPublisher(ctx, postData);
+    if (action === 'newsUploadPhoto') return newsUploadPhoto(ctx, postData);
+    return newsRemovePhoto(ctx, postData);
+  } catch (err) {
+    return voteFail('error', err.toString());
+  } finally {
+    if (lock) lock.releaseLock();
+  }
+}
+
+function newsList(ctx) {
+  return readNewsArticles(readVoteRows(ctx.articles));
+}
+
+function newsFind(ctx, id) {
+  var list = newsList(ctx);
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].id === String(id)) return list[i];
+  }
+  return null;
+}
+
+function newsAdminArticle(ctx, a) {
+  var editor = findVoteUser(ctx.users, a.updatedBy);
+  return { id: a.id, slug: a.slug, title: a.title, body: a.body, coverId: a.coverFileId || null, photoIds: a.photoFileIds,
+    projectId: a.projectId, published: a.published, publishedAt: a.publishedAt, updatedAt: a.updatedAt, updatedByName: editor ? editor.name : '' };
+}
+
+function newsGetAdmin(ctx) {
+  var list = newsList(ctx);
+  list.sort(function(a, b) { return a.updatedAt < b.updatedAt ? 1 : a.updatedAt > b.updatedAt ? -1 : 0; });
+  var out = { success: true, isBureau: ctx.isBureau, articles: list.map(function(a) { return newsAdminArticle(ctx, a); }) };
+  if (ctx.isBureau) {
+    out.members = ctx.users.map(function(u) {
+      return { id: u.id, name: u.name, role: u.role, canPublish: newsCanPublish(ctx.users, ctx.publisherRows, u.id) };
+    });
+  }
+  return out;
+}
+
+function writeNewsArticle(ctx, existing, a) {
+  var row = [a.id, a.slug || '', a.title, a.body, a.coverFileId || '', JSON.stringify(a.photoFileIds || []), a.projectId || '',
+    a.published ? 'oui' : 'non', a.publishedAt || '', a.createdBy, ctx.requester.id, new Date(nowMs()).toISOString()];
+  if (existing) {
+    for (var c = 0; c < row.length; c++) ctx.articles.getRange(existing.sheetRow, c + 1).setValue(row[c]);
+  } else {
+    ctx.articles.appendRow(row);
+  }
+}
+
+function cleanNewsFields(postData) {
+  if (typeof postData.title !== 'string') return { error: 'Requête invalide.' };
+  var title = postData.title.trim();
+  if (!title || title.length > NEWS_LIMITS.title) return { error: 'Le titre doit faire entre 1 et ' + NEWS_LIMITS.title + ' caractères.' };
+  if (postData.body !== undefined && postData.body !== null && typeof postData.body !== 'string') return { error: 'Requête invalide.' };
+  var body = postData.body ? postData.body.replace(/\r\n/g, '\n').trim() : '';
+  if (body.length > NEWS_LIMITS.body) return { error: 'Le texte fait au plus ' + NEWS_LIMITS.body + ' caractères.' };
+  var projectId = postData.projectId;
+  if (projectId === undefined || projectId === null || projectId === '') {
+    projectId = null;
+  } else if (typeof projectId !== 'string' || !/^[a-z0-9-]{1,40}$/.test(projectId)) {
+    return { error: 'Projet inconnu.' };
+  }
+  return { title: title, body: body, projectId: projectId };
+}
+
+function newsSave(ctx, postData) {
+  var fields = cleanNewsFields(postData);
+  if (fields.error) return voteFail('bad_request', fields.error);
+  var existing = null;
+  if (postData.id !== undefined && postData.id !== null && postData.id !== '') {
+    existing = newsFind(ctx, postData.id);
+    if (!existing) return voteFail('not_found', 'Article introuvable.');
+  }
+  var photos = existing ? existing.photoFileIds : [];
+  if (postData.photoIds !== undefined) {
+    var wanted = postData.photoIds;
+    var ok = Object.prototype.toString.call(wanted) === '[object Array]' && wanted.length === photos.length;
+    var seen = {};
+    for (var i = 0; ok && i < wanted.length; i++) {
+      var pid = String(wanted[i]);
+      if (photos.indexOf(pid) === -1 || seen[pid]) ok = false;
+      seen[pid] = true;
+    }
+    if (!ok) return voteFail('bad_request', 'Ordre des photos invalide.');
+    photos = wanted.map(String);
+  }
+  var a = existing || { id: Utilities.getUuid(), slug: '', coverFileId: '', published: false, publishedAt: '', createdBy: ctx.requester.id };
+  a.title = fields.title;
+  a.body = fields.body;
+  a.projectId = fields.projectId;
+  a.photoFileIds = photos;
+  writeNewsArticle(ctx, existing, a);
+  return { success: true, id: a.id };
+}
+
+function newsUniqueSlug(ctx, article) {
+  var taken = {};
+  var list = newsList(ctx);
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].id !== article.id && list[i].slug) taken[list[i].slug] = true;
+  }
+  var base = nomineeSlug(article.title);
+  if (base === 'nomme') base = 'actu';
+  var slug = base;
+  var n = 2;
+  while (taken[slug]) slug = base + '-' + (n++);
+  return slug;
+}
+
+function newsSetPublished(ctx, postData) {
+  var a = newsFind(ctx, postData.id);
+  if (!a) return voteFail('not_found', 'Article introuvable.');
+  if (postData.published === true) {
+    if (!a.title || !a.body || !nomineePhotoUsable(a.coverFileId)) {
+      return voteFail('incomplete', 'Pour publier, il faut un titre, un texte et une photo de couverture.');
+    }
+    if (!a.slug) a.slug = newsUniqueSlug(ctx, a);
+    if (!a.publishedAt) a.publishedAt = todayKeyParis();
+    a.published = true;
+  } else {
+    a.published = false;
+  }
+  writeNewsArticle(ctx, a, a);
+  return { success: true, slug: a.slug };
+}
+
+function newsDelete(ctx, postData) {
+  var a = newsFind(ctx, postData.id);
+  if (!a) return voteFail('not_found', 'Article introuvable.');
+  ctx.articles.deleteRow(a.sheetRow);
+  trashNomineePhoto(a.coverFileId);
+  for (var i = 0; i < a.photoFileIds.length; i++) trashNomineePhoto(a.photoFileIds[i]);
+  return { success: true };
+}
+
+function newsSetPublisher(ctx, postData) {
+  if (!ctx.isBureau) return voteFail('forbidden', 'Action réservée au Bureau.');
+  var target = findVoteUser(ctx.users, postData.userId);
+  if (!target) return voteFail('not_found', 'Compte introuvable.');
+  if (target.role === 'bureau') return voteFail('bad_request', 'Le Bureau peut déjà publier.');
+  var sheet = getVoteSheet(NEWS_SHEETS.publishers);
+  var rows = readVoteRows(sheet);
+  var present = [];
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].cells[0]) === target.id) present.push(rows[i].sheetRow);
+  }
+  if (postData.allowed === true) {
+    if (present.length === 0) sheet.appendRow([target.id, ctx.requester.id, new Date(nowMs()).toISOString()]);
+  } else {
+    for (var r = present.length - 1; r >= 0; r--) sheet.deleteRow(present[r]);
+  }
+  return { success: true };
 }
 
 // ==========================================
