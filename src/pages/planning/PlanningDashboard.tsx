@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award, ClipboardCheck, Cookie } from 'lucide-react';
+import { Calendar, CalendarCheck, User, CheckSquare, FileText, Sparkles, Bell, Globe, ArrowRight, Award, ClipboardCheck, Cookie, Newspaper } from 'lucide-react';
 import { PlanningLayout } from './PlanningLayout';
 import { usePlanning } from '../../context/PlanningContext';
 import { usePlanningNotifications } from '../../hooks/usePlanningNotifications';
+import { useNewsAccess } from '../../hooks/useNewsAccess';
 import { useVoteData } from '../../hooks/useVoteData';
 import { projectsData } from '../../data/projectsData';
 
@@ -17,6 +18,7 @@ interface DashCard {
     section: 'activite' | 'gestion';
     chefOnly?: boolean;
     bureauOnly?: boolean;
+    newsOnly?: boolean;
 }
 
 const cards: DashCard[] = [
@@ -59,6 +61,15 @@ const cards: DashCard[] = [
         to: '/planning/vote',
         gradient: 'from-[#83338A] to-[#EC602B]',
         section: 'activite',
+    },
+    {
+        icon: <Newspaper size={26} />,
+        label: 'Actualités',
+        description: "Publiez les nouvelles de l'association",
+        to: '/planning/actualites',
+        gradient: 'from-[#EC602B] to-[#A043A8]',
+        section: 'activite',
+        newsOnly: true,
     },
     {
         icon: <Bell size={26} />,
@@ -119,10 +130,12 @@ export function PlanningDashboard() {
     const { data: voteData } = useVoteData();
     const isChef = currentUser?.role === 'chef_projet';
     const isBureau = currentUser?.role === 'bureau';
+    const { canPublish: canPublishNews } = useNewsAccess();
 
     const myProjects = projectsData.filter(p => currentUser?.projectIds.includes(p.id));
 
     const visibleCards = cards.filter(c => {
+        if (c.newsOnly) return canPublishNews;
         if (c.bureauOnly) return isBureau;
         if (c.chefOnly) return isChef || isBureau;
         return true;

@@ -1537,7 +1537,7 @@ var NEWS_SHEETS = {
   reels: { name: 'ReelsInstagram', headers: ['mediaId', 'shortcode', 'permalink', 'caption', 'timestamp', 'coverFileId', 'syncedAt'], textColumns: 'A:G' }
 };
 var NEWS_LIMITS = { title: 120, body: 5000, photos: 6, publicArticles: 60, reels: 8, igFetch: 25 };
-var NEWS_ACTIONS = ['newsAccess', 'newsGetAdmin', 'newsSave', 'newsSetPublished', 'newsDelete', 'newsSetPublisher', 'newsUploadPhoto', 'newsRemovePhoto'];
+var NEWS_ACTIONS = ['newsAccess', 'newsGetAdmin', 'newsSave', 'newsSetPublished', 'newsDelete', 'newsSetPublisher', 'newsUploadPhoto', 'newsRemovePhoto', 'newsGetPhoto'];
 
 // Google Sheets peut convertir « 2026-11-12 » en date : on relit toujours une clé YYYY-MM-DD.
 function newsDateKey(value) {
@@ -1588,7 +1588,7 @@ function handleNewsAction(action, postData) {
     authenticated = false;
   }
   if (!authenticated) return voteFail('unauthenticated', 'Votre session doit être renouvelée. Reconnectez-vous pour continuer.');
-  var isWrite = action !== 'newsAccess' && action !== 'newsGetAdmin';
+  var isWrite = action !== 'newsAccess' && action !== 'newsGetAdmin' && action !== 'newsGetPhoto';
   var lock = isWrite ? LockService.getScriptLock() : null;
   try {
     if (lock) lock.waitLock(15000);
@@ -1607,6 +1607,7 @@ function handleNewsAction(action, postData) {
     if (action === 'newsDelete') return newsDelete(ctx, postData);
     if (action === 'newsSetPublisher') return newsSetPublisher(ctx, postData);
     if (action === 'newsUploadPhoto') return newsUploadPhoto(ctx, postData);
+    if (action === 'newsGetPhoto') return newsGetPhoto(ctx, postData);
     return newsRemovePhoto(ctx, postData);
   } catch (err) {
     return voteFail('error', err.toString());
@@ -1777,6 +1778,16 @@ function newsRemovePhoto(ctx, postData) {
   writeNewsArticle(ctx, a, a);
   trashNomineePhoto(photoId);
   return { success: true };
+}
+
+// Photo d'un article pour l'espace membre, même non publié (la lecture publique refuse les brouillons).
+function newsGetPhoto(ctx, postData) {
+  var a = newsFind(ctx, postData.id);
+  var photoId = String(postData.photoId || '');
+  if (!a || !photoId || (a.coverFileId !== photoId && a.photoFileIds.indexOf(photoId) === -1) || !nomineePhotoUsable(photoId)) {
+    return voteFail('not_found', 'Photo introuvable.');
+  }
+  return { success: true, data: Utilities.base64Encode(DriveApp.getFileById(photoId).getBlob().getBytes()) };
 }
 
 // Articles visibles sur le site : publiés et avec une couverture encore présente dans Drive.

@@ -305,3 +305,14 @@ test('newsSave : ordre des photos enregistré ; identifiant étranger refusé', 
     assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2, 'x'] }).code, 'bad_request');
     assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2] }).code, 'bad_request');
 });
+
+test('newsGetPhoto : photo d\'un brouillon lue par un publieur, refusée à un tuteur et hors article', () => {
+    const h = withPublisher('a1');
+    const { id } = h.call('newsSave', { requesterId: 'a1', ...article() });
+    const cover = upload(h, id).photoId;
+    const res = h.call('newsGetPhoto', { requesterId: 'a1', id, photoId: cover });
+    assert.equal(res.success, true);
+    assert.equal(res.data, JPEG);
+    assert.equal(h.call('newsGetPhoto', { requesterId: 'b2', id, photoId: cover }).code, 'forbidden');
+    assert.equal(h.call('newsGetPhoto', { requesterId: 'a1', id, photoId: 'sheet-id-1' }).code, 'not_found');
+});

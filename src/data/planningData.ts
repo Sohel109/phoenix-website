@@ -589,6 +589,12 @@ export async function deleteNewsApi(requesterId: string, id: string, token: stri
     return { success, message, code };
 }
 
+/** Photo d'un article de l'espace membre (y compris un brouillon), en adresse data: JPEG. null si indisponible. */
+export async function fetchNewsPhotoApi(requesterId: string, id: string, photoId: string, token: string): Promise<string | null> {
+    const result = await postNewsAction({ action: 'newsGetPhoto', requesterId, id, photoId, token });
+    return result.success && result.data && typeof result.data.data === 'string' ? `data:image/jpeg;base64,${result.data.data}` : null;
+}
+
 export async function setNewsPublisherApi(requesterId: string, userId: string, allowed: boolean, token: string): Promise<ApiResult> {
     const { success, message, code } = await postNewsAction({ action: 'newsSetPublisher', requesterId, userId, allowed, token });
     return { success, message, code };

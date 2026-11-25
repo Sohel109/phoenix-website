@@ -47,6 +47,7 @@ const PlanningMesEvenements = lazy(() => import('./pages/planning/PlanningMesEve
 const PlanningNotifications = lazy(() => import('./pages/planning/PlanningNotifications').then(m => ({ default: m.PlanningNotifications })));
 const PlanningVote = lazy(() => import('./pages/planning/PlanningVote').then(m => ({ default: m.PlanningVote })));
 const PlanningPresenceEnfants = lazy(() => import('./pages/planning/PlanningPresenceEnfants').then(m => ({ default: m.PlanningPresenceEnfants })));
+const PlanningActualites = lazy(() => import('./pages/planning/PlanningActualites').then(m => ({ default: m.PlanningActualites })));
 const PlanningGouters = lazy(() => import('./pages/planning/PlanningGouters').then(m => ({ default: m.PlanningGouters })));
 
 // Précharge les pages publiques une fois le chargement terminé et le navigateur inactif :
@@ -190,6 +191,7 @@ function App() {
                   <Route path="/planning/vote/:slug" element={<PlanningGuard><PlanningVote /></PlanningGuard>} />
                   <Route path="/planning/presences-enfants" element={<PlanningGuard><PlanningPresenceEnfants /></PlanningGuard>} />
                   <Route path="/planning/gouters" element={<PlanningGuard><PlanningGouters /></PlanningGuard>} />
+                  <Route path="/planning/actualites" element={<PlanningGuard><PlanningActualites /></PlanningGuard>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
