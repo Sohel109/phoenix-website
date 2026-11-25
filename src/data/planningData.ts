@@ -1,6 +1,7 @@
 import { projectsData } from './projectsData';
 import { parseVoteData } from './voteResponse';
 import { parseNominees, type NomineeProfile, type NomineeStat, type PublicNominees } from './nominees';
+import { parseNews, parseNewsAdmin, type NewsAdmin, type PublicNews } from './news';
 import { parseChildrenData } from './childrenResponse';
 import { parseGouterData } from './gouterResponse';
 import { parseExemptionsData, parseImportResult, parseManualHoursData } from './hoursResponse';
@@ -522,6 +523,75 @@ export async function fetchPublicNominees(): Promise<PublicNominees | null> {
 export function nomineePhotoUrl(photoId: string): string {
     const API_URL = import.meta.env.VITE_API_URL || '';
     return `${API_URL}/api/planning?photo=${encodeURIComponent(photoId)}`;
+}
+
+/** Adresse publique d'une image servie par le script (photo de nommé, photo d'article, couverture de réel). */
+export const publicImageUrl = nomineePhotoUrl;
+
+// ─── Actualités ───────────────────────────────────────────────────────────────
+
+const NEWS_UNAVAILABLE = 'Les actualités ne sont pas disponibles pour le moment.';
+type ApiResult = { success: boolean; message: string; code?: string };
+
+const postNewsAction = (body: Record<string, unknown>) => postPlanningAction(body, NEWS_UNAVAILABLE);
+
+/** Actualités publiées et réels (site public). null si le service ne répond pas comme prévu. */
+export async function fetchPublicNews(): Promise<PublicNews | null> {
+    try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/planning?news=1`);
+        if (!response.ok) return null;
+        return parseNews(await response.json());
+    } catch {
+        return null;
+    }
+}
+
+export async function newsAccessApi(requesterId: string, token: string): Promise<{ canPublish: boolean; isBureau: boolean } | null> {
+    const result = await postNewsAction({ action: 'newsAccess', requesterId, token });
+    if (!result.success || !result.data) return null;
+    return { canPublish: result.data.canPublish === true, isBureau: result.data.isBureau === true };
+}
+
+export async function fetchNewsAdmin(requesterId: string, token: string): Promise<{ ok: true; data: NewsAdmin } | { ok: false; message: string; code?: string }> {
+    const result = await postNewsAction({ action: 'newsGetAdmin', requesterId, token });
+    if (!result.success) return { ok: false, message: result.message, code: result.code };
+    const data = parseNewsAdmin(result.data);
+    return data ? { ok: true, data } : { ok: false, message: NEWS_UNAVAILABLE };
+}
+
+export async function saveNewsApi(
+    requesterId: string,
+    fields: { id?: string; title: string; body: string; projectId: string | null; photoIds?: string[] },
+    token: string
+): Promise<ApiResult & { id?: string }> {
+    const { success, message, code, data } = await postNewsAction({ action: 'newsSave', requesterId, ...fields, token });
+    return { success, message, code, id: data && typeof data.id === 'string' ? data.id : undefined };
+}
+
+export async function setNewsPublishedApi(requesterId: string, id: string, published: boolean, token: string): Promise<ApiResult & { slug?: string }> {
+    const { success, message, code, data } = await postNewsAction({ action: 'newsSetPublished', requesterId, id, published, token });
+    return { success, message, code, slug: data && typeof data.slug === 'string' ? data.slug : undefined };
+}
+
+export async function uploadNewsPhotoApi(requesterId: string, id: string, slot: 'cover' | 'gallery', data: string, token: string): Promise<ApiResult & { photoId?: string }> {
+    const result = await postNewsAction({ action: 'newsUploadPhoto', requesterId, id, slot, data, token });
+    return { success: result.success, message: result.message, code: result.code, photoId: result.data && typeof result.data.photoId === 'string' ? result.data.photoId : undefined };
+}
+
+export async function removeNewsPhotoApi(requesterId: string, id: string, photoId: string, token: string): Promise<ApiResult> {
+    const { success, message, code } = await postNewsAction({ action: 'newsRemovePhoto', requesterId, id, photoId, token });
+    return { success, message, code };
+}
+
+export async function deleteNewsApi(requesterId: string, id: string, token: string): Promise<ApiResult> {
+    const { success, message, code } = await postNewsAction({ action: 'newsDelete', requesterId, id, token });
+    return { success, message, code };
+}
+
+export async function setNewsPublisherApi(requesterId: string, userId: string, allowed: boolean, token: string): Promise<ApiResult> {
+    const { success, message, code } = await postNewsAction({ action: 'newsSetPublisher', requesterId, userId, allowed, token });
+    return { success, message, code };
 }
 
 export async function castVoteApi(voterId: string, candidateId: string, token: string): Promise<{ success: boolean; message: string; code?: string }> {
