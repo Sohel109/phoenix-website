@@ -16,7 +16,7 @@ interface NomineeProfileEditorProps {
 const MAX_ITEMS = 12;
 const MAX_ITEM = 160;
 const MAX_STATS = 8;
-const MAX_QUOTE = 300;
+const MAX_QUOTE = 350;
 
 /** Lit une image choisie, la recadre en 4:5 et la réduit à 900 px de large (JPEG). */
 async function toPortraitJpeg(file: File): Promise<string> {

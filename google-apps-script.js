@@ -1201,7 +1201,7 @@ function votePublishWinner(ctx, postData) {
 // jamais renvoyer l'identifiant d'un compte.
 var NOMINEE_PHOTO_FOLDER = 'Phoenix - Photos nommés';
 var NOMINEE_PHOTO_MAX = 1500000;
-var NOMINEE_LIMITS = { name: 60, items: 12, item: 160, stats: 8, statText: 30, quote: 300 };
+var NOMINEE_LIMITS = { name: 60, items: 12, item: 160, stats: 8, statText: 30, quote: 350 };
 
 function nomineeSlug(name) {
   var map = { 'à': 'a', 'â': 'a', 'ä': 'a', 'á': 'a', 'ã': 'a', 'ç': 'c', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',

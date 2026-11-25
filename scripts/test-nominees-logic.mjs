@@ -276,11 +276,12 @@ test('saveNomineeProfile : enregistre la citation et la renvoie partout', () => 
     assert.equal(bureauMember(h, 'a1').profile.quote, 'Votez pour moi, je ne lâche rien !');
 });
 
-test('saveNomineeProfile : citation facultative, 300 caractères au plus', () => {
+test('saveNomineeProfile : citation facultative, 350 caractères au plus', () => {
     const h = fresh();
     h.call('saveNomineeProfile', profileInput('a1'));
     assert.equal(bureauMember(h, 'a1').profile.quote, '');
-    assert.equal(h.call('saveNomineeProfile', profileInput('a1', { quote: 'x'.repeat(301) })).code, 'bad_request');
+    assert.equal(h.call('saveNomineeProfile', profileInput('a1', { quote: 'x'.repeat(350) })).code, undefined);
+    assert.equal(h.call('saveNomineeProfile', profileInput('a1', { quote: 'x'.repeat(351) })).code, 'bad_request');
     assert.equal(h.call('saveNomineeProfile', profileInput('a1', { quote: 42 })).code, 'bad_request');
 });
 

@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         try {
             const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getNominees`);
             const data = JSON.parse(await response.text());
-            if (data && data.success) res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
+            if (data && data.success) res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=60');
             return res.status(200).json(data);
         } catch (error) {
             console.error('Erreur serverless nominees:', error);

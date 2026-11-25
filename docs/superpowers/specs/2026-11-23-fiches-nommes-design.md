@@ -79,7 +79,7 @@ Décocher un nommé supprime sa fiche (et met sa photo à la corbeille Drive) ap
 
 Le relais existant `api/planning.js` gagne une branche `GET ?photo=<id>&v=<updatedAt>` qui appelle `getNomineePhoto`, renvoie l'image en `image/jpeg` avec `Cache-Control: public, s-maxage=86400, stale-while-revalidate=604800`. Le paramètre `v` change à chaque nouvelle photo, ce qui évite d'afficher une ancienne image. Pas de nouveau fichier dans `api/` (limite de fonctions Vercel).
 
-La page publique lit les fiches avec `GET /api/planning?nominees=1` (même relais, cache court : `s-maxage=300`).
+La page publique lit les fiches avec `GET /api/planning?nominees=1` (même relais, cache court : `s-maxage=60`).
 
 ## Erreurs et cas limites
 
