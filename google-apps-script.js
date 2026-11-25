@@ -1599,6 +1599,7 @@ function handleNewsAction(action, postData) {
     var canPublish = newsCanPublish(users, publisherRows, requester.id);
     var isBureau = requester.role === 'bureau';
     if (action === 'newsAccess') return { success: true, canPublish: canPublish, isBureau: isBureau };
+    if (isWrite) clearPublicNewsCache();
     if (!canPublish) return voteFail('forbidden', "Vous n'avez pas accès aux actualités.");
     var ctx = { users: users, requester: requester, isBureau: isBureau, publisherRows: publisherRows, articles: getVoteSheet(NEWS_SHEETS.articles) };
     if (action === 'newsGetAdmin') return newsGetAdmin(ctx);
@@ -1681,17 +1682,19 @@ function newsSave(ctx, postData) {
     if (!existing) return voteFail('not_found', 'Article introuvable.');
   }
   var photos = existing ? existing.photoFileIds : [];
+  // Ordre des photos choisi dans l'éditeur. Une liste périmée (photo ajoutée ou retirée ailleurs entre-temps) ne bloque
+  // jamais l'enregistrement : on garde l'ordre demandé pour les photos encore là, puis les autres à la suite.
   if (postData.photoIds !== undefined) {
-    var wanted = postData.photoIds;
-    var ok = Object.prototype.toString.call(wanted) === '[object Array]' && wanted.length === photos.length;
-    var seen = {};
-    for (var i = 0; ok && i < wanted.length; i++) {
-      var pid = String(wanted[i]);
-      if (photos.indexOf(pid) === -1 || seen[pid]) ok = false;
-      seen[pid] = true;
+    if (Object.prototype.toString.call(postData.photoIds) !== '[object Array]') return voteFail('bad_request', 'Ordre des photos invalide.');
+    var ordered = [];
+    for (var i = 0; i < postData.photoIds.length; i++) {
+      var pid = String(postData.photoIds[i]);
+      if (photos.indexOf(pid) !== -1 && ordered.indexOf(pid) === -1) ordered.push(pid);
     }
-    if (!ok) return voteFail('bad_request', 'Ordre des photos invalide.');
-    photos = wanted.map(String);
+    for (var j = 0; j < photos.length; j++) {
+      if (ordered.indexOf(photos[j]) === -1) ordered.push(photos[j]);
+    }
+    photos = ordered;
   }
   var a = existing || { id: Utilities.getUuid(), slug: '', coverFileId: '', published: false, publishedAt: '', createdBy: ctx.requester.id };
   a.title = fields.title;
@@ -1768,6 +1771,9 @@ function newsRemovePhoto(ctx, postData) {
   var a = newsFind(ctx, postData.id);
   if (!a) return voteFail('not_found', 'Article introuvable.');
   var photoId = String(postData.photoId || '');
+  if (photoId && a.coverFileId === photoId && a.published) {
+    return voteFail('bad_request', 'Un article en ligne garde sa photo de couverture : utilisez « Remplacer ».');
+  }
   if (photoId && a.coverFileId === photoId) {
     a.coverFileId = '';
   } else if (photoId && a.photoFileIds.indexOf(photoId) !== -1) {
@@ -1793,16 +1799,21 @@ function newsGetPhoto(ctx, postData) {
 // Articles visibles sur le site : publiés et avec une couverture encore présente dans Drive.
 function publicNewsArticles() {
   var list = readNewsArticles(readVoteRowsIfAny(NEWS_SHEETS.articles));
-  var out = [];
+  var candidates = [];
   for (var i = 0; i < list.length; i++) {
-    if (list[i].published && list[i].slug && nomineePhotoUsable(list[i].coverFileId)) out.push({ order: i, a: list[i] });
+    if (list[i].published && list[i].slug) candidates.push({ order: i, a: list[i] });
   }
   // Plus récent d'abord ; le même jour, le dernier publié dans la feuille passe devant.
-  out.sort(function(x, y) {
+  candidates.sort(function(x, y) {
     if (x.a.publishedAt !== y.a.publishedAt) return x.a.publishedAt < y.a.publishedAt ? 1 : -1;
     return y.order - x.order;
   });
-  return out.slice(0, NEWS_LIMITS.publicArticles).map(function(x) { return x.a; });
+  // Chaque vérification Drive coûte du temps : on s'arrête dès que la page est pleine.
+  var out = [];
+  for (var c = 0; c < candidates.length && out.length < NEWS_LIMITS.publicArticles; c++) {
+    if (nomineePhotoUsable(candidates[c].a.coverFileId)) out.push(candidates[c].a);
+  }
+  return out;
 }
 
 function publicNewsReels() {
@@ -1827,12 +1838,41 @@ function publicNewsImageIds() {
   return ids;
 }
 
+// Réponse publique gardée 10 minutes dans le cache du script (vidé à chaque écriture et après chaque synchro Instagram) :
+// sans cela, chaque visiteur attendrait une vérification Drive par article. Les photos de galerie ne sont pas vérifiées
+// une à une : une photo supprimée à la main n'est plus servie par getPublicImage et le site masque l'image cassée.
+var PUBLIC_NEWS_CACHE_KEY = 'public-news';
+
+function clearPublicNewsCache() {
+  try {
+    CacheService.getScriptCache().remove(PUBLIC_NEWS_CACHE_KEY);
+  } catch (e) {
+    // Cache indisponible : la prochaine lecture recalcule, sans gravité.
+  }
+}
+
 function getPublicNews() {
+  var cache = null;
+  try {
+    cache = CacheService.getScriptCache();
+    var hit = cache.get(PUBLIC_NEWS_CACHE_KEY);
+    if (hit) return JSON.parse(hit);
+  } catch (e) {
+    cache = null;
+  }
   var articles = publicNewsArticles().map(function(a) {
-    return { slug: a.slug, title: a.title, body: a.body, coverId: a.coverFileId, photoIds: a.photoFileIds.filter(nomineePhotoUsable),
+    return { slug: a.slug, title: a.title, body: a.body, coverId: a.coverFileId, photoIds: a.photoFileIds,
       projectId: a.projectId, publishedAt: a.publishedAt };
   });
-  return { success: true, articles: articles, reels: publicNewsReels() };
+  var out = { success: true, articles: articles, reels: publicNewsReels() };
+  if (cache) {
+    try {
+      cache.put(PUBLIC_NEWS_CACHE_KEY, JSON.stringify(out), 600);
+    } catch (e) {
+      // Réponse trop grosse pour le cache (100 Ko) : servie sans cache.
+    }
+  }
+  return out;
 }
 
 // ==========================================
@@ -1948,10 +1988,10 @@ function synchroInstagram() {
       if (row && row.caption !== videos[u].caption) sheet.getRange(row.sheetRow, 4).setValue(videos[u].caption);
     }
 
-    // Une vidéo absente du fil a été supprimée sur Instagram si elle tombe dans la période lue. Quand le fil compte moins
-    // de 25 publications, il contient tout le compte.
-    var full = feed.length >= NEWS_LIMITS.igFetch;
-    var gone = known.filter(function(r) { return !seen[r.mediaId] && (!full || (oldest && r.timestamp >= oldest)); });
+    // Une vidéo absente du fil a été supprimée sur Instagram si elle tombe dans la période lue.
+    // Fil vide (compte changé, incident) : on ne supprime rien. Sans page suivante annoncée, le fil contient tout le compte.
+    var full = !(data.paging && data.paging.next);
+    var gone = feed.length === 0 ? [] : known.filter(function(r) { return !seen[r.mediaId] && (full || (oldest && r.timestamp >= oldest)); });
     gone.sort(function(a, b) { return b.sheetRow - a.sheetRow; });
     for (var g = 0; g < gone.length; g++) {
       sheet.deleteRow(gone[g].sheetRow);
@@ -1967,6 +2007,7 @@ function synchroInstagram() {
       }
     }
     props.setProperty('INSTAGRAM_LAST_ERROR', '');
+    clearPublicNewsCache();
   } catch (err) {
     props.setProperty('INSTAGRAM_LAST_ERROR', stamp + ' : ' + (err && err.message ? err.message : String(err)));
   } finally {

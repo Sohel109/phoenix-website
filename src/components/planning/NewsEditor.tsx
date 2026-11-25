@@ -64,6 +64,8 @@ export function NewsEditor({ article, requesterId, token, onClose, onChanged }: 
     const [slug, setSlug] = useState(article?.slug ?? '');
     const [previews, setPreviews] = useState<Record<string, string>>({});
     const [dirty, setDirty] = useState(false);
+    // L'ordre des photos n'est envoyé que s'il a été changé ici.
+    const [reordered, setReordered] = useState(false);
     const [busy, setBusy] = useState<Busy>(null);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
@@ -128,13 +130,14 @@ export function NewsEditor({ article, requesterId, token, onClose, onChanged }: 
             setError("Donnez d'abord un titre à l'article.");
             return null;
         }
-        const result = await saveNewsApi(requesterId, { id: id ?? undefined, title, body, projectId: projectId || null, photoIds: id ? photos : undefined }, token);
+        const result = await saveNewsApi(requesterId, { id: id ?? undefined, title, body, projectId: projectId || null, photoIds: id && reordered ? photos : undefined }, token);
         if (!result.success || !result.id) {
             setError(result.message);
             return null;
         }
         setId(result.id);
         setDirty(false);
+        setReordered(false);
         return result.id;
     };
 
@@ -234,6 +237,7 @@ export function NewsEditor({ article, requesterId, token, onClose, onChanged }: 
         const next = [...photos];
         [next[index], next[target]] = [next[target], next[index]];
         setPhotos(next);
+        setReordered(true);
         setDirty(true);
         setNotice(null);
     };
@@ -283,7 +287,7 @@ export function NewsEditor({ article, requesterId, token, onClose, onChanged }: 
                                         <Camera size={13} />
                                         {cover ? 'Remplacer' : 'Choisir une photo'}
                                     </button>
-                                    {cover && (
+                                    {cover && !published && (
                                         <button type="button" disabled={locked} onClick={() => void removePhoto(cover)} className={`${smallButton} bg-transparent text-[#ECDDFD]/70 border-[#ECDDFD]/15 hover:text-white`}>
                                             <Trash2 size={13} />
                                             Retirer

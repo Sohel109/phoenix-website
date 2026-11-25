@@ -47,12 +47,13 @@ export default async function handler(req, res) {
     }
 
     // Image publique (photo de nommé, photo d'article, couverture de réel) : une nouvelle photo a un nouvel identifiant,
-    // l'adresse change donc d'elle-même.
+    // l'adresse change donc d'elle-même. L'action reste getNomineePhoto, que l'ancien script comprend aussi : les photos
+    // des nommés restent visibles si le site part en ligne avant le redéploiement du script.
     if (req.method === 'GET' && req.query && req.query.photo !== undefined) {
         const id = String(req.query.photo);
         if (queryKeys.length !== 1 || !/^[A-Za-z0-9_-]{10,100}$/.test(id)) return res.status(400).json({ success: false, message: 'Photo invalide' });
         try {
-            const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getPublicImage&id=${encodeURIComponent(id)}`);
+            const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=getNomineePhoto&id=${encodeURIComponent(id)}`);
             const data = JSON.parse(await response.text());
             if (!data || !data.success || typeof data.data !== 'string') return res.status(404).json({ success: false, message: 'Photo introuvable' });
             res.setHeader('Content-Type', 'image/jpeg');

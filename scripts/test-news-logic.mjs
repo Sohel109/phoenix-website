@@ -246,13 +246,12 @@ test('getNews : ni non publié, ni sans couverture utilisable, ni identifiant de
     assert.deepEqual(Object.keys(res.articles[0]).sort(), ['body', 'coverId', 'photoIds', 'projectId', 'publishedAt', 'slug', 'title']);
 });
 
-test('getNews : galerie filtrée sur les photos utilisables', () => {
+test('galerie : une photo supprimée à la main n\'est plus servie', () => {
     const h = fresh();
     const a = publishedArticle(h);
     const g1 = upload(h, a.id, 'gallery').photoId;
-    const g2 = upload(h, a.id, 'gallery').photoId;
     h.drive.files.get(g1).trashed = true;
-    assert.deepEqual(h.get('getNews').articles[0].photoIds, [g2]);
+    assert.equal(h.get('getPublicImage', { id: g1 }).success, false);
 });
 
 test('getNews : publishedAt en YYYY-MM-DD même converti en Date, plus récent d\'abord, 60 au plus', () => {
@@ -302,8 +301,44 @@ test('newsSave : ordre des photos enregistré ; identifiant étranger refusé', 
     const g2 = upload(h, id, 'gallery').photoId;
     assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2, g1] }).success, true);
     assert.deepEqual(h.call('newsGetAdmin', { requesterId: 'd4' }).articles[0].photoIds, [g2, g1]);
-    assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2, 'x'] }).code, 'bad_request');
-    assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2] }).code, 'bad_request');
+});
+
+test('newsSave avec une liste de photos périmée : enregistre quand même, ordre fusionné', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    const g1 = upload(h, id, 'gallery').photoId;
+    const g2 = upload(h, id, 'gallery').photoId;
+    const g3 = upload(h, id, 'gallery').photoId;
+    // L'éditeur ne connaît pas g3 (ajoutée ailleurs) et garde une photo retirée entre-temps.
+    const res = h.call('newsSave', { requesterId: 'd4', id, ...article({ title: 'Titre à jour' }), photoIds: [g2, 'retiree', g1] });
+    assert.equal(res.success, true);
+    const a = h.call('newsGetAdmin', { requesterId: 'd4' }).articles[0];
+    assert.equal(a.title, 'Titre à jour');
+    assert.deepEqual(a.photoIds, [g2, g1, g3]);
+    assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: 'x' }).code, 'bad_request');
+});
+
+test('article en ligne : sa couverture ne peut pas être retirée, seulement remplacée', () => {
+    const h = fresh();
+    const a = publishedArticle(h);
+    const res = h.call('newsRemovePhoto', { requesterId: 'd4', id: a.id, photoId: a.cover });
+    assert.equal(res.code, 'bad_request');
+    assert.equal(h.drive.files.get(a.cover).trashed, false);
+    assert.equal(h.get('getNews').articles.length, 1);
+});
+
+test('getNews mis en cache dix minutes, vidé à chaque écriture', () => {
+    const h = fresh();
+    const a = publishedArticle(h, { title: 'Premier' });
+    assert.equal(h.get('getNews').articles.length, 1);
+    // Couverture supprimée à la main dans Drive : rien ne change tant que le cache vit.
+    h.drive.files.get(a.cover).trashed = true;
+    assert.equal(h.get('getNews').articles.length, 1);
+    h.advanceMs(601 * 1000);
+    assert.equal(h.get('getNews').articles.length, 0);
+    // Une publication vide le cache tout de suite.
+    publishedArticle(h, { title: 'Second' });
+    assert.deepEqual(h.get('getNews').articles.map((x) => x.title), ['Second']);
 });
 
 test('newsGetPhoto : photo d\'un brouillon lue par un publieur, refusée à un tuteur et hors article', () => {

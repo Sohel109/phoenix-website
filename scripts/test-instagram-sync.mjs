@@ -25,7 +25,7 @@ function setup({ feed = [video(1), image(2), video(3)], token = 'TOKEN-1' } = {}
     h.setFetch((url) => {
         if (url.startsWith('https://graph.instagram.com/me/media')) {
             if (state.mediaStatus !== 200) return { code: state.mediaStatus, json: { error: { message: 'Error validating access token', code: 190 } } };
-            return { json: { data: state.feed } };
+            return { json: state.hasMore ? { data: state.feed, paging: { next: 'https://graph.instagram.com/me/media?after=X' } } : { data: state.feed } };
         }
         if (url.startsWith('https://graph.instagram.com/refresh_access_token')) {
             state.refreshed++;
@@ -71,6 +71,7 @@ test('fil complet (25 publications) : vidéo supprimée dans la fenêtre retiré
     const cover3 = reelRows(h).find((r) => r[0] === 'm3')[5];
     // m3 supprimée sur Instagram ; m1 sort des 25 dernières publications lues.
     state.feed = [...Array.from({ length: 24 }, (_, i) => video(27 - i)), video(2)];
+    state.hasMore = true;
     sync(h);
     const ids = reelRows(h).map((r) => r[0]);
     assert.ok(!ids.includes('m3'));
@@ -159,4 +160,21 @@ test('getNews : 8 réels au plus, les plus récents, couverture servie par getPu
     assert.equal(reels[0].shortcode, 'CODE10');
     assert.deepEqual(Object.keys(reels[0]).sort(), ['caption', 'coverId', 'id', 'permalink', 'shortcode', 'timestamp']);
     assert.equal(h.get('getPublicImage', { id: reels[0].coverId }).success, true);
+});
+
+test('fil vide renvoyé par Instagram : aucun réel effacé', () => {
+    const { h, state } = setup({ feed: [video(3), video(1)] });
+    sync(h);
+    state.feed = [];
+    sync(h);
+    assert.equal(reelRows(h).length, 2);
+});
+
+test('fil partiel (page suivante annoncée) : une vidéo plus ancienne que la page est gardée', () => {
+    const { h, state } = setup({ feed: [video(3), video(1)] });
+    sync(h);
+    state.feed = [video(4), video(3)];
+    state.hasMore = true;
+    sync(h);
+    assert.deepEqual(reelRows(h).map((r) => r[0]).sort(), ['m1', 'm3', 'm4']);
 });

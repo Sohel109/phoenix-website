@@ -14,6 +14,9 @@ const INSTAGRAM = 'https://www.instagram.com/phoenixedc/';
 
 function ArticleView({ article, others }: { article: PublicArticle; others: PublicArticle[] }) {
     const [zoom, setZoom] = useState<string | null>(null);
+    // Photo supprimée à la main dans Drive : l'image ne charge plus, on la retire de la galerie.
+    const [broken, setBroken] = useState<string[]>([]);
+    const gallery = article.photoIds.filter((id) => !broken.includes(id));
     const project = projectTitle(article.projectId);
     return (
         <article className="max-w-3xl mx-auto">
@@ -39,10 +42,10 @@ function ArticleView({ article, others }: { article: PublicArticle; others: Publ
 
             <NewsBody body={article.body} className="mt-8 text-base sm:text-lg leading-relaxed text-[#2A082D]/85" />
 
-            {article.photoIds.length > 0 && (
+            {gallery.length > 0 && (
                 <section className="mt-12" aria-label="Photos">
                     <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {article.photoIds.map((id, i) => (
+                        {gallery.map((id, i) => (
                             <li key={id}>
                                 <button
                                     type="button"
@@ -50,7 +53,7 @@ function ArticleView({ article, others }: { article: PublicArticle; others: Publ
                                     aria-label={`Agrandir la photo ${i + 1}`}
                                     className="block w-full aspect-square overflow-hidden rounded-lg bg-[#ECDDFD] focus-visible:ring-2 focus-visible:ring-[#EC602B]"
                                 >
-                                    <img src={publicImageUrl(id)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                                    <img src={publicImageUrl(id)} alt="" loading="lazy" decoding="async" onError={() => setBroken((b) => [...b, id])} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                 </button>
                             </li>
                         ))}
