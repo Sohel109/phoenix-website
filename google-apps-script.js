@@ -58,9 +58,21 @@ function doGet(e) {
   }
 
   // Fiches publiques des nommés au tuteur du mois et leurs photos (lues sans compte par le site).
+  // Actualités publiées et réels Instagram (lus sans compte par le site).
+  if (action === 'getNews' || action === 'getPublicImage') {
+    try {
+      var newsOut = action === 'getNews' ? getPublicNews() : getPublicImage(e.parameter.id);
+      return ContentService.createTextOutput(JSON.stringify(newsOut))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   if (action === 'getNominees' || action === 'getNomineePhoto') {
     try {
-      var nomineeResult = action === 'getNominees' ? getPublicNominees() : getPublicNomineePhoto(e.parameter.id);
+      var nomineeResult = action === 'getNominees' ? getPublicNominees() : getPublicImage(e.parameter.id);
       return ContentService.createTextOutput(JSON.stringify(nomineeResult))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (err) {
@@ -1292,8 +1304,12 @@ function trashNomineePhoto(fileId) {
 // Le dossier est retrouvé par son identifiant, jamais par son nom : un dossier du même nom partagé par quelqu'un
 // d'autre ne doit pas recevoir les photos.
 function getNomineePhotoFolder() {
+  return getPrivateFolder('NOMINEE_PHOTO_FOLDER_ID', NOMINEE_PHOTO_FOLDER);
+}
+
+function getPrivateFolder(propertyKey, folderName) {
   var props = PropertiesService.getScriptProperties();
-  var savedId = props.getProperty('NOMINEE_PHOTO_FOLDER_ID');
+  var savedId = props.getProperty(propertyKey);
   if (savedId) {
     try {
       var saved = DriveApp.getFolderById(savedId);
@@ -1302,8 +1318,8 @@ function getNomineePhotoFolder() {
       // Dossier supprimé : on en crée un nouveau.
     }
   }
-  var folder = DriveApp.createFolder(NOMINEE_PHOTO_FOLDER);
-  props.setProperty('NOMINEE_PHOTO_FOLDER_ID', folder.getId());
+  var folder = DriveApp.createFolder(folderName);
+  props.setProperty(propertyKey, folder.getId());
   return folder;
 }
 
@@ -1386,11 +1402,9 @@ function nomineeSave(ctx, postData) {
 function nomineeUploadPhoto(ctx, postData) {
   var t = nomineeTarget(ctx, postData);
   if (t.error) return t.error;
-  var data = typeof postData.data === 'string' ? postData.data.replace(/^data:image\/jpeg;base64,/, '') : '';
-  if (data.length > NOMINEE_PHOTO_MAX) return voteFail('too_large', 'La photo est trop lourde.');
-  if (!data || !/^[A-Za-z0-9+\/]+={0,2}$/.test(data)) return voteFail('bad_request', 'Photo illisible.');
-  var bytes = Utilities.base64Decode(data);
-  if (bytes.length < 4 || (bytes[0] & 255) !== 0xFF || (bytes[1] & 255) !== 0xD8) return voteFail('bad_request', 'La photo doit être une image JPEG.');
+  var decoded = decodeJpegUpload(postData.data);
+  if (decoded.error) return decoded.error;
+  var bytes = decoded.bytes;
   var blob = Utilities.newBlob(bytes, 'image/jpeg', 'nomme-' + ctx.win.selectionMonthKey + '-' + t.target.id + '.jpg');
   var file = getNomineePhotoFolder().createFile(blob);
   var existing = t.existing;
@@ -1401,6 +1415,16 @@ function nomineeUploadPhoto(ctx, postData) {
   writeNomineeProfile(ctx, t.target, existing, fields);
   if (existing) trashNomineePhoto(existing.photoFileId);
   return { success: true, photoId: file.getId() };
+}
+
+// Photo envoyée par l'espace membre : base64 d'un JPEG, 1,5 Mo au plus.
+function decodeJpegUpload(raw) {
+  var data = typeof raw === 'string' ? raw.replace(/^data:image\/jpeg;base64,/, '') : '';
+  if (data.length > NOMINEE_PHOTO_MAX) return { error: voteFail('too_large', 'La photo est trop lourde.') };
+  if (!data || !/^[A-Za-z0-9+\/]+={0,2}$/.test(data)) return { error: voteFail('bad_request', 'Photo illisible.') };
+  var bytes = Utilities.base64Decode(data);
+  if (bytes.length < 4 || (bytes[0] & 255) !== 0xFF || (bytes[1] & 255) !== 0xD8) return { error: voteFail('bad_request', 'La photo doit être une image JPEG.') };
+  return { bytes: bytes };
 }
 
 function nomineeRemovePhoto(ctx, postData) {
@@ -1483,7 +1507,9 @@ function getPublicNominees() {
   return { success: true, monthKey: null, nominees: [] };
 }
 
-function getPublicNomineePhoto(fileId) {
+// Image publique : photo d'une fiche de nommé, photo d'un article publié ou couverture d'un réel enregistré.
+// Tout autre fichier du Drive est refusé, même si quelqu'un devine son identifiant.
+function getPublicImage(fileId) {
   var id = String(fileId || '');
   var notFound = { success: false, code: 'not_found', message: 'Photo introuvable.' };
   if (!id) return notFound;
@@ -1492,6 +1518,7 @@ function getPublicNomineePhoto(fileId) {
   for (var i = 0; i < rows.length; i++) {
     if (String(rows[i].cells[5] || '') === id) known = true;
   }
+  if (!known) known = publicNewsImageIds()[id] === true;
   if (!known || !nomineePhotoUsable(id)) return notFound;
   var blob = DriveApp.getFileById(id).getBlob();
   return { success: true, mimeType: 'image/jpeg', data: Utilities.base64Encode(blob.getBytes()) };
@@ -1711,6 +1738,83 @@ function newsDelete(ctx, postData) {
   trashNomineePhoto(a.coverFileId);
   for (var i = 0; i < a.photoFileIds.length; i++) trashNomineePhoto(a.photoFileIds[i]);
   return { success: true };
+}
+
+var NEWS_PHOTO_FOLDER = 'Phoenix - Photos actualités';
+
+function newsUploadPhoto(ctx, postData) {
+  var a = newsFind(ctx, postData.id);
+  if (!a) return voteFail('not_found', 'Article introuvable.');
+  var slot = postData.slot;
+  if (slot !== 'cover' && slot !== 'gallery') return voteFail('bad_request', 'Requête invalide.');
+  if (slot === 'gallery' && a.photoFileIds.length >= NEWS_LIMITS.photos) {
+    return voteFail('too_many', 'Au plus ' + NEWS_LIMITS.photos + ' photos en plus de la couverture.');
+  }
+  var decoded = decodeJpegUpload(postData.data);
+  if (decoded.error) return decoded.error;
+  var blob = Utilities.newBlob(decoded.bytes, 'image/jpeg', 'actu-' + a.id + '-' + nowMs() + '.jpg');
+  var file = getPrivateFolder('NEWS_PHOTO_FOLDER_ID', NEWS_PHOTO_FOLDER).createFile(blob);
+  var previousCover = a.coverFileId;
+  if (slot === 'cover') a.coverFileId = file.getId();
+  else a.photoFileIds.push(file.getId());
+  writeNewsArticle(ctx, a, a);
+  if (slot === 'cover') trashNomineePhoto(previousCover);
+  return { success: true, photoId: file.getId() };
+}
+
+function newsRemovePhoto(ctx, postData) {
+  var a = newsFind(ctx, postData.id);
+  if (!a) return voteFail('not_found', 'Article introuvable.');
+  var photoId = String(postData.photoId || '');
+  if (photoId && a.coverFileId === photoId) {
+    a.coverFileId = '';
+  } else if (photoId && a.photoFileIds.indexOf(photoId) !== -1) {
+    a.photoFileIds.splice(a.photoFileIds.indexOf(photoId), 1);
+  } else {
+    return voteFail('not_found', 'Photo introuvable.');
+  }
+  writeNewsArticle(ctx, a, a);
+  trashNomineePhoto(photoId);
+  return { success: true };
+}
+
+// Articles visibles sur le site : publiés et avec une couverture encore présente dans Drive.
+function publicNewsArticles() {
+  var list = readNewsArticles(readVoteRowsIfAny(NEWS_SHEETS.articles));
+  var out = [];
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].published && list[i].slug && nomineePhotoUsable(list[i].coverFileId)) out.push({ order: i, a: list[i] });
+  }
+  // Plus récent d'abord ; le même jour, le dernier publié dans la feuille passe devant.
+  out.sort(function(x, y) {
+    if (x.a.publishedAt !== y.a.publishedAt) return x.a.publishedAt < y.a.publishedAt ? 1 : -1;
+    return y.order - x.order;
+  });
+  return out.slice(0, NEWS_LIMITS.publicArticles).map(function(x) { return x.a; });
+}
+
+function publicNewsReels() {
+  return [];
+}
+
+function publicNewsImageIds() {
+  var ids = {};
+  var articles = readNewsArticles(readVoteRowsIfAny(NEWS_SHEETS.articles));
+  for (var i = 0; i < articles.length; i++) {
+    if (!articles[i].published) continue;
+    ids[articles[i].coverFileId] = true;
+    for (var p = 0; p < articles[i].photoFileIds.length; p++) ids[articles[i].photoFileIds[p]] = true;
+  }
+  delete ids[''];
+  return ids;
+}
+
+function getPublicNews() {
+  var articles = publicNewsArticles().map(function(a) {
+    return { slug: a.slug, title: a.title, body: a.body, coverId: a.coverFileId, photoIds: a.photoFileIds.filter(nomineePhotoUsable),
+      projectId: a.projectId, publishedAt: a.publishedAt };
+  });
+  return { success: true, articles: articles, reels: publicNewsReels() };
 }
 
 function newsSetPublisher(ctx, postData) {

@@ -143,3 +143,165 @@ test('newsDelete retire la ligne', () => {
     assert.equal(h.call('newsDelete', { requesterId: 'd4', id }).success, true);
     assert.equal(h.call('newsGetAdmin', { requesterId: 'd4' }).articles.length, 0);
 });
+
+// ─── Photos et lecture publique (Task 2) ───────────────────────────────────────
+
+const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4]).toString('base64');
+const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]).toString('base64');
+const upload = (h, id, slot = 'cover', data = JPEG) => h.call('newsUploadPhoto', { requesterId: 'd4', id, slot, data });
+const publishedArticle = (h, extra = {}) => {
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article(extra) });
+    const cover = upload(h, id).photoId;
+    const res = h.call('newsSetPublished', { requesterId: 'd4', id, published: true });
+    assert.equal(res.success, true, JSON.stringify(res));
+    return { id, cover, slug: res.slug };
+};
+
+test('couverture PNG refusée, trop lourde refusée, JPEG accepté', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    assert.equal(upload(h, id, 'cover', PNG).code, 'bad_request');
+    assert.equal(upload(h, id, 'cover', 'A'.repeat(1500004)).code, 'too_large');
+    assert.equal(upload(h, id, 'autre').code, 'bad_request');
+    const ok = upload(h, id);
+    assert.equal(ok.success, true);
+    assert.equal(h.drive.files.get(ok.photoId).folder, 'Phoenix - Photos actualités');
+    assert.equal(h.call('newsGetAdmin', { requesterId: 'd4' }).articles[0].coverId, ok.photoId);
+});
+
+test('7e photo de galerie : too_many', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    for (let i = 0; i < 6; i++) assert.equal(upload(h, id, 'gallery').success, true);
+    assert.equal(upload(h, id, 'gallery').code, 'too_many');
+    assert.equal(h.call('newsGetAdmin', { requesterId: 'd4' }).articles[0].photoIds.length, 6);
+});
+
+test('nouvelle couverture : l\'ancienne à la corbeille', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    const first = upload(h, id).photoId;
+    const second = upload(h, id).photoId;
+    assert.equal(h.drive.files.get(first).trashed, true);
+    assert.equal(h.drive.files.get(second).trashed, false);
+});
+
+test('newsRemovePhoto : couverture ou galerie, à la corbeille ; photo étrangère refusée', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    const cover = upload(h, id).photoId;
+    const g = upload(h, id, 'gallery').photoId;
+    assert.equal(h.call('newsRemovePhoto', { requesterId: 'd4', id, photoId: 'autre' }).code, 'not_found');
+    assert.equal(h.call('newsRemovePhoto', { requesterId: 'd4', id, photoId: g }).success, true);
+    assert.equal(h.call('newsRemovePhoto', { requesterId: 'd4', id, photoId: cover }).success, true);
+    const a = h.call('newsGetAdmin', { requesterId: 'd4' }).articles[0];
+    assert.equal(a.coverId, null);
+    assert.deepEqual(a.photoIds, []);
+    assert.equal(h.drive.files.get(g).trashed, true);
+    assert.equal(h.drive.files.get(cover).trashed, true);
+});
+
+test('newsDelete met les photos à la corbeille', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    const cover = upload(h, id).photoId;
+    const g = upload(h, id, 'gallery').photoId;
+    h.call('newsDelete', { requesterId: 'd4', id });
+    assert.equal(h.drive.files.get(cover).trashed, true);
+    assert.equal(h.drive.files.get(g).trashed, true);
+});
+
+test('slug fixé à la première publication ; titres identiques : x et x-2', () => {
+    const h = fresh();
+    const a = publishedArticle(h, { title: 'Sortie au Mucem !' });
+    assert.equal(a.slug, 'sortie-au-mucem');
+    h.call('newsSave', { requesterId: 'd4', id: a.id, ...article({ title: 'Autre titre' }) });
+    h.call('newsSetPublished', { requesterId: 'd4', id: a.id, published: false });
+    assert.equal(h.call('newsSetPublished', { requesterId: 'd4', id: a.id, published: true }).slug, 'sortie-au-mucem');
+    assert.equal(publishedArticle(h, { title: 'Sortie au Mucem' }).slug, 'sortie-au-mucem-2');
+    assert.equal(publishedArticle(h, { title: '!!!' }).slug, 'actu');
+});
+
+test('publier sans texte : incomplete', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article({ body: '' }) });
+    upload(h, id);
+    assert.equal(h.call('newsSetPublished', { requesterId: 'd4', id, published: true }).code, 'incomplete');
+});
+
+test('getNews : ni non publié, ni sans couverture utilisable, ni identifiant de compte', () => {
+    const h = withPublisher('a1');
+    publishedArticle(h, { title: 'Visible' });
+    const hidden = publishedArticle(h, { title: 'Dépublié' });
+    h.call('newsSetPublished', { requesterId: 'd4', id: hidden.id, published: false });
+    const lost = publishedArticle(h, { title: 'Couverture perdue' });
+    h.drive.files.get(lost.cover).trashed = true;
+    h.call('newsSave', { requesterId: 'a1', ...article({ title: 'Brouillon' }) });
+    const res = h.get('getNews');
+    assert.equal(res.success, true);
+    assert.deepEqual(res.articles.map((a) => a.title), ['Visible']);
+    assert.deepEqual(res.reels, []);
+    const text = JSON.stringify(res);
+    for (const forbidden of ['"a1"', '"d4"', 'createdBy', 'updatedBy', hidden.id]) assert.ok(!text.includes(forbidden), forbidden);
+    assert.deepEqual(Object.keys(res.articles[0]).sort(), ['body', 'coverId', 'photoIds', 'projectId', 'publishedAt', 'slug', 'title']);
+});
+
+test('getNews : galerie filtrée sur les photos utilisables', () => {
+    const h = fresh();
+    const a = publishedArticle(h);
+    const g1 = upload(h, a.id, 'gallery').photoId;
+    const g2 = upload(h, a.id, 'gallery').photoId;
+    h.drive.files.get(g1).trashed = true;
+    assert.deepEqual(h.get('getNews').articles[0].photoIds, [g2]);
+});
+
+test('getNews : publishedAt en YYYY-MM-DD même converti en Date, plus récent d\'abord, 60 au plus', () => {
+    const h = fresh();
+    publishedArticle(h, { title: 'Ancien' });
+    h.setNow('2026-11-26');
+    publishedArticle(h, { title: 'Récent' });
+    // Google Sheets convertit la date de publication du premier article.
+    h.setSheetCell('Actualites', 2, 9, new Date('2026-11-24T23:00:00Z'));
+    const res = h.get('getNews');
+    assert.deepEqual(res.articles.map((a) => [a.title, a.publishedAt]), [['Récent', '2026-11-26'], ['Ancien', '2026-11-25']]);
+    for (let i = 0; i < 60; i++) publishedArticle(h, { title: `Article ${i}` });
+    assert.equal(h.get('getNews').articles.length, 60);
+});
+
+test('getNews avant toute publication : listes vides, aucun onglet créé', () => {
+    const h = fresh();
+    assert.deepEqual(h.get('getNews'), { success: true, articles: [], reels: [] });
+    assert.equal(h.sheet('Actualites'), null);
+});
+
+test('getPublicImage : article publié servi, dépublié refusé, fichier quelconque refusé ; alias getNomineePhoto', () => {
+    const h = fresh();
+    const a = publishedArticle(h);
+    const g = upload(h, a.id, 'gallery').photoId;
+    assert.equal(h.get('getPublicImage', { id: a.cover }).success, true);
+    assert.equal(h.get('getPublicImage', { id: g }).success, true);
+    assert.equal(h.get('getNomineePhoto', { id: a.cover }).success, true);
+    assert.equal(h.get('getPublicImage', { id: 'sheet-id-1' }).success, false);
+    assert.equal(h.get('getPublicImage', { id: '' }).success, false);
+    h.call('newsSetPublished', { requesterId: 'd4', id: a.id, published: false });
+    assert.equal(h.get('getPublicImage', { id: a.cover }).success, false);
+});
+
+test('getPublicImage : la photo d\'un nommé reste servie', () => {
+    const h = fresh();
+    h.call('setVoteCandidate', { requesterId: 'd4', userId: 'a1', selected: true });
+    const photo = h.call('uploadNomineePhoto', { requesterId: 'd4', userId: 'a1', data: JPEG }).photoId;
+    assert.ok(photo);
+    assert.equal(h.get('getPublicImage', { id: photo }).success, true);
+});
+
+test('newsSave : ordre des photos enregistré ; identifiant étranger refusé', () => {
+    const h = fresh();
+    const { id } = h.call('newsSave', { requesterId: 'd4', ...article() });
+    const g1 = upload(h, id, 'gallery').photoId;
+    const g2 = upload(h, id, 'gallery').photoId;
+    assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2, g1] }).success, true);
+    assert.deepEqual(h.call('newsGetAdmin', { requesterId: 'd4' }).articles[0].photoIds, [g2, g1]);
+    assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2, 'x'] }).code, 'bad_request');
+    assert.equal(h.call('newsSave', { requesterId: 'd4', id, ...article(), photoIds: [g2] }).code, 'bad_request');
+});
