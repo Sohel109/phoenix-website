@@ -22,6 +22,7 @@ const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.P
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
 const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
 const EventDetail = lazy(() => import('./pages/EventDetail').then(m => ({ default: m.EventDetail })));
+const Actualites = lazy(() => import('./pages/Actualites').then(m => ({ default: m.Actualites })));
 const TuteurDuMois = lazy(() => import('./pages/TuteurDuMois').then(m => ({ default: m.TuteurDuMois })));
 const Partners = lazy(() => import('./pages/Partners').then(m => ({ default: m.Partners })));
 const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
@@ -121,6 +122,8 @@ function App() {
                   <Route path="/carte-des-projets" element={<ProjectMap />} />
                   <Route path="/evenements" element={<Events />} />
                   <Route path="/evenements/:id" element={<EventDetail />} />
+                  <Route path="/actualites" element={<Actualites />} />
+                  <Route path="/actualites/:slug" element={<Actualites />} />
                   <Route path="/tuteur-du-mois" element={<TuteurDuMois />} />
                   <Route path="/tuteur-du-mois/:slug" element={<TuteurDuMois />} />
                   <Route path="/partenaires" element={<Partners />} />

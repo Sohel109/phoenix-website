@@ -21,6 +21,7 @@ const NAV = [
     ['/projets', 'Nos projets'],
     ['/soutien-scolaire-marseille', 'Soutien scolaire à Marseille'],
     ['/evenements', 'Événements'],
+    ['/actualites', 'Actualités'],
     ['/partenaires', 'Partenaires'],
     ['/transparence', 'Transparence et dons'],
     ['/documents', 'Documents'],
@@ -186,6 +187,19 @@ ${p(x.fullDescription)}
         body: `<h1>Nos événements : éloquence, simulation de l'ONU et olympiades</h1>
 ${p("Phœnix EDC organise la Journée de l'Égalité des Chances et son concours d'éloquence, la simulation diplomatique SimONU et les Olympiades, pour développer l'art oratoire et l'ambition des jeunes accompagnés.")}
 <ul>${events.map((e) => `<li>${link(`/evenements/${e.id}`, e.title)} : ${esc(e.description)}</li>`).join('')}</ul>`,
+    });
+
+    // Page générique : les articles eux-mêmes ne sont jamais écrits dans le HTML statique, pour qu'un article retiré
+    // disparaisse du site sans attendre la prochaine mise en ligne.
+    pages.push({
+        path: '/actualites',
+        title: "Actualités de l'association – Phœnix EDC",
+        description:
+            "Sorties, voyages, projets et vie de l'association : les dernières nouvelles de Phœnix Égalité des Chances et nos réels Instagram.",
+        crumb: 'Actualités',
+        body: `<h1>Les actualités de Phœnix EDC</h1>
+${p("Sorties culturelles, voyages, projets de tutorat et coulisses de l'association : les nouvelles de Phœnix Égalité des Chances, racontées par l'équipe, et nos derniers réels Instagram.")}
+<p><a href="https://www.instagram.com/phoenixedc/">Suivre Phœnix EDC sur Instagram</a></p>`,
     });
 
     for (const e of events) {
