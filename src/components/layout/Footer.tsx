@@ -1,26 +1,53 @@
-import { useState } from 'react';
-import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin, Phone, ArrowRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { MaskingTape } from '../common/HandDrawnElements';
+import { usePublicNews } from '../../hooks/usePublicNews';
+import { formatNewsDate } from '../../data/news';
+
+/** Les 2 derniers articles ; sans article (ou service indisponible), un renvoi vers Instagram. */
+function FooterNews() {
+    const { data } = usePublicNews();
+    const latest = (data?.articles ?? []).slice(0, 2);
+    if (latest.length === 0) {
+        return (
+            <div className="space-y-3">
+                <p className="text-xs sm:text-sm text-[#ECDDFD]/80 leading-relaxed">Suivez la vie de l'association sur Instagram.</p>
+                <a
+                    href="https://www.instagram.com/phoenixedc/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 btn-phoenix-orange text-xs shadow-md hover:shadow-lg touch-tactile"
+                >
+                    <Instagram size={14} />
+                    <span>@phoenixedc</span>
+                </a>
+            </div>
+        );
+    }
+    return (
+        <div className="space-y-4">
+            <ul className="space-y-3">
+                {latest.map((article) => (
+                    <li key={article.slug}>
+                        <Link to={`/actualites/${article.slug}`} className="group block rounded-xl bg-white/5 border border-white/10 px-4 py-3 hover:border-[#EC602B]/60 hover:bg-white/10 transition-colors">
+                            <span className="block text-[11px] font-school font-bold uppercase tracking-wider text-[#ECDDFD]/55">{formatNewsDate(article.publishedAt)}</span>
+                            <span className="block mt-0.5 text-sm font-semibold text-white leading-snug group-hover:text-[#FF7E2E] transition-colors">{article.title}</span>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+            <Link to="/actualites" className="inline-flex items-center gap-2 px-6 py-2.5 btn-phoenix-orange text-xs shadow-md hover:shadow-lg touch-tactile">
+                <span>Toutes les actus</span>
+                <ArrowRight size={14} />
+            </Link>
+        </div>
+    );
+}
 
 export function Footer() {
     const location = useLocation();
-    const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
-    const [formData, setFormData] = useState({
-        nom: '',
-        prenom: '',
-        email: '',
-        consent: false
-    });
-
     // Masquer le footer dans l'intranet planning (design sombre, pas de footer public)
     if (location.pathname.startsWith('/planning')) return null;
-
-    const handleNewsletterSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData.email || !formData.consent) return;
-        setNewsletterSubmitted(true);
-    };
 
     return (
         <footer className="relative bg-[#2A082D] text-[#ECDDFD]/75 pt-16 pb-10 border-t border-[#6F2B75]/40 overflow-hidden">
@@ -159,6 +186,11 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link to="/actualites" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
+                                    Actualités
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/tuteur-du-mois" className="hover:text-[#EC602B] hover:translate-x-1 inline-block transition-all">
                                     Tuteur du mois
                                 </Link>
@@ -191,100 +223,18 @@ export function Footer() {
                         </ul>
                     </div>
 
-                    {/* Colonne 3 : Abonnez-vous (fiche carnet scotchée, chaleureuse) */}
+                    {/* Colonne 3 : dernières actualités (fiche carnet scotchée) */}
                     <div className="md:col-span-5 space-y-4 relative">
                         <MaskingTape variant="lilac" angle="right" className="hidden sm:block -top-2 right-6 z-30" />
                         <div className="flex items-baseline gap-3 border-b border-white/10 pb-2">
                             <h4 className="font-display text-xl text-white tracking-normal">
-                                Abonnez-vous
+                                Dernières actus
                             </h4>
                             <span className="font-script text-lg text-[#FF7E2E] -rotate-1 select-none hidden sm:inline">
                                 Restez connectés ✦
                             </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-[#ECDDFD]/80 leading-relaxed font-normal">
-                            Abonnez-vous pour être alerté de toutes les actualités et actions de terrain de Phœnix EDC.
-                        </p>
-                        <p className="text-[11px] text-[#ECDDFD]/55 font-school italic">
-                            Tous les champs sont obligatoires.
-                        </p>
-
-                        {newsletterSubmitted ? (
-                            <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs sm:text-sm flex items-center gap-3">
-                                <CheckCircle2 size={20} className="text-emerald-400 shrink-0" />
-                                <span>Merci pour votre inscription ! Vous recevrez nos prochaines actualités par email.</span>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                    <div>
-                                        <label htmlFor="footer-nom" className="block text-[11px] font-medium text-[#ECDDFD]/70 mb-1">
-                                            Nom *
-                                        </label>
-                                        <input
-                                            id="footer-nom"
-                                            type="text"
-                                            required
-                                            value={formData.nom}
-                                            onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-                                            className="w-full px-3 py-2 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:outline-none focus:border-[#EC602B] focus:ring-1 focus:ring-[#EC602B] transition-all"
-                                            placeholder="Votre nom"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="footer-prenom" className="block text-[11px] font-medium text-[#ECDDFD]/70 mb-1">
-                                            Prénom *
-                                        </label>
-                                        <input
-                                            id="footer-prenom"
-                                            type="text"
-                                            required
-                                            value={formData.prenom}
-                                            onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
-                                            className="w-full px-3 py-2 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:outline-none focus:border-[#EC602B] focus:ring-1 focus:ring-[#EC602B] transition-all"
-                                            placeholder="Votre prénom"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label htmlFor="footer-email" className="block text-[11px] font-medium text-[#ECDDFD]/70 mb-1">
-                                        E-mail *
-                                    </label>
-                                    <input
-                                        id="footer-email"
-                                        type="email"
-                                        required
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-3 py-2 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:outline-none focus:border-[#EC602B] focus:ring-1 focus:ring-[#EC602B] transition-all"
-                                        placeholder="votre.email@exemple.fr"
-                                    />
-                                </div>
-
-                                <div className="flex items-start gap-2 pt-1">
-                                    <input
-                                        id="footer-consent"
-                                        type="checkbox"
-                                        required
-                                        checked={formData.consent}
-                                        onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
-                                        className="mt-0.5 rounded border-white/20 text-[#EC602B] focus:ring-[#EC602B] bg-white/10"
-                                    />
-                                    <label htmlFor="footer-consent" className="text-[11px] text-[#ECDDFD]/55 leading-snug cursor-pointer">
-                                        J'accepte que mes informations personnelles soient utilisées uniquement dans le cadre de la lettre d'actualités de Phœnix EDC.
-                                    </label>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="w-full sm:w-auto px-6 py-2.5 btn-phoenix-orange active:scale-[0.98] text-xs shadow-md hover:shadow-lg cursor-pointer touch-tactile"
-                                >
-                                    <span>Je m'abonne</span>
-                                    <ArrowRight size={14} />
-                                </button>
-                            </form>
-                        )}
+                        <FooterNews />
                     </div>
                 </div>
 
