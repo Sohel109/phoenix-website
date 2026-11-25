@@ -1533,7 +1533,8 @@ function getPublicImage(fileId) {
 // restent valables même si le titre change.
 var NEWS_SHEETS = {
   articles: { name: 'Actualites', headers: ['id', 'slug', 'title', 'body', 'coverFileId', 'photoFileIds', 'projectId', 'published', 'publishedAt', 'createdBy', 'updatedBy', 'updatedAt'], textColumns: 'A:L' },
-  publishers: { name: 'Publieurs', headers: ['userId', 'grantedBy', 'grantedAt'], textColumns: 'A:C' }
+  publishers: { name: 'Publieurs', headers: ['userId', 'grantedBy', 'grantedAt'], textColumns: 'A:C' },
+  reels: { name: 'ReelsInstagram', headers: ['mediaId', 'shortcode', 'permalink', 'caption', 'timestamp', 'coverFileId', 'syncedAt'], textColumns: 'A:G' }
 };
 var NEWS_LIMITS = { title: 120, body: 5000, photos: 6, publicArticles: 60, reels: 8, igFetch: 25 };
 var NEWS_ACTIONS = ['newsAccess', 'newsGetAdmin', 'newsSave', 'newsSetPublished', 'newsDelete', 'newsSetPublisher', 'newsUploadPhoto', 'newsRemovePhoto'];
@@ -1794,7 +1795,11 @@ function publicNewsArticles() {
 }
 
 function publicNewsReels() {
-  return [];
+  var list = readReels(readVoteRowsIfAny(NEWS_SHEETS.reels)).filter(function(r) { return nomineePhotoUsable(r.coverFileId); });
+  list.sort(function(a, b) { return a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0; });
+  return list.slice(0, NEWS_LIMITS.reels).map(function(r) {
+    return { id: r.mediaId, shortcode: r.shortcode, permalink: r.permalink, caption: r.caption, timestamp: r.timestamp, coverId: r.coverFileId };
+  });
 }
 
 function publicNewsImageIds() {
@@ -1805,6 +1810,8 @@ function publicNewsImageIds() {
     ids[articles[i].coverFileId] = true;
     for (var p = 0; p < articles[i].photoFileIds.length; p++) ids[articles[i].photoFileIds[p]] = true;
   }
+  var reels = readReels(readVoteRowsIfAny(NEWS_SHEETS.reels));
+  for (var r = 0; r < reels.length; r++) ids[reels[r].coverFileId] = true;
   delete ids[''];
   return ids;
 }
@@ -1815,6 +1822,157 @@ function getPublicNews() {
       projectId: a.projectId, publishedAt: a.publishedAt };
   });
   return { success: true, articles: articles, reels: publicNewsReels() };
+}
+
+// ==========================================
+// RÉELS INSTAGRAM
+// ==========================================
+// Un déclencheur quotidien (créé une fois par installerSynchroInstagram) lit les 25 dernières publications du compte
+// @phoenixedc et garde les vidéos (tout réel publié est une vidéo ; avec la connexion Instagram, media_product_type n'est
+// pas fiable). Les adresses d'images d'Instagram expirent : la couverture est copiée dans un dossier Drive privé.
+// La clé (propriété INSTAGRAM_TOKEN) vit 60 jours ; elle est renouvelée tous les 30 jours. Au moindre échec, rien n'est
+// modifié et le message est noté dans la propriété INSTAGRAM_LAST_ERROR : le site garde les réels déjà enregistrés.
+var INSTAGRAM_REEL_FOLDER = 'Phoenix - Couvertures réels';
+var INSTAGRAM_REFRESH_EVERY_MS = 30 * 24 * 3600 * 1000;
+
+function reelShortcode(permalink) {
+  var m = /^https:\/\/(www\.)?instagram\.com\/(reel|reels|p)\/([A-Za-z0-9_-]+)/.exec(String(permalink || ''));
+  return m ? m[3] : '';
+}
+
+// « 2026-11-20T10:00:00+0000 » (format d'Instagram) ou date convertie par Sheets : toujours relu en ISO.
+function instagramTimestamp(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') return value.toISOString();
+  var d = new Date(String(value || '').replace(/([+-]\d{2})(\d{2})$/, '$1:$2'));
+  return isNaN(d.getTime()) ? '' : d.toISOString();
+}
+
+function readReels(rows) {
+  return rows.map(function(row) {
+    var c = row.cells;
+    return { sheetRow: row.sheetRow, mediaId: String(c[0]), shortcode: String(c[1] || ''), permalink: String(c[2] || ''),
+      caption: String(c[3] === null || c[3] === undefined ? '' : c[3]), timestamp: instagramTimestamp(c[4]), coverFileId: c[5] ? String(c[5]) : '' };
+  });
+}
+
+function instagramGetJson(url) {
+  var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  var data;
+  try {
+    data = JSON.parse(res.getContentText());
+  } catch (e) {
+    throw new Error("Réponse illisible d'Instagram (code " + res.getResponseCode() + ').');
+  }
+  if (res.getResponseCode() !== 200) {
+    throw new Error('Instagram : ' + (data && data.error && data.error.message ? data.error.message : 'code ' + res.getResponseCode()));
+  }
+  return data;
+}
+
+// Une clé collée à la main (fin différente de celle notée) repart pour 30 jours : Instagram refuse de renouveler une clé
+// de moins de 24 heures.
+function refreshInstagramTokenIfDue(props, token) {
+  var tail = token.slice(-8);
+  var at = props.getProperty('INSTAGRAM_TOKEN_REFRESHED_AT');
+  if (!at || props.getProperty('INSTAGRAM_TOKEN_TAIL') !== tail) {
+    props.setProperty('INSTAGRAM_TOKEN_REFRESHED_AT', new Date(nowMs()).toISOString());
+    props.setProperty('INSTAGRAM_TOKEN_TAIL', tail);
+    return token;
+  }
+  if (nowMs() - new Date(at).getTime() < INSTAGRAM_REFRESH_EVERY_MS) return token;
+  var data = instagramGetJson('https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=' + encodeURIComponent(token));
+  if (!data || typeof data.access_token !== 'string' || !data.access_token) throw new Error('Renouvellement de la clé Instagram refusé.');
+  props.setProperty('INSTAGRAM_TOKEN', data.access_token);
+  props.setProperty('INSTAGRAM_TOKEN_REFRESHED_AT', new Date(nowMs()).toISOString());
+  props.setProperty('INSTAGRAM_TOKEN_TAIL', data.access_token.slice(-8));
+  return data.access_token;
+}
+
+function synchroInstagram() {
+  var props = PropertiesService.getScriptProperties();
+  var stamp = new Date(nowMs()).toISOString();
+  var token = props.getProperty('INSTAGRAM_TOKEN');
+  if (!token) {
+    props.setProperty('INSTAGRAM_LAST_ERROR', stamp + ' : propriété INSTAGRAM_TOKEN absente.');
+    return;
+  }
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    token = refreshInstagramTokenIfDue(props, token);
+    var data = instagramGetJson('https://graph.instagram.com/me/media?fields=id,media_type,thumbnail_url,permalink,caption,timestamp&limit='
+      + NEWS_LIMITS.igFetch + '&access_token=' + encodeURIComponent(token));
+    if (!data || Object.prototype.toString.call(data.data) !== '[object Array]') throw new Error("Réponse inattendue d'Instagram.");
+    var feed = data.data;
+    var seen = {};
+    var oldest = '';
+    var videos = [];
+    for (var i = 0; i < feed.length; i++) {
+      var item = feed[i] || {};
+      var ts = instagramTimestamp(item.timestamp);
+      seen[String(item.id)] = true;
+      if (ts && (!oldest || ts < oldest)) oldest = ts;
+      var code = reelShortcode(item.permalink);
+      if (item.media_type !== 'VIDEO' || !item.thumbnail_url || !code || !ts) continue;
+      videos.push({ id: String(item.id), shortcode: code, permalink: String(item.permalink), caption: String(item.caption || ''), timestamp: ts, thumb: String(item.thumbnail_url) });
+    }
+
+    var sheet = getVoteSheet(NEWS_SHEETS.reels);
+    var known = readReels(readVoteRows(sheet));
+    var byId = {};
+    for (var k = 0; k < known.length; k++) byId[known[k].mediaId] = known[k];
+
+    // Couvertures des nouveaux réels téléchargées avant toute écriture : un échec ne laisse rien à moitié fait.
+    var fresh = [];
+    for (var v = 0; v < videos.length; v++) {
+      if (byId[videos[v].id]) continue;
+      var img = UrlFetchApp.fetch(videos[v].thumb, { muteHttpExceptions: true });
+      if (img.getResponseCode() !== 200) throw new Error("Couverture d'un réel indisponible (code " + img.getResponseCode() + ').');
+      fresh.push({ video: videos[v], blob: img.getBlob() });
+    }
+
+    // Légendes modifiées sur Instagram (avant les suppressions, qui décalent les lignes).
+    for (var u = 0; u < videos.length; u++) {
+      var row = byId[videos[u].id];
+      if (row && row.caption !== videos[u].caption) sheet.getRange(row.sheetRow, 4).setValue(videos[u].caption);
+    }
+
+    // Une vidéo absente du fil a été supprimée sur Instagram si elle tombe dans la période lue. Quand le fil compte moins
+    // de 25 publications, il contient tout le compte.
+    var full = feed.length >= NEWS_LIMITS.igFetch;
+    var gone = known.filter(function(r) { return !seen[r.mediaId] && (!full || (oldest && r.timestamp >= oldest)); });
+    gone.sort(function(a, b) { return b.sheetRow - a.sheetRow; });
+    for (var g = 0; g < gone.length; g++) {
+      sheet.deleteRow(gone[g].sheetRow);
+      trashNomineePhoto(gone[g].coverFileId);
+    }
+
+    if (fresh.length) {
+      var folder = getPrivateFolder('INSTAGRAM_REEL_FOLDER_ID', INSTAGRAM_REEL_FOLDER);
+      for (var f = 0; f < fresh.length; f++) {
+        var r = fresh[f].video;
+        var file = folder.createFile(fresh[f].blob.setName('reel-' + r.id + '.jpg'));
+        sheet.appendRow([r.id, r.shortcode, r.permalink, r.caption, r.timestamp, file.getId(), stamp]);
+      }
+    }
+    props.setProperty('INSTAGRAM_LAST_ERROR', '');
+  } catch (err) {
+    props.setProperty('INSTAGRAM_LAST_ERROR', stamp + ' : ' + (err && err.message ? err.message : String(err)));
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * À exécuter UNE FOIS dans l'éditeur Apps Script, après avoir enregistré la clé dans la propriété INSTAGRAM_TOKEN :
+ * crée le déclencheur qui récupère les réels chaque matin vers 6 h. Peut être relancée sans risque.
+ */
+function installerSynchroInstagram() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'synchroInstagram') ScriptApp.deleteTrigger(triggers[i]);
+  }
+  ScriptApp.newTrigger('synchroInstagram').timeBased().everyDays(1).atHour(6).create();
 }
 
 function newsSetPublisher(ctx, postData) {

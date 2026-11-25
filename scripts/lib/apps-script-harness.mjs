@@ -126,6 +126,9 @@ export function loadScript(options) {
         },
     });
     const triggers = [];
+    // Faux UrlFetchApp : `fetchHandler(url)` renvoie { code, json?, text?, bytes? } ; chaque adresse appelée est notée.
+    const fetches = [];
+    let fetchHandler = () => { throw new Error('Aucun accès réseau dans les tests'); };
     const fakeTrigger = (entry) => ({ getHandlerFunction: () => entry.handler, entry });
     const sandbox = {
         console,
@@ -160,9 +163,23 @@ export function loadScript(options) {
             newTrigger: (handler) => ({
                 timeBased() { return this; },
                 onWeekDay(day) { this.day = day; return this; },
+                everyDays(n) { this.everyDays = n; return this; },
                 atHour(hour) { this.hour = hour; return this; },
-                create() { triggers.push({ handler, weekDay: this.day, hour: this.hour }); },
+                create() { triggers.push({ handler, weekDay: this.day, everyDays: this.everyDays, hour: this.hour }); },
             }),
+        },
+        UrlFetchApp: {
+            fetch: (url) => {
+                fetches.push(url);
+                const r = fetchHandler(url);
+                const text = r.text ?? (r.json !== undefined ? JSON.stringify(r.json) : '');
+                const bytes = Array.from(Buffer.from(r.bytes ?? [0xff, 0xd8, 0xff, 0xe0])).map((b) => (b > 127 ? b - 256 : b));
+                return {
+                    getResponseCode: () => r.code ?? 200,
+                    getContentText: () => text,
+                    getBlob: () => sandbox.Utilities.newBlob(bytes, 'image/jpeg', 'cover.jpg'),
+                };
+            },
         },
         GmailApp: { sendEmail: (to, subject) => { mailbox.push({ to, subject }); }, getAliases: () => [] },
         MailApp: { sendEmail: (m) => { mailbox.push({ to: m.to, subject: m.subject }); }, getRemainingDailyQuota: () => 100 },
@@ -209,6 +226,10 @@ export function loadScript(options) {
         ctx,
         drive,
         triggers,
+        fetches,
+        setFetch(fn) { fetchHandler = fn; },
+        property(key) { return properties.get(key) ?? null; },
+        setProperty(key, value) { properties.set(key, value); },
         setNow(key) { state.now = key; },
         advanceMs(ms) { state.nowMs += ms; },
         mailbox,
