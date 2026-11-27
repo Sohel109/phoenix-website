@@ -21,7 +21,6 @@ const NAV = [
     ['/projets', 'Nos projets'],
     ['/soutien-scolaire-marseille', 'Soutien scolaire à Marseille'],
     ['/evenements', 'Événements'],
-    ['/actualites', 'Actualités'],
     ['/partenaires', 'Partenaires'],
     ['/transparence', 'Transparence et dons'],
     ['/documents', 'Documents'],

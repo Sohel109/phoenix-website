@@ -39,7 +39,6 @@ export function Header() {
         { label: "L'Association", path: '/association' },
         { label: 'Nos Projets', path: '/projets' },
         { label: 'Événements', path: '/evenements' },
-        { label: 'Actualités', path: '/actualites' },
         { label: 'Tuteur du mois', path: '/tuteur-du-mois', live: true },
         { label: 'Partenaires', path: '/partenaires' },
         { label: 'Documents', path: '/documents' },
