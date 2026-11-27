@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin, Phone, ArrowRight } from 'lucide-react';
+import { Facebook, Instagram, Mail, MapPin, Music2, Linkedin, ArrowRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { MaskingTape } from '../common/HandDrawnElements';
 import { usePublicNews } from '../../hooks/usePublicNews';
@@ -80,14 +80,6 @@ export function Footer() {
                         </div>
 
                         <ul className="space-y-3.5 text-xs sm:text-sm text-[#ECDDFD]/75 font-medium">
-                            <li className="flex items-center gap-3 group">
-                                <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-[#EC602B] shrink-0 group-hover:bg-[#EC602B] group-hover:text-white transition-colors">
-                                    <Phone size={15} />
-                                </span>
-                                <a href="tel:0491827844" className="hover:text-white hover:underline transition-colors">
-                                    04 91 82 78 44
-                                </a>
-                            </li>
                             <li className="flex items-center gap-3 group">
                                 <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-[#EC602B] shrink-0 group-hover:bg-[#EC602B] group-hover:text-white transition-colors">
                                     <Mail size={15} />
